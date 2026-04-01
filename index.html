@@ -1,0 +1,2805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MONK MODE — PUSH PULL LEGS</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #e8412a;
+    --blue: #1d4ed8;
+    --green: #16a34a;
+    --purple: #7c3aed;
+    --black: #080808;
+    --dark: #111111;
+    --card: #161616;
+    --border: #242424;
+    --text: #e2e2e2;
+    --muted: #666;
+    --dim: #333;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--black);
+    color: var(--text);
+    overflow-x: hidden;
+    padding-top: 60px;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(8,8,8,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    height: 60px;
+    display: flex; align-items: center; justify-content: flex-start; gap: 0;
+  }
+  .nav-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: #fff;
+  }
+  .nav-logo span { color: var(--red); }
+  .nav-tabs { margin-left: 24px; }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #fff; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 60px 80px;
+    position: relative;
+    overflow: hidden;
+    background: var(--black);
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 30%, rgba(232,65,42,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(29,78,216,0.08) 0%, transparent 70%);
+  }
+  .hero-number {
+    position: absolute;
+    right: -20px; top: 50%;
+    transform: translateY(-60%);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(200px, 30vw, 400px);
+    line-height: 1;
+    color: rgba(255,255,255,0.02);
+    letter-spacing: -0.02em;
+    user-select: none;
+  }
+  .hero-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 20px;
+    position: relative;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 40px; height: 2px;
+    background: var(--red);
+  }
+  .hero-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(110px, 18vw, 240px);
+    line-height: 0.88;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: #fff;
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .hero-title .line2 { color: var(--red); display: block; }
+  .hero-title .line3 { color: rgba(255,255,255,0.15); display: block; }
+  .hero-desc {
+    font-size: 16px;
+    color: var(--muted);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    position: relative;
+  }
+  .hero-stats {
+    display: flex; gap: 48px;
+    position: relative;
+  }
+  .stat-item {}
+  .stat-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 48px;
+    line-height: 1;
+    color: #fff;
+    letter-spacing: -0.02em;
+  }
+  .stat-num span { color: var(--red); }
+  .stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .hero-cta {
+    position: relative;
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--red);
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 16px 36px;
+    border: none; cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 48px;
+    align-self: flex-start;
+  }
+  .hero-cta:hover { background: #ff5a42; transform: translateY(-2px); }
+  .hero-cta-arrow { font-size: 20px; transition: transform 0.2s; }
+  .hero-cta:hover .hero-cta-arrow { transform: translateX(4px); }
+
+  /* SECTION BASE */
+  section { padding: 100px 60px; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--red); }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(48px, 6vw, 80px);
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    color: #fff;
+    margin-bottom: 48px;
+  }
+
+  /* ABOUT */
+  #about { background: var(--black); border-top: 1px solid var(--border); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .about-text p {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+  .about-text p strong { color: var(--text); font-weight: 600; }
+  .pillars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .pillar {
+    background: var(--card);
+    padding: 28px 24px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .pillar:hover { border-color: var(--dim); }
+  .pillar-icon {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .pillar-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .pillar-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* WEEK OVERVIEW */
+  #overview { background: var(--dark); border-top: 1px solid var(--border); }
+  .week-tabs {
+    display: flex; gap: 4px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+  }
+  .week-tab {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 10px 24px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .week-tab:hover { border-color: var(--dim); color: var(--text); }
+  .week-tab.active { background: var(--red); border-color: var(--red); color: #fff; }
+  .week-info {
+    padding: 24px 28px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    margin-bottom: 40px;
+    display: flex; gap: 32px; flex-wrap: wrap;
+  }
+  .week-info-item {}
+  .week-info-label { font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .week-info-val { font-size: 15px; color: var(--text); }
+
+  /* DAY CARDS */
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2px;
+  }
+  .day-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .day-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--dc, var(--red));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .day-card:hover::before { transform: scaleX(1); }
+  .day-card:hover { border-color: var(--dim); background: #1a1a1a; }
+  .day-card-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .day-card-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .day-card-focus { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 20px; }
+  .day-card-meta { display: flex; gap: 16px; align-items: center; }
+  .day-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+  .day-duration { font-size: 12px; color: #f59e0b; font-weight: 600; }
+  .day-lift-count { font-size: 12px; color: var(--muted); }
+
+  /* WORKOUT PLAN */
+  #plan { background: var(--black); border-top: 1px solid var(--border); }
+  .plan-nav {
+    display: flex; gap: 2px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  .plan-nav-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 12px 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+  .plan-nav-btn:hover { color: var(--text); border-color: var(--dim); }
+  .plan-nav-btn.active { color: #fff; background: #161616; border-color: var(--dc, var(--red)); border-left-color: var(--dc, var(--red)); }
+
+  .plan-content { display: none; }
+  .plan-content.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .plan-day-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+  }
+  .plan-day-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 64px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .plan-day-focus { font-size: 15px; color: var(--muted); margin-top: 8px; max-width: 500px; line-height: 1.6; }
+  .plan-badges { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  /* WARMUP SECTION */
+  .warmup-toggle-btn {
+    background: transparent;
+    border: 1px solid #1e3a1e;
+    color: #4a8a4a;
+    padding: 12px 24px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 32px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .warmup-toggle-btn:hover, .warmup-toggle-btn.open {
+    border-color: var(--green); color: var(--green); background: rgba(22,163,74,0.05);
+  }
+  .warmup-panel {
+    display: none;
+    background: rgba(22,163,74,0.04);
+    border: 1px solid rgba(22,163,74,0.2);
+    border-left: 4px solid var(--green);
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    animation: fadeIn 0.2s ease;
+  }
+  .warmup-panel.open { display: block; }
+  .warmup-panel-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 24px;
+  }
+  .warmup-steps { display: flex; flex-direction: column; gap: 16px; }
+  .warmup-step { display: flex; gap: 20px; align-items: flex-start; }
+  .warmup-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--green);
+    min-width: 24px;
+    line-height: 1.2;
+  }
+  .warmup-step-text { font-size: 15px; color: var(--text); margin-bottom: 4px; font-weight: 500; }
+  .warmup-step-why { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* LIFT TABLE */
+  .lift-table-header {
+    display: grid;
+    grid-template-columns: 1fr 80px 90px 90px;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .lift-table-header span {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .lift-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 90px 90px;
+    gap: 12px;
+    padding: 20px 0;
+    border-bottom: 1px solid #1a1a1a;
+    cursor: pointer;
+    transition: all 0.15s;
+    align-items: start;
+  }
+  .lift-row:hover { background: rgba(255,255,255,0.02); padding-left: 8px; }
+  .lift-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .lift-sets-reps {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .lift-rest { font-size: 14px; color: #f59e0b; font-weight: 600; padding-top: 2px; }
+  .lift-time { font-size: 14px; color: var(--dim); padding-top: 2px; }
+  .lift-note {
+    display: none;
+    grid-column: 1 / -1;
+    padding: 14px 16px;
+    background: var(--card);
+    border-left: 3px solid var(--dc, var(--red));
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-top: 10px;
+    animation: fadeIn 0.2s ease;
+  }
+  .lift-note.open { display: block; }
+  .lift-chevron {
+    font-size: 11px;
+    color: var(--dim);
+    padding-top: 4px;
+    transition: transform 0.2s;
+    user-select: none;
+  }
+  .lift-row.expanded .lift-chevron { transform: rotate(180deg); }
+
+  /* PROGRESSION */
+  #progression { background: var(--dark); border-top: 1px solid var(--border); }
+  .prog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .prog-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .prog-card-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .prog-card-lift {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .prog-row {
+    display: grid;
+    grid-template-columns: 90px 120px 1fr;
+    gap: 16px;
+    padding: 18px 28px;
+    border-bottom: 1px solid #1a1a1a;
+    align-items: center;
+    transition: background 0.15s;
+  }
+  .prog-row:last-child { border-bottom: none; }
+  .prog-row:hover { background: rgba(255,255,255,0.02); }
+  .prog-row.highlight { background: rgba(232,65,42,0.05); border-left: 3px solid var(--red); }
+  .prog-week { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .prog-week.active-week { color: #fff; font-weight: 700; }
+  .prog-weight {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+  }
+  .prog-note { font-size: 13px; color: var(--muted); line-height: 1.4; }
+  .prog-week-selector {
+    display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .prog-week-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .prog-week-btn:hover { border-color: var(--dim); color: var(--text); }
+  .prog-week-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* FOOTER */
+  footer {
+    background: var(--black);
+    border-top: 1px solid var(--border);
+    padding: 60px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 32px;
+  }
+  .footer-logo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .footer-logo span { color: var(--red); }
+  .footer-sub { font-size: 13px; color: var(--muted); }
+  .footer-rules { max-width: 400px; }
+  .footer-rules-title { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--red); margin-bottom: 16px; }
+  .footer-rule { font-size: 13px; color: var(--muted); margin-bottom: 8px; display: flex; gap: 10px; line-height: 1.5; }
+  .footer-rule-num { color: var(--red); flex-shrink: 0; font-weight: 700; }
+
+  /* BADGE STYLES */
+  .badge {
+    display: inline-block;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    @media (max-width: 768px) { .nav-logo { font-size: 18px; } }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    .hero { padding: 0 24px 60px; }
+    .hero-title { font-size: 64px; }
+    .about-grid { grid-template-columns: 1fr; gap: 48px; }
+    .pillars { grid-template-columns: 1fr; }
+    .prog-grid { grid-template-columns: 1fr; }
+    footer { padding: 40px 24px; }
+    .plan-day-title { font-size: 48px; }
+    .lift-table-header, .lift-row { grid-template-columns: 1fr 70px 80px; }
+    .lift-time { display: none; }
+  }
+
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .fade-up:nth-child(2) { transition-delay: 0.1s; }
+  .fade-up:nth-child(3) { transition-delay: 0.2s; }
+  .fade-up:nth-child(4) { transition-delay: 0.3s; }
+
+  /* LOGGING SYSTEM */
+  .lift-row { position: relative; }
+  .log-sets-row {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .log-sets-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    min-width: 50px;
+  }
+  .set-circle {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .set-circle:hover { border-color: #555; color: #ccc; background: rgba(255,255,255,0.03); }
+  .set-circle.logged { border-color: var(--green); color: var(--green); background: rgba(22,163,74,0.08); }
+  .set-circle.flash { background: var(--green); color: #fff; border-color: var(--green); }
+  .last-session-row {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .last-session-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .last-session-chip {
+    font-size: 12px;
+    color: #555;
+    padding: 3px 10px;
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 2px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .last-session-chip.has-data { color: #888; border-color: #2a2a2a; }
+  /* LOG MODAL */
+  .log-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.88);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+    animation: fadeIn 0.15s ease;
+  }
+  .log-modal-card {
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-top: 3px solid var(--green);
+    border-radius: 4px;
+    padding: 28px 32px;
+    width: 320px;
+    max-width: 90vw;
+  }
+  .log-modal-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 6px;
+  }
+  .log-modal-lift {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+  .log-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .log-input-group {}
+  .log-input-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .log-input-field {
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    padding: 14px 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    border-radius: 3px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .log-input-field:focus { border-color: var(--green); }
+  .log-save-btn {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    width: 100%;
+    margin-bottom: 10px;
+    transition: background 0.15s;
+  }
+  .log-save-btn:hover { background: #15803d; }
+  .log-cancel-btn {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    width: 100%;
+    transition: all 0.15s;
+  }
+  .log-cancel-btn:hover { color: #ccc; border-color: #444; }
+  .clear-day-btn {
+    background: transparent;
+    border: 1px solid #1e1e1e;
+    color: #333;
+    cursor: pointer;
+    padding: 6px 14px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: all 0.15s;
+    margin-left: 8px;
+  }
+  .clear-day-btn:hover { border-color: rgba(232,65,42,0.4); color: rgba(232,65,42,0.6); }
+
+
+  /* ── REST TIMER ─────────────────────────────────────────────────────────── */
+  .timer-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 300;
+    background: #0e0e0e;
+    border-top: 1px solid #222;
+    padding: 0;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.6);
+  }
+  .timer-bar.visible { transform: translateY(0); }
+  .timer-progress-track {
+    height: 3px;
+    background: #1a1a1a;
+    width: 100%;
+  }
+  .timer-progress-fill {
+    height: 100%;
+    background: var(--green);
+    width: 100%;
+    transition: width 1s linear, background 0.5s ease;
+  }
+  .timer-progress-fill.warning { background: #f59e0b; }
+  .timer-progress-fill.done { background: var(--red); }
+  .timer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 28px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .timer-left { display: flex; align-items: center; gap: 18px; }
+  .timer-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .timer-lift-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #aaa;
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .timer-display {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 52px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: #fff;
+    min-width: 110px;
+    text-align: center;
+    transition: color 0.3s;
+  }
+  .timer-display.warning { color: #f59e0b; }
+  .timer-display.done { color: var(--red); }
+  .timer-right { display: flex; align-items: center; gap: 10px; }
+  .timer-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid #333;
+    background: transparent;
+    color: #888;
+    padding: 8px 18px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .timer-btn:hover { border-color: #555; color: #ccc; }
+  .timer-btn.primary {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+  }
+  .timer-btn.primary:hover { background: #15803d; border-color: #15803d; }
+  .timer-btn.danger { border-color: rgba(232,65,42,0.4); color: rgba(232,65,42,0.7); }
+  .timer-btn.danger:hover { border-color: var(--red); color: var(--red); }
+  @media (max-width: 600px) {
+    .timer-inner { padding: 12px 16px; gap: 12px; }
+    .timer-display { font-size: 44px; }
+    .timer-lift-name { display: none; }
+  }
+
+
+  /* ── TAB SYSTEM ─────────────────────────────────────────────────────────── */
+  .nav-tabs {
+    display: flex;
+    gap: 0;
+    height: 100%;
+    align-items: stretch;
+  }
+  .nav-tab {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--muted);
+    padding: 0 28px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 60px;
+    position: relative;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active {
+    color: #fff;
+    border-bottom-color: var(--red);
+  }
+  .nav-tab-icon {
+    font-size: 13px;
+    opacity: 0.7;
+  }
+  .nav-tab.active .nav-tab-icon { opacity: 1; color: var(--red); }
+  /* Tab pages — only one visible at a time */
+  .tab-page { display: none; }
+  .tab-page.active { display: block; animation: tabFadeIn 0.25s ease; }
+  @keyframes tabFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .subnav-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    padding: 12px 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .subnav-btn:hover { color: var(--text); }
+  .subnav-btn.active { color: #fff; border-bottom-color: var(--red); }
+
+
+  /* ── MAXES SETTINGS ─────────────────────────────────────────────────────── */
+  .settings-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .settings-maxes-display {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .settings-max-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .settings-max-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .settings-max-val {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.02em;
+  }
+  .settings-max-val.unset { color: var(--dim); font-size: 13px; font-weight: 400; }
+  .settings-open-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 9px 20px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .settings-open-btn:hover { border-color: #555; color: #ccc; }
+  .settings-open-btn.has-data { border-color: var(--red); color: var(--red); }
+  /* Settings modal */
+  .settings-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 250;
+    animation: fadeIn 0.15s ease;
+  }
+  .settings-modal-card {
+    background: #121212;
+    border: 1px solid #2a2a2a;
+    border-top: 3px solid var(--red);
+    border-radius: 4px;
+    padding: 36px 40px;
+    width: 480px;
+    max-width: 92vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .settings-modal-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .settings-modal-sub {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+  .settings-input-group {
+    margin-bottom: 24px;
+  }
+  .settings-input-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .settings-input-label span { color: var(--red); font-size: 10px; }
+  .settings-input-field {
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    color: #fff;
+    padding: 14px 18px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    border-radius: 3px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .settings-input-field:focus { border-color: var(--red); }
+  .settings-input-hint {
+    font-size: 11px;
+    color: var(--dim);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .settings-save-btn {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    width: 100%;
+    margin-bottom: 10px;
+    transition: background 0.15s;
+  }
+  .settings-save-btn:hover { background: #cc3520; }
+  .settings-cancel-btn {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 12px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    width: 100%;
+    transition: all 0.15s;
+  }
+  .settings-cancel-btn:hover { color: #ccc; border-color: #444; }
+
+  /* Maxes mode toggle */
+  .maxes-mode-toggle {
+    display: flex;
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 3px;
+    padding: 3px;
+    margin-bottom: 28px;
+    gap: 3px;
+  }
+  .mode-toggle-btn {
+    flex: 1;
+    padding: 10px 6px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    line-height: 1.2;
+  }
+  .mode-toggle-btn.active { background: var(--red); color: #fff; }
+  .maxes-reps-row {
+    display: none;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: flex-end;
+  }
+  .settings-modal-card.maxes-mode-reps .maxes-reps-row { display: flex; }
+  .settings-modal-card.maxes-mode-reps .maxes-1rm-input { display: none; }
+  .maxes-reps-input-wrap { flex: 1; }
+  .maxes-reps-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 6px;
+  }
+  .maxes-est-1rm {
+    font-size: 11px;
+    color: var(--red);
+    margin-top: 8px;
+    min-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    opacity: 0.85;
+  }
+
+  /* Weight badge on lift rows */
+  .lift-weight-badge {
+    display: inline-block;
+    background: rgba(232,65,42,0.1);
+    border: 1px solid rgba(232,65,42,0.25);
+    color: #e8412a;
+    padding: 2px 10px;
+    border-radius: 2px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    margin-left: 10px;
+    vertical-align: middle;
+  }
+  .lift-weight-badge.squat { background: rgba(22,163,74,0.1); border-color: rgba(22,163,74,0.25); color: #16a34a; }
+  .lift-weight-badge.ohp { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.25); color: #f59e0b; }
+  .lift-weight-badge.pullup { background: rgba(29,78,216,0.1); border-color: rgba(29,78,216,0.25); color: #4d8ef8; }
+
+
+  html, body { overflow-x: hidden; }
+
+
+  /* ── INFO SUB-SECTIONS ──────────────────────────────────────────────────── */
+
+
+</style>
+<style>
+.tab-main { display: none; }
+.tab-main.on { display: block; }
+.sub-sec { display: none; }
+.sub-sec.on { display: block; }
+.nav-sub {
+  position: sticky; top: 60px; z-index: 99;
+  background: #090909; border-bottom: 1px solid #222;
+  display: flex; padding: 0 40px; overflow-x: auto;
+}
+.nav-sub button {
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: #666; padding: 12px 18px; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+  white-space: nowrap;
+}
+.nav-sub button.on { color: #fff; border-bottom-color: #e8412a; }
+
+/* ── TRAINING MODE (white background) ──────────────────────────────────── */
+body.training-mode { background: #f5f5f5; }
+body.training-mode nav { background: rgba(255,255,255,0.97); border-bottom-color: #e0e0e0; }
+body.training-mode .nav-logo { color: #111; }
+body.training-mode .nav-logo span { color: var(--red); }
+body.training-mode .nav-tab { color: #999; }
+body.training-mode .nav-tab.active { color: #111; border-bottom-color: var(--red); }
+body.training-mode #plan { background: #f5f5f5; border-top: none; }
+body.training-mode .settings-bar { background: #fff; border-bottom: 1px solid #e8e8e8; }
+body.training-mode .settings-max-chip { background: #f0f0f0; border-color: #ddd; }
+body.training-mode .settings-max-label { color: #888; }
+body.training-mode .settings-max-val { color: #111; }
+body.training-mode .settings-max-val.unset { color: #bbb; }
+body.training-mode .settings-open-btn {
+  border-color: var(--red);
+  color: #fff;
+  background: var(--red);
+  font-size: 14px;
+  padding: 11px 24px;
+  box-shadow: 0 2px 12px rgba(232,65,42,0.35);
+}
+body.training-mode .settings-open-btn:hover { background: #cc3520; border-color: #cc3520; box-shadow: 0 4px 18px rgba(232,65,42,0.45); }
+.rest-timer-strip { display:flex; align-items:center; gap:10px; margin-bottom:20px; padding:12px 14px; background:#111; border:1px solid #1e1e1e; border-radius:4px; flex-wrap:wrap; }
+body.training-mode .rest-timer-strip { background:#f0f0f0; border-color:#ddd; }
+.rest-timer-strip-label { font-size:10px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+body.training-mode .rest-timer-strip-label { color:#888; }
+.rest-preset-btn { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.08em; padding:6px 14px; background:transparent; border:1px solid #2a2a2a; color:#666; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+body.training-mode .rest-preset-btn { border-color:#ccc; color:#555; background:transparent; }
+.rest-preset-btn:hover, .rest-preset-btn.active-preset { background:var(--red); border-color:var(--red); color:#fff; }
+body.training-mode .rest-preset-btn:hover, body.training-mode .rest-preset-btn.active-preset { background:var(--red); border-color:var(--red); color:#fff; }
+body.training-mode .section-title { color: #111; }
+body.training-mode .section-label { color: var(--red); }
+body.training-mode .plan-day-title { /* keep colored */ }
+body.training-mode .plan-day-focus { color: #666; }
+body.training-mode .lift-table-header span { color: #aaa; }
+body.training-mode .lift-table-header { border-bottom-color: #e0e0e0; }
+body.training-mode .lift-row { border-bottom-color: #ebebeb; background: #fff; margin-bottom: 2px; }
+body.training-mode .lift-row:hover { background: #fafafa; }
+body.training-mode .lift-name { color: #111; }
+body.training-mode .lift-sets-reps { color: #888; }
+body.training-mode .lift-chevron { color: #ccc; }
+body.training-mode .lift-note { background: #f9f9f9; color: #555; }
+body.training-mode .warmup-toggle-btn { border-color: #cce8cc; color: #2d7a2d; }
+body.training-mode .warmup-panel { background: rgba(22,163,74,0.03); border-color: rgba(22,163,74,0.25); }
+body.training-mode .warmup-step-text { color: #222; }
+body.training-mode .warmup-step-why { color: #888; }
+/* Day tabs — re-enable and style for light mode */
+body.training-mode #planNav { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 32px; }
+body.training-mode .plan-nav-btn { border-color: #ddd; color: #777; background: #fff; }
+body.training-mode .plan-nav-btn:hover { border-color: #bbb; color: #333; background: #fafafa; }
+body.training-mode .plan-nav-btn.active { color: #fff; background: #111; border-color: #111; border-left-color: var(--dc, var(--red)); }
+/* Week selector */
+body.training-mode .train-week-btn { border-color: #ddd !important; color: #777 !important; background: #fff !important; }
+body.training-mode .train-week-btn:hover { border-color: #bbb !important; color: #333 !important; }
+body.training-mode .train-week-label { color: #888; }
+body.training-mode .timer-bar { background: rgba(255,255,255,0.98); border-top-color: #e0e0e0; }
+body.training-mode .timer-label { color: #888; }
+body.training-mode .timer-lift-name { color: #333; }
+body.training-mode .timer-display { color: #111; }
+body.training-mode .clear-day-btn { border-color: #ddd; color: #bbb; }
+body.training-mode .log-sets-row .set-circle { border-color: #ddd; color: #999; }
+body.training-mode .log-sets-row .set-circle.logged { border-color: var(--red); color: var(--red); }
+body.training-mode .last-session { color: #aaa; }
+body.training-mode footer { display: none; }
+
+/* ── REST TIMER MODAL ───────────────────────────────────────────────────── */
+.rest-modal-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.65);
+  display: none; align-items: center; justify-content: center;
+}
+.rest-modal-overlay.visible { display: flex; animation: fadeIn 0.2s ease; }
+.rest-modal-card {
+  background: #fff; padding: 44px 52px; text-align: center;
+  width: min(380px, 92vw); position: relative;
+}
+.rest-modal-eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.3em;
+  text-transform: uppercase; color: #bbb; margin-bottom: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+.rest-modal-lift {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: #111; margin-bottom: 28px; min-height: 22px;
+}
+.rest-modal-ring-wrap {
+  position: relative; width: 190px; height: 190px; margin: 0 auto 20px;
+}
+.rest-modal-ring-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.rest-modal-time {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+  font-size: 62px; line-height: 1; color: #111; letter-spacing: -0.02em;
+}
+.rest-modal-time.warning { color: #e8412a; }
+.rest-modal-time.done { color: #16a34a; font-size: 46px; }
+.rest-modal-status {
+  font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+  font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: #bbb; margin-bottom: 24px; min-height: 16px;
+}
+.rest-modal-status.ready { color: #16a34a; }
+.rest-modal-btns { display: flex; gap: 10px; justify-content: center; }
+.rest-modal-add {
+  background: transparent; border: 1px solid #e0e0e0; color: #999;
+  padding: 12px 20px; font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 14px; letter-spacing: 0.1em;
+  text-transform: uppercase; cursor: pointer; transition: all 0.15s;
+}
+.rest-modal-add:hover { border-color: #bbb; color: #555; }
+.rest-modal-skip {
+  background: #111; color: #fff; border: 1px solid #111;
+  padding: 12px 28px; font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700; font-size: 14px; letter-spacing: 0.1em;
+  text-transform: uppercase; cursor: pointer; transition: all 0.15s; flex: 1;
+}
+.rest-modal-skip:hover { background: #333; }
+.rest-modal-skip.ready-state { background: #16a34a; border-color: #16a34a; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">MONK<span>.</span>MODE</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="tab-btn-info" onclick="goTab('info')">
+      <span class="nav-tab-icon">&#9675;</span> Overview
+    </button>
+    <button class="nav-tab" id="tab-btn-training" onclick="goTab('training')" title="Set your maxes to unlock">
+      <span class="nav-tab-icon">&#9650;</span> Train <span id="train-lock-icon" style="font-size:10px;opacity:0.5;margin-left:2px;">🔒</span>
+    </button>
+  </div>
+</nav>
+
+<div id="tab-info" class="tab-main on">
+  <div class="nav-sub" id="info-subnav">
+    <button id="sb-home" class="on" onclick="goSec('home')">Home</button>
+    <button id="sb-about" onclick="goSec('about')">About</button>
+    <button id="sb-edge" onclick="goSec('edge')">The Edge</button>
+    <button id="sb-overview" onclick="goSec('overview')">Week Overview</button>
+    <button id="sb-progression" onclick="goSec('progression')">Progression</button>
+  </div>
+  <div id="sec-home" class="sub-sec on"><section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-number">MM</div>
+  <div class="hero-eyebrow">10-Week PPL Strength Program</div>
+  <h1 class="hero-title">
+    <span style="-webkit-text-stroke:4px rgba(255,255,255,0.9);color:transparent;display:block;text-shadow:0 0 80px rgba(255,255,255,0.08)">MONK</span>
+    <span class="line2">MODE</span>
+  </h1>
+  <a href="#" class="hero-cta" onclick="enterMonkMode(); return false;">
+    Enter Monk Mode <span class="hero-cta-arrow">→</span>
+  </a>
+  <p class="hero-desc">
+    10 weeks. 6 days a week. One goal. Walk into summer undeniable. This program is built to make you stronger, leaner, and impossible to ignore before the season starts.
+  </p>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">6<span>+1</span></div>
+      <div class="stat-label">Days / Week</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">10</div>
+      <div class="stat-label">Weeks to Summer</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100<span>%</span></div>
+      <div class="stat-label">Programmed</div>
+    </div>
+  </div>
+</section></div>
+  <div id="sec-about" class="sub-sec"><section id="about">
+  <div class="section-label">What This Is</div>
+  <h2 class="section-title">NOT FOR<br>EVERYONE</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>Most guys are spinning their wheels, training consistently for months, even years, and looking exactly the same. Not because they lack effort. Because they lack structure. Random workouts and random progression produce random results. <strong>Monk Mode is not random.</strong></p>
+      <p>This is a <strong>10-week, 6-day Push/Pull/Legs program</strong> built around one non-negotiable principle: progressive overload on the compounds that matter. Squat and bench increase every single week for three weeks, then you deload and hit it again heavier in Wave 2. Every muscle group is trained twice a week — Push A and Push B, Pull A and Pull B, Legs A and Legs B — giving you the training frequency to drive real adaptation without burning out. Sunday is accessory: mobility, core, and shoulder longevity work that keeps you training hard for years, not just 10 weeks.</p>
+      <p>Face pulls appear on every pull day without exception. Hip mobility is built into every leg session before the first work set. These are not optional extras. They are the reason you will walk out of this program healthier than you walked in. Most strength programs ignore shoulder health until something breaks. This one addresses it from day one.</p>
+      <p><strong>The structure is deliberate. The execution is on you.</strong> Two loading waves, each building from baseline through overload, separated by a deload that makes the next wave possible. Ten weeks from now you will squat heavier, press heavier, and look completely different. Most men never commit long enough to find out what they're capable of. You will.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar fade-up">
+        <div class="pillar-icon">🏋️</div>
+        <div class="pillar-title">Strength First</div>
+        <div class="pillar-desc">Back squat and bench press add load every single week of each wave. Not when you feel like it, every week. Progressive overload on the primary compounds is how your body changes. Everything else is secondary.</div>
+      </div>
+      <div class="pillar fade-up">
+        <div class="pillar-icon">🔁</div>
+        <div class="pillar-title">Twice a Week</div>
+        <div class="pillar-desc">Each muscle group trained twice per week, the minimum effective frequency for maximizing both strength and hypertrophy. Push A and Push B hit chest and shoulders differently. Pull A and Pull B cover different angles of the back. Legs A is squat-dominant; Legs B hits the posterior chain. Frequency is what separates serious programs from gym noise.</div>
+      </div>
+      <div class="pillar fade-up">
+        <div class="pillar-icon">🦵</div>
+        <div class="pillar-title">Move Like an Athlete</div>
+        <div class="pillar-desc">Hip 90/90 switches, couch stretch, and goblet squat holds are programmed before every leg day, not as an afterthought, but as direct prep for squat depth and posterior chain loading. Tight hips don't just limit your squat. They shift load to your lower back. Fix the hips; fix the lift.</div>
+      </div>
+      <div class="pillar fade-up">
+        <div class="pillar-icon">💪</div>
+        <div class="pillar-title">Built to Last</div>
+        <div class="pillar-desc">Face pulls, band pull-aparts, and shoulder CARs appear on every push and pull day. External rotator health is the reason heavy bench pressers blow out their shoulders, and the reason this program's pressing volume is sustainable for the full 10 weeks and beyond.</div>
+      </div>
+    </div>
+  </div>
+</section></div>
+  <div id="sec-edge" class="sub-sec"><section id="edge" style="background:#0a0a0a;border-top:1px solid #1a1a1a;padding:100px 60px;">
+  <div class="section-label">The Real ROI</div>
+  <h2 class="section-title" style="margin-bottom:24px;">YOUR BODY<br>OPENS DOORS</h2>
+  <p style="font-size:16px;color:var(--muted);max-width:600px;line-height:1.8;margin-bottom:72px;">
+    People say looks don't matter. Those people are lying to you. The world responds differently to a man who carries himself with physical authority. This is not vanity. This is strategy.
+  </p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;margin-bottom:80px;">
+
+    <!-- Confidence -->
+    <div style="background:#111;border:1px solid #1e1e1e;padding:40px 36px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(232,65,42,0.04);line-height:1;user-select:none;">01</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">Mental Edge</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Confidence<br>Is Not Born.<br>It's Built.</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+        Every rep you finish when you wanted to stop is a deposit into your self-belief. After 10 weeks of this program, you will walk into rooms differently. Not because you told yourself to. Because your body knows what you put into it.
+      </p>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8;">
+        The men who dominate in every area of life, in business, in social settings, in creative work, are not smarter than everyone else. They carry themselves like they've already won. <strong style="color:#ccc;">That posture comes from the work you do in here.</strong>
+      </p>
+    </div>
+
+    <!-- Social Status -->
+    <div style="background:#111;border:1px solid #1e1e1e;padding:40px 36px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(232,65,42,0.04);line-height:1;user-select:none;">02</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">Social Capital</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">People Treat<br>You How You<br>Look.</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+        This is uncomfortable to say out loud. But you already know it's true. A physically imposing, well-built man is treated with more respect in every room he enters. In job interviews. In negotiations. On the street. At a party.
+      </p>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8;">
+        You cannot control how people are wired. You can control how you show up. <strong style="color:#ccc;">Build the kind of body that commands attention before you say a word.</strong>
+      </p>
+    </div>
+
+    <!-- Athletic Performance -->
+    <div style="background:#111;border:1px solid #1e1e1e;padding:40px 36px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(232,65,42,0.04);line-height:1;user-select:none;">03</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">Athletic Output</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Strong Men<br>Are Useful<br>Men.</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
+        Mobility work is baked into every session. You will be stronger and move better than 99% of men your age. Pick up anything. Sprint when it matters. Play any sport and be the most physically capable person on the field.
+      </p>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8;">
+        Weakness is a choice at this age. You have every resource you need. <strong style="color:#ccc;">The only question is whether you actually want it badly enough to show up every day.</strong>
+      </p>
+    </div>
+
+  </div>
+
+  <!-- Pull quote -->
+  <div style="border-left:4px solid var(--red);padding:32px 40px;background:#0d0d0d;max-width:800px;">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(28px,4vw,48px);line-height:1.15;color:#fff;margin-bottom:20px;letter-spacing:0.01em;">
+      "The average man will never know what he was capable of. He was too comfortable to find out."
+    </div>
+    <div style="font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);">
+      Monk Mode — 10-Week PPL Program
+    </div>
+  </div>
+</section></div>
+  <div id="sec-overview" class="sub-sec"><section id="overview">
+  <div class="section-label">The Battle Plan</div>
+  <h2 class="section-title">10 WEEKS.<br>NO EXCUSES.</h2>
+
+  <div class="week-tabs" id="weekTabs" style="flex-wrap:wrap;">
+    <button class="week-tab active" onclick="selectWeek(0, this)" style="position:relative;"><span style="font-size:9px;color:#e8412a;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 1</button>
+    <button class="week-tab" onclick="selectWeek(1, this)" style="position:relative;"><span style="font-size:9px;color:#e8412a;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 2</button>
+    <button class="week-tab" onclick="selectWeek(2, this)" style="position:relative;"><span style="font-size:9px;color:#e8412a;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 3</button>
+    <button class="week-tab" onclick="selectWeek(3, this)" style="position:relative;"><span style="font-size:9px;color:#e8412a;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 4</button>
+    <button class="week-tab" onclick="selectWeek(4, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 5</button>
+    <button class="week-tab" onclick="selectWeek(5, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 6</button>
+    <button class="week-tab" onclick="selectWeek(6, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 7</button>
+    <button class="week-tab" onclick="selectWeek(7, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 8</button>
+    <button class="week-tab" onclick="selectWeek(8, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 9</button>
+    <button class="week-tab" onclick="selectWeek(9, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 10</button>
+  </div>
+
+  <div id="weekInfoPanels">
+    <div class="week-info" id="winfo0">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#e8412a;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#16a34a22;color:#16a34a;border:1px solid #16a34a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Baseline, establish working weights, own the movement</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">65–70%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Intro explosive work, box jumps 3x5 before leg days</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Log every set. This is your benchmark. Don't ego load."</div></div>
+    </div>
+    <div class="week-info" id="winfo1" style="display:none">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#e8412a;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Load — add weight to every main lift, volume goes up</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">72–76%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 3x5, broad jumps 3x5 before leg days</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Hit every rep before adding weight. Form is non-negotiable."</div></div>
+    </div>
+    <div class="week-info" id="winfo2" style="display:none">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#e8412a;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#e8412a22;color:#e8412a;border:1px solid #e8412a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Overload — heaviest week of wave 1, push hard</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">78–83%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 4x5, lateral bounds 3x6 before leg days</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Leave 1 rep in the tank on main lifts. Grind accessories."</div></div>
+    </div>
+    <div class="week-info" id="winfo3" style="display:none">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#e8412a;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#55522;color:#555;border:1px solid #55544;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">DELOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Deload, back off, move perfectly, let the body adapt</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">~60%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Light movement prep only, no heavy explosive work</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Full ROM every rep. Feel every muscle. CNS recovery."</div></div>
+    </div>
+    <div class="week-info" id="winfo4" style="display:none">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#16a34a22;color:#16a34a;border:1px solid #16a34a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Wave 2 Base, return heavier than wave 1 started</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">70–74%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 4x5, depth jumps 3x4 before leg days</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"You are stronger than week 1. Prove it. New baseline."</div></div>
+    </div>
+    <div class="week-info" id="winfo5" style="display:none">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Build, volume and load climbing, accessories intensify</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">75–79%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Depth jumps 3x5, broad jumps 3x6, lateral bounds 3x6</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Every main lift heavier than the same position in wave 1."</div></div>
+    </div>
+    <div class="week-info" id="winfo6" style="display:none">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Load — highest volume week of the program</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">79–83%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Full explosive circuit before each leg day, 15 min</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"This is where most guys quit. You don't quit."</div></div>
+    </div>
+    <div class="week-info" id="winfo7" style="display:none">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#e8412a22;color:#e8412a;border:1px solid #e8412a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Overload — push into new territory, heaviest sets yet</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">83–88%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Reduced, box jumps 3x3 only, save CNS for main lifts</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Beat every week 3 number. This is the point of the whole program."</div></div>
+    </div>
+    <div class="week-info" id="winfo8" style="display:none">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#7c3aed22;color:#7c3aed;border:1px solid #7c3aed44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">PEAK</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Peak — near-max effort, minimal volume, maximum intensity</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">88–93%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">None, full CNS focus on peak lifts</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Top sets only. 2-3 heavy sets on main lifts. This is your test week."</div></div>
+    </div>
+    <div class="week-info" id="winfo9" style="display:none">
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#55522;color:#555;border:1px solid #55544;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">DELOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Final Deload, recover, reflect, come back and test maxes</div></div>
+      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">~55–60%</div></div>
+      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Mobility only, foam roll, stretch, move well</div></div>
+      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"You finished. Now recover completely. Test maxes next week fresh."</div></div>
+    </div>
+  </div>
+
+
+</section></div>
+  <div id="sec-progression" class="sub-sec"><section id="progression">
+  <div class="section-label">Your Numbers</div>
+  <h2 class="section-title">BEAT YOUR<br>LAST SELF</h2>
+
+  <div id="prog-intro" style="margin-bottom:28px;font-size:15px;color:var(--muted);max-width:560px;line-height:1.7">
+    Enter your 1RM above and every number in this table matches your inputs exactly. <strong style="color:var(--text)">This model is built around you,</strong> not a generic starting point. Add load each week of the wave, deload, return heavier. Hit every prescribed rep before adding weight. One missed rep means you stay at the same weight. No exceptions, no negotiating with yourself.
+  </div>
+
+  <div class="prog-week-selector" style="flex-wrap:wrap;">
+    <button class="prog-week-btn active" onclick="selectProgWeek(0,this)">Week 1</button>
+    <button class="prog-week-btn" onclick="selectProgWeek(1,this)">Week 2</button>
+    <button class="prog-week-btn" onclick="selectProgWeek(2,this)">Week 3</button>
+    <button class="prog-week-btn" onclick="selectProgWeek(3,this)">Week 4</button>
+    <button class="prog-week-btn" onclick="selectProgWeek(4,this)">Week 5</button>
+    <button class="prog-week-btn" onclick="selectProgWeek(5,this)">Week 6</button>
+    <button class="prog-week-btn" onclick="selectProgWeek(6,this)">Week 7</button>
+    <button class="prog-week-btn" onclick="selectProgWeek(7,this)">Week 8</button>
+    <button class="prog-week-btn" onclick="selectProgWeek(8,this)">Week 9</button>
+    <button class="prog-week-btn" onclick="selectProgWeek(9,this)">Week 10</button>
+  </div>
+
+  <div class="prog-grid">
+    <div class="prog-card">
+      <div class="prog-card-header">
+        <div class="prog-card-lift" style="color:#e8412a">🏋️ Bench Press</div>
+      </div>
+      <div class="prog-row highlight" id="bench-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#e8412a">190 lbs</div><div class="prog-note">Set your baseline. Own the movement.</div></div>
+      <div class="prog-row" id="bench-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#e8412a">200 lbs</div><div class="prog-note">5 lb jump. Hit all 4 sets of 5.</div></div>
+      <div class="prog-row" id="bench-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#e8412a">215 lbs</div><div class="prog-note">Heaviest of wave 1. 1 rep in tank.</div></div>
+      <div class="prog-row" id="bench-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#e8412a">~140 lbs</div><div class="prog-note">Deload. Perfect form. Full ROM.</div></div>
+      <div class="prog-row" id="bench-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#e8412a">205 lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
+      <div class="prog-row" id="bench-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#e8412a">215 lbs</div><div class="prog-note">Match week 3. This should feel easier.</div></div>
+      <div class="prog-row" id="bench-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#e8412a">225 lbs</div><div class="prog-note">New territory. Earn it.</div></div>
+      <div class="prog-row" id="bench-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#e8412a">235 lbs</div><div class="prog-note">Beat wave 1 peak by 20 lbs.</div></div>
+      <div class="prog-row" id="bench-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#e8412a">245 lbs, top sets</div><div class="prog-note">2–3 heavy sets. Leave nothing.</div></div>
+      <div class="prog-row" id="bench-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#e8412a">~150 lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
+    </div>
+    <div class="prog-card">
+      <div class="prog-card-header">
+        <div class="prog-card-lift" style="color:#16a34a">🦵 Back Squat</div>
+      </div>
+      <div class="prog-row highlight" id="squat-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#16a34a">265 lbs</div><div class="prog-note">Set your baseline. Depth first.</div></div>
+      <div class="prog-row" id="squat-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#16a34a">275 lbs</div><div class="prog-note">10 lb jump. All 5 sets of 5.</div></div>
+      <div class="prog-row" id="squat-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#16a34a">295 lbs</div><div class="prog-note">Heaviest of wave 1. Grind it.</div></div>
+      <div class="prog-row" id="squat-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#16a34a">~195 lbs</div><div class="prog-note">Deload. Hips open, depth perfect.</div></div>
+      <div class="prog-row" id="squat-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#16a34a">280 lbs</div><div class="prog-note">Back and building. Stronger base.</div></div>
+      <div class="prog-row" id="squat-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#16a34a">295 lbs</div><div class="prog-note">Match wave 1 peak. It's lighter now.</div></div>
+      <div class="prog-row" id="squat-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#16a34a">310 lbs</div><div class="prog-note">New personal territory.</div></div>
+      <div class="prog-row" id="squat-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#16a34a">325 lbs</div><div class="prog-note">30 lb PR over wave 1 peak.</div></div>
+      <div class="prog-row" id="squat-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#16a34a">335 lbs, top sets</div><div class="prog-note">Near max. 2–3 heavy sets only.</div></div>
+      <div class="prog-row" id="squat-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#16a34a">~210 lbs</div><div class="prog-note">Deload. Test max next week fresh.</div></div>
+    </div>
+    <div class="prog-card" id="prog-card-ohp" style="display:none">
+      <div class="prog-card-header">
+        <div class="prog-card-lift" style="color:#7c3aed">🏋️ Overhead Press</div>
+      </div>
+      <div class="prog-row highlight" id="ohp-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Set your baseline. Strict press, no leg drive.</div></div>
+      <div class="prog-row" id="ohp-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Small jump. Lock in bar path.</div></div>
+      <div class="prog-row" id="ohp-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Heaviest of wave 1. Stay tight.</div></div>
+      <div class="prog-row" id="ohp-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Deload. Perfect technique only.</div></div>
+      <div class="prog-row" id="ohp-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
+      <div class="prog-row" id="ohp-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Match week 3. Should feel manageable.</div></div>
+      <div class="prog-row" id="ohp-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">New territory. Brace hard.</div></div>
+      <div class="prog-row" id="ohp-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Building toward your peak.</div></div>
+      <div class="prog-row" id="ohp-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#7c3aed">— lbs, top sets</div><div class="prog-note">2–3 heavy sets. Everything you have.</div></div>
+      <div class="prog-row" id="ohp-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
+    </div>
+  </div>
+  </div>
+</section><footer>
+  <div>
+    <div class="footer-logo">MONK<span>.</span>MODE</div>
+    <div class="footer-sub">Do the work. Become undeniable.</div>
+  </div>
+  <div class="footer-rules">
+    <div class="footer-rules-title">The Code</div>
+    <div class="footer-rule"><span class="footer-rule-num">01</span>Face pulls every pull day. Every single one.</div>
+    <div class="footer-rule"><span class="footer-rule-num">02</span>Hip mobility every leg day. This is what separates you.</div>
+    <div class="footer-rule"><span class="footer-rule-num">03</span>Full rest on main lifts. Cutting it short is for amateurs.</div>
+    <div class="footer-rule"><span class="footer-rule-num">04</span>Deload weeks 4 and 10. The weak skip it. You won't.</div>
+    <div class="footer-rule"><span class="footer-rule-num">05</span>Log every set. If you're not tracking, you're not progressing.</div>
+  </div>
+</footer></div>
+</div>
+
+<div id="tab-training" class="tab-main">
+
+<section id="plan">
+  <!-- SETTINGS BAR -->
+  <div class="settings-bar" id="settingsBar">
+    <div class="settings-maxes-display" id="maxesDisplay">
+      <div class="settings-max-chip">
+        <span class="settings-max-label">Squat</span>
+        <span class="settings-max-val unset" id="chip-squat">Not set</span>
+      </div>
+      <div class="settings-max-chip">
+        <span class="settings-max-label">Bench</span>
+        <span class="settings-max-val unset" id="chip-bench">Not set</span>
+      </div>
+      <div class="settings-max-chip">
+        <span class="settings-max-label">OHP</span>
+        <span class="settings-max-val unset" id="chip-ohp">Not set</span>
+      </div>
+    </div>
+    <button class="settings-open-btn" id="settingsOpenBtn" onclick="openSettingsModalFromBtn()">
+      ⚙ Set Your Maxes
+    </button>
+  </div>
+  <!-- REST TIMER QUICK-START -->
+  <div class="rest-timer-strip">
+    <span class="rest-timer-strip-label">Rest Timer</span>
+    <button class="rest-preset-btn" onclick="quickStartTimer(60, this)">1:00</button>
+    <button class="rest-preset-btn" onclick="quickStartTimer(90, this)">1:30</button>
+    <button class="rest-preset-btn" onclick="quickStartTimer(120, this)">2:00</button>
+    <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
+    <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
+  </div>
+  <div class="section-label">Monk Mode — Daily Training</div>
+  <h2 class="section-title">THIS IS<br>WHERE YOU WIN</h2>
+
+  <!-- WEEK SELECTOR FOR TRAINING -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+    <span style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Training Week</span>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;" id="trainWeekSelector">
+      <button onclick="setTrainWeek(0);highlightTrainWeek(0,this)" class="train-week-btn active-twb" style="background:rgba(232,65,42,0.15);border:1px solid rgba(232,65,42,0.3);color:#e8412a;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W1</button>
+      <button onclick="setTrainWeek(1);highlightTrainWeek(1,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W2</button>
+      <button onclick="setTrainWeek(2);highlightTrainWeek(2,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W3</button>
+      <button onclick="setTrainWeek(3);highlightTrainWeek(3,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W4</button>
+      <button onclick="setTrainWeek(4);highlightTrainWeek(4,this)" class="train-week-btn" style="background:transparent;border:1px solid #1d4ed8;color:#4d8ef8;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W5</button>
+      <button onclick="setTrainWeek(5);highlightTrainWeek(5,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W6</button>
+      <button onclick="setTrainWeek(6);highlightTrainWeek(6,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W7</button>
+      <button onclick="setTrainWeek(7);highlightTrainWeek(7,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W8</button>
+      <button onclick="setTrainWeek(8);highlightTrainWeek(8,this)" class="train-week-btn" style="background:transparent;border:1px solid #7c3aed;color:#a78bfa;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W9</button>
+      <button onclick="setTrainWeek(9);highlightTrainWeek(9,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W10</button>
+    </div>
+  </div>
+  <div class="plan-nav" id="planNav">
+    <button class="plan-nav-btn active" style="--dc:#e8412a" onclick="switchDay('push1')" id="btn-push1">Mon · Push A</button>
+    <button class="plan-nav-btn" style="--dc:#1d4ed8" onclick="switchDay('pull1')" id="btn-pull1">Tue · Pull A</button>
+    <button class="plan-nav-btn" style="--dc:#16a34a" onclick="switchDay('legs1')" id="btn-legs1">Wed · Legs A</button>
+    <button class="plan-nav-btn" style="--dc:#e8412a" onclick="switchDay('push2')" id="btn-push2">Thu · Push B</button>
+    <button class="plan-nav-btn" style="--dc:#1d4ed8" onclick="switchDay('pull2')" id="btn-pull2">Fri · Pull B</button>
+    <button class="plan-nav-btn" style="--dc:#16a34a" onclick="switchDay('legs2')" id="btn-legs2">Sat · Legs B</button>
+    <button class="plan-nav-btn" style="--dc:#7c3aed" onclick="switchDay('accessory')" id="btn-accessory">Sun · Accessory</button>
+  </div>
+
+  <!-- PUSH A -->
+  <div class="plan-content active" id="day-push1">
+    <div class="plan-day-header">
+      <div>
+        <div class="plan-day-title" style="color:#e8412a">PUSH A</div>
+        <div class="plan-day-focus">Bench-focused. Horizontal pressing priority.</div>
+      </div>
+      <div class="plan-badges">
+        <span class="badge" style="background:rgba(232,65,42,0.15);color:#e8412a;border:1px solid rgba(232,65,42,0.3)">Monday</span>
+        <span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:20</span>
+      </div>
+    <button class="clear-day-btn" onclick="clearDayLogs('push1'); return false;">Clear Logs</button>
+      </div>
+    <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-push1', this)">▶ Show Warm-Up</button>
+    <div class="warmup-panel" id="wu-push1">
+      <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
+      <div class="warmup-steps">
+        <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min incline walk or row</div><div class="warmup-step-why">Raise core temp. Don't skip this.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">Band pull-aparts — 2x20</div><div class="warmup-step-why">Wake up rear delts and external rotators before any pressing.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Shoulder CARs — 10 slow circles each arm</div><div class="warmup-step-why">Opens the glenohumeral joint through its full range under no load. Non-negotiable before any pressing session — this is how you train the shoulder to move freely before you put a barbell on top of it.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Bench ramp-up: bar x10, 95x5, 135x3, 165x2</div><div class="warmup-step-why">Progressive load to working weight. Never jump straight to work sets.</div></div></div>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Flat Barbell Bench Press</div><div class="lift-sets-reps">4 sets × 5 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">Your primary strength indicator for this program. Add 5 lbs per week — no more, no less. Arch slightly, retract your scapulae, keep your feet planted. The bar should touch your lower chest, not your sternum. If you can't get all 5 reps on every set, you went too heavy. 3–4 min rest is not optional — this is a CNS-demanding compound and undertesting your rest directly costs you reps.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Incline Dumbbell Press</div><div class="lift-sets-reps">3 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the bench at 30–45°. Go higher and you shift the load to the front delt, not the upper chest. Lower the dumbbells with a 2-second eccentric — this is where hypertrophy happens. Elbows should track at roughly 45° from your torso, not flared straight out. This angle reduces shoulder impingement risk and keeps the pec fiber under tension the full way down.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Cable Chest Fly</div><div class="lift-sets-reps">3 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The pec's primary function is horizontal adduction — this movement trains exactly that. Go light enough to feel a full stretch at the bottom. If you feel this in your biceps tendon, you've gone too heavy. Slight forward lean at the cable allows for a longer range of motion. Squeeze at the top like you're trying to crack a walnut between your palms.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Seated DB Shoulder Press</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seat at 90°. Elbows at roughly 75° from your torso — not straight out to the sides (that impinges), not too close to your body (that turns it into a tricep push). Press to near lockout overhead, but don't smash the joint at the top. Control the return. This is supplemental work, not an ego lift — keep it smooth.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raises</div><div class="lift-sets-reps">3 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lead with your elbow, not your wrist. Slight forward lean — about 10° — shifts load directly onto the medial deltoid. Your thumb should be no higher than your pinky at the top (internally rotate slightly). If you're swinging to get the weight up, you're using momentum, not muscle. Drop the weight and do it right. Wide shoulders come from this exercise done correctly, not from heavy sloppy reps.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Tricep Rope Pushdown</div><div class="lift-sets-reps">3 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Split the rope at the bottom of each rep — this maximizes lateral head contraction. Elbows stay pinned to your sides. Only your forearms move. If your elbows are traveling forward and back, you're involving your lats and losing the isolation. Can superset with the overhead extension directly after to hit both heads of the tricep with minimal rest time.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Overhead Tricep Extension (cable)</div><div class="lift-sets-reps">3 sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The long head of the tricep only reaches full stretch with the arm overhead — that's why this movement exists and why pushdowns alone aren't enough. Use the rope attachment, face away from the cable stack, and hinge slightly at the hip. Elbows point straight at the ceiling and don't drift outward. Control the return — the stretch position is where you're building thickness in the horseshoe.</div></div>
+  </div>
+
+  <!-- PULL A -->
+  <div class="plan-content" id="day-pull1">
+    <div class="plan-day-header">
+      <div><div class="plan-day-title" style="color:#4d8ef8">PULL A</div><div class="plan-day-focus">Back thickness and width. Rear delt health for shoulder longevity.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(29,78,216,0.15);color:#4d8ef8;border:1px solid rgba(29,78,216,0.3)">Tuesday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:20</span></div>
+    <button class="clear-day-btn" onclick="clearDayLogs('pull1'); return false;">Clear Logs</button>
+      </div>
+    <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-pull1', this)">▶ Show Warm-Up</button>
+    <div class="warmup-panel" id="wu-pull1">
+      <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
+      <div class="warmup-steps">
+        <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min row or bike</div><div class="warmup-step-why">Get blood moving. Rowing also pre-activates the lats.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">Dead hangs — 3x20–30 sec</div><div class="warmup-step-why">Decompress the spine, stretch the lats, build grip.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Scapular pull-ups — 2x10</div><div class="warmup-step-why">Activates lower traps and serratus before loaded pulling.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Bodyweight pull-ups x5, then load belt</div><div class="warmup-step-why">Don't put a loaded shoulder through full ROM cold.</div></div></div>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Weighted Pull-Ups</div><div class="lift-sets-reps">4 sets × 5–6 reps</div></div><div class="lift-rest">3 min</div><div class="lift-time">~16 min</div><div class="lift-chevron">▼</div><div class="lift-note">Dead hang at the bottom — full scapular depression before each rep. Don't shrug into the pull. Initiate by depressing and retracting the scapulae first, then drive your elbows toward your hips. Chin over bar, lower with control. Add weight using a belt or vest only after you can consistently hit 6 clean reps across all 4 sets. Kipping is cheating here.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Barbell Row</div><div class="lift-sets-reps">4 sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~14 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hip hinge to about 45°. The bar pulls to your lower ribcage, not your belly button. Think about driving your elbows behind you and squeezing the shoulder blades together at the top — not just lifting the bar with your arms. A slight amount of body English on the last rep of a heavy set is acceptable; bouncing every rep off the floor is a form breakdown. Progressive overload applies here too.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Lat Pulldown</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lean back slightly — about 15° — and pull the bar to your upper chest. The movement is driven by depressing and retracting your scapulae, then driving elbows down toward your hips. You should feel a strong lat stretch at the top of each rep. If your elbows are shooting forward, your lats are checked out. Wide grip emphasizes the outer lat — that's the width you see from the front.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Cable Row (neutral grip)</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit upright, not leaning back for leverage. The cable row builds mid-back thickness — rhomboids, mid-traps, rear delts. Pull the handle to your lower sternum and pause 1 second at peak contraction with your shoulder blades fully retracted. The slow eccentric on the return is where most people cut corners — let the stretch come fully at the front before the next rep.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Face Pulls</div><div class="lift-sets-reps">4 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cable at or slightly above eye level. Pull the rope toward your face with your elbows high and wide — think "W" position at the end of the movement. The goal is external rotation of the shoulder, not just pulling weight back. This directly counteracts the internal rotation pattern created by heavy pressing and protects the rotator cuff over years of training. 4 sets, every pull day, no exceptions.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Hammer Curls</div><div class="lift-sets-reps">3 sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Neutral grip (thumbs up) trains the brachialis — the muscle that sits under the bicep and pushes it up, creating peak. Elbows stay pinned to your sides throughout. You can alternate arms or do both simultaneously. Superset directly with incline curls to save time and keep bicep blood volume up without excessive rest.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Incline DB Curls</div><div class="lift-sets-reps">3 sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie back on a 45° incline bench with your arms hanging straight down. This position places the long head of the bicep in a fully stretched position before the curl even begins — you cannot achieve this stretch standing. Supinate (rotate palm up) as you curl. The long head is responsible for the peak of your bicep. If you skip this, you're leaving development on the table.</div></div>
+  </div>
+
+  <!-- LEGS A -->
+  <div class="plan-content" id="day-legs1">
+    <div class="plan-day-header">
+      <div><div class="plan-day-title" style="color:#16a34a">LEGS A</div><div class="plan-day-focus">Squat-focused. Anterior chain priority. Hip mobility mandatory.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(22,163,74,0.15);color:#16a34a;border:1px solid rgba(22,163,74,0.3)">Wednesday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:25</span></div>
+    <button class="clear-day-btn" onclick="clearDayLogs('legs1'); return false;">Clear Logs</button>
+      </div>
+    <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-legs1', this)">▶ Show Warm-Up</button>
+    <div class="warmup-panel" id="wu-legs1">
+      <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
+      <div class="warmup-steps">
+        <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min bike (low resistance)</div><div class="warmup-step-why">Gets hips moving without taxing CNS before squats.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">Hip 90/90 switches — 2x10 each side</div><div class="warmup-step-why">Internal + external rotation. Direct squat depth work.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Couch stretch — 60 sec each side</div><div class="warmup-step-why">Hip flexor release. Tightness here limits squat depth.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Goblet squat — 3x8 with pause at bottom</div><div class="warmup-step-why">Groove the pattern, open the hips, activate glutes.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">5</div><div><div class="warmup-step-text">Squat ramp-up: bar x10, 135x5, 185x3, 225x2</div><div class="warmup-step-why">CNS prep. Don't rush this on squat day.</div></div></div>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Back Squat</div><div class="lift-sets-reps">5 sets × 5 reps</div></div><div class="lift-rest">3–5 min</div><div class="lift-time">~22 min</div><div class="lift-chevron">▼</div><div class="lift-note">The king of this program. 5x5 is not a beginner protocol — it's a high-tension, low-rep strength scheme that drives neuromuscular adaptation at a rate hypertrophy rep ranges cannot match. Add 5 lbs per week. Bar sits on the shelf of your rear delts (low bar), not balanced on your neck. Brace hard before you unrack — 360° of intra-abdominal pressure. Sit into the squat; don't fold forward. 3–5 min rest is what the science says you need to recover CNS output between heavy compound sets. Honor it.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Pause Squat (2-sec pause)</div><div class="lift-sets-reps">3 sets × 5 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Load at 60–65% of your working squat weight. The 2-second pause at the bottom eliminates the stretch-shortening reflex — you can't use the bounce to get out of the hole. This exposes and directly trains your weakest position. Simultaneously, holding depth for 2 seconds forces hip and ankle mobility under load, which is the most effective way to improve your squat pattern over time.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Press (feet high and wide)</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Feet high and wide on the platform — this shifts load toward glutes and hamstrings and dramatically reduces anterior knee stress compared to a low, narrow stance. Lower all the way down without your lower back rounding off the pad. If your hips are coming up, you're going too deep for your current hip flexibility. Full range within your control; don't ego load and cut the range.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Bulgarian Split Squat</div><div class="lift-sets-reps">3 sets × 8 reps/leg</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Rear foot elevated on a bench behind you. Your front foot is far enough forward that your shin stays vertical at the bottom — if your knee is diving over your toes, step out further. Lower slowly (3 seconds down), feel the hip flexor stretch in the rear leg. This is one of the best exercises for bilateral hip strength imbalances that compound lifts mask. Heavier than you think you should go once you've got the pattern.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Curl</div><div class="lift-sets-reps">3 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">This program squats heavy without conventional deadlifts. That means your hamstrings are getting less hip-hinge stimulus than a typical program — leg curls fill that gap for knee flexion. Curl through full ROM, pause at peak contraction, and lower with a 2-second eccentric. The eccentric is where hamstring strength is built and where hamstring injuries are prevented. Don't drop the weight back down.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Standing Calf Raise</div><div class="lift-sets-reps">4 sets × 15 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Full range — heel all the way down into a stretch, all the way up onto the ball of your foot at the top. The gastrocnemius (outer calf) responds to standing raises under a straight knee. Hold the top for a beat. Most people never train calves through full range, which is why most people have underdeveloped calves. Short rest is fine here — calves are highly oxidative and recover quickly.</div></div>
+  </div>
+
+  <!-- PUSH B -->
+  <div class="plan-content" id="day-push2">
+    <div class="plan-day-header">
+      <div><div class="plan-day-title" style="color:#e8412a">PUSH B</div><div class="plan-day-focus">OHP variation + chest volume. More hypertrophy emphasis than Push A.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(232,65,42,0.15);color:#e8412a;border:1px solid rgba(232,65,42,0.3)">Thursday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:20</span></div>
+    <button class="clear-day-btn" onclick="clearDayLogs('push2'); return false;">Clear Logs</button>
+      </div>
+    <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-push2', this)">▶ Show Warm-Up</button>
+    <div class="warmup-panel" id="wu-push2">
+      <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
+      <div class="warmup-steps">
+        <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min incline walk or light bike</div><div class="warmup-step-why">Core temp up before overhead work.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">Shoulder CARs — 10 each arm</div><div class="warmup-step-why">Shoulder joint prep. Do this every push day.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Face pulls — 2x20 light</div><div class="warmup-step-why">Activate external rotators before pressing overhead.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">OHP ramp-up: bar x10, 65x5, 95x3</div><div class="warmup-step-why">Overhead pressing demands more from the shoulder than bench. Ramp carefully.</div></div></div>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Seated Barbell OHP</div><div class="lift-sets-reps">4 sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~15 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seated to eliminate leg drive — this keeps it honest. The bar starts at your clavicle and presses in a straight line overhead, finishing slightly behind your ears at the top. Brace your core hard; don't hyperextend your lower back to get the bar up. This is your secondary strength indicator for the program — track it week over week. You should be pressing 2–3 lbs more each week. Overhead strength also directly carries over to your bench stability.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Dumbbell Bench Press</div><div class="lift-sets-reps">4 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Greater range of motion than barbell — the dumbbells can travel lower, fully stretching the pec fibers. Elbows at about 45–60° from your torso, same as barbell bench. Dumbbells also allow each shoulder to move independently, exposing and correcting strength imbalances that a barbell masks. This is higher rep than Push A's bench — you're accumulating volume and time under tension, not chasing a new max.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Low-to-High Cable Fly</div><div class="lift-sets-reps">3 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cables at the lowest pulley position and bring them up and across your body. This angle of pull targets the upper pec fibers — the same fibers the incline DB press hits, but with constant cable tension through the entire ROM. Feel the stretch at the bottom. If you're using so much weight you can't feel the pec working, you've lost the point of the exercise.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Arnold Press</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Start with palms facing you (like the top of a curl), rotate as you press so palms face forward at the top. This rotation recruits all three heads of the deltoid — anterior, medial, and posterior — across the full range of motion. It also trains the rotator cuff through active rotation under load. Go controlled; this isn't a speed movement. Lighter than a standard DB press, but the stimulus is superior for shoulder development.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raises (cable)</div><div class="lift-sets-reps">3 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable lateral raises maintain constant tension through the full arc — dumbbells lose tension at the bottom where the cable is strongest. Stand sideways to the cable, cross-body cable attachment. Same technique as DB laterals: elbow leads, slight lean, thumb below pinky at the top. This is the second lateral raise session of the week — shoulder width comes from frequency and volume on the medial delt.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Skull Crushers</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Use an EZ-bar — the angled grip reduces wrist and elbow stress compared to a straight bar. Lower to your forehead or slightly behind your head (the latter increases long head stretch). Elbows stay pointed at the ceiling throughout. Don't let them flare out. This is one of the best long head tricep movements; the long head won't reach full stretch in pushdowns. Control the negative — if your elbows are hurting, drop the weight and slow down.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Close Grip Bench</div><div class="lift-sets-reps">3 sets × 8–10 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hands just inside shoulder width — not your palms touching, which is too narrow and creates wrist torque. This shifts the prime mover emphasis from pec to tricep while still involving the chest. Touch the bar to your lower chest, elbows tucked. This is the closest thing to a direct tricep mass builder using a barbell, and it directly strengthens the lockout portion of your standard bench press. Run it at the end of Push B while your CNS is still switched on.</div></div>
+  </div>
+
+  <!-- PULL B -->
+  <div class="plan-content" id="day-pull2">
+    <div class="plan-day-header">
+      <div><div class="plan-day-title" style="color:#4d8ef8">PULL B</div><div class="plan-day-focus">Back width and arm hypertrophy. Slightly higher volume, more isolation.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(29,78,216,0.15);color:#4d8ef8;border:1px solid rgba(29,78,216,0.3)">Friday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:20</span></div>
+    <button class="clear-day-btn" onclick="clearDayLogs('pull2'); return false;">Clear Logs</button>
+      </div>
+    <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-pull2', this)">▶ Show Warm-Up</button>
+    <div class="warmup-panel" id="wu-pull2">
+      <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
+      <div class="warmup-steps">
+        <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min row</div><div class="warmup-step-why">Doubles as lat activation. Best warm-up for a pull day.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">Dead hangs — 2x30 sec</div><div class="warmup-step-why">Spinal decompression after a full week of loading.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Band pull-aparts — 2x20</div><div class="warmup-step-why">Shoulder prep before any rowing movements.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Light cable row — 1x15 slow</div><div class="warmup-step-why">Feel the lats engage before loading up.</div></div></div>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Seated Cable Row (wide grip)</div><div class="lift-sets-reps">4 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Wide grip with a wide-bar attachment pulls your elbows out to the sides, targeting the upper back — traps, rhomboids, and rear delts — rather than the lats. Sit upright, row to your upper abs, and squeeze the shoulder blades together hard at the peak. The difference between a back that looks wide from the front vs. thick from the side comes down to how much you prioritize this kind of upper back work.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Single Arm DB Row</div><div class="lift-sets-reps">4 sets × 10 reps/side</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Brace your free hand on the bench, keep your spine neutral — no rotation to swing the weight up. The DB should travel in a straight line from full lat stretch at the bottom to a strong elbow-behind-the-hip position at the top. Go heavy. This is one of the few unilateral back exercises where you can genuinely load up and feel the full lat from origin to insertion. If the weight is easy at 10 reps, add more next set.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Straight Arm Pulldown</div><div class="lift-sets-reps">3 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Arms stay nearly straight — just a soft elbow bend to protect the joint. Hinge forward slightly at the hips and pull the bar from overhead down to your thighs, thinking about your elbows moving toward your hips. Because no bicep is involved in the movement, this isolates the lat completely. You'll feel exactly where your lat is. Use this as a mind-muscle connection exercise before heavier pulling, or as a burnout finisher after.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Chest-Supported Row</div><div class="lift-sets-reps">3 sets × 12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">The chest pad eliminates lower back fatigue and the temptation to use momentum — your back has to do every rep honestly. Set the bench at 30–45°, lie face down, and row with elbows at about 60° from your body. This angle hits the mid-trap and rhomboid region that creates the 3D thickness in your upper back. Focus on the squeeze at the top rather than the weight on the stack.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Face Pulls</div><div class="lift-sets-reps">4 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Every pull day. This is not optional. The external rotation component of the face pull is the direct antidote to the internal rotation load of benching and pressing. Every time you bench heavy without training the opposing rotation pattern, you're creating an imbalance that will eventually show up as shoulder impingement, bicep tendon pain, or AC joint issues. 15–20 reps, high elbows, "W" at the finish. Always.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Barbell Curl</div><div class="lift-sets-reps">3 sets × 8–10 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">This is the strength curl variation — treat it like a compound lift for biceps. Track the weight and add load over time. Elbows stay fixed at your sides. Slight forward lean at the waist is acceptable; full-body swing is not. Supinate (rotate wrist) as you curl to ensure full bicep contraction. This should be heavier than any other curl variation you're doing. If it isn't, you're not pushing hard enough here.</div></div>
+    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Cable Curl (single arm)</div><div class="lift-sets-reps">3 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable provides consistent tension through the full arc — unlike dumbbells, the bicep is maximally loaded at every point in the range. Pull to peak contraction and hold 1 second — you should feel a hard squeeze in the bicep, not just feel the arm coming up. Slow the return down to 2 seconds. The pump you're feeling at this point in the session is maximizing cellular swelling stimulus. Don't rush through it.</div></div>
+  </div>
+
+  <!-- LEGS B -->
+  <div class="plan-content" id="day-legs2">
+    <div class="plan-day-header">
+      <div><div class="plan-day-title" style="color:#16a34a">LEGS B</div><div class="plan-day-focus">Posterior chain + quad volume. Less CNS demand than Legs A.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(22,163,74,0.15);color:#16a34a;border:1px solid rgba(22,163,74,0.3)">Saturday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:25</span></div>
+    <button class="clear-day-btn" onclick="clearDayLogs('legs2'); return false;">Clear Logs</button>
+      </div>
+    <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-legs2', this)">▶ Show Warm-Up</button>
+    <div class="warmup-panel" id="wu-legs2">
+      <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
+      <div class="warmup-steps">
+        <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min bike</div><div class="warmup-step-why">Hip and knee joint prep.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">World's greatest stretch — 5 reps each side</div><div class="warmup-step-why">Full lower body mobility in one movement. Hip flexors, adductors, t-spine.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Glute bridges — 2x15</div><div class="warmup-step-why">Activate glutes before RDLs. Reduces lower back compensation.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Front squat or hack squat ramp-up: bar x8, 95x5</div><div class="warmup-step-why">Lighter ramp-up than Legs A. Higher volume day, not max strength.</div></div></div>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Front Squat or Hack Squat</div><div class="lift-sets-reps">4 sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~15 min</div><div class="lift-chevron">▼</div><div class="lift-note">The front squat keeps the torso more upright than the back squat, which places the load directly over the quad — making it one of the most effective exercises for quad hypertrophy while simultaneously training hip mobility under load. If the front rack position causes shoulder discomfort, cross your arms (clean grip alternative) or switch to hack squat machine. Hack squat is a legitimate substitute — full depth, controlled tempo. Either way, this is your main squat variation for Legs B.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Romanian Deadlift (RDL)</div><div class="lift-sets-reps">4 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~13 min</div><div class="lift-chevron">▼</div><div class="lift-note">This is a hip hinge, not a deadlift. Soft knees throughout — about 15–20° of bend. Push your hips back as the bar travels down your legs, keeping it close to your body. You should feel a strong hamstring stretch at the bottom. Stop when you feel your lower back start to round — that's your end range. Go heavy, but never at the expense of a neutral spine. This is the primary posterior chain builder on Legs B and directly complements the squat-dominant loading of Legs A.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Extension</div><div class="lift-sets-reps">3 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Targeted VMO (inner quad) and teardrop development. Sit all the way back in the pad, toes pointed slightly outward to bias the inner quad. Extend fully and hold 1 second at the top — most people let the weight drop before full quad contraction. Slow eccentric on the way down. This is not a joint-destructive exercise when done correctly; the danger comes from loading excessively heavy and using momentum rather than muscle control.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Curl</div><div class="lift-sets-reps">3 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Second leg curl session of the week. Can superset with leg extensions to save time — the joints aren't competing and the brief active rest between antagonists keeps quality high. Feet slightly turned in (internal rotation) shifts emphasis to the outer hamstring bicep femoris. Keep hips flat on the pad — if your hips are rising to get the weight up, you've overloaded it.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Walking Lunges</div><div class="lift-sets-reps">3 sets × 12 reps/leg</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Keep your torso upright and step long enough that your shin stays vertical at the bottom of each rep. Walking lunges train single-leg strength, hip flexor length under load, and proprioception simultaneously. This is functional leg training — the kind that makes you athletic, not just big. Add dumbbells once bodyweight becomes easy. The stretch in the rear hip at the bottom of each step is the hip flexor work you need between squat sessions.</div></div>
+    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Seated Calf Raise</div><div class="lift-sets-reps">4 sets × 15–20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The seated position bends the knee, which puts the gastrocnemius in a shortened position and shifts all the load to the soleus — the flat, wide muscle that sits underneath. Training both the standing and seated calf raise is the only way to fully develop the lower leg. Full range, full stretch at the bottom. The soleus responds to higher reps. 15–20 is the right zone here.</div></div>
+  </div>
+
+  <!-- ACCESSORY -->
+  <div class="plan-content" id="day-accessory">
+    <div class="plan-day-header">
+      <div><div class="plan-day-title" style="color:#a78bfa">ACCESSORY</div><div class="plan-day-focus">Mobility, core stability, and athletic maintenance. No heavy loading.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3)">Sunday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~55 min</span></div>
+    <button class="clear-day-btn" onclick="clearDayLogs('accessory'); return false;">Clear Logs</button>
+      </div>
+    <div style="padding:20px 24px;background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.2);border-left:4px solid #7c3aed;margin-bottom:32px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#a78bfa;margin-bottom:16px">Foam Roll First: quads, hip flexors, t-spine, 5 min. Then 10 deep diaphragmatic breaths.</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <span style="font-size:13px;color:var(--muted)">No heavy loading.</span>
+        <span style="font-size:13px;color:var(--muted)">Hip work is the priority.</span>
+        <span style="font-size:13px;color:var(--muted)">Face pulls are mandatory.</span>
+        <span style="font-size:13px;color:var(--muted)">45–60 min max.</span>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Movement</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Hip Flexor Stretch (couch stretch)</div><div class="lift-sets-reps">3 sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The single most important mobility exercise for anyone who squats and sits. Tight psoas and rectus femoris cause anterior pelvic tilt, which limits squat depth, increases lower back stress, and flattens the glute response. Rear foot on a bench or couch, front shin vertical, drive your hip toward the floor. You should feel this deep in the front of the rear hip. Hold the tension — don't wiggle around. 60 seconds is the minimum effective dose for actual tissue change.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Hip 90/90 Switches</div><div class="lift-sets-reps">3 sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit with both knees bent at 90° — one in front, one to the side. Rotate your pelvis to switch sides, moving through internal and external rotation of the hip joint. This is the most direct way to train hip mobility in the pattern that affects squatting and sprinting. Don't use your hands to push your knee down. Let the range come from actual hip rotation. Over 10 weeks of Sunday sessions this will measurably change your squat depth.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Pigeon Pose</div><div class="lift-sets-reps">3 sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Targets the piriformis and external hip rotators — the muscles responsible for hip tightness that presents as knee cave during squats. Front shin as close to horizontal as your current mobility allows. Don't let your pelvis rotate — keep both hips square to the floor. Breathe into the tension. 60 seconds minimum per side. If you're rushing through this, you're not getting the adaptation. It's supposed to be uncomfortable. That discomfort is the work.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Band Pull-Aparts</div><div class="lift-sets-reps">4 sets × 20 reps</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hold the band at shoulder width, keep arms straight, and pull it apart to chest level — ending in a "T" position. Pinch your shoulder blades together hard at the end range. This trains the posterior deltoid and external rotators in a way that directly counterbalances the internal rotation load of pressing. Four sets of 20 on your rest day keeps the shoulder infrastructure healthy between heavy push and pull sessions.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Face Pull with External Rotation</div><div class="lift-sets-reps">3 sets × 20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Light load — the goal is rotator cuff activation, not strength stimulus. Pull to your face with high elbows, then add an external rotation at the end: press the handles up and outward so your hands end above your elbows. This end-range external rotation is what makes this version more effective than a standard face pull. Think of this as shoulder maintenance — the reason this shoulder will still be training heavy at 40.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Dead Bug</div><div class="lift-sets-reps">3 sets × 10/side</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie on your back, arms straight to the ceiling, hips and knees at 90°. Lower the opposite arm and leg simultaneously toward the floor — without letting your lower back come off the ground. That's the whole exercise. The lower back must stay in contact with the floor throughout. This trains anti-extension core stability — the ability to resist lumbar extension under load. That's the same stability you need to brace properly under a squat bar. Don't rush the reps.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Pallof Press</div><div class="lift-sets-reps">3 sets × 12/side</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Stand sideways to a cable stack at chest height. Hold the handle at your sternum, brace hard, and press straight out in front of you — the cable will try to rotate you toward it. Resist that rotation completely. This trains anti-rotation core strength, which is the stability pattern used in almost every athletic movement and heavy compound lift. You should feel this in your obliques and deep core. Pause at full extension for 1 second.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Ab Wheel Rollout</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">One of the highest difficulty core exercises — don't let the simple appearance fool you. Roll out to a position where your body is parallel or near-parallel to the floor, maintaining a completely neutral spine. The moment your lower back arches, you've gone too far. Start from your knees until you can control the full range. This builds the same bracing pattern you use in heavy squats and deadlifts — core rigidity under axial load.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Single Leg Glute Bridge</div><div class="lift-sets-reps">3 sets × 15/side</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie on your back, one foot flat on the floor, the other leg extended. Drive through the heel and lift your hips until your body forms a straight line from shoulder to knee. Squeeze the glute hard at the top — most people fire their hamstring and back instead. The glute should be doing the work. Single-leg variation addresses bilateral glute strength imbalances that develop from asymmetrical squat patterns, and directly improves hip stability for squatting and sprinting.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">T-Spine Rotation (foam roller)</div><div class="lift-sets-reps">3 sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~4 min</div><div class="lift-chevron">▼</div><div class="lift-note">Place the foam roller perpendicular to your spine at mid-back level (thoracic spine, not lower back). Support your head, cross your arms, and rotate to each side. Thoracic mobility is critical for overhead pressing mechanics — a stiff t-spine forces the shoulder to compensate, which is where impingement patterns develop. Also directly affects your ability to keep an upright torso in the front squat. 10 reps each side, letting the weight of your arms rotate you further each rep.</div></div>
+    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Jefferson Curl (very light)</div><div class="lift-sets-reps">2 sets × 8 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~4 min</div><div class="lift-chevron">▼</div><div class="lift-note">Stand on a box or step, hold 10–25 lbs, and slowly curl your spine down vertebra by vertebra — chin to chest first, then thoracic, then lumbar. This is controlled spinal flexion under minimal load, which builds tensile strength in the spinal erectors and improves flexion range of motion. Never heavy. Never rushed. This is the opposite of every other movement in this program — the spine is rounding deliberately. That deliberate control is what makes it safe and beneficial.</div></div>
+  </div>
+</section>
+
+
+</div>
+
+<!-- REST TIMER MODAL -->
+<div class="rest-modal-overlay" id="restModal">
+  <div class="rest-modal-card">
+    <div class="rest-modal-eyebrow">Rest Timer</div>
+    <div class="rest-modal-lift" id="restModalLift"></div>
+    <div class="rest-modal-ring-wrap">
+      <svg viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="85" stroke="#f0f0f0" stroke-width="10" fill="none"/>
+        <circle id="restModalRing" cx="100" cy="100" r="85" stroke="#e8412a" stroke-width="10" fill="none"
+          stroke-dasharray="534" stroke-dashoffset="0" stroke-linecap="round"
+          transform="rotate(-90 100 100)" style="transition:stroke-dashoffset 1s linear,stroke 0.4s;"/>
+      </svg>
+      <div class="rest-modal-time" id="restModalTime">0:00</div>
+    </div>
+    <div class="rest-modal-status" id="restModalStatus"></div>
+    <div class="rest-modal-btns">
+      <button class="rest-modal-add" onclick="addTimerTime(30)">+30s</button>
+      <button class="rest-modal-skip" id="restModalSkipBtn" onclick="dismissTimer()">Skip Rest</button>
+    </div>
+  </div>
+</div>
+<!-- REST TIMER BAR -->
+<div class="timer-bar" id="timerBar">
+  <div class="timer-progress-track">
+    <div class="timer-progress-fill" id="timerFill"></div>
+  </div>
+  <div class="timer-inner">
+    <div class="timer-left">
+      <div>
+        <div class="timer-label">Rest Timer</div>
+        <div class="timer-lift-name" id="timerLiftName">—</div>
+      </div>
+      <div class="timer-display" id="timerDisplay">0:00</div>
+    </div>
+    <div class="timer-right">
+      <button class="timer-btn" onclick="addTimerTime(30)">+30s</button>
+      <button class="timer-btn primary" id="timerToggleBtn" onclick="toggleTimer()">Pause</button>
+      <button class="timer-btn danger" onclick="dismissTimer()">Done</button>
+    </div>
+  </div>
+</div>
+<!-- MAXES SETTINGS MODAL -->
+<div class="settings-modal-overlay" id="settingsModal" style="display:none;">
+  <div class="settings-modal-card" id="settingsModalCard">
+    <div class="settings-modal-title" id="settingsModalTitle">Your Maxes</div>
+    <div class="settings-modal-sub" id="settingsModalSub">Enter your 1-rep maxes. Weights across the program will auto-calculate and display as ranges for each week. Stored locally on your device.</div>
+
+    <div class="maxes-mode-toggle">
+      <button class="mode-toggle-btn active" id="mode-btn-1rm" onclick="setMaxesMode('1rm')">I Know My 1RM</button>
+      <button class="mode-toggle-btn" id="mode-btn-reps" onclick="setMaxesMode('reps')">Enter a Working Set</button>
+    </div>
+
+    <div class="settings-input-group">
+      <div class="settings-input-label">Back Squat <span>lbs</span></div>
+      <input class="settings-input-field maxes-1rm-input" id="input-squat" type="number" placeholder="315" inputmode="decimal">
+      <div class="maxes-reps-row">
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Weight (lbs)</div>
+          <input class="settings-input-field" id="reps-weight-squat" type="number" placeholder="275" inputmode="decimal" oninput="updateEpley('squat')">
+        </div>
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Reps</div>
+          <input class="settings-input-field" id="reps-count-squat" type="number" placeholder="5" inputmode="decimal" min="1" max="30" oninput="updateEpley('squat')">
+        </div>
+      </div>
+      <div class="maxes-est-1rm" id="est-1rm-squat"></div>
+      <div class="settings-input-hint">Used for: Back Squat, Pause Squat, Front Squat</div>
+    </div>
+
+    <div class="settings-input-group">
+      <div class="settings-input-label">Bench Press <span>lbs</span></div>
+      <input class="settings-input-field maxes-1rm-input" id="input-bench" type="number" placeholder="225" inputmode="decimal">
+      <div class="maxes-reps-row">
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Weight (lbs)</div>
+          <input class="settings-input-field" id="reps-weight-bench" type="number" placeholder="185" inputmode="decimal" oninput="updateEpley('bench')">
+        </div>
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Reps</div>
+          <input class="settings-input-field" id="reps-count-bench" type="number" placeholder="5" inputmode="decimal" min="1" max="30" oninput="updateEpley('bench')">
+        </div>
+      </div>
+      <div class="maxes-est-1rm" id="est-1rm-bench"></div>
+      <div class="settings-input-hint">Used for: Flat Bench, Close Grip Bench</div>
+    </div>
+
+    <div class="settings-input-group">
+      <div class="settings-input-label">Overhead Press <span>lbs</span></div>
+      <input class="settings-input-field maxes-1rm-input" id="input-ohp" type="number" placeholder="155" inputmode="decimal">
+      <div class="maxes-reps-row">
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Weight (lbs)</div>
+          <input class="settings-input-field" id="reps-weight-ohp" type="number" placeholder="115" inputmode="decimal" oninput="updateEpley('ohp')">
+        </div>
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Reps</div>
+          <input class="settings-input-field" id="reps-count-ohp" type="number" placeholder="5" inputmode="decimal" min="1" max="30" oninput="updateEpley('ohp')">
+        </div>
+      </div>
+      <div class="maxes-est-1rm" id="est-1rm-ohp"></div>
+      <div class="settings-input-hint">Used for: Seated Barbell OHP</div>
+    </div>
+
+    <button class="settings-save-btn" id="settingsSaveBtn" onclick="saveMaxes()">Save & Update Program</button>
+    <button class="settings-cancel-btn" id="settingsCancelBtn" onclick="cancelMonkModeEntry()">Cancel</button>
+  </div>
+</div>
+
+<script>
+  //     STORAGE                                                                
+  const STORE_KEY = 'ppl_workout_logs_v2';
+  function loadLogs() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } }
+  function saveLogs(l) { try { localStorage.setItem(STORE_KEY, JSON.stringify(l)); } catch {} }
+  let logs = loadLogs();
+
+  //     LIFT SETS DATA                                                          
+  const LIFT_SETS = {
+    'push1::0':4,'push1::1':3,'push1::2':3,'push1::3':3,'push1::4':3,'push1::5':3,'push1::6':3,
+    'pull1::0':4,'pull1::1':4,'pull1::2':3,'pull1::3':3,'pull1::4':4,'pull1::5':3,'pull1::6':3,
+    'legs1::0':5,'legs1::1':3,'legs1::2':3,'legs1::3':3,'legs1::4':3,'legs1::5':4,
+    'push2::0':4,'push2::1':4,'push2::2':3,'push2::3':3,'push2::4':3,'push2::5':3,'push2::6':3,
+    'pull2::0':4,'pull2::1':4,'pull2::2':3,'pull2::3':3,'pull2::4':4,'pull2::5':3,'pull2::6':3,
+    'legs2::0':4,'legs2::1':4,'legs2::2':3,'legs2::3':3,'legs2::4':3,'legs2::5':4,
+    'accessory::0':3,'accessory::1':3,'accessory::2':3,'accessory::3':4,'accessory::4':3,
+    'accessory::5':3,'accessory::6':3,'accessory::7':3,'accessory::8':3,'accessory::9':3,'accessory::10':2
+  };
+
+  //     INIT LIFT ROWS (set circles + last session)                             
+  function initLiftRows() {
+    const days = ['push1','pull1','legs1','push2','pull2','legs2','accessory'];
+    days.forEach(dayId => {
+      const dayEl = document.getElementById('day-' + dayId);
+      if (!dayEl) return;
+      const rows = dayEl.querySelectorAll('.lift-row');
+      rows.forEach((row, liftIdx) => {
+        const key = dayId + '::' + liftIdx;
+        const numSets = LIFT_SETS[key] || 3;
+        const liftName = row.querySelector('.lift-name') ? row.querySelector('.lift-name').textContent : '';
+        row.setAttribute('data-day', dayId);
+        row.setAttribute('data-lift', liftIdx);
+        const setsRow = document.createElement('div');
+        setsRow.className = 'log-sets-row';
+        setsRow.setAttribute('data-sets-row', key);
+        const setsLabel = document.createElement('span');
+        setsLabel.className = 'log-sets-label';
+        setsLabel.textContent = 'Log';
+        setsRow.appendChild(setsLabel);
+        for (let s = 0; s < numSets; s++) {
+          const btn = document.createElement('button');
+          btn.className = 'set-circle';
+          btn.textContent = s + 1;
+          btn.setAttribute('data-set', s);
+          btn.onclick = (function(d,l,si,ln){ return function(e){ e.stopPropagation(); openLogModal(d,l,si,ln); }; })(dayId, liftIdx, s, liftName);
+          setsRow.appendChild(btn);
+        }
+        row.appendChild(setsRow);
+        const lastRow = document.createElement('div');
+        lastRow.className = 'last-session-row';
+        lastRow.setAttribute('data-last-row', key);
+        const lastLabel = document.createElement('span');
+        lastLabel.className = 'last-session-label';
+        lastLabel.textContent = 'Last:';
+        lastRow.appendChild(lastLabel);
+        for (let s = 0; s < numSets; s++) {
+          const chip = document.createElement('span');
+          chip.className = 'last-session-chip';
+          chip.setAttribute('data-chip', s);
+          chip.textContent = '-';
+          lastRow.appendChild(chip);
+        }
+        row.appendChild(lastRow);
+      });
+    });
+    renderAllLogs();
+  }
+
+  //     RENDER LOGGED DATA                                                      
+  function renderAllLogs() {
+    Object.keys(LIFT_SETS).forEach(key => {
+      const numSets = LIFT_SETS[key];
+      const setsRow = document.querySelector('[data-sets-row="' + key + '"]');
+      const lastRow = document.querySelector('[data-last-row="' + key + '"]');
+      if (!setsRow || !lastRow) return;
+      const circles = setsRow.querySelectorAll('.set-circle');
+      const chips = lastRow.querySelectorAll('[data-chip]');
+      for (let s = 0; s < numSets; s++) {
+        const entry = logs[key + '::' + s];
+        if (circles[s]) circles[s].classList.toggle('logged', !!entry);
+        if (chips[s]) {
+          if (entry) { chips[s].textContent = entry.weight + 'lb x ' + entry.reps; chips[s].classList.add('has-data'); }
+          else { chips[s].textContent = '-'; chips[s].classList.remove('has-data'); }
+        }
+      }
+    });
+  }
+
+  //     LOG MODAL                                                               
+  let activeModal = null;
+  function openLogModal(dayId, liftIdx, setIdx, liftName) {
+    closeLogModal();
+    const key = dayId + '::' + liftIdx + '::' + setIdx;
+    const existing = logs[key] || {};
+    const overlay = document.createElement('div');
+    overlay.className = 'log-modal-overlay';
+    overlay.onclick = function(e) { if (e.target === overlay) closeLogModal(); };
+    overlay.innerHTML = '<div class="log-modal-card"><div class="log-modal-title">Set ' + (setIdx+1) + '</div><div class="log-modal-lift">' + liftName + '</div><div class="log-inputs"><div class="log-input-group"><div class="log-input-label">Weight (lbs)</div><input class="log-input-field" id="log-weight" type="number" placeholder="225" value="' + (existing.weight||'') + '" inputmode="decimal"></div><div class="log-input-group"><div class="log-input-label">Reps</div><input class="log-input-field" id="log-reps" type="number" placeholder="5" value="' + (existing.reps||'') + '" inputmode="numeric"></div></div><button class="log-save-btn" onclick="saveSet(\'' + dayId + '\',' + liftIdx + ',' + setIdx + ')">Save Set</button><button class="log-cancel-btn" onclick="closeLogModal()">Cancel</button></div>';
+    document.body.appendChild(overlay);
+    activeModal = overlay;
+    setTimeout(function(){ var w=document.getElementById('log-weight'); if(w) w.focus(); }, 50);
+    overlay.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') saveSet(dayId, liftIdx, setIdx);
+      if (e.key === 'Escape') closeLogModal();
+    });
+  }
+
+  function closeLogModal() { if (activeModal) { activeModal.remove(); activeModal = null; } }
+
+  function saveSet(dayId, liftIdx, setIdx) {
+    var weight = document.getElementById('log-weight') ? document.getElementById('log-weight').value.trim() : '';
+    var reps = document.getElementById('log-reps') ? document.getElementById('log-reps').value.trim() : '';
+    if (!weight && !reps) { closeLogModal(); return; }
+    var liftKey = dayId + '::' + liftIdx;
+    var restSeconds = 90;
+    var liftName = '';
+    var setsRow = document.querySelector('[data-sets-row="' + liftKey + '"]');
+    if (setsRow) {
+      var row = setsRow.closest('.lift-row');
+      if (row) {
+        var restEl = row.querySelector('.lift-rest');
+        if (restEl) restSeconds = parseRestToSeconds(restEl.textContent);
+        var nameEl = row.querySelector('.lift-name');
+        if (nameEl) liftName = nameEl.textContent;
+      }
+    }
+    var key = dayId + '::' + liftIdx + '::' + setIdx;
+    logs[key] = { weight: weight || '-', reps: reps || '-' };
+    saveLogs(logs);
+    closeLogModal();
+    renderAllLogs();
+    startTimer(restSeconds, liftName);
+    var flashRow = document.querySelector('[data-sets-row="' + liftKey + '"]');
+    if (flashRow) {
+      var circles = flashRow.querySelectorAll('.set-circle');
+      if (circles[setIdx]) {
+        circles[setIdx].classList.add('flash');
+        setTimeout(function(){ circles[setIdx].classList.remove('flash'); }, 800);
+      }
+    }
+    if (window._enteringMonkMode) {
+      window._enteringMonkMode = false;
+      goTab('training');
+    }
+  }
+
+  function clearDayLogs(dayId) {
+    var prefix = dayId + '::';
+    Object.keys(logs).forEach(function(k){ if (k.startsWith(prefix)) delete logs[k]; });
+    saveLogs(logs); renderAllLogs();
+  }
+
+  //     REST TIMER                                                              
+  var timerInterval = null;
+  var timerSeconds = 0;
+  var timerTotal = 0;
+  var timerRunning = false;
+
+  function parseRestToSeconds(restStr) {
+    if (!restStr) return 90;
+    var s = restStr.toLowerCase().trim();
+    var rangeMin = s.match(/^(\d+)[-\-](\d+)\s*min/);
+    if (rangeMin) return parseInt(rangeMin[1]) * 60;
+    var minMatch = s.match(/^(\d+)\s*min/);
+    if (minMatch) return parseInt(minMatch[1]) * 60;
+    var secMatch = s.match(/^(\d+)\s*sec/);
+    if (secMatch) return parseInt(secMatch[1]);
+    return 90;
+  }
+
+  function formatTime(s) {
+    var m = Math.floor(s / 60);
+    var sec = s % 60;
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  var CIRC = 534;
+  function updateModalRing(secs) {
+    var mTime = document.getElementById('restModalTime');
+    var mRing = document.getElementById('restModalRing');
+    var mStatus = document.getElementById('restModalStatus');
+    var mSkip = document.getElementById('restModalSkipBtn');
+    var offset = (1 - Math.max(0, secs / timerTotal)) * CIRC;
+    if (mTime) { mTime.textContent = formatTime(Math.max(0, secs)); }
+    if (mRing) mRing.style.strokeDashoffset = offset;
+    if (secs <= 10 && secs > 0) {
+      if (mTime) mTime.className = 'rest-modal-time warning';
+      if (mRing) mRing.style.stroke = '#e8412a';
+    }
+    if (secs <= 0) {
+      if (mTime) { mTime.textContent = 'GO!'; mTime.className = 'rest-modal-time done'; }
+      if (mRing) { mRing.style.stroke = '#16a34a'; mRing.style.strokeDashoffset = CIRC; }
+      if (mStatus) { mStatus.textContent = 'Next set ready'; mStatus.className = 'rest-modal-status ready'; }
+      if (mSkip) { mSkip.textContent = 'Start Next Set'; mSkip.className = 'rest-modal-skip ready-state'; }
+    }
+  }
+
+  function startTimer(seconds, liftName) {
+    if (timerInterval) clearInterval(timerInterval);
+    timerSeconds = seconds; timerTotal = seconds; timerRunning = true;
+    var bar = document.getElementById('timerBar');
+    var display = document.getElementById('timerDisplay');
+    var fill = document.getElementById('timerFill');
+    var liftEl = document.getElementById('timerLiftName');
+    var toggleBtn = document.getElementById('timerToggleBtn');
+    var modal = document.getElementById('restModal');
+    var mLift = document.getElementById('restModalLift');
+    var mTime = document.getElementById('restModalTime');
+    var mRing = document.getElementById('restModalRing');
+    var mStatus = document.getElementById('restModalStatus');
+    var mSkip = document.getElementById('restModalSkipBtn');
+    // legacy bar
+    if (liftEl) liftEl.textContent = liftName || '-';
+    if (display) { display.textContent = formatTime(timerSeconds); display.className = 'timer-display'; }
+    if (fill) { fill.style.width = '100%'; fill.className = 'timer-progress-fill'; }
+    if (toggleBtn) toggleBtn.textContent = 'Pause';
+    // modal
+    if (mLift) mLift.textContent = liftName || '';
+    if (mTime) { mTime.textContent = formatTime(timerSeconds); mTime.className = 'rest-modal-time'; }
+    if (mRing) { mRing.style.strokeDashoffset = '0'; mRing.style.stroke = '#e8412a'; }
+    if (mStatus) { mStatus.textContent = ''; mStatus.className = 'rest-modal-status'; }
+    if (mSkip) { mSkip.textContent = 'Skip Rest'; mSkip.className = 'rest-modal-skip'; }
+    if (modal) modal.classList.add('visible');
+    timerInterval = setInterval(function() {
+      if (!timerRunning) return;
+      timerSeconds--;
+      var pct = Math.max(0, (timerSeconds / timerTotal) * 100);
+      if (display) display.textContent = formatTime(Math.max(0, timerSeconds));
+      if (fill) fill.style.width = pct + '%';
+      updateModalRing(timerSeconds);
+      if (timerSeconds <= 10 && timerSeconds > 0) {
+        if (display) display.className = 'timer-display warning';
+        if (fill) fill.className = 'timer-progress-fill warning';
+      }
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval); timerRunning = false;
+        if (display) { display.textContent = 'GO!'; display.className = 'timer-display done'; }
+        if (fill) { fill.style.width = '0%'; fill.className = 'timer-progress-fill done'; }
+        if (toggleBtn) toggleBtn.textContent = 'Start';
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        playBeep();
+      }
+    }, 1000);
+  }
+
+  function toggleTimer() {
+    var btn = document.getElementById('timerToggleBtn');
+    if (timerSeconds <= 0) { startTimer(timerTotal, document.getElementById('timerLiftName') ? document.getElementById('timerLiftName').textContent : ''); return; }
+    timerRunning = !timerRunning;
+    if (btn) btn.textContent = timerRunning ? 'Pause' : 'Resume';
+  }
+
+  function addTimerTime(secs) {
+    timerSeconds += secs; timerTotal += secs;
+    var display = document.getElementById('timerDisplay');
+    var fill = document.getElementById('timerFill');
+    if (display) { display.textContent = formatTime(timerSeconds); display.className = 'timer-display'; }
+    if (fill) fill.className = 'timer-progress-fill';
+    updateModalRing(timerSeconds);
+    if (!timerRunning && timerSeconds > 0) { timerRunning = true; var btn = document.getElementById('timerToggleBtn'); if (btn) btn.textContent = 'Pause'; }
+  }
+
+  function quickStartTimer(seconds, btn) {
+    document.querySelectorAll('.rest-preset-btn').forEach(function(b) { b.classList.remove('active-preset'); });
+    if (btn) btn.classList.add('active-preset');
+    startTimer(seconds, 'Manual Rest');
+    setTimeout(function() { if (btn) btn.classList.remove('active-preset'); }, 500);
+  }
+
+  function dismissTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerRunning = false;
+    var bar = document.getElementById('timerBar');
+    if (bar) bar.classList.remove('visible');
+    var modal = document.getElementById('restModal');
+    if (modal) modal.classList.remove('visible');
+  }
+
+  function playBeep() {
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine'; osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.4, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+      osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
+    } catch(e) {}
+  }
+
+  //     MAXES & WEIGHT CALCULATION                                              
+  const MAXES_KEY = 'monk_mode_maxes_v1';
+  const WEEK_INTENSITY = [
+    [0.65,0.70],[0.72,0.76],[0.78,0.83],[0.58,0.62],
+    [0.70,0.74],[0.75,0.79],[0.79,0.83],[0.83,0.88],[0.88,0.93],[0.55,0.60]
+  ];
+  const LIFT_MAX_MAP = [
+    { match: ['Flat Barbell Bench Press'], maxKey: 'bench', cls: '' },
+    { match: ['Close Grip Bench'], maxKey: 'bench', cls: '', pctLo: 0.70, pctHi: 0.75 },
+    { match: ['Dumbbell Bench Press'], maxKey: 'bench', cls: '', pctLo: 0.55, pctHi: 0.62 },
+    { match: ['Incline Dumbbell Press'], maxKey: 'bench', cls: '', pctLo: 0.60, pctHi: 0.68 },
+    { match: ['Low-to-High Cable Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
+    { match: ['Cable Chest Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
+    { match: ['Skull Crushers'], maxKey: 'bench', cls: '', pctLo: 0.35, pctHi: 0.42 },
+    { match: ['Tricep Rope Pushdown'], maxKey: 'bench', cls: '', pctLo: 0.25, pctHi: 0.32 },
+    { match: ['Overhead Tricep Extension'], maxKey: 'bench', cls: '', pctLo: 0.20, pctHi: 0.28 },
+    { match: ['Barbell Row'], maxKey: 'bench', cls: '', pctLo: 0.68, pctHi: 0.75 },
+    { match: ['Cable Row'], maxKey: 'bench', cls: '', pctLo: 0.52, pctHi: 0.60 },
+    { match: ['Chest-Supported Row'], maxKey: 'bench', cls: '', pctLo: 0.50, pctHi: 0.58 },
+    { match: ['Single Arm DB Row'], maxKey: 'bench', cls: '', pctLo: 0.55, pctHi: 0.65 },
+    { match: ['Seated Cable Row'], maxKey: 'bench', cls: '', pctLo: 0.52, pctHi: 0.60 },
+    { match: ['Barbell Curl'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
+    { match: ['Hammer Curls'], maxKey: 'bench', cls: '', pctLo: 0.22, pctHi: 0.28 },
+    { match: ['Incline DB Curls'], maxKey: 'bench', cls: '', pctLo: 0.18, pctHi: 0.25 },
+    { match: ['Cable Curl'], maxKey: 'bench', cls: '', pctLo: 0.18, pctHi: 0.24 },
+    { match: ['Seated Barbell OHP'], maxKey: 'ohp', cls: 'ohp' },
+    { match: ['Arnold Press'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.45, pctHi: 0.52 },
+    { match: ['Seated DB Shoulder Press'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.48, pctHi: 0.56 },
+    { match: ['Lateral Raises (cable)'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.14, pctHi: 0.20 },
+    { match: ['Lateral Raises'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.14, pctHi: 0.20 },
+    { match: ['Back Squat'], maxKey: 'squat', cls: 'squat' },
+    { match: ['Pause Squat'], maxKey: 'squat', cls: 'squat', pct: 0.65 },
+    { match: ['Front Squat'], maxKey: 'squat', cls: 'squat', pctLo: 0.68, pctHi: 0.75 },
+    { match: ['Hack Squat'], maxKey: 'squat', cls: 'squat', pctLo: 0.68, pctHi: 0.75 },
+    { match: ['Romanian Deadlift'], maxKey: 'squat', cls: 'squat', pctLo: 0.52, pctHi: 0.60 },
+    { match: ['Leg Press'], maxKey: 'squat', cls: 'squat', pctLo: 0.85, pctHi: 0.98 },
+    { match: ['Bulgarian Split Squat'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
+    { match: ['Leg Extension'], maxKey: 'squat', cls: 'squat', pctLo: 0.22, pctHi: 0.30 },
+    { match: ['Leg Curl'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
+    { match: ['Walking Lunges'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
+    { match: ['Standing Calf Raise'], maxKey: 'squat', cls: 'squat', pctLo: 0.38, pctHi: 0.48 },
+    { match: ['Seated Calf Raise'], maxKey: 'squat', cls: 'squat', pctLo: 0.32, pctHi: 0.42 },
+    { match: ['Weighted Pull-Ups'], maxKey: 'pullup', cls: 'pullup' },
+    { match: ['Lat Pulldown'], maxKey: 'pullup', cls: 'pullup', pctLo: 0.55, pctHi: 0.68 },
+    { match: ['Straight Arm Pulldown'], maxKey: 'pullup', cls: 'pullup', pctLo: 0.28, pctHi: 0.36 },
+  ];
+
+  var userMaxes = {};
+  var currentTrainWeek = 0;
+
+  function loadMaxes() {
+    try { userMaxes = JSON.parse(localStorage.getItem(MAXES_KEY)) || {}; } catch { userMaxes = {}; }
+  }
+  function persistMaxes() {
+    try { localStorage.setItem(MAXES_KEY, JSON.stringify(userMaxes)); } catch {} }
+  function roundToNearestFive(n) { return Math.round(n / 5) * 5; }
+  function calcWeightRange(max, lo, hi) {
+    var l = roundToNearestFive(max * lo);
+    var h = roundToNearestFive(max * hi);
+    return l === h ? l + ' lbs' : l + '-' + h + ' lbs';
+  }
+
+  window._maxesMode = '1rm';
+  function setMaxesMode(mode) {
+    window._maxesMode = mode;
+    var card = document.getElementById('settingsModalCard');
+    var btn1rm = document.getElementById('mode-btn-1rm');
+    var btnReps = document.getElementById('mode-btn-reps');
+    if (mode === 'reps') {
+      if (card) card.classList.add('maxes-mode-reps');
+      if (btn1rm) btn1rm.classList.remove('active');
+      if (btnReps) btnReps.classList.add('active');
+    } else {
+      if (card) card.classList.remove('maxes-mode-reps');
+      if (btn1rm) btn1rm.classList.add('active');
+      if (btnReps) btnReps.classList.remove('active');
+    }
+    ['squat','bench','ohp'].forEach(function(l){ document.getElementById('est-1rm-' + l).textContent = ''; });
+  }
+
+  function updateEpley(lift) {
+    var w = parseFloat(document.getElementById('reps-weight-' + lift).value);
+    var r = parseFloat(document.getElementById('reps-count-' + lift).value);
+    var el = document.getElementById('est-1rm-' + lift);
+    if (!el) return;
+    if (!isNaN(w) && !isNaN(r) && r > 0 && r <= 30) {
+      var est = Math.round(w * (1 + r / 30) / 5) * 5;
+      el.textContent = '\u2248 ' + est + ' lbs estimated 1RM';
+    } else {
+      el.textContent = '';
+    }
+  }
+
+  function openSettingsModal() {
+    loadMaxes();
+    document.getElementById('input-squat').value = userMaxes.squat || '';
+    document.getElementById('input-bench').value = userMaxes.bench || '';
+    document.getElementById('input-ohp').value = userMaxes.ohp || '';
+    setMaxesMode('1rm');
+    document.getElementById('settingsModal').style.display = 'flex';
+    setTimeout(function(){ var w=document.getElementById('input-squat'); if(w) w.focus(); }, 80);
+  }
+
+  function openSettingsModalFromBtn() {
+    window._enteringMonkMode = false;
+    document.getElementById('settingsModalTitle').textContent = 'Your Maxes';
+    document.getElementById('settingsModalSub').textContent = 'Enter your 1-rep maxes. Weights across the program will auto-calculate and display as ranges for each week. Stored locally on your device.';
+    document.getElementById('settingsSaveBtn').textContent = 'Save & Update Program';
+    document.getElementById('settingsCancelBtn').textContent = 'Cancel';
+    openSettingsModal();
+  }
+
+  function closeSettingsModal() {
+    document.getElementById('settingsModal').style.display = 'none';
+  }
+
+  function saveMaxes() {
+    if (window._maxesMode === 'reps') {
+      ['squat','bench','ohp'].forEach(function(lift) {
+        var w = parseFloat(document.getElementById('reps-weight-' + lift).value);
+        var r = parseFloat(document.getElementById('reps-count-' + lift).value);
+        if (!isNaN(w) && !isNaN(r) && r > 0) {
+          userMaxes[lift] = Math.round(w * (1 + r / 30) / 5) * 5;
+        }
+      });
+    } else {
+      var sq = parseFloat(document.getElementById('input-squat').value);
+      var bn = parseFloat(document.getElementById('input-bench').value);
+      var oh = parseFloat(document.getElementById('input-ohp').value);
+      if (!isNaN(sq)) userMaxes.squat = sq;
+      if (!isNaN(bn)) userMaxes.bench = bn;
+      if (!isNaN(oh)) userMaxes.ohp = oh;
+    }
+    persistMaxes();
+    closeSettingsModal();
+    updateMaxChips();
+    renderWeightBadges();
+    renderProgressionTable();
+    window._enteringMonkMode = false;
+    if (typeof updateTrainLock === 'function') updateTrainLock();
+    goSec('about');
+  }
+
+  function updateMaxChips() {
+    var fields = { squat:'chip-squat', bench:'chip-bench', ohp:'chip-ohp' };
+    var hasAny = false;
+    Object.entries(fields).forEach(function(e) {
+      var key = e[0]; var chipId = e[1];
+      var el = document.getElementById(chipId);
+      if (!el) return;
+      if (userMaxes[key] !== undefined) {
+        el.textContent = userMaxes[key] + ' lbs';
+        el.classList.remove('unset');
+        hasAny = true;
+      } else {
+        el.textContent = 'Not set';
+        el.classList.add('unset');
+      }
+    });
+    var btn = document.getElementById('settingsOpenBtn');
+    if (btn && hasAny) { btn.classList.add('has-data'); btn.textContent = '  Edit Maxes'; }
+  }
+
+  function renderWeightBadges() {
+    var intensity = WEEK_INTENSITY[currentTrainWeek] || [0.72, 0.78];
+    var lowPct = intensity[0]; var highPct = intensity[1];
+    document.querySelectorAll('.lift-weight-badge').forEach(function(b){ b.remove(); });
+    var trainingTab = document.getElementById('tab-training');
+    if (!trainingTab) return;
+    trainingTab.querySelectorAll('.lift-row').forEach(function(row) {
+      var nameEl = row.querySelector('.lift-name');
+      if (!nameEl) return;
+      var name = nameEl.textContent.trim();
+      for (var i = 0; i < LIFT_MAX_MAP.length; i++) {
+        var entry = LIFT_MAX_MAP[i];
+        var matched = entry.match.some(function(m){ return name.indexOf(m) !== -1; });
+        if (!matched) continue;
+        var max = userMaxes[entry.maxKey];
+        if (!max) break;
+        var badge;
+        if (entry.pct) {
+          badge = roundToNearestFive(max * entry.pct) + ' lbs';
+        } else if (entry.pctLo && entry.pctHi) {
+          badge = calcWeightRange(max, entry.pctLo, entry.pctHi);
+        } else {
+          badge = calcWeightRange(max, lowPct, highPct);
+        }
+        var badgeEl = document.createElement('span');
+        badgeEl.className = 'lift-weight-badge' + (entry.cls ? ' ' + entry.cls : '');
+        badgeEl.textContent = badge;
+        nameEl.appendChild(badgeEl);
+        break;
+      }
+    });
+  }
+
+  function renderProgressionTable() {
+    var BENCH_PCTS = [0.84, 0.89, 0.96, 0.62, 0.91, 0.96, 1.00, 1.04, 1.09, 0.67];
+    var SQUAT_PCTS = [0.84, 0.87, 0.94, 0.62, 0.89, 0.94, 0.98, 1.03, 1.06, 0.67];
+    var OHP_PCTS   = [0.84, 0.89, 0.96, 0.62, 0.91, 0.96, 1.00, 1.04, 1.09, 0.67];
+    function applyPcts(liftKey, pcts, prefix) {
+      var max = userMaxes[liftKey];
+      if (!max) return;
+      var tm = Math.round(max * 0.90 / 5) * 5;
+      pcts.forEach(function(pct, i) {
+        var row = document.getElementById(prefix + '-' + i);
+        if (!row) return;
+        var wEl = row.querySelector('.prog-weight');
+        if (!wEl) return;
+        var w = Math.round(tm * pct / 5) * 5;
+        var isDeload = (i === 3 || i === 9);
+        var isTopSet = (i === 8);
+        wEl.textContent = (isDeload ? '~' : '') + w + ' lbs' + (isTopSet ? ', top sets' : '');
+      });
+    }
+    applyPcts('bench', BENCH_PCTS, 'bench');
+    applyPcts('squat', SQUAT_PCTS, 'squat');
+    applyPcts('ohp',   OHP_PCTS,   'ohp');
+    // Show or hide OHP card
+    var ohpCard = document.getElementById('prog-card-ohp');
+    if (ohpCard) ohpCard.style.display = userMaxes.ohp ? 'block' : 'none';
+    // Update intro
+    var intro = document.getElementById('prog-intro');
+    if (intro) {
+      var hasAny = userMaxes.squat || userMaxes.bench || userMaxes.ohp;
+      if (hasAny) {
+        var parts = [];
+        if (userMaxes.squat) parts.push('Squat ' + userMaxes.squat + ' lbs');
+        if (userMaxes.bench) parts.push('Bench ' + userMaxes.bench + ' lbs');
+        if (userMaxes.ohp) parts.push('OHP ' + userMaxes.ohp + ' lbs');
+        intro.innerHTML = 'Your numbers: <strong style="color:var(--red)">' + parts.join(' / ') + '</strong>. All weights below are calculated from your 1RM using a 90% training max. They climb above your starting point in weeks 7 to 9 because the program builds the capacity first. Hit every prescribed rep before adding weight. One missed rep means you stay at the same weight. No exceptions.';
+      }
+    }
+  }
+
+  function setTrainWeek(idx) { currentTrainWeek = idx; renderWeightBadges(); }
+
+  function highlightTrainWeek(idx, btn) {
+    document.querySelectorAll('.train-week-btn').forEach(function(b){
+      b.style.background='transparent'; b.style.color='#555'; b.style.borderColor='#222';
+    });
+    btn.style.background='rgba(232,65,42,0.15)';
+    btn.style.color='#e8412a';
+    btn.style.borderColor='rgba(232,65,42,0.4)';
+  }
+
+  //     MONK MODE ENTRY FLOW                                                     
+  function enterMonkMode() {
+    loadMaxes();
+    var hasMaxes = userMaxes.squat || userMaxes.bench || userMaxes.ohp;
+    if (!hasMaxes) {
+      // Show maxes modal - they fill in PRs then get taken to Train tab
+      window._enteringMonkMode = true;
+      var title = document.getElementById('settingsModalTitle');
+      var sub = document.getElementById('settingsModalSub');
+      var saveBtn = document.getElementById('settingsSaveBtn');
+      var cancelBtn = document.getElementById('settingsCancelBtn');
+      if (title) title.textContent = 'Set Your Maxes';
+      if (sub) sub.textContent = 'Enter your 1-rep maxes. The program calculates your weights for every lift automatically.';
+      if (saveBtn) saveBtn.textContent = 'Enter Monk Mode';
+      if (cancelBtn) cancelBtn.textContent = 'Skip for now';
+      var sq = document.getElementById('input-squat');
+      var bn = document.getElementById('input-bench');
+      var oh = document.getElementById('input-ohp');
+      if (sq) sq.value = '';
+      if (bn) bn.value = '';
+      if (oh) oh.value = '';
+      setMaxesMode('1rm');
+      var modal = document.getElementById('settingsModal');
+      if (modal) modal.style.display = 'flex';
+    } else {
+      goTab('training');
+    }
+  }
+
+  function cancelMonkModeEntry() {
+    window._enteringMonkMode = false;
+    closeSettingsModal();
+  }
+
+  //     INFO SECTION SWITCHER                                                    
+  function showSection(id) {
+    var ids = ['home','about','edge','overview','progression'];
+    for (var i = 0; i < ids.length; i++) {
+      var sec = document.getElementById('isec-' + ids[i]);
+      var btn = document.getElementById('isub-' + ids[i]);
+      if (sec) sec.className = 'info-section' + (ids[i] === id ? ' visible' : '');
+      if (btn) btn.className = 'subnav-btn' + (ids[i] === id ? ' active' : '');
+    }
+    window.scrollTo(0, 0);
+  }
+  function switchInfoSection(sectionId, btn) { showSection(sectionId); }
+
+  //     MAIN TAB SWITCHER                                                        
+  function switchTab(tabName) {
+    var pages = document.querySelectorAll('.tab-page');
+    pages.forEach(function(p) { p.classList.remove('active'); });
+    var navBtns = document.querySelectorAll('.nav-tab');
+    navBtns.forEach(function(b) { b.classList.remove('active'); });
+    var targetPage = document.getElementById('tab-' + tabName);
+    var targetBtn  = document.getElementById('tab-btn-' + tabName);
+    if (targetPage) targetPage.classList.add('active');
+    if (targetBtn)  targetBtn.classList.add('active');
+    // Show/hide subnav based on tab
+    var subnav = document.querySelector('.info-subnav');
+    if (subnav) subnav.style.display = tabName === 'info' ? 'flex' : 'none';
+    // Adjust body padding
+    document.body.style.paddingTop = tabName === 'info' ? '105px' : '60px';
+    window.scrollTo(0, 0);
+  }
+
+  //     DAY SWITCHER                                                            
+  function switchDay(dayId) {
+    document.querySelectorAll('.plan-content').forEach(function(el){ el.classList.remove('active'); });
+    document.querySelectorAll('.plan-nav-btn').forEach(function(el){ el.classList.remove('active'); });
+    var day = document.getElementById('day-' + dayId);
+    var btn = document.getElementById('btn-' + dayId);
+    if (day) day.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+
+  //     LIFT NOTE TOGGLE                                                        
+  function toggleNote(row) {
+    var note = row.querySelector('.lift-note');
+    var chevron = row.querySelector('.lift-chevron');
+    var isOpen = note.classList.contains('open');
+    note.classList.toggle('open');
+    row.classList.toggle('expanded');
+    chevron.textContent = isOpen ? ' ' : ' ';
+  }
+
+  //     WARMUP TOGGLE                                                           
+  function toggleWarmup(panelId, btn) {
+    var panel = document.getElementById(panelId);
+    if (!panel) return;
+    var isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open');
+    btn.classList.toggle('open');
+    btn.textContent = isOpen ? '  Show Warm-Up' : '  Hide Warm-Up';
+  }
+
+  //     WEEK SELECTORS                                                          
+  var currentWeek = 0;
+  function selectWeek(idx, btn) {
+    document.querySelectorAll('.week-tab').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    for (var i = 0; i < 10; i++) {
+      var el = document.getElementById('winfo' + i);
+      if (el) el.style.display = i === idx ? 'flex' : 'none';
+    }
+    currentWeek = idx;
+  }
+
+  var currentProgWeek = 0;
+  function selectProgWeek(idx, btn) {
+    document.querySelectorAll('.prog-week-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    for (var i = 0; i < 10; i++) {
+      var isActive = i === idx;
+      ['bench-', 'squat-'].forEach(function(prefix) {
+        var row = document.getElementById(prefix + i);
+        if (row) {
+          row.classList.toggle('highlight', isActive);
+          var wk = row.querySelector('.prog-week');
+          if (wk) wk.classList.toggle('active-week', isActive);
+        }
+      });
+    }
+    currentProgWeek = idx;
+  }
+
+  //     FADE IN OBSERVER                                                        
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(function(el){ observer.observe(el); });
+
+  //     CLOSE MODALS ON OVERLAY CLICK / ESCAPE                                   
+  document.addEventListener('click', function(e) {
+    var sm = document.getElementById('settingsModal');
+    if (sm && e.target === sm) closeSettingsModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSettingsModal();
+  });
+
+  //     INIT                                                                     
+  document.addEventListener('DOMContentLoaded', function() {
+    initLiftRows();
+    loadMaxes();
+    updateMaxChips();
+    renderWeightBadges();
+    renderProgressionTable();
+    // Sync train lock state
+    if (typeof updateTrainLock === 'function') updateTrainLock();
+    // Auto-open maxes modal on first visit
+    var hasMaxes = userMaxes.squat || userMaxes.bench || userMaxes.ohp;
+    if (!hasMaxes) {
+      setTimeout(function() { enterMonkMode(); }, 500);
+    }
+  });
+</script>
+
+<script>
+var INFO_SECS = ['home','about','edge','overview','progression'];
+
+function getMostRecentDay() {
+  var order = ['push1','pull1','legs1','push2','pull2','legs2','accessory'];
+  try {
+    var logs = JSON.parse(localStorage.getItem('ppl_workout_logs_v2')) || {};
+    var found = 'push1';
+    order.forEach(function(day) {
+      var hasLog = Object.keys(logs).some(function(k) { return k.indexOf(day + '::') === 0; });
+      if (hasLog) found = day;
+    });
+    return found;
+  } catch(e) { return 'push1'; }
+}
+
+function updateTrainLock() {
+  try {
+    var m = JSON.parse(localStorage.getItem('monk_mode_maxes_v1')) || {};
+    var unlocked = m.squat || m.bench || m.ohp;
+    var icon = document.getElementById('train-lock-icon');
+    if (icon) icon.style.display = unlocked ? 'none' : 'inline';
+    var btn = document.getElementById('tab-btn-training');
+    if (btn) btn.style.opacity = unlocked ? '1' : '0.55';
+    return !!unlocked;
+  } catch(e) { return false; }
+}
+
+function goTab(t) {
+  if (t === 'training') {
+    var unlocked = updateTrainLock();
+    if (!unlocked) {
+      enterMonkMode();
+      return;
+    }
+  }
+  document.getElementById('tab-info').style.display = t === 'info' ? 'block' : 'none';
+  document.getElementById('tab-training').style.display = t === 'training' ? 'block' : 'none';
+  document.getElementById('info-subnav').style.display = t === 'info' ? 'flex' : 'none';
+  var tabs = document.querySelectorAll('.nav-tab');
+  tabs.forEach(function(b) { b.classList.remove('active'); });
+  var btn = document.getElementById('tab-btn-' + t);
+  if (btn) btn.classList.add('active');
+  if (t === 'training') {
+    document.body.classList.add('training-mode');
+    switchDay(getMostRecentDay());
+  } else {
+    document.body.classList.remove('training-mode');
+  }
+  window.scrollTo(0,0);
+}
+
+function goSec(id) {
+  INFO_SECS.forEach(function(s) {
+    var sec = document.getElementById('sec-' + s);
+    var btn = document.getElementById('sb-' + s);
+    if (sec) sec.style.display = s === id ? 'block' : 'none';
+    if (btn) { btn.className = s === id ? 'on' : ''; }
+  });
+  window.scrollTo(0,0);
+}
+
+// Override the old switchTab to use goTab
+window.switchTab = function(t) { goTab(t); };
+
+// Init: use inline display instead of classes
+document.addEventListener('DOMContentLoaded', function() {
+  INFO_SECS.forEach(function(s) {
+    var sec = document.getElementById('sec-' + s);
+    if (sec) sec.style.display = s === 'home' ? 'block' : 'none';
+  });
+});
+</script>
+</body>
+</html>
