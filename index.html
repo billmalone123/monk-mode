@@ -587,9 +587,16 @@
     .nav-logo { font-size: 18px; }
     .nav-links { display: none; }
     section { padding: 80px 24px; }
-    .hero { padding: 0 24px 60px; }
-    .hero-title { font-size: 64px; }
+    .hero {
+      min-height: auto;
+      padding: 40px 24px 48px;
+      justify-content: flex-start;
+    }
+    .hero-number { display: none; }
+    .hero-title { font-size: 64px; margin-bottom: 20px; }
+    .hero-desc { font-size: 14px; margin-bottom: 28px; }
     .hero-stats { gap: 24px; flex-wrap: wrap; }
+    .hero-cta { margin-top: 28px; }
     .about-grid { grid-template-columns: 1fr; gap: 48px; }
     .pillars { grid-template-columns: 1fr; }
     .prog-grid { grid-template-columns: 1fr; }
@@ -604,10 +611,14 @@
 
   /* MOBILE — iPhone and small phones */
   @media (max-width: 480px) {
-    .hero { padding: 0 20px 60px; }
-    .hero-title { font-size: 52px; }
-    .hero-stats { gap: 16px; }
-    .stat-num { font-size: 36px; }
+    .hero { padding: 32px 20px 40px; }
+    .hero-title { font-size: 44px; margin-bottom: 16px; }
+    .hero-eyebrow { margin-bottom: 12px; }
+    .hero-desc { font-size: 13px; margin-bottom: 20px; }
+    .hero-stats { gap: 12px; }
+    .stat-num { font-size: 32px; }
+    .stat-label { font-size: 10px; }
+    .hero-cta { margin-top: 20px; padding: 12px 24px; font-size: 14px; }
     .section-title { font-size: clamp(36px, 10vw, 80px); }
     .nav-sub { padding: 0 10px; }
     .nav-sub button { padding: 12px 10px; font-size: 11px; }
@@ -1262,7 +1273,7 @@
 .sub-sec.on { display: block; }
 .nav-sub {
   position: sticky; top: 60px; z-index: 99;
-  background: #090909; border-bottom: 1px solid #222;
+  background: var(--black); border-bottom: 1px solid var(--border);
   display: flex; padding: 0 40px; overflow-x: auto;
 }
 .nav-sub button {
