@@ -626,6 +626,41 @@
     section { padding: 60px 20px; }
   }
 
+  /* LANDSCAPE PHONE — short viewport in horizontal orientation */
+  @media (max-height: 500px) and (orientation: landscape) {
+    body { padding-top: 48px; }
+    nav { height: 48px; }
+    .nav-sub { top: 48px; }
+    .hero { min-height: auto; padding: 60px 32px 40px; }
+    .hero-title { font-size: clamp(48px, 10vw, 80px); margin-bottom: 16px; }
+    .hero-stats { gap: 20px; }
+    .hero-cta { margin-top: 20px; padding: 12px 24px; }
+    section { padding: 60px 32px; }
+  }
+
+  /* TABLET — 769px to 1024px */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    nav { padding: 0 28px; }
+    .nav-sub { padding: 0 28px; }
+    section { padding: 80px 40px; }
+    .hero { padding: 0 40px 64px; }
+    footer { padding: 48px 40px; }
+    .about-grid { gap: 48px; }
+    .prog-grid { gap: 24px; }
+    .hero-title { font-size: clamp(72px, 12vw, 150px); }
+    .lift-table-header, .lift-row { grid-template-columns: 1fr 70px 80px; }
+    .lift-time { display: none; }
+  }
+
+  /* WIDE DESKTOP — constrain content width on large monitors */
+  @media (min-width: 1440px) {
+    nav { padding: 0 max(60px, calc((100vw - 1400px) / 2)); }
+    .nav-sub { padding: 0 max(40px, calc((100vw - 1400px) / 2)); }
+    section { padding: 100px max(60px, calc((100vw - 1400px) / 2)); }
+    .hero { padding: 0 max(60px, calc((100vw - 1400px) / 2)) 80px; }
+    footer { padding: 60px max(60px, calc((100vw - 1400px) / 2)); }
+  }
+
   /* ANIMATIONS */
   .fade-up {
     opacity: 0;
