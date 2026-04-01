@@ -582,13 +582,14 @@
     margin: 0;
   }
 
-  /* MOBILE */
+  /* MOBILE — tablet and below */
   @media (max-width: 768px) {
-    @media (max-width: 768px) { .nav-logo { font-size: 18px; } }
+    .nav-logo { font-size: 18px; }
     .nav-links { display: none; }
     section { padding: 80px 24px; }
     .hero { padding: 0 24px 60px; }
     .hero-title { font-size: 64px; }
+    .hero-stats { gap: 24px; flex-wrap: wrap; }
     .about-grid { grid-template-columns: 1fr; gap: 48px; }
     .pillars { grid-template-columns: 1fr; }
     .prog-grid { grid-template-columns: 1fr; }
@@ -596,6 +597,33 @@
     .plan-day-title { font-size: 48px; }
     .lift-table-header, .lift-row { grid-template-columns: 1fr 70px 80px; }
     .lift-time { display: none; }
+    .nav-sub { padding: 0 16px; }
+    .settings-maxes-display { gap: 8px; }
+    .settings-max-chip { padding: 5px 10px; }
+  }
+
+  /* MOBILE — iPhone and small phones */
+  @media (max-width: 480px) {
+    .hero { padding: 0 20px 60px; }
+    .hero-title { font-size: 52px; }
+    .hero-stats { gap: 16px; }
+    .stat-num { font-size: 36px; }
+    .section-title { font-size: clamp(36px, 10vw, 80px); }
+    .nav-sub { padding: 0 10px; }
+    .nav-sub button { padding: 12px 10px; font-size: 11px; }
+    .plan-nav-btn { font-size: 11px; padding: 7px 8px; }
+    .settings-max-chip { padding: 4px 8px; gap: 6px; }
+    .settings-max-label { font-size: 9px; }
+    .settings-max-val { font-size: 14px; }
+    .settings-open-btn { font-size: 12px; padding: 8px 14px; }
+    .rest-timer-strip { padding: 10px 12px; gap: 6px; }
+    .rest-preset-btn { padding: 5px 10px; font-size: 12px; }
+    .rest-timer-strip-label { font-size: 9px; }
+    .prog-week-btn { padding: 5px 10px; font-size: 12px; }
+    .timer-inner { padding: 10px 14px; }
+    .timer-display { font-size: 40px; }
+    footer { padding: 32px 20px; }
+    section { padding: 60px 20px; }
   }
 
   /* ANIMATIONS */
