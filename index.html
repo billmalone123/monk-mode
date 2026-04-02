@@ -585,8 +585,12 @@
 
   /* MOBILE — tablet and below */
   @media (max-width: 768px) {
-    .nav-logo { font-size: 18px; }
+    nav { padding: 0 16px; height: 52px; }
+    body { padding-top: 52px; }
+    .nav-sub { top: 52px; }
+    .nav-logo { font-size: 17px; }
     .nav-links { display: none; }
+    .nav-tab { padding: 0 14px; font-size: 13px; gap: 6px; height: 52px; }
     section { padding: 80px 24px; }
     .hero {
       min-height: auto;
@@ -594,6 +598,7 @@
       justify-content: flex-start;
     }
     .hero-number { display: none; }
+    .hero-eyebrow { font-size: 11px; margin-bottom: 14px; }
     .hero-title { font-size: 64px; margin-bottom: 20px; }
     .hero-desc { font-size: 14px; margin-bottom: 28px; }
     .hero-stats { gap: 24px; flex-wrap: wrap; }
@@ -606,7 +611,8 @@
     .plan-day-title { font-size: 48px; }
     .lift-table-header, .lift-row { grid-template-columns: 1fr 70px 80px; }
     .lift-time { display: none; }
-    .nav-sub { padding: 0 16px; }
+    .nav-sub { padding: 0 12px; }
+    .nav-sub button { padding: 12px 12px; font-size: 11px; }
     .settings-maxes-display { gap: 8px; }
     .settings-max-chip { padding: 5px 10px; }
   }
