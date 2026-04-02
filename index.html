@@ -197,6 +197,7 @@
 
   /* ABOUT */
   #about { background: var(--black); border-top: 1px solid var(--border); }
+  .edge-section { padding: 100px 60px; }
   .about-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -274,7 +275,7 @@
   /* DAY CARDS */
   .day-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: 2px;
   }
   .day-card {
@@ -597,6 +598,7 @@
     .hero-desc { font-size: 14px; margin-bottom: 28px; }
     .hero-stats { gap: 24px; flex-wrap: wrap; }
     .hero-cta { margin-top: 28px; }
+    .edge-section { padding: 80px 24px; }
     .about-grid { grid-template-columns: 1fr; gap: 48px; }
     .pillars { grid-template-columns: 1fr; }
     .prog-grid { grid-template-columns: 1fr; }
@@ -612,6 +614,7 @@
   /* MOBILE — iPhone and small phones */
   @media (max-width: 480px) {
     .hero { padding: 32px 20px 40px; }
+    .edge-section { padding: 60px 20px; }
     .hero-title { font-size: 44px; margin-bottom: 16px; }
     .hero-eyebrow { margin-bottom: 12px; }
     .hero-desc { font-size: 13px; margin-bottom: 20px; }
@@ -1491,14 +1494,14 @@ body.training-mode footer { display: none; }
     </div>
   </div>
 </section></div>
-  <div id="sec-edge" class="sub-sec"><section id="edge" style="background:#0a0a0a;border-top:1px solid #1a1a1a;padding:100px 60px;">
+  <div id="sec-edge" class="sub-sec"><section id="edge" class="edge-section" style="background:#0a0a0a;border-top:1px solid #1a1a1a;">
   <div class="section-label">The Real ROI</div>
   <h2 class="section-title" style="margin-bottom:24px;">YOUR BODY<br>OPENS DOORS</h2>
   <p style="font-size:16px;color:var(--muted);max-width:600px;line-height:1.8;margin-bottom:72px;">
     People say looks don't matter. Those people are lying to you. The world responds differently to a man who carries himself with physical authority. This is not vanity. This is strategy.
   </p>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2px;margin-bottom:80px;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:2px;margin-bottom:80px;">
 
     <!-- Confidence -->
     <div style="background:#111;border:1px solid #1e1e1e;padding:40px 36px;position:relative;overflow:hidden;">
