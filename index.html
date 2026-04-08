@@ -2212,14 +2212,19 @@ body.training-mode footer { display: none; }
         const entry = logs[key + '::' + s];
         if (circles[s]) circles[s].classList.toggle('logged', !!entry);
         if (chips[s]) {
-          if (entry) { chips[s].textContent = entry.weight + 'lb x ' + entry.reps; chips[s].classList.add('has-data'); }
+          if (entry) { var _lr = setsRow.closest ? setsRow.closest('.lift-row') : null; var _ln = _lr && _lr.querySelector('.lift-name') ? _lr.querySelector('.lift-name').textContent : ''; chips[s].textContent = entry.weight + (isCableExercise(_ln) ? 'p' : 'lb') + ' x ' + entry.reps; chips[s].classList.add('has-data'); }
           else { chips[s].textContent = '-'; chips[s].classList.remove('has-data'); }
         }
       }
     });
   }
 
-  //     LOG MODAL                                                               
+  //     LOG MODAL
+  function isCableExercise(name) {
+    var n = (name || '').toLowerCase();
+    return n.includes('cable') || n.includes('pulldown') || n.includes('pushdown') || n.includes('face pull');
+  }
+
   let activeModal = null;
   function openLogModal(dayId, liftIdx, setIdx, liftName) {
     closeLogModal();
@@ -2228,7 +2233,10 @@ body.training-mode footer { display: none; }
     const overlay = document.createElement('div');
     overlay.className = 'log-modal-overlay';
     overlay.onclick = function(e) { if (e.target === overlay) closeLogModal(); };
-    overlay.innerHTML = '<div class="log-modal-card"><div class="log-modal-title">Set ' + (setIdx+1) + '</div><div class="log-modal-lift">' + liftName + '</div><div class="log-inputs"><div class="log-input-group"><div class="log-input-label">Weight (lbs)</div><input class="log-input-field" id="log-weight" type="number" placeholder="225" value="' + (existing.weight||'') + '" inputmode="decimal"></div><div class="log-input-group"><div class="log-input-label">Reps</div><input class="log-input-field" id="log-reps" type="number" placeholder="5" value="' + (existing.reps||'') + '" inputmode="numeric"></div></div><button class="log-save-btn" onclick="saveSet(\'' + dayId + '\',' + liftIdx + ',' + setIdx + ')">Save Set</button><button class="log-cancel-btn" onclick="closeLogModal()">Cancel</button></div>';
+    var _cable = isCableExercise(liftName);
+    var _wLabel = _cable ? 'Pins' : 'Weight (lbs)';
+    var _wPlaceholder = _cable ? '8' : '225';
+    overlay.innerHTML = '<div class="log-modal-card"><div class="log-modal-title">Set ' + (setIdx+1) + '</div><div class="log-modal-lift">' + liftName + '</div><div class="log-inputs"><div class="log-input-group"><div class="log-input-label">' + _wLabel + '</div><input class="log-input-field" id="log-weight" type="number" placeholder="' + _wPlaceholder + '" value="' + (existing.weight||'') + '" inputmode="decimal"></div><div class="log-input-group"><div class="log-input-label">Reps</div><input class="log-input-field" id="log-reps" type="number" placeholder="5" value="' + (existing.reps||'') + '" inputmode="numeric"></div></div><button class="log-save-btn" onclick="saveSet(\'' + dayId + '\',' + liftIdx + ',' + setIdx + ')">Save Set</button><button class="log-cancel-btn" onclick="closeLogModal()">Cancel</button></div>';
     document.body.appendChild(overlay);
     activeModal = overlay;
     setTimeout(function(){ var w=document.getElementById('log-weight'); if(w) w.focus(); }, 50);
@@ -2283,16 +2291,21 @@ body.training-mode footer { display: none; }
     saveLogs(logs); renderAllLogs();
   }
 
-  //     REST TIMER                                                              
+  //     REST TIMER
+  var TIMER_BG_KEY = 'monk_timer_bg_v1';
   var timerInterval = null;
   var timerSeconds = 0;
   var timerTotal = 0;
   var timerRunning = false;
+  var timerEndTime = 0;         // ms timestamp when timer fires (0 = not set)
+  var timerPausedRemaining = 0; // seconds left when paused
+  var timerLiftName = '';
+  var _notifTimeout = null;
 
   function parseRestToSeconds(restStr) {
     if (!restStr) return 90;
     var s = restStr.toLowerCase().trim();
-    var rangeMin = s.match(/^(\d+)[-\-](\d+)\s*min/);
+    var rangeMin = s.match(/^(\d+)[–\-](\d+)\s*min/);  // handles en-dash and hyphen
     if (rangeMin) return parseInt(rangeMin[1]) * 60;
     var minMatch = s.match(/^(\d+)\s*min/);
     if (minMatch) return parseInt(minMatch[1]) * 60;
@@ -2302,6 +2315,7 @@ body.training-mode footer { display: none; }
   }
 
   function formatTime(s) {
+    s = Math.max(0, Math.round(s));
     var m = Math.floor(s / 60);
     var sec = s % 60;
     return m + ':' + (sec < 10 ? '0' : '') + sec;
@@ -2328,10 +2342,68 @@ body.training-mode footer { display: none; }
     }
   }
 
+  function _saveTimerState() {
+    try {
+      if (timerRunning && timerEndTime > 0) {
+        localStorage.setItem(TIMER_BG_KEY, JSON.stringify({ endTime: timerEndTime, total: timerTotal, liftName: timerLiftName }));
+      } else {
+        localStorage.removeItem(TIMER_BG_KEY);
+      }
+    } catch(e) {}
+  }
+
+  function _scheduleNotification(ms, liftName) {
+    if (_notifTimeout) clearTimeout(_notifTimeout);
+    if (typeof Notification === 'undefined' || Notification.permission !== 'granted' || ms <= 0) return;
+    _notifTimeout = setTimeout(function() {
+      try {
+        new Notification('Rest Complete — GO!', {
+          body: liftName ? 'Next set: ' + liftName : 'Time for your next set!',
+          tag: 'monk-rest-timer',
+          requireInteraction: false
+        });
+      } catch(e) {}
+    }, ms);
+  }
+
+  function _timerTick() {
+    if (!timerRunning || timerEndTime <= 0) return;
+    var remaining = (timerEndTime - Date.now()) / 1000;
+    timerSeconds = Math.max(0, Math.ceil(remaining));
+    var display = document.getElementById('timerDisplay');
+    var fill = document.getElementById('timerFill');
+    var toggleBtn = document.getElementById('timerToggleBtn');
+    var pct = Math.max(0, (timerSeconds / timerTotal) * 100);
+    if (display) display.textContent = formatTime(timerSeconds);
+    if (fill) fill.style.width = pct + '%';
+    updateModalRing(timerSeconds);
+    if (timerSeconds <= 10 && timerSeconds > 0) {
+      if (display) display.className = 'timer-display warning';
+      if (fill) fill.className = 'timer-progress-fill warning';
+    } else if (timerSeconds > 10) {
+      if (display) display.className = 'timer-display';
+      if (fill) fill.className = 'timer-progress-fill';
+    }
+    if (timerSeconds <= 0) {
+      clearInterval(timerInterval); timerInterval = null;
+      timerRunning = false; timerEndTime = 0;
+      try { localStorage.removeItem(TIMER_BG_KEY); } catch(e) {}
+      if (display) { display.textContent = 'GO!'; display.className = 'timer-display done'; }
+      if (fill) { fill.style.width = '0%'; fill.className = 'timer-progress-fill done'; }
+      if (toggleBtn) toggleBtn.textContent = 'Start';
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      playBeep();
+    }
+  }
+
   function startTimer(seconds, liftName) {
     if (timerInterval) clearInterval(timerInterval);
-    timerSeconds = seconds; timerTotal = seconds; timerRunning = true;
-    var bar = document.getElementById('timerBar');
+    if (_notifTimeout) clearTimeout(_notifTimeout);
+    timerTotal = seconds; timerSeconds = seconds; timerRunning = true;
+    timerEndTime = Date.now() + seconds * 1000;
+    timerLiftName = liftName || '';
+    timerPausedRemaining = 0;
+    _saveTimerState();
     var display = document.getElementById('timerDisplay');
     var fill = document.getElementById('timerFill');
     var liftEl = document.getElementById('timerLiftName');
@@ -2342,55 +2414,75 @@ body.training-mode footer { display: none; }
     var mRing = document.getElementById('restModalRing');
     var mStatus = document.getElementById('restModalStatus');
     var mSkip = document.getElementById('restModalSkipBtn');
-    // legacy bar
     if (liftEl) liftEl.textContent = liftName || '-';
-    if (display) { display.textContent = formatTime(timerSeconds); display.className = 'timer-display'; }
+    if (display) { display.textContent = formatTime(seconds); display.className = 'timer-display'; }
     if (fill) { fill.style.width = '100%'; fill.className = 'timer-progress-fill'; }
     if (toggleBtn) toggleBtn.textContent = 'Pause';
-    // modal
     if (mLift) mLift.textContent = liftName || '';
-    if (mTime) { mTime.textContent = formatTime(timerSeconds); mTime.className = 'rest-modal-time'; }
+    if (mTime) { mTime.textContent = formatTime(seconds); mTime.className = 'rest-modal-time'; }
     if (mRing) { mRing.style.strokeDashoffset = '0'; mRing.style.stroke = '#e8412a'; }
     if (mStatus) { mStatus.textContent = ''; mStatus.className = 'rest-modal-status'; }
     if (mSkip) { mSkip.textContent = 'Skip Rest'; mSkip.className = 'rest-modal-skip'; }
     if (modal) modal.classList.add('visible');
-    timerInterval = setInterval(function() {
-      if (!timerRunning) return;
-      timerSeconds--;
-      var pct = Math.max(0, (timerSeconds / timerTotal) * 100);
-      if (display) display.textContent = formatTime(Math.max(0, timerSeconds));
-      if (fill) fill.style.width = pct + '%';
-      updateModalRing(timerSeconds);
-      if (timerSeconds <= 10 && timerSeconds > 0) {
-        if (display) display.className = 'timer-display warning';
-        if (fill) fill.className = 'timer-progress-fill warning';
+    if (typeof Notification !== 'undefined') {
+      if (Notification.permission === 'granted') {
+        _scheduleNotification(seconds * 1000, liftName);
+      } else if (Notification.permission === 'default') {
+        Notification.requestPermission().then(function(p) {
+          if (p === 'granted') _scheduleNotification(Math.max(0, timerEndTime - Date.now()), timerLiftName);
+        }).catch(function(){});
       }
-      if (timerSeconds <= 0) {
-        clearInterval(timerInterval); timerRunning = false;
-        if (display) { display.textContent = 'GO!'; display.className = 'timer-display done'; }
-        if (fill) { fill.style.width = '0%'; fill.className = 'timer-progress-fill done'; }
-        if (toggleBtn) toggleBtn.textContent = 'Start';
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        playBeep();
-      }
-    }, 1000);
+    }
+    timerInterval = setInterval(_timerTick, 400);
   }
 
   function toggleTimer() {
     var btn = document.getElementById('timerToggleBtn');
-    if (timerSeconds <= 0) { startTimer(timerTotal, document.getElementById('timerLiftName') ? document.getElementById('timerLiftName').textContent : ''); return; }
+    if (!timerRunning && timerSeconds <= 0) { startTimer(timerTotal, timerLiftName); return; }
     timerRunning = !timerRunning;
-    if (btn) btn.textContent = timerRunning ? 'Pause' : 'Resume';
+    if (!timerRunning) {
+      timerPausedRemaining = Math.max(0, Math.ceil((timerEndTime - Date.now()) / 1000));
+      timerEndTime = 0;
+      if (_notifTimeout) clearTimeout(_notifTimeout);
+      try { localStorage.removeItem(TIMER_BG_KEY); } catch(e) {}
+      if (btn) btn.textContent = 'Resume';
+    } else {
+      timerEndTime = Date.now() + timerPausedRemaining * 1000;
+      timerSeconds = timerPausedRemaining;
+      timerPausedRemaining = 0;
+      _saveTimerState();
+      _scheduleNotification(timerEndTime - Date.now(), timerLiftName);
+      if (btn) btn.textContent = 'Pause';
+    }
   }
 
   function addTimerTime(secs) {
-    timerSeconds += secs; timerTotal += secs;
+    if (timerRunning && timerEndTime > 0) {
+      timerEndTime += secs * 1000;
+      timerTotal += secs;
+      _saveTimerState();
+      _scheduleNotification(timerEndTime - Date.now(), timerLiftName);
+    } else {
+      timerPausedRemaining += secs;
+      timerTotal += secs;
+      timerSeconds = timerPausedRemaining;
+    }
     var display = document.getElementById('timerDisplay');
     var fill = document.getElementById('timerFill');
-    if (display) { display.textContent = formatTime(timerSeconds); display.className = 'timer-display'; }
+    var remaining = timerRunning ? Math.ceil((timerEndTime - Date.now()) / 1000) : timerPausedRemaining;
+    if (display) { display.textContent = formatTime(remaining); display.className = 'timer-display'; }
     if (fill) fill.className = 'timer-progress-fill';
-    updateModalRing(timerSeconds);
-    if (!timerRunning && timerSeconds > 0) { timerRunning = true; var btn = document.getElementById('timerToggleBtn'); if (btn) btn.textContent = 'Pause'; }
+    updateModalRing(remaining);
+    if (!timerRunning && timerPausedRemaining > 0) {
+      timerRunning = true;
+      timerEndTime = Date.now() + timerPausedRemaining * 1000;
+      timerPausedRemaining = 0;
+      _saveTimerState();
+      _scheduleNotification(timerEndTime - Date.now(), timerLiftName);
+      var btn = document.getElementById('timerToggleBtn');
+      if (btn) btn.textContent = 'Pause';
+      if (!timerInterval) timerInterval = setInterval(_timerTick, 400);
+    }
   }
 
   function quickStartTimer(seconds, btn) {
@@ -2402,7 +2494,9 @@ body.training-mode footer { display: none; }
 
   function dismissTimer() {
     if (timerInterval) clearInterval(timerInterval);
-    timerRunning = false;
+    if (_notifTimeout) clearTimeout(_notifTimeout);
+    timerRunning = false; timerEndTime = 0; timerPausedRemaining = 0;
+    try { localStorage.removeItem(TIMER_BG_KEY); } catch(e) {}
     var bar = document.getElementById('timerBar');
     if (bar) bar.classList.remove('visible');
     var modal = document.getElementById('restModal');
@@ -2421,6 +2515,47 @@ body.training-mode footer { display: none; }
       osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.6);
     } catch(e) {}
   }
+
+  // Restore timer when tab/screen returns from background
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) return;
+    try {
+      var stored = JSON.parse(localStorage.getItem(TIMER_BG_KEY));
+      if (!stored || !stored.endTime) return;
+      if (timerRunning) return; // already ticking, _timerTick will catch up
+      var remaining = Math.ceil((stored.endTime - Date.now()) / 1000);
+      timerTotal = stored.total || 90;
+      timerLiftName = stored.liftName || '';
+      var display = document.getElementById('timerDisplay');
+      var fill = document.getElementById('timerFill');
+      var toggleBtn = document.getElementById('timerToggleBtn');
+      var modal = document.getElementById('restModal');
+      var mLift = document.getElementById('restModalLift');
+      if (remaining > 0) {
+        timerEndTime = stored.endTime;
+        timerRunning = true; timerSeconds = remaining; timerPausedRemaining = 0;
+        if (modal) modal.classList.add('visible');
+        if (mLift) mLift.textContent = timerLiftName;
+        if (display) { display.textContent = formatTime(remaining); display.className = 'timer-display'; }
+        if (fill) { fill.style.width = Math.max(0, (remaining / timerTotal) * 100) + '%'; fill.className = 'timer-progress-fill'; }
+        if (toggleBtn) toggleBtn.textContent = 'Pause';
+        updateModalRing(remaining);
+        if (!timerInterval) timerInterval = setInterval(_timerTick, 400);
+      } else {
+        // Expired while hidden — show GO! and alert
+        timerRunning = false; timerEndTime = 0;
+        try { localStorage.removeItem(TIMER_BG_KEY); } catch(e) {}
+        if (modal) modal.classList.add('visible');
+        if (mLift) mLift.textContent = timerLiftName;
+        if (display) { display.textContent = 'GO!'; display.className = 'timer-display done'; }
+        if (fill) { fill.style.width = '0%'; fill.className = 'timer-progress-fill done'; }
+        if (toggleBtn) toggleBtn.textContent = 'Start';
+        updateModalRing(0);
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        playBeep();
+      }
+    } catch(e) {}
+  });
 
   //     MAXES & WEIGHT CALCULATION                                              
   const MAXES_KEY = 'monk_mode_maxes_v1';
@@ -2859,6 +2994,9 @@ body.training-mode footer { display: none; }
 
   //     INIT                                                                     
   document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+      Notification.requestPermission().catch(function(){});
+    }
     initLiftRows();
     loadMaxes();
     loadAccBaselines();
