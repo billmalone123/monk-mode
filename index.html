@@ -1421,18 +1421,21 @@ body.training-mode footer { display: none; }
 .rest-modal-btns { display: flex; gap: 10px; justify-content: center; }
 .rest-modal-add {
   background: transparent; border: 1px solid #e0e0e0; color: #999;
-  padding: 12px 20px; font-family: 'Barlow Condensed', sans-serif;
+  padding: 14px 20px; min-height: 48px; font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700; font-size: 14px; letter-spacing: 0.1em;
   text-transform: uppercase; cursor: pointer; transition: all 0.15s;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
 .rest-modal-add:hover { border-color: #bbb; color: #555; }
 .rest-modal-skip {
   background: #111; color: #fff; border: 1px solid #111;
-  padding: 12px 28px; font-family: 'Barlow Condensed', sans-serif;
+  padding: 14px 28px; min-height: 48px; font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700; font-size: 14px; letter-spacing: 0.1em;
   text-transform: uppercase; cursor: pointer; transition: all 0.15s; flex: 1;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
 .rest-modal-skip:hover { background: #333; }
+.rest-modal-skip:active { opacity: 0.8; }
 .rest-modal-skip.ready-state { background: #16a34a; border-color: #16a34a; }
 </style>
 </head>
@@ -2499,7 +2502,11 @@ body.training-mode footer { display: none; }
     setTimeout(function() { if (btn) btn.classList.remove('active-preset'); }, 500);
   }
 
+  var _dismissing = false;
   function dismissTimer() {
+    if (_dismissing) return;
+    _dismissing = true;
+    setTimeout(function() { _dismissing = false; }, 400);
     if (timerInterval) clearInterval(timerInterval);
     if (_notifTimeout) clearTimeout(_notifTimeout);
     timerRunning = false; timerEndTime = 0; timerPausedRemaining = 0;
