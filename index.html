@@ -2232,7 +2232,7 @@ body.training-mode footer { display: none; }
   //     LOG MODAL
   function isCableExercise(name) {
     var n = (name || '').toLowerCase();
-    return n.includes('cable') || n.includes('pulldown') || n.includes('pushdown') || n.includes('face pull');
+    return n.includes('cable') || n.includes('pulldown') || n.includes('pushdown') || n.includes('face pull') || n.startsWith('pins');
   }
 
   let activeModal = null;
@@ -2617,7 +2617,7 @@ body.training-mode footer { display: none; }
     { match: ['Romanian Deadlift'], maxKey: 'squat', cls: 'squat', pctLo: 0.52, pctHi: 0.60 },
     { match: ['Leg Press'], maxKey: 'squat', cls: 'squat', pctLo: 0.85, pctHi: 0.98 },
     { match: ['Bulgarian Split Squat'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
-    { match: ['Leg Extension'], maxKey: 'squat', cls: 'squat', pctLo: 0.22, pctHi: 0.30 },
+    { match: ['Leg Extension', 'Pins'], maxKey: 'squat', cls: 'squat', pctLo: 0.22, pctHi: 0.30 },
     { match: ['Leg Curl'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
     { match: ['Walking Lunges'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
     { match: ['Standing Calf Raise'], maxKey: 'squat', cls: 'squat', pctLo: 0.38, pctHi: 0.48 },
