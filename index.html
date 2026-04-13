@@ -2763,13 +2763,15 @@ body.training-mode footer { display: none; }
         if (entry.pctLo && entry.pctHi) {
           var anyMax = userMaxes.bench || userMaxes.squat || userMaxes.ohp || userMaxes.pullup;
           if (!anyMax) break;
+          var _isPins = isCableExercise(name);
+          var _unit = _isPins ? 'pins' : 'lbs';
           if (currentTrainWeek === 0) {
             // Week 1: show inline input so user logs actual weight at RPE 7
             var wrap = document.createElement('span');
             wrap.className = 'lift-weight-badge acc-log-wrap';
             var inp = document.createElement('input');
             inp.type = 'number'; inp.className = 'acc-input';
-            inp.placeholder = 'log lbs';
+            inp.placeholder = 'log ' + _unit;
             inp.title = 'RPE 7 — stop 3 reps short of failure. Log what you actually use.';
             var stored = accBaselines[name];
             if (stored) inp.value = stored;
@@ -2788,7 +2790,7 @@ body.training-mode footer { display: none; }
             accBadge.className = 'lift-weight-badge' + (entry.cls ? ' ' + entry.cls : '');
             var baseline = accBaselines[name];
             if (baseline) {
-              accBadge.textContent = roundToNearestFive(baseline * (ACCESSORY_PROG[currentTrainWeek] || 1.0)) + ' lbs';
+              accBadge.textContent = roundToNearestFive(baseline * (ACCESSORY_PROG[currentTrainWeek] || 1.0)) + ' ' + _unit;
             } else {
               accBadge.textContent = 'Log wk 1 first';
               accBadge.style.cssText = 'color:#555;border-color:rgba(255,255,255,0.08);background:transparent;font-size:11px';
