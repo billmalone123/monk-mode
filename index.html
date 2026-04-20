@@ -2146,6 +2146,14 @@ body.training-mode footer { display: none; }
   function loadLogs() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } }
   function saveLogs(l) { try { localStorage.setItem(STORE_KEY, JSON.stringify(l)); } catch {} }
   let logs = loadLogs();
+  // Migrate old keys (no week prefix) to w0:: format
+  (function() {
+    var dirty = false;
+    Object.keys(logs).forEach(function(k) {
+      if (!/^w\d+::/.test(k)) { logs['w0::' + k] = logs[k]; delete logs[k]; dirty = true; }
+    });
+    if (dirty) saveLogs(logs);
+  })();
 
   //     LIFT SETS DATA                                                          
   const LIFT_SETS = {
@@ -2856,7 +2864,7 @@ body.training-mode footer { display: none; }
     }
   }
 
-  function setTrainWeek(idx) { currentTrainWeek = idx; renderWeightBadges(); renderAllLogs(); }
+  function setTrainWeek(idx) { currentTrainWeek = idx; loadMaxes(); renderWeightBadges(); renderAllLogs(); }
 
   function highlightTrainWeek(idx, btn) {
     document.querySelectorAll('.train-week-btn').forEach(function(b){
