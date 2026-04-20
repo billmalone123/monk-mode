@@ -1437,6 +1437,18 @@ body.training-mode footer { display: none; }
 .rest-modal-skip:hover { background: #333; }
 .rest-modal-skip:active { opacity: 0.8; }
 .rest-modal-skip.ready-state { background: #16a34a; border-color: #16a34a; }
+  .fly-select {
+    display: block; margin-top: 6px;
+    appearance: none; -webkit-appearance: none;
+    background: #111 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23555'/%3E%3C/svg%3E") no-repeat right 8px center;
+    border: 1px solid #2a2a2a; color: #888;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
+    font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 24px 4px 8px; cursor: pointer; border-radius: 2px;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  }
+  .fly-select:focus { outline: none; border-color: #555; }
+  body.training-mode .fly-select { background-color: #f5f5f5; color: #555; border-color: #ddd; }
 </style>
 </head>
 <body>
@@ -1858,7 +1870,7 @@ body.training-mode footer { display: none; }
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Flat Barbell Bench Press</div><div class="lift-sets-reps">4 sets × 5 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">Your primary strength indicator for this program. Add 5 lbs per week — no more, no less. Arch slightly, retract your scapulae, keep your feet planted. The bar should touch your lower chest, not your sternum. If you can't get all 5 reps on every set, you went too heavy. 3–4 min rest is not optional — this is a CNS-demanding compound and undertesting your rest directly costs you reps.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Incline Dumbbell Press</div><div class="lift-sets-reps">3 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the bench at 30–45°. Go higher and you shift the load to the front delt, not the upper chest. Lower the dumbbells with a 2-second eccentric — this is where hypertrophy happens. Elbows should track at roughly 45° from your torso, not flared straight out. This angle reduces shoulder impingement risk and keeps the pec fiber under tension the full way down.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Cable Chest Fly</div><div class="lift-sets-reps">3 sets × 12–15 reps</div><div class="lift-alts"><span>ALT:</span>Pec Dec Machine · Dumbbell Fly</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The pec's primary function is horizontal adduction — this movement trains exactly that. Go light enough to feel a full stretch at the bottom. If you feel this in your biceps tendon, you've gone too heavy. Slight forward lean at the cable allows for a longer range of motion. Squeeze at the top like you're trying to crack a walnut between your palms.<br><br><strong>Pec Dec Machine:</strong> If the cable station is taken, the pec dec is a direct substitute — same movement pattern, same rep range. Set the handles so your elbows are at chest height. Control the return and feel the full stretch at the open position — don't let it slam back.<br><br><strong>Dumbbell Fly:</strong> Lie flat on a bench, slight bend in the elbows throughout (do not turn this into a press). Lower with a wide arc until you feel a deep stretch across the chest, then drive back up squeezing the pecs together. Go lighter than you think — the stretch position is vulnerable. Same rep range: 12–15.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Cable Chest Fly</div><div class="lift-sets-reps">3 sets × 12–15 reps</div><select class="fly-select" onclick="event.stopPropagation()" onchange="switchFly(this,'push1')" id="fly-select-push1"><option value="0">Cable Machine</option><option value="1">Pec Dec</option><option value="2">Dumbbell Fly</option></select></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The pec's primary function is horizontal adduction — this movement trains exactly that. Go light enough to feel a full stretch at the bottom. If you feel this in your biceps tendon, you've gone too heavy. Slight forward lean at the cable allows for a longer range of motion. Squeeze at the top like you're trying to crack a walnut between your palms.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Seated DB Shoulder Press</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seat at 90°. Elbows at roughly 75° from your torso — not straight out to the sides (that impinges), not too close to your body (that turns it into a tricep push). Press to near lockout overhead, but don't smash the joint at the top. Control the return. This is supplemental work, not an ego lift — keep it smooth.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raises (cable)</div><div class="lift-sets-reps">3 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Stand sideways to the cable stack with the attachment at the low pulley. Cable lateral raises maintain constant tension through the full arc — dumbbells lose tension at the bottom where the cable is strongest. Lead with your elbow, slight forward lean of about 10° to shift load onto the medial deltoid. Thumb no higher than pinky at the top (internally rotate slightly). If you're swinging to get the weight up, you're using momentum, not muscle. Drop the pins and do it right. Wide shoulders come from this exercise done correctly, not from heavy sloppy reps.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Tricep Rope Pushdown</div><div class="lift-sets-reps">3 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Split the rope at the bottom of each rep — this maximizes lateral head contraction. Elbows stay pinned to your sides. Only your forearms move. If your elbows are traveling forward and back, you're involving your lats and losing the isolation. Can superset with the overhead extension directly after to hit both heads of the tricep with minimal rest time.</div></div>
@@ -1938,7 +1950,7 @@ body.training-mode footer { display: none; }
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Seated Barbell OHP</div><div class="lift-sets-reps">4 sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~15 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seated to eliminate leg drive — this keeps it honest. The bar starts at your clavicle and presses in a straight line overhead, finishing slightly behind your ears at the top. Brace your core hard; don't hyperextend your lower back to get the bar up. This is your secondary strength indicator for the program — track it week over week. You should be pressing 2–3 lbs more each week. Overhead strength also directly carries over to your bench stability.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Dumbbell Bench Press</div><div class="lift-sets-reps">4 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Greater range of motion than barbell — the dumbbells can travel lower, fully stretching the pec fibers. Elbows at about 45–60° from your torso, same as barbell bench. Dumbbells also allow each shoulder to move independently, exposing and correcting strength imbalances that a barbell masks. This is higher rep than Push A's bench — you're accumulating volume and time under tension, not chasing a new max.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Low-to-High Cable Fly</div><div class="lift-sets-reps">3 sets × 12–15 reps</div><div class="lift-alts"><span>ALT:</span>Pec Dec Machine · Incline Dumbbell Fly</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cables at the lowest pulley position and bring them up and across your body. This angle of pull targets the upper pec fibers — the same fibers the incline DB press hits, but with constant cable tension through the entire ROM. Feel the stretch at the bottom. If you're using so much weight you can't feel the pec working, you've lost the point of the exercise.<br><br><strong>Pec Dec Machine:</strong> Most pec dec machines allow you to adjust the seat height — set it so the handles are at lower-chest level to replicate the low-to-high angle. Same 12–15 rep range. Focus on the stretch at the open position and squeeze at the close.<br><br><strong>Incline Dumbbell Fly:</strong> Set the bench to 30–45°. This angle shifts the load toward the upper pec fibers, matching the intent of the low-to-high cable. Slight elbow bend, wide arc down to a deep stretch, drive back up with the pec — not the shoulder. Go lighter than you expect. 12–15 reps with control.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Low-to-High Cable Fly</div><div class="lift-sets-reps">3 sets × 12–15 reps</div><select class="fly-select" onclick="event.stopPropagation()" onchange="switchFly(this,'push2')" id="fly-select-push2"><option value="0">Cable (Low-to-High)</option><option value="1">Pec Dec</option><option value="2">Incline DB Fly</option></select></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cables at the lowest pulley position and bring them up and across your body. This angle of pull targets the upper pec fibers — the same fibers the incline DB press hits, but with constant cable tension through the entire ROM. Feel the stretch at the bottom. If you're using so much weight you can't feel the pec working, you've lost the point of the exercise.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Arnold Press</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Start with palms facing you (like the top of a curl), rotate as you press so palms face forward at the top. This rotation recruits all three heads of the deltoid — anterior, medial, and posterior — across the full range of motion. It also trains the rotator cuff through active rotation under load. Go controlled; this isn't a speed movement. Lighter than a standard DB press, but the stimulus is superior for shoulder development.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raises (cable)</div><div class="lift-sets-reps">3 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable lateral raises maintain constant tension through the full arc — dumbbells lose tension at the bottom where the cable is strongest. Stand sideways to the cable, cross-body cable attachment. Same technique as DB laterals: elbow leads, slight lean, thumb below pinky at the top. This is the second lateral raise session of the week — shoulder width comes from frequency and volume on the medial delt.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Skull Crushers</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Use an EZ-bar — the angled grip reduces wrist and elbow stress compared to a straight bar. Lower to your forehead or slightly behind your head (the latter increases long head stretch). Elbows stay pointed at the ceiling throughout. Don't let them flare out. This is one of the best long head tricep movements; the long head won't reach full stretch in pushdowns. Control the negative — if your elbows are hurting, drop the weight and slow down.</div></div>
@@ -2238,9 +2250,49 @@ body.training-mode footer { display: none; }
   }
 
   //     LOG MODAL
+  var FLY_DATA = {
+    push1: [
+      { name: 'Cable Chest Fly', note: "The pec\u2019s primary function is horizontal adduction \u2014 this movement trains exactly that. Go light enough to feel a full stretch at the bottom. If you feel this in your biceps tendon, you\u2019ve gone too heavy. Slight forward lean at the cable allows for a longer range of motion. Squeeze at the top like you\u2019re trying to crack a walnut between your palms." },
+      { name: 'Pec Dec Machine', note: "Direct substitute for the cable fly \u2014 same movement pattern, same rep range. Set the handles so your elbows are at chest height. Control the return and feel the full stretch at the open position \u2014 don\u2019t let it slam back. Pin-loaded so track weight in pins." },
+      { name: 'Dumbbell Fly', note: "Lie flat on a bench, slight bend in the elbows throughout (do not turn this into a press). Lower with a wide arc until you feel a deep stretch across the chest, then drive back up squeezing the pecs together. Go lighter than you think \u2014 the stretch position is vulnerable. Same rep range: 12\u201315." }
+    ],
+    push2: [
+      { name: 'Low-to-High Cable Fly', note: "Set the cables at the lowest pulley position and bring them up and across your body. This angle of pull targets the upper pec fibers \u2014 the same fibers the incline DB press hits, but with constant cable tension through the entire ROM. Feel the stretch at the bottom. If you\u2019re using so much weight you can\u2019t feel the pec working, you\u2019ve lost the point of the exercise." },
+      { name: 'Pec Dec Machine', note: "Most pec dec machines allow you to adjust the seat height \u2014 set it so the handles are at lower-chest level to replicate the low-to-high angle. Same 12\u201315 rep range. Focus on the stretch at the open position and squeeze at the close. Pin-loaded so track weight in pins." },
+      { name: 'Incline Dumbbell Fly', note: "Set the bench to 30\u201345\u00b0. This angle shifts the load toward the upper pec fibers, matching the intent of the low-to-high cable. Slight elbow bend, wide arc down to a deep stretch, drive back up with the pec \u2014 not the shoulder. Go lighter than you expect. 12\u201315 reps with control." }
+    ]
+  };
+
+  function switchFly(sel, key) {
+    sel.blur();
+    var idx = parseInt(sel.value);
+    var variant = FLY_DATA[key][idx];
+    var row = sel.closest('.lift-row');
+    var nameEl = row.querySelector('.lift-name');
+    var noteEl = row.querySelector('.lift-note');
+    nameEl.textContent = variant.name;
+    if (noteEl) noteEl.innerHTML = variant.note;
+    try { localStorage.setItem('fly_sel_' + key, idx); } catch(e) {}
+    renderWeightBadges();
+  }
+
+  function initFlySelects() {
+    ['push1','push2'].forEach(function(key) {
+      var sel = document.getElementById('fly-select-' + key);
+      if (!sel) return;
+      try {
+        var saved = localStorage.getItem('fly_sel_' + key);
+        if (saved !== null) {
+          sel.value = saved;
+          switchFly(sel, key);
+        }
+      } catch(e) {}
+    });
+  }
+
   function isCableExercise(name) {
     var n = (name || '').toLowerCase();
-    return n.includes('cable') || n.includes('pulldown') || n.includes('pushdown') || n.includes('face pull') || n.startsWith('pins');
+    return n.includes('cable') || n.includes('pulldown') || n.includes('pushdown') || n.includes('face pull') || n.startsWith('pins') || n.includes('pec dec');
   }
 
   let activeModal = null;
@@ -2599,8 +2651,8 @@ body.training-mode footer { display: none; }
     { match: ['Close Grip Bench'], maxKey: 'bench', cls: '', pctLo: 0.70, pctHi: 0.75 },
     { match: ['Dumbbell Bench Press'], maxKey: 'bench', cls: '', pctLo: 0.55, pctHi: 0.62 },
     { match: ['Incline Dumbbell Press'], maxKey: 'bench', cls: '', pctLo: 0.47, pctHi: 0.53 },
-    { match: ['Low-to-High Cable Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
-    { match: ['Cable Chest Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
+    { match: ['Low-to-High Cable Fly', 'Incline Dumbbell Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
+    { match: ['Cable Chest Fly', 'Pec Dec Machine', 'Dumbbell Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
     { match: ['Skull Crushers'], maxKey: 'bench', cls: '', pctLo: 0.35, pctHi: 0.42 },
     { match: ['Tricep Rope Pushdown'], maxKey: 'bench', cls: '', pctLo: 0.25, pctHi: 0.32 },
     { match: ['Overhead Tricep Extension'], maxKey: 'bench', cls: '', pctLo: 0.20, pctHi: 0.28 },
@@ -3021,6 +3073,7 @@ body.training-mode footer { display: none; }
       Notification.requestPermission().catch(function(){});
     }
     initLiftRows();
+    initFlySelects();
     loadMaxes();
     loadAccBaselines();
     updateMaxChips();
