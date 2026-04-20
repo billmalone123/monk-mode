@@ -2210,6 +2210,7 @@ body.training-mode footer { display: none; }
 
   //     RENDER LOGGED DATA                                                      
   function renderAllLogs() {
+    var wk = 'w' + currentTrainWeek + '::';
     Object.keys(LIFT_SETS).forEach(key => {
       const numSets = LIFT_SETS[key];
       const setsRow = document.querySelector('[data-sets-row="' + key + '"]');
@@ -2218,7 +2219,7 @@ body.training-mode footer { display: none; }
       const circles = setsRow.querySelectorAll('.set-circle');
       const chips = lastRow.querySelectorAll('[data-chip]');
       for (let s = 0; s < numSets; s++) {
-        const entry = logs[key + '::' + s];
+        const entry = logs[wk + key + '::' + s];
         if (circles[s]) circles[s].classList.toggle('logged', !!entry);
         if (chips[s]) {
           if (entry) { var _lr = setsRow.closest ? setsRow.closest('.lift-row') : null; var _ln = _lr && _lr.querySelector('.lift-name') ? _lr.querySelector('.lift-name').textContent : ''; chips[s].textContent = entry.weight + (isCableExercise(_ln) ? 'p' : 'lb') + ' x ' + entry.reps; chips[s].classList.add('has-data'); }
@@ -2237,7 +2238,7 @@ body.training-mode footer { display: none; }
   let activeModal = null;
   function openLogModal(dayId, liftIdx, setIdx, liftName) {
     closeLogModal();
-    const key = dayId + '::' + liftIdx + '::' + setIdx;
+    const key = 'w' + currentTrainWeek + '::' + dayId + '::' + liftIdx + '::' + setIdx;
     const existing = logs[key] || {};
     const overlay = document.createElement('div');
     overlay.className = 'log-modal-overlay';
@@ -2274,7 +2275,7 @@ body.training-mode footer { display: none; }
         if (nameEl) liftName = nameEl.textContent;
       }
     }
-    var key = dayId + '::' + liftIdx + '::' + setIdx;
+    var key = 'w' + currentTrainWeek + '::' + dayId + '::' + liftIdx + '::' + setIdx;
     logs[key] = { weight: weight || '-', reps: reps || '-' };
     saveLogs(logs);
     closeLogModal();
@@ -2295,7 +2296,7 @@ body.training-mode footer { display: none; }
   }
 
   function clearDayLogs(dayId) {
-    var prefix = dayId + '::';
+    var prefix = 'w' + currentTrainWeek + '::' + dayId + '::';
     Object.keys(logs).forEach(function(k){ if (k.startsWith(prefix)) delete logs[k]; });
     saveLogs(logs); renderAllLogs();
   }
@@ -2855,7 +2856,7 @@ body.training-mode footer { display: none; }
     }
   }
 
-  function setTrainWeek(idx) { currentTrainWeek = idx; renderWeightBadges(); }
+  function setTrainWeek(idx) { currentTrainWeek = idx; renderWeightBadges(); renderAllLogs(); }
 
   function highlightTrainWeek(idx, btn) {
     document.querySelectorAll('.train-week-btn').forEach(function(b){
