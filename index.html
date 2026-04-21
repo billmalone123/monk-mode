@@ -2687,7 +2687,7 @@ body.training-mode footer { display: none; }
   ];
 
   var userMaxes = {};
-  var currentTrainWeek = 0;
+  var currentTrainWeek = (function(){ try { return parseInt(localStorage.getItem('monk_train_week')||'0')||0; } catch(e){ return 0; } })();
 
   function loadMaxes() {
     try { userMaxes = JSON.parse(localStorage.getItem(MAXES_KEY)) || {}; } catch { userMaxes = {}; }
@@ -2916,7 +2916,11 @@ body.training-mode footer { display: none; }
     }
   }
 
-  function setTrainWeek(idx) { currentTrainWeek = idx; loadMaxes(); renderWeightBadges(); renderAllLogs(); }
+  function setTrainWeek(idx) {
+    currentTrainWeek = idx;
+    try { localStorage.setItem('monk_train_week', idx); } catch(e) {}
+    loadMaxes(); renderWeightBadges(); renderAllLogs();
+  }
 
   function highlightTrainWeek(idx, btn) {
     document.querySelectorAll('.train-week-btn').forEach(function(b){
@@ -3076,6 +3080,11 @@ body.training-mode footer { display: none; }
     initFlySelects();
     loadMaxes();
     loadAccBaselines();
+    // Restore saved training week button highlight
+    if (currentTrainWeek > 0) {
+      var twBtns = document.querySelectorAll('.train-week-btn');
+      if (twBtns[currentTrainWeek]) highlightTrainWeek(currentTrainWeek, twBtns[currentTrainWeek]);
+    }
     updateMaxChips();
     renderWeightBadges();
     renderProgressionTable();
