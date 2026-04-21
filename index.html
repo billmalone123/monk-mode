@@ -3008,6 +3008,7 @@ body.training-mode footer { display: none; }
     var btn = document.getElementById('btn-' + dayId);
     if (day) day.classList.add('active');
     if (btn) btn.classList.add('active');
+    try { localStorage.setItem('monk_current_day', dayId); } catch(e) {}
   }
 
   //     LIFT NOTE TOGGLE                                                        
@@ -3108,10 +3109,12 @@ var INFO_SECS = ['home','about','edge','overview','progression'];
 function getMostRecentDay() {
   var order = ['push1','pull1','legs1','push2','pull2','legs2','accessory'];
   try {
+    var saved = localStorage.getItem('monk_current_day');
+    if (saved && order.indexOf(saved) !== -1) return saved;
     var logs = JSON.parse(localStorage.getItem('ppl_workout_logs_v2')) || {};
     var found = 'push1';
     order.forEach(function(day) {
-      var hasLog = Object.keys(logs).some(function(k) { return k.indexOf(day + '::') === 0; });
+      var hasLog = Object.keys(logs).some(function(k) { return k.indexOf('::' + day + '::') !== -1; });
       if (hasLog) found = day;
     });
     return found;
