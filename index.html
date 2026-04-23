@@ -1431,11 +1431,11 @@ body.training-mode footer { display: none; }
   background: #111; color: #fff; border: 1px solid #111;
   padding: 14px 28px; min-height: 48px; font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700; font-size: 14px; letter-spacing: 0.1em;
-  text-transform: uppercase; cursor: pointer; transition: all 0.15s; flex: 1;
-  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  text-transform: uppercase; cursor: pointer; transition: background 0.1s; flex: 1;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none;
 }
 .rest-modal-skip:hover { background: #333; }
-.rest-modal-skip:active { opacity: 0.8; }
+.rest-modal-skip:active { background: #444; }
 .rest-modal-skip.ready-state { background: #16a34a; border-color: #16a34a; }
   .fly-select {
     display: block; margin-top: 6px;
@@ -2063,7 +2063,7 @@ body.training-mode footer { display: none; }
     <div class="rest-modal-status" id="restModalStatus"></div>
     <div class="rest-modal-btns">
       <button class="rest-modal-add" onclick="addTimerTime(30)">+30s</button>
-      <button class="rest-modal-skip" id="restModalSkipBtn" onclick="dismissTimer()">Skip Rest</button>
+      <button class="rest-modal-skip" id="restModalSkipBtn" ontouchstart="dismissTimer();event.preventDefault()" onclick="dismissTimer()">Skip Rest</button>
     </div>
   </div>
 </div>
