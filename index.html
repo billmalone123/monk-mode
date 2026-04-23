@@ -1954,7 +1954,7 @@ body.training-mode footer { display: none; }
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Arnold Press</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Start with palms facing you (like the top of a curl), rotate as you press so palms face forward at the top. This rotation recruits all three heads of the deltoid — anterior, medial, and posterior — across the full range of motion. It also trains the rotator cuff through active rotation under load. Go controlled; this isn't a speed movement. Lighter than a standard DB press, but the stimulus is superior for shoulder development.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raises (cable)</div><div class="lift-sets-reps">3 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable lateral raises maintain constant tension through the full arc — dumbbells lose tension at the bottom where the cable is strongest. Stand sideways to the cable, cross-body cable attachment. Same technique as DB laterals: elbow leads, slight lean, thumb below pinky at the top. This is the second lateral raise session of the week — shoulder width comes from frequency and volume on the medial delt.</div></div>
     <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Skull Crushers</div><div class="lift-sets-reps">3 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Use an EZ-bar — the angled grip reduces wrist and elbow stress compared to a straight bar. Lower to your forehead or slightly behind your head (the latter increases long head stretch). Elbows stay pointed at the ceiling throughout. Don't let them flare out. This is one of the best long head tricep movements; the long head won't reach full stretch in pushdowns. Control the negative — if your elbows are hurting, drop the weight and slow down.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Close Grip Bench</div><div class="lift-sets-reps">3 sets × 8–10 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hands just inside shoulder width — not your palms touching, which is too narrow and creates wrist torque. This shifts the prime mover emphasis from pec to tricep while still involving the chest. Touch the bar to your lower chest, elbows tucked. This is the closest thing to a direct tricep mass builder using a barbell, and it directly strengthens the lockout portion of your standard bench press. Run it at the end of Push B while your CNS is still switched on.</div></div>
+    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Single Arm Cable Pushdown</div><div class="lift-sets-reps">3 sets × 12–15 reps/side</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Use a single handle attachment. One arm at a time forces each side to work independently — any imbalance that a bilateral pushdown masks will show up here. Elbow pinned to your side, press straight down to full lockout, hold for a beat at the bottom and feel the lateral head contract hard. Control the return. Cable keeps tension on the tricep through the entire range, unlike a dumbbell kickback which goes slack at the bottom. Run both arms back to back with minimal rest between sides.</div></div>
   </div>
 
   <!-- PULL B -->
@@ -2129,7 +2129,7 @@ body.training-mode footer { display: none; }
         </div>
       </div>
       <div class="maxes-est-1rm" id="est-1rm-bench"></div>
-      <div class="settings-input-hint">Used for: Flat Bench, Close Grip Bench</div>
+      <div class="settings-input-hint">Used for: Flat Bench</div>
     </div>
 
     <div class="settings-input-group">
@@ -2650,7 +2650,7 @@ body.training-mode footer { display: none; }
     try { localStorage.setItem(ACC_KEY, JSON.stringify(accBaselines)); } catch(e) {} }
   const LIFT_MAX_MAP = [
     { match: ['Flat Barbell Bench Press'], maxKey: 'bench', cls: '' },
-    { match: ['Close Grip Bench'], maxKey: 'bench', cls: '', pctLo: 0.70, pctHi: 0.75 },
+    { match: ['Single Arm Cable Pushdown'], maxKey: 'bench', cls: '', pctLo: 0.22, pctHi: 0.28 },
     { match: ['Dumbbell Bench Press'], maxKey: 'bench', cls: '', pctLo: 0.55, pctHi: 0.62 },
     { match: ['Incline Dumbbell Press'], maxKey: 'bench', cls: '', pctLo: 0.47, pctHi: 0.53 },
     { match: ['Low-to-High Cable Fly', 'Incline Dumbbell Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
