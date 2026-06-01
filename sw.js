@@ -1,4 +1,4 @@
-const CACHE = 'monk-mode-v1';
+const CACHE = 'monk-mode-v2';
 const URLS = [
   '/monk-mode/',
   '/monk-mode/index.html',
