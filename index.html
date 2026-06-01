@@ -12,20 +12,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --red: #e8412a;
-    --blue: #1d4ed8;
-    --green: #16a34a;
-    --purple: #7c3aed;
-    --black: #080808;
-    --dark: #111111;
-    --card: #161616;
-    --border: #242424;
-    --text: #e2e2e2;
-    --muted: #666;
-    --dim: #333;
+    --red: #f04060;
+    --blue: #4d86f5;
+    --green: #30c47a;
+    --purple: #9c5cf5;
+    --black: #09090e;
+    --dark: #0f1018;
+    --card: #13141f;
+    --border: #1c1e30;
+    --text: #e2e6f5;
+    --muted: #7480a3;
+    --dim: #252840;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; background: #080808; }
+  html { scroll-behavior: smooth; background: #09090e; }
   body {
     font-family: 'Barlow', sans-serif;
     background: var(--black);
@@ -42,8 +42,10 @@
   /* NAV */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: #080808;
-    border-bottom: 1px solid var(--border);
+    background: rgba(9,9,14,0.85);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(28,30,48,0.9);
     padding: 0 40px;
     height: 60px;
     display: flex; align-items: center; justify-content: flex-start; gap: 0;
@@ -81,8 +83,9 @@
   .hero-bg {
     position: absolute; inset: 0;
     background:
-      radial-gradient(ellipse 60% 50% at 80% 30%, rgba(232,65,42,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(29,78,216,0.08) 0%, transparent 70%);
+      radial-gradient(ellipse 60% 50% at 80% 30%, rgba(240,64,96,0.13) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(77,134,245,0.09) 0%, transparent 70%),
+      radial-gradient(ellipse 30% 40% at 50% 50%, rgba(156,92,245,0.04) 0%, transparent 60%);
   }
   .hero-number {
     position: absolute;
@@ -158,7 +161,7 @@
   .hero-cta {
     position: relative;
     display: inline-flex; align-items: center; gap: 12px;
-    background: var(--red);
+    background: linear-gradient(135deg, #f04060 0%, #c42858 100%);
     color: #fff;
     text-decoration: none;
     font-family: 'Barlow Condensed', sans-serif;
@@ -171,8 +174,9 @@
     transition: all 0.2s;
     margin-top: 48px;
     align-self: flex-start;
+    box-shadow: 0 4px 24px rgba(240,64,96,0.3);
   }
-  .hero-cta:hover { background: #ff5a42; transform: translateY(-2px); }
+  .hero-cta:hover { background: linear-gradient(135deg, #ff5575 0%, #d4386a 100%); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(240,64,96,0.4); }
   .hero-cta-arrow { font-size: 20px; transition: transform 0.2s; }
   .hero-cta:hover .hero-cta-arrow { transform: translateX(4px); }
 
@@ -302,7 +306,7 @@
     transition: transform 0.3s;
   }
   .day-card:hover::before { transform: scaleX(1); }
-  .day-card:hover { border-color: var(--dim); background: #1a1a1a; }
+  .day-card:hover { border-color: #2e3050; background: #191a2a; }
   .day-card-tag {
     font-size: 10px;
     font-weight: 700;
@@ -378,8 +382,8 @@
   /* WARMUP SECTION */
   .warmup-toggle-btn {
     background: transparent;
-    border: 1px solid #1e3a1e;
-    color: #4a8a4a;
+    border: 1px solid rgba(48,196,122,0.18);
+    color: rgba(48,196,122,0.6);
     padding: 12px 24px;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
@@ -392,12 +396,12 @@
     display: flex; align-items: center; gap: 10px;
   }
   .warmup-toggle-btn:hover, .warmup-toggle-btn.open {
-    border-color: var(--green); color: var(--green); background: rgba(22,163,74,0.05);
+    border-color: var(--green); color: var(--green); background: rgba(48,196,122,0.05);
   }
   .warmup-panel {
     display: none;
-    background: rgba(22,163,74,0.04);
-    border: 1px solid rgba(22,163,74,0.2);
+    background: rgba(48,196,122,0.04);
+    border: 1px solid rgba(48,196,122,0.18);
     border-left: 4px solid var(--green);
     padding: 28px 32px;
     margin-bottom: 32px;
@@ -446,12 +450,12 @@
     grid-template-columns: 1fr 80px 90px 90px;
     gap: 12px;
     padding: 20px 0;
-    border-bottom: 1px solid #1a1a1a;
+    border-bottom: 1px solid #181a2a;
     cursor: pointer;
     transition: all 0.15s;
     align-items: start;
   }
-  .lift-row:hover { background: rgba(255,255,255,0.02); padding-left: 8px; }
+  .lift-row:hover { background: rgba(77,134,245,0.03); padding-left: 8px; }
   .lift-name {
     font-size: 16px;
     font-weight: 600;
@@ -468,9 +472,9 @@
     margin-top: 4px;
     letter-spacing: 0.02em;
   }
-  .ramp-hint { font-size: 11px; color: #888; margin-top: 3px; letter-spacing: 0.01em; }
-  .lift-alts span { color: #f59e0b; font-weight: 600; margin-right: 4px; }
-  .lift-rest { font-size: 14px; color: #f59e0b; font-weight: 600; padding-top: 2px; }
+  .ramp-hint { font-size: 11px; color: #5a6485; margin-top: 3px; letter-spacing: 0.01em; }
+  .lift-alts span { color: #f5a623; font-weight: 600; margin-right: 4px; }
+  .lift-rest { font-size: 14px; color: #f5a623; font-weight: 600; padding-top: 2px; }
   .lift-time { font-size: 14px; color: var(--dim); padding-top: 2px; }
   .lift-note {
     display: none;
@@ -525,7 +529,7 @@
   }
   .prog-row:last-child { border-bottom: none; }
   .prog-row:hover { background: rgba(255,255,255,0.02); }
-  .prog-row.highlight { background: rgba(232,65,42,0.05); border-left: 3px solid var(--red); }
+  .prog-row.highlight { background: rgba(240,64,96,0.06); border-left: 3px solid var(--red); }
   .prog-week { font-size: 13px; color: var(--muted); font-weight: 500; }
   .prog-week.active-week { color: #fff; font-weight: 700; }
   .prog-weight {
@@ -597,9 +601,9 @@
 
   /* MOBILE — tablet and below */
   @media (max-width: 768px) {
-    nav { padding: 0 12px; height: 48px; border-bottom: none; background: #080808; }
+    nav { padding: 0 12px; height: 48px; border-bottom: none; background: rgba(9,9,14,0.9); }
     body { padding-top: 48px; }
-    .nav-sub { top: 48px; background: #080808; border-top: none; }
+    .nav-sub { top: 48px; background: rgba(9,9,14,0.95); border-top: none; }
     .nav-logo { font-size: 15px; letter-spacing: 0.04em; }
     .nav-links { display: none; }
     .nav-tab { padding: 0 10px; font-size: 12px; gap: 4px; height: 48px; }
@@ -739,8 +743,8 @@
     flex-shrink: 0;
     position: relative;
   }
-  .set-circle:hover { border-color: #555; color: #ccc; background: rgba(255,255,255,0.03); }
-  .set-circle.logged { border-color: var(--green); color: var(--green); background: rgba(22,163,74,0.08); }
+  .set-circle:hover { border-color: #3a3e60; color: #c0c8e8; background: rgba(77,134,245,0.06); }
+  .set-circle.logged { border-color: var(--green); color: var(--green); background: rgba(48,196,122,0.1); }
   .set-circle.flash { background: var(--green); color: #fff; border-color: var(--green); }
   .last-session-row {
     grid-column: 1 / -1;
@@ -759,16 +763,16 @@
   }
   .last-session-chip {
     font-size: 12px;
-    color: #555;
+    color: #3a4060;
     padding: 3px 10px;
-    background: #111;
-    border: 1px solid #1e1e1e;
+    background: #0f1018;
+    border: 1px solid #1c1e30;
     border-radius: 2px;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 600;
     letter-spacing: 0.05em;
   }
-  .last-session-chip.has-data { color: #888; border-color: #2a2a2a; }
+  .last-session-chip.has-data { color: #7480a3; border-color: #252840; }
   /* LOG MODAL */
   .log-modal-overlay {
     position: fixed; inset: 0;
@@ -778,13 +782,14 @@
     animation: fadeIn 0.15s ease;
   }
   .log-modal-card {
-    background: #141414;
-    border: 1px solid #2a2a2a;
+    background: #111220;
+    border: 1px solid #1c1e30;
     border-top: 3px solid var(--green);
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 28px 32px;
     width: 320px;
     max-width: 90vw;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
   }
   .log-modal-title {
     font-family: 'Barlow Condensed', sans-serif;
@@ -819,21 +824,21 @@
     margin-bottom: 8px;
   }
   .log-input-field {
-    background: #0a0a0a;
-    border: 1px solid #2a2a2a;
+    background: #09090e;
+    border: 1px solid #1c1e30;
     color: #fff;
     padding: 14px 16px;
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 22px;
     font-weight: 700;
-    border-radius: 3px;
+    border-radius: 4px;
     width: 100%;
     outline: none;
     transition: border-color 0.15s;
   }
-  .log-input-field:focus { border-color: var(--green); }
+  .log-input-field:focus { border-color: var(--green); box-shadow: 0 0 0 2px rgba(48,196,122,0.12); }
   .log-save-btn {
-    background: var(--green);
+    background: linear-gradient(135deg, #30c47a 0%, #1da860 100%);
     color: #fff;
     border: none;
     padding: 14px;
@@ -843,12 +848,13 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 4px;
     width: 100%;
     margin-bottom: 10px;
-    transition: background 0.15s;
+    transition: all 0.15s;
+    box-shadow: 0 4px 16px rgba(48,196,122,0.25);
   }
-  .log-save-btn:hover { background: #15803d; }
+  .log-save-btn:hover { background: linear-gradient(135deg, #40d488 0%, #25b86e 100%); box-shadow: 0 6px 20px rgba(48,196,122,0.35); }
   .log-cancel-btn {
     background: transparent;
     color: var(--muted);
@@ -867,8 +873,8 @@
   .log-cancel-btn:hover { color: #ccc; border-color: #444; }
   .clear-day-btn {
     background: transparent;
-    border: 1px solid #1e1e1e;
-    color: #333;
+    border: 1px solid #1c1e30;
+    color: #2e3050;
     cursor: pointer;
     padding: 6px 14px;
     font-family: 'Barlow Condensed', sans-serif;
@@ -880,7 +886,7 @@
     transition: all 0.15s;
     margin-left: 8px;
   }
-  .clear-day-btn:hover { border-color: rgba(232,65,42,0.4); color: rgba(232,65,42,0.6); }
+  .clear-day-btn:hover { border-color: rgba(240,64,96,0.4); color: rgba(240,64,96,0.65); }
 
 
   /* ── REST TIMER ─────────────────────────────────────────────────────────── */
@@ -888,17 +894,19 @@
     position: fixed;
     bottom: 0; left: 0; right: 0;
     z-index: 300;
-    background: #0e0e0e;
-    border-top: 1px solid #222;
+    background: rgba(13,14,24,0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid #1c1e30;
     padding: 0;
     transform: translateY(100%);
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 -8px 40px rgba(0,0,0,0.6);
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.7);
   }
   .timer-bar.visible { transform: translateY(0); }
   .timer-progress-track {
     height: 3px;
-    background: #1a1a1a;
+    background: #1c1e30;
     width: 100%;
   }
   .timer-progress-fill {
@@ -929,7 +937,7 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
     font-size: 15px;
-    color: #aaa;
+    color: #9098bf;
     max-width: 220px;
     white-space: nowrap;
     overflow: hidden;
@@ -955,23 +963,24 @@
     font-size: 13px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    border: 1px solid #333;
+    border: 1px solid #252840;
     background: transparent;
-    color: #888;
+    color: #7480a3;
     padding: 8px 18px;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 3px;
     transition: all 0.15s;
     white-space: nowrap;
   }
-  .timer-btn:hover { border-color: #555; color: #ccc; }
+  .timer-btn:hover { border-color: #3a3e60; color: #c0c8e8; }
   .timer-btn.primary {
-    background: var(--green);
-    border-color: var(--green);
+    background: linear-gradient(135deg, #30c47a 0%, #1da860 100%);
+    border-color: transparent;
     color: #fff;
+    box-shadow: 0 2px 10px rgba(48,196,122,0.3);
   }
-  .timer-btn.primary:hover { background: #15803d; border-color: #15803d; }
-  .timer-btn.danger { border-color: rgba(232,65,42,0.4); color: rgba(232,65,42,0.7); }
+  .timer-btn.primary:hover { background: linear-gradient(135deg, #40d488 0%, #25b86e 100%); }
+  .timer-btn.danger { border-color: rgba(240,64,96,0.35); color: rgba(240,64,96,0.65); }
   .timer-btn.danger:hover { border-color: var(--red); color: var(--red); }
   @media (max-width: 600px) {
     .timer-inner { padding: 12px 16px; gap: 12px; }
@@ -1065,9 +1074,9 @@
     align-items: center;
     gap: 8px;
     padding: 6px 14px;
-    background: #111;
-    border: 1px solid var(--border);
-    border-radius: 2px;
+    background: #0f1018;
+    border: 1px solid #1c1e30;
+    border-radius: 4px;
     font-family: 'Barlow Condensed', sans-serif;
   }
   .settings-max-label {
@@ -1112,15 +1121,16 @@
     animation: fadeIn 0.15s ease;
   }
   .settings-modal-card {
-    background: #121212;
-    border: 1px solid #2a2a2a;
+    background: #111220;
+    border: 1px solid #1c1e30;
     border-top: 3px solid var(--red);
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 36px 40px;
     width: 480px;
     max-width: 92vw;
     max-height: 90vh;
     overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.65);
   }
   .settings-modal-title {
     font-family: 'Barlow Condensed', sans-serif;
@@ -1153,20 +1163,20 @@
   }
   .settings-input-label span { color: var(--red); font-size: 10px; }
   .settings-input-field {
-    background: #0a0a0a;
-    border: 1px solid #2a2a2a;
+    background: #09090e;
+    border: 1px solid #1c1e30;
     color: #fff;
     padding: 14px 18px;
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 24px;
     font-weight: 800;
-    border-radius: 3px;
+    border-radius: 4px;
     width: 100%;
     outline: none;
     transition: border-color 0.15s;
     letter-spacing: 0.02em;
   }
-  .settings-input-field:focus { border-color: var(--red); }
+  .settings-input-field:focus { border-color: var(--red); box-shadow: 0 0 0 2px rgba(240,64,96,0.12); }
   .settings-input-hint {
     font-size: 11px;
     color: var(--dim);
@@ -1174,7 +1184,7 @@
     line-height: 1.5;
   }
   .settings-save-btn {
-    background: var(--red);
+    background: linear-gradient(135deg, #f04060 0%, #c42858 100%);
     color: #fff;
     border: none;
     padding: 16px;
@@ -1184,12 +1194,13 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 4px;
     width: 100%;
     margin-bottom: 10px;
-    transition: background 0.15s;
+    transition: all 0.15s;
+    box-shadow: 0 4px 16px rgba(240,64,96,0.25);
   }
-  .settings-save-btn:hover { background: #cc3520; }
+  .settings-save-btn:hover { background: linear-gradient(135deg, #ff5575 0%, #d4386a 100%); }
   .settings-cancel-btn {
     background: transparent;
     color: var(--muted);
@@ -1210,9 +1221,9 @@
   /* Maxes mode toggle */
   .maxes-mode-toggle {
     display: flex;
-    background: #0a0a0a;
-    border: 1px solid #2a2a2a;
-    border-radius: 3px;
+    background: #09090e;
+    border: 1px solid #1c1e30;
+    border-radius: 5px;
     padding: 3px;
     margin-bottom: 28px;
     gap: 3px;
@@ -1264,9 +1275,9 @@
   /* Weight badge on lift rows */
   .lift-weight-badge {
     display: inline-block;
-    background: rgba(232,65,42,0.1);
-    border: 1px solid rgba(232,65,42,0.25);
-    color: #e8412a;
+    background: rgba(240,64,96,0.1);
+    border: 1px solid rgba(240,64,96,0.28);
+    color: #f04060;
     padding: 2px 10px;
     border-radius: 2px;
     font-family: 'Barlow Condensed', sans-serif;
@@ -1276,19 +1287,19 @@
     margin-left: 10px;
     vertical-align: middle;
   }
-  .lift-weight-badge.squat { background: rgba(22,163,74,0.1); border-color: rgba(22,163,74,0.25); color: #16a34a; }
-  .lift-weight-badge.ohp { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.25); color: #f59e0b; }
-  .lift-weight-badge.pullup { background: rgba(29,78,216,0.1); border-color: rgba(29,78,216,0.25); color: #4d8ef8; }
+  .lift-weight-badge.squat { background: rgba(48,196,122,0.1); border-color: rgba(48,196,122,0.28); color: #30c47a; }
+  .lift-weight-badge.ohp { background: rgba(245,166,35,0.1); border-color: rgba(245,166,35,0.28); color: #f5a623; }
+  .lift-weight-badge.pullup { background: rgba(77,134,245,0.1); border-color: rgba(77,134,245,0.28); color: #4d86f5; }
   .acc-log-wrap { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; vertical-align: middle; }
   .acc-input {
-    width: 72px; background: rgba(232,65,42,0.08); border: 1px solid rgba(232,65,42,0.35);
-    color: #e8412a; padding: 2px 8px; border-radius: 2px;
+    width: 72px; background: rgba(240,64,96,0.08); border: 1px solid rgba(240,64,96,0.35);
+    color: #f04060; padding: 2px 8px; border-radius: 2px;
     font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px;
     text-align: center; outline: none; letter-spacing: 0.05em;
   }
-  .acc-input:focus { border-color: rgba(232,65,42,0.7); background: rgba(232,65,42,0.12); }
-  .acc-input::placeholder { color: rgba(232,65,42,0.35); }
-  .acc-rpe-hint { font-size: 10px; color: #666; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.06em; white-space: nowrap; }
+  .acc-input:focus { border-color: rgba(240,64,96,0.7); background: rgba(240,64,96,0.12); }
+  .acc-input::placeholder { color: rgba(240,64,96,0.35); }
+  .acc-rpe-hint { font-size: 10px; color: #5a6485; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.06em; white-space: nowrap; }
 
 
   html, body { overflow-x: hidden; }
@@ -1319,7 +1330,7 @@
   font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
   white-space: nowrap;
 }
-.nav-sub button.on { color: #fff; border-bottom-color: #e8412a; }
+.nav-sub button.on { color: #fff; border-bottom-color: #f04060; }
 
 /* ── TRAINING MODE (white background) ──────────────────────────────────── */
 body.training-mode { background: #f5f5f5; }
@@ -1340,14 +1351,14 @@ body.training-mode .settings-open-btn {
   background: var(--red);
   font-size: 14px;
   padding: 11px 24px;
-  box-shadow: 0 2px 12px rgba(232,65,42,0.35);
+  box-shadow: 0 2px 12px rgba(240,64,96,0.35);
 }
-body.training-mode .settings-open-btn:hover { background: #cc3520; border-color: #cc3520; box-shadow: 0 4px 18px rgba(232,65,42,0.45); }
-.rest-timer-strip { display:flex; align-items:center; gap:10px; margin-bottom:20px; padding:12px 14px; background:#111; border:1px solid #1e1e1e; border-radius:4px; flex-wrap:wrap; }
+body.training-mode .settings-open-btn:hover { background: linear-gradient(135deg, #ff5575 0%, #d4386a 100%); border-color: transparent; box-shadow: 0 4px 18px rgba(240,64,96,0.45); }
+.rest-timer-strip { display:flex; align-items:center; gap:10px; margin-bottom:20px; padding:12px 14px; background:#0f1018; border:1px solid #1c1e30; border-radius:4px; flex-wrap:wrap; }
 body.training-mode .rest-timer-strip { background:#f0f0f0; border-color:#ddd; }
 .rest-timer-strip-label { font-size:10px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
 body.training-mode .rest-timer-strip-label { color:#888; }
-.rest-preset-btn { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.08em; padding:6px 14px; background:transparent; border:1px solid #2a2a2a; color:#666; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+.rest-preset-btn { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.08em; padding:6px 14px; background:transparent; border:1px solid #1c1e30; color:#5a6485; border-radius:3px; cursor:pointer; transition:all 0.15s; }
 body.training-mode .rest-preset-btn { border-color:#ccc; color:#555; background:transparent; }
 .rest-preset-btn:hover, .rest-preset-btn.active-preset { background:var(--red); border-color:var(--red); color:#fff; }
 body.training-mode .rest-preset-btn:hover, body.training-mode .rest-preset-btn.active-preset { background:var(--red); border-color:var(--red); color:#fff; }
@@ -1364,7 +1375,7 @@ body.training-mode .lift-sets-reps { color: #888; }
 body.training-mode .lift-chevron { color: #ccc; }
 body.training-mode .lift-note { background: #f9f9f9; color: #555; }
 body.training-mode .warmup-toggle-btn { border-color: #cce8cc; color: #2d7a2d; }
-body.training-mode .warmup-panel { background: rgba(22,163,74,0.03); border-color: rgba(22,163,74,0.25); }
+body.training-mode .warmup-panel { background: rgba(48,196,122,0.03); border-color: rgba(48,196,122,0.22); }
 body.training-mode .warmup-step-text { color: #222; }
 body.training-mode .warmup-step-why { color: #888; }
 /* Day tabs — re-enable and style for light mode */
@@ -1416,14 +1427,14 @@ body.training-mode footer { display: none; }
   font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
   font-size: 62px; line-height: 1; color: #111; letter-spacing: -0.02em;
 }
-.rest-modal-time.warning { color: #e8412a; }
-.rest-modal-time.done { color: #16a34a; font-size: 46px; }
+.rest-modal-time.warning { color: #f04060; }
+.rest-modal-time.done { color: #30c47a; font-size: 46px; }
 .rest-modal-status {
   font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
   font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
   color: #bbb; margin-bottom: 24px; min-height: 16px;
 }
-.rest-modal-status.ready { color: #16a34a; }
+.rest-modal-status.ready { color: #30c47a; }
 .rest-modal-btns { display: flex; gap: 10px; justify-content: center; }
 .rest-modal-add {
   background: transparent; border: 1px solid #e0e0e0; color: #999;
@@ -1439,7 +1450,7 @@ body.training-mode footer { display: none; }
   text-transform: uppercase; cursor: pointer; transition: all 0.15s; flex: 1;
 }
 .rest-modal-skip:hover { background: #333; }
-.rest-modal-skip.ready-state { background: #16a34a; border-color: #16a34a; }
+.rest-modal-skip.ready-state { background: #30c47a; border-color: #30c47a; }
 </style>
 </head>
 <body>
@@ -1538,7 +1549,7 @@ body.training-mode footer { display: none; }
 
     <!-- Confidence -->
     <div style="background:#111;border:1px solid #1e1e1e;padding:40px 36px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(232,65,42,0.04);line-height:1;user-select:none;">01</div>
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(240,64,96,0.05);line-height:1;user-select:none;">01</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">Mental Edge</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Confidence<br>Is Not Born.<br>It's Built.</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
@@ -1551,7 +1562,7 @@ body.training-mode footer { display: none; }
 
     <!-- Social Status -->
     <div style="background:#111;border:1px solid #1e1e1e;padding:40px 36px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(232,65,42,0.04);line-height:1;user-select:none;">02</div>
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(240,64,96,0.05);line-height:1;user-select:none;">02</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">Social Capital</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">People Treat<br>You How You<br>Look.</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
@@ -1564,7 +1575,7 @@ body.training-mode footer { display: none; }
 
     <!-- Athletic Performance -->
     <div style="background:#111;border:1px solid #1e1e1e;padding:40px 36px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(232,65,42,0.04);line-height:1;user-select:none;">03</div>
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(240,64,96,0.05);line-height:1;user-select:none;">03</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">Athletic Output</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Strong Men<br>Are Useful<br>Men.</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
@@ -1592,29 +1603,29 @@ body.training-mode footer { display: none; }
   <h2 class="section-title">10 WEEKS.<br>NO EXCUSES.</h2>
 
   <div class="week-tabs" id="weekTabs" style="flex-wrap:wrap;">
-    <button class="week-tab active" onclick="selectWeek(0, this)" style="position:relative;"><span style="font-size:9px;color:#e8412a;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 1</button>
-    <button class="week-tab" onclick="selectWeek(1, this)" style="position:relative;"><span style="font-size:9px;color:#e8412a;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 2</button>
-    <button class="week-tab" onclick="selectWeek(2, this)" style="position:relative;"><span style="font-size:9px;color:#e8412a;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 3</button>
-    <button class="week-tab" onclick="selectWeek(3, this)" style="position:relative;"><span style="font-size:9px;color:#e8412a;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 4</button>
-    <button class="week-tab" onclick="selectWeek(4, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 5</button>
-    <button class="week-tab" onclick="selectWeek(5, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 6</button>
-    <button class="week-tab" onclick="selectWeek(6, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 7</button>
-    <button class="week-tab" onclick="selectWeek(7, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 8</button>
-    <button class="week-tab" onclick="selectWeek(8, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 9</button>
-    <button class="week-tab" onclick="selectWeek(9, this)" style="position:relative;"><span style="font-size:9px;color:#1d4ed8;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 10</button>
+    <button class="week-tab active" onclick="selectWeek(0, this)" style="position:relative;"><span style="font-size:9px;color:#f04060;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 1</button>
+    <button class="week-tab" onclick="selectWeek(1, this)" style="position:relative;"><span style="font-size:9px;color:#f04060;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 2</button>
+    <button class="week-tab" onclick="selectWeek(2, this)" style="position:relative;"><span style="font-size:9px;color:#f04060;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 3</button>
+    <button class="week-tab" onclick="selectWeek(3, this)" style="position:relative;"><span style="font-size:9px;color:#f04060;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 4</button>
+    <button class="week-tab" onclick="selectWeek(4, this)" style="position:relative;"><span style="font-size:9px;color:#4d86f5;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 5</button>
+    <button class="week-tab" onclick="selectWeek(5, this)" style="position:relative;"><span style="font-size:9px;color:#4d86f5;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 6</button>
+    <button class="week-tab" onclick="selectWeek(6, this)" style="position:relative;"><span style="font-size:9px;color:#4d86f5;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 7</button>
+    <button class="week-tab" onclick="selectWeek(7, this)" style="position:relative;"><span style="font-size:9px;color:#4d86f5;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 8</button>
+    <button class="week-tab" onclick="selectWeek(8, this)" style="position:relative;"><span style="font-size:9px;color:#4d86f5;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 9</button>
+    <button class="week-tab" onclick="selectWeek(9, this)" style="position:relative;"><span style="font-size:9px;color:#4d86f5;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 10</button>
   </div>
 
   <div id="weekInfoPanels">
     <div class="week-info" id="winfo0">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#e8412a;font-weight:700;">Wave 1</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#16a34a22;color:#16a34a;border:1px solid #16a34a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#f04060;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#30c47a22;color:#30c47a;border:1px solid #30c47a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Baseline, establish working weights, own the movement</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">65–70%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Intro explosive work, box jumps 3x5 before leg days</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Log every set. This is your benchmark. Don't ego load."</div></div>
     </div>
     <div class="week-info" id="winfo1" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#e8412a;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#f04060;font-weight:700;">Wave 1</div></div>
       <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Load — add weight to every main lift, volume goes up</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">72–76%</div></div>
@@ -1622,15 +1633,15 @@ body.training-mode footer { display: none; }
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Hit every rep before adding weight. Form is non-negotiable."</div></div>
     </div>
     <div class="week-info" id="winfo2" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#e8412a;font-weight:700;">Wave 1</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#e8412a22;color:#e8412a;border:1px solid #e8412a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#f04060;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#f0406022;color:#f04060;border:1px solid #f0406044;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Overload — heaviest week of wave 1, push hard</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">78–83%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 4x5, lateral bounds 3x6 before leg days</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Leave 1 rep in the tank on main lifts. Grind accessories."</div></div>
     </div>
     <div class="week-info" id="winfo3" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#e8412a;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#f04060;font-weight:700;">Wave 1</div></div>
       <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#55522;color:#555;border:1px solid #55544;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">DELOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Deload, back off, move perfectly, let the body adapt</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">~60%</div></div>
@@ -1638,15 +1649,15 @@ body.training-mode footer { display: none; }
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Full ROM every rep. Feel every muscle. CNS recovery."</div></div>
     </div>
     <div class="week-info" id="winfo4" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#16a34a22;color:#16a34a;border:1px solid #16a34a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#4d86f5;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#30c47a22;color:#30c47a;border:1px solid #30c47a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Wave 2 Base, return heavier than wave 1 started</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">70–74%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 4x5, depth jumps 3x4 before leg days</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"You are stronger than week 1. Prove it. New baseline."</div></div>
     </div>
     <div class="week-info" id="winfo5" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#4d86f5;font-weight:700;">Wave 2</div></div>
       <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Build, volume and load climbing, accessories intensify</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">75–79%</div></div>
@@ -1654,7 +1665,7 @@ body.training-mode footer { display: none; }
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Every main lift heavier than the same position in wave 1."</div></div>
     </div>
     <div class="week-info" id="winfo6" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#4d86f5;font-weight:700;">Wave 2</div></div>
       <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#f59e0b22;color:#f59e0b;border:1px solid #f59e0b44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Load — highest volume week of the program</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">79–83%</div></div>
@@ -1662,23 +1673,23 @@ body.training-mode footer { display: none; }
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"This is where most guys quit. You don't quit."</div></div>
     </div>
     <div class="week-info" id="winfo7" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#e8412a22;color:#e8412a;border:1px solid #e8412a44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#4d86f5;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#f0406022;color:#f04060;border:1px solid #f0406044;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Overload — push into new territory, heaviest sets yet</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">83–88%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Reduced, box jumps 3x3 only, save CNS for main lifts</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Beat every week 3 number. This is the point of the whole program."</div></div>
     </div>
     <div class="week-info" id="winfo8" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#7c3aed22;color:#7c3aed;border:1px solid #7c3aed44;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">PEAK</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#4d86f5;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#9c5cf522;color:#9c5cf5;border:1px solid #9c5cf544;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">PEAK</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Peak — near-max effort, minimal volume, maximum intensity</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">88–93%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">None, full CNS focus on peak lifts</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Top sets only. 2-3 heavy sets on main lifts. This is your test week."</div></div>
     </div>
     <div class="week-info" id="winfo9" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#1d4ed8;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#4d86f5;font-weight:700;">Wave 2</div></div>
       <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#55522;color:#555;border:1px solid #55544;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">DELOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Final Deload, recover, reflect, come back and test maxes</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">~55–60%</div></div>
@@ -1713,48 +1724,48 @@ body.training-mode footer { display: none; }
   <div class="prog-grid">
     <div class="prog-card">
       <div class="prog-card-header">
-        <div class="prog-card-lift" style="color:#e8412a">🏋️ Bench Press</div>
+        <div class="prog-card-lift" style="color:#f04060">🏋️ Bench Press</div>
       </div>
-      <div class="prog-row highlight" id="bench-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#e8412a">190 lbs</div><div class="prog-note">Set your baseline. Own the movement.</div></div>
-      <div class="prog-row" id="bench-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#e8412a">200 lbs</div><div class="prog-note">5 lb jump. Hit all 4 sets of 5.</div></div>
-      <div class="prog-row" id="bench-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#e8412a">215 lbs</div><div class="prog-note">Heaviest of wave 1. 1 rep in tank.</div></div>
-      <div class="prog-row" id="bench-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#e8412a">~140 lbs</div><div class="prog-note">Deload. Perfect form. Full ROM.</div></div>
-      <div class="prog-row" id="bench-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#e8412a">205 lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
-      <div class="prog-row" id="bench-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#e8412a">215 lbs</div><div class="prog-note">Match week 3. This should feel easier.</div></div>
-      <div class="prog-row" id="bench-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#e8412a">225 lbs</div><div class="prog-note">New territory. Earn it.</div></div>
-      <div class="prog-row" id="bench-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#e8412a">235 lbs</div><div class="prog-note">Beat wave 1 peak by 20 lbs.</div></div>
-      <div class="prog-row" id="bench-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#e8412a">245 lbs, top sets</div><div class="prog-note">2–3 heavy sets. Leave nothing.</div></div>
-      <div class="prog-row" id="bench-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#e8412a">~150 lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
+      <div class="prog-row highlight" id="bench-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#f04060">190 lbs</div><div class="prog-note">Set your baseline. Own the movement.</div></div>
+      <div class="prog-row" id="bench-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#f04060">200 lbs</div><div class="prog-note">5 lb jump. Hit all 4 sets of 5.</div></div>
+      <div class="prog-row" id="bench-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#f04060">215 lbs</div><div class="prog-note">Heaviest of wave 1. 1 rep in tank.</div></div>
+      <div class="prog-row" id="bench-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#f04060">~140 lbs</div><div class="prog-note">Deload. Perfect form. Full ROM.</div></div>
+      <div class="prog-row" id="bench-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#f04060">205 lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
+      <div class="prog-row" id="bench-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#f04060">215 lbs</div><div class="prog-note">Match week 3. This should feel easier.</div></div>
+      <div class="prog-row" id="bench-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#f04060">225 lbs</div><div class="prog-note">New territory. Earn it.</div></div>
+      <div class="prog-row" id="bench-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#f04060">235 lbs</div><div class="prog-note">Beat wave 1 peak by 20 lbs.</div></div>
+      <div class="prog-row" id="bench-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#f04060">245 lbs, top sets</div><div class="prog-note">2–3 heavy sets. Leave nothing.</div></div>
+      <div class="prog-row" id="bench-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#f04060">~150 lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
     </div>
     <div class="prog-card">
       <div class="prog-card-header">
-        <div class="prog-card-lift" style="color:#16a34a">🦵 Back Squat</div>
+        <div class="prog-card-lift" style="color:#30c47a">🦵 Back Squat</div>
       </div>
-      <div class="prog-row highlight" id="squat-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#16a34a">265 lbs</div><div class="prog-note">Set your baseline. Depth first.</div></div>
-      <div class="prog-row" id="squat-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#16a34a">275 lbs</div><div class="prog-note">10 lb jump. All 5 sets of 5.</div></div>
-      <div class="prog-row" id="squat-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#16a34a">295 lbs</div><div class="prog-note">Heaviest of wave 1. Grind it.</div></div>
-      <div class="prog-row" id="squat-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#16a34a">~195 lbs</div><div class="prog-note">Deload. Hips open, depth perfect.</div></div>
-      <div class="prog-row" id="squat-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#16a34a">280 lbs</div><div class="prog-note">Back and building. Stronger base.</div></div>
-      <div class="prog-row" id="squat-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#16a34a">295 lbs</div><div class="prog-note">Match wave 1 peak. It's lighter now.</div></div>
-      <div class="prog-row" id="squat-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#16a34a">310 lbs</div><div class="prog-note">New personal territory.</div></div>
-      <div class="prog-row" id="squat-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#16a34a">325 lbs</div><div class="prog-note">30 lb PR over wave 1 peak.</div></div>
-      <div class="prog-row" id="squat-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#16a34a">335 lbs, top sets</div><div class="prog-note">Near max. 2–3 heavy sets only.</div></div>
-      <div class="prog-row" id="squat-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#16a34a">~210 lbs</div><div class="prog-note">Deload. Test max next week fresh.</div></div>
+      <div class="prog-row highlight" id="squat-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#30c47a">265 lbs</div><div class="prog-note">Set your baseline. Depth first.</div></div>
+      <div class="prog-row" id="squat-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#30c47a">275 lbs</div><div class="prog-note">10 lb jump. All 5 sets of 5.</div></div>
+      <div class="prog-row" id="squat-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#30c47a">295 lbs</div><div class="prog-note">Heaviest of wave 1. Grind it.</div></div>
+      <div class="prog-row" id="squat-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#30c47a">~195 lbs</div><div class="prog-note">Deload. Hips open, depth perfect.</div></div>
+      <div class="prog-row" id="squat-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#30c47a">280 lbs</div><div class="prog-note">Back and building. Stronger base.</div></div>
+      <div class="prog-row" id="squat-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#30c47a">295 lbs</div><div class="prog-note">Match wave 1 peak. It's lighter now.</div></div>
+      <div class="prog-row" id="squat-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#30c47a">310 lbs</div><div class="prog-note">New personal territory.</div></div>
+      <div class="prog-row" id="squat-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#30c47a">325 lbs</div><div class="prog-note">30 lb PR over wave 1 peak.</div></div>
+      <div class="prog-row" id="squat-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#30c47a">335 lbs, top sets</div><div class="prog-note">Near max. 2–3 heavy sets only.</div></div>
+      <div class="prog-row" id="squat-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#30c47a">~210 lbs</div><div class="prog-note">Deload. Test max next week fresh.</div></div>
     </div>
     <div class="prog-card" id="prog-card-ohp" style="display:none">
       <div class="prog-card-header">
-        <div class="prog-card-lift" style="color:#7c3aed">🏋️ Overhead Press</div>
+        <div class="prog-card-lift" style="color:#9c5cf5">🏋️ Overhead Press</div>
       </div>
-      <div class="prog-row highlight" id="ohp-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Set your baseline. Strict press, no leg drive.</div></div>
-      <div class="prog-row" id="ohp-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Small jump. Lock in bar path.</div></div>
-      <div class="prog-row" id="ohp-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Heaviest of wave 1. Stay tight.</div></div>
-      <div class="prog-row" id="ohp-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Deload. Perfect technique only.</div></div>
-      <div class="prog-row" id="ohp-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
-      <div class="prog-row" id="ohp-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Match week 3. Should feel manageable.</div></div>
-      <div class="prog-row" id="ohp-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">New territory. Brace hard.</div></div>
-      <div class="prog-row" id="ohp-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Building toward your peak.</div></div>
-      <div class="prog-row" id="ohp-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#7c3aed">— lbs, top sets</div><div class="prog-note">2–3 heavy sets. Everything you have.</div></div>
-      <div class="prog-row" id="ohp-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#7c3aed">— lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
+      <div class="prog-row highlight" id="ohp-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#9c5cf5">— lbs</div><div class="prog-note">Set your baseline. Strict press, no leg drive.</div></div>
+      <div class="prog-row" id="ohp-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#9c5cf5">— lbs</div><div class="prog-note">Small jump. Lock in bar path.</div></div>
+      <div class="prog-row" id="ohp-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#9c5cf5">— lbs</div><div class="prog-note">Heaviest of wave 1. Stay tight.</div></div>
+      <div class="prog-row" id="ohp-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#9c5cf5">— lbs</div><div class="prog-note">Deload. Perfect technique only.</div></div>
+      <div class="prog-row" id="ohp-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#9c5cf5">— lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
+      <div class="prog-row" id="ohp-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#9c5cf5">— lbs</div><div class="prog-note">Match week 3. Should feel manageable.</div></div>
+      <div class="prog-row" id="ohp-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#9c5cf5">— lbs</div><div class="prog-note">New territory. Brace hard.</div></div>
+      <div class="prog-row" id="ohp-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#9c5cf5">— lbs</div><div class="prog-note">Building toward your peak.</div></div>
+      <div class="prog-row" id="ohp-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#9c5cf5">— lbs, top sets</div><div class="prog-note">2–3 heavy sets. Everything you have.</div></div>
+      <div class="prog-row" id="ohp-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#9c5cf5">— lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
     </div>
   </div>
   </div>
@@ -1813,38 +1824,38 @@ body.training-mode footer { display: none; }
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
     <span style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Training Week</span>
     <div style="display:flex;gap:4px;flex-wrap:wrap;" id="trainWeekSelector">
-      <button onclick="setTrainWeek(0);highlightTrainWeek(0,this)" class="train-week-btn active-twb" style="background:rgba(232,65,42,0.15);border:1px solid rgba(232,65,42,0.3);color:#e8412a;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W1</button>
+      <button onclick="setTrainWeek(0);highlightTrainWeek(0,this)" class="train-week-btn active-twb" style="background:rgba(240,64,96,0.14);border:1px solid rgba(240,64,96,0.32);color:#f04060;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:3px;transition:all 0.15s;">W1</button>
       <button onclick="setTrainWeek(1);highlightTrainWeek(1,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W2</button>
       <button onclick="setTrainWeek(2);highlightTrainWeek(2,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W3</button>
       <button onclick="setTrainWeek(3);highlightTrainWeek(3,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W4</button>
-      <button onclick="setTrainWeek(4);highlightTrainWeek(4,this)" class="train-week-btn" style="background:transparent;border:1px solid #1d4ed8;color:#4d8ef8;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W5</button>
+      <button onclick="setTrainWeek(4);highlightTrainWeek(4,this)" class="train-week-btn" style="background:transparent;border:1px solid rgba(77,134,245,0.35);color:#60a0ff;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:3px;transition:all 0.15s;">W5</button>
       <button onclick="setTrainWeek(5);highlightTrainWeek(5,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W6</button>
       <button onclick="setTrainWeek(6);highlightTrainWeek(6,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W7</button>
       <button onclick="setTrainWeek(7);highlightTrainWeek(7,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W8</button>
-      <button onclick="setTrainWeek(8);highlightTrainWeek(8,this)" class="train-week-btn" style="background:transparent;border:1px solid #7c3aed;color:#a78bfa;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W9</button>
+      <button onclick="setTrainWeek(8);highlightTrainWeek(8,this)" class="train-week-btn" style="background:transparent;border:1px solid rgba(156,92,245,0.35);color:#bf84fa;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:3px;transition:all 0.15s;">W9</button>
       <button onclick="setTrainWeek(9);highlightTrainWeek(9,this)" class="train-week-btn" style="background:transparent;border:1px solid #222;color:#555;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;border-radius:2px;transition:all 0.15s;">W10</button>
     </div>
   </div>
   <div class="plan-nav" id="planNav">
-    <button class="plan-nav-btn active" style="--dc:#e8412a" onclick="switchDay('push1')" id="btn-push1">Mon · Push A</button>
-    <button class="plan-nav-btn" style="--dc:#1d4ed8" onclick="switchDay('pull1')" id="btn-pull1">Tue · Pull A</button>
-    <button class="plan-nav-btn" style="--dc:#16a34a" onclick="switchDay('legs1')" id="btn-legs1">Wed · Legs A</button>
-    <button class="plan-nav-btn" style="--dc:#e8412a" onclick="switchDay('push2')" id="btn-push2">Thu · Push B</button>
-    <button class="plan-nav-btn" style="--dc:#1d4ed8" onclick="switchDay('pull2')" id="btn-pull2">Fri · Pull B</button>
-    <button class="plan-nav-btn" style="--dc:#16a34a" onclick="switchDay('legs2')" id="btn-legs2">Sat · Legs B</button>
-    <button class="plan-nav-btn" style="--dc:#7c3aed" onclick="switchDay('accessory')" id="btn-accessory">Sun · Accessory</button>
+    <button class="plan-nav-btn active" style="--dc:#f04060" onclick="switchDay('push1')" id="btn-push1">Mon · Push A</button>
+    <button class="plan-nav-btn" style="--dc:#4d86f5" onclick="switchDay('pull1')" id="btn-pull1">Tue · Pull A</button>
+    <button class="plan-nav-btn" style="--dc:#30c47a" onclick="switchDay('legs1')" id="btn-legs1">Wed · Legs A</button>
+    <button class="plan-nav-btn" style="--dc:#f04060" onclick="switchDay('push2')" id="btn-push2">Thu · Push B</button>
+    <button class="plan-nav-btn" style="--dc:#4d86f5" onclick="switchDay('pull2')" id="btn-pull2">Fri · Pull B</button>
+    <button class="plan-nav-btn" style="--dc:#30c47a" onclick="switchDay('legs2')" id="btn-legs2">Sat · Legs B</button>
+    <button class="plan-nav-btn" style="--dc:#9c5cf5" onclick="switchDay('accessory')" id="btn-accessory">Sun · Accessory</button>
   </div>
 
   <!-- PUSH A -->
   <div class="plan-content active" id="day-push1">
     <div class="plan-day-header">
       <div>
-        <div class="plan-day-title" style="color:#e8412a">PUSH A</div>
+        <div class="plan-day-title" style="color:#f04060">PUSH A</div>
         <div class="plan-day-focus">Bench-focused. Horizontal pressing priority.</div>
       </div>
       <div class="plan-badges">
-        <span class="badge" style="background:rgba(232,65,42,0.15);color:#e8412a;border:1px solid rgba(232,65,42,0.3)">Monday</span>
-        <span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:20</span>
+        <span class="badge" style="background:rgba(240,64,96,0.12);color:#f04060;border:1px solid rgba(240,64,96,0.28)">Monday</span>
+        <span class="badge" style="background:#13141f;color:#f5a623;border:1px solid #1c1e30">⏱ ~1:20</span>
       </div>
     <button class="clear-day-btn" onclick="clearDayLogs('push1'); return false;">Clear Logs</button>
       </div>
@@ -1859,20 +1870,20 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Flat Barbell Bench Press</div><div class="lift-sets-reps">2 working sets × 5 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">Your primary strength indicator for this program. Add 5 lbs per week — no more, no less. Arch slightly, retract your scapulae, keep your feet planted. The bar should touch your lower chest, not your sternum. If you can't get all 5 reps on every set, you went too heavy. 3–4 min rest is not optional — this is a CNS-demanding compound and undertesting your rest directly costs you reps.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Incline Dumbbell Press</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the bench at 30–45°. Go higher and you shift the load to the front delt, not the upper chest. Lower the dumbbells with a 2-second eccentric — this is where hypertrophy happens. Elbows should track at roughly 45° from your torso, not flared straight out. This angle reduces shoulder impingement risk and keeps the pec fiber under tension the full way down.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Cable Chest Fly</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div><div class="lift-alts"><span>ALT:</span>Pec Dec Machine · Dumbbell Fly</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The pec's primary function is horizontal adduction — this movement trains exactly that. Go light enough to feel a full stretch at the bottom. If you feel this in your biceps tendon, you've gone too heavy. Slight forward lean at the cable allows for a longer range of motion. Squeeze at the top like you're trying to crack a walnut between your palms.<br><br><strong>Pec Dec Machine:</strong> If the cable station is taken, the pec dec is a direct substitute — same movement pattern, same rep range. Set the handles so your elbows are at chest height. Control the return and feel the full stretch at the open position — don't let it slam back.<br><br><strong>Dumbbell Fly:</strong> Lie flat on a bench, slight bend in the elbows throughout (do not turn this into a press). Lower with a wide arc until you feel a deep stretch across the chest, then drive back up squeezing the pecs together. Go lighter than you think — the stretch position is vulnerable. Same rep range: 12–15.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Seated DB Shoulder Press</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seat at 90°. Elbows at roughly 75° from your torso — not straight out to the sides (that impinges), not too close to your body (that turns it into a tricep push). Press to near lockout overhead, but don't smash the joint at the top. Control the return. This is supplemental work, not an ego lift — keep it smooth.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raises</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lead with your elbow, not your wrist. Slight forward lean — about 10° — shifts load directly onto the medial deltoid. Your thumb should be no higher than your pinky at the top (internally rotate slightly). If you're swinging to get the weight up, you're using momentum, not muscle. Drop the weight and do it right. Wide shoulders come from this exercise done correctly, not from heavy sloppy reps.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Tricep Rope Pushdown</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Split the rope at the bottom of each rep — this maximizes lateral head contraction. Elbows stay pinned to your sides. Only your forearms move. If your elbows are traveling forward and back, you're involving your lats and losing the isolation. Can superset with the overhead extension directly after to hit both heads of the tricep with minimal rest time.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Overhead Tricep Extension (cable)</div><div class="lift-sets-reps">2 working sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The long head of the tricep only reaches full stretch with the arm overhead — that's why this movement exists and why pushdowns alone aren't enough. Use the rope attachment, face away from the cable stack, and hinge slightly at the hip. Elbows point straight at the ceiling and don't drift outward. Control the return — the stretch position is where you're building thickness in the horseshoe.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Flat Barbell Bench Press</div><div class="lift-sets-reps">2 working sets × 5 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">Your primary strength indicator for this program. Add 5 lbs per week — no more, no less. Arch slightly, retract your scapulae, keep your feet planted. The bar should touch your lower chest, not your sternum. If you can't get all 5 reps on every set, you went too heavy. 3–4 min rest is not optional — this is a CNS-demanding compound and undertesting your rest directly costs you reps.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Incline Dumbbell Press</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the bench at 30–45°. Go higher and you shift the load to the front delt, not the upper chest. Lower the dumbbells with a 2-second eccentric — this is where hypertrophy happens. Elbows should track at roughly 45° from your torso, not flared straight out. This angle reduces shoulder impingement risk and keeps the pec fiber under tension the full way down.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Cable Chest Fly</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div><div class="lift-alts"><span>ALT:</span>Pec Dec Machine · Dumbbell Fly</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The pec's primary function is horizontal adduction — this movement trains exactly that. Go light enough to feel a full stretch at the bottom. If you feel this in your biceps tendon, you've gone too heavy. Slight forward lean at the cable allows for a longer range of motion. Squeeze at the top like you're trying to crack a walnut between your palms.<br><br><strong>Pec Dec Machine:</strong> If the cable station is taken, the pec dec is a direct substitute — same movement pattern, same rep range. Set the handles so your elbows are at chest height. Control the return and feel the full stretch at the open position — don't let it slam back.<br><br><strong>Dumbbell Fly:</strong> Lie flat on a bench, slight bend in the elbows throughout (do not turn this into a press). Lower with a wide arc until you feel a deep stretch across the chest, then drive back up squeezing the pecs together. Go lighter than you think — the stretch position is vulnerable. Same rep range: 12–15.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Seated DB Shoulder Press</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seat at 90°. Elbows at roughly 75° from your torso — not straight out to the sides (that impinges), not too close to your body (that turns it into a tricep push). Press to near lockout overhead, but don't smash the joint at the top. Control the return. This is supplemental work, not an ego lift — keep it smooth.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raises</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lead with your elbow, not your wrist. Slight forward lean — about 10° — shifts load directly onto the medial deltoid. Your thumb should be no higher than your pinky at the top (internally rotate slightly). If you're swinging to get the weight up, you're using momentum, not muscle. Drop the weight and do it right. Wide shoulders come from this exercise done correctly, not from heavy sloppy reps.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Tricep Rope Pushdown</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Split the rope at the bottom of each rep — this maximizes lateral head contraction. Elbows stay pinned to your sides. Only your forearms move. If your elbows are traveling forward and back, you're involving your lats and losing the isolation. Can superset with the overhead extension directly after to hit both heads of the tricep with minimal rest time.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Overhead Tricep Extension (cable)</div><div class="lift-sets-reps">2 working sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The long head of the tricep only reaches full stretch with the arm overhead — that's why this movement exists and why pushdowns alone aren't enough. Use the rope attachment, face away from the cable stack, and hinge slightly at the hip. Elbows point straight at the ceiling and don't drift outward. Control the return — the stretch position is where you're building thickness in the horseshoe.</div></div>
   </div>
 
   <!-- PULL A -->
   <div class="plan-content" id="day-pull1">
     <div class="plan-day-header">
-      <div><div class="plan-day-title" style="color:#4d8ef8">PULL A</div><div class="plan-day-focus">Back thickness and width. Rear delt health for shoulder longevity.</div></div>
-      <div class="plan-badges"><span class="badge" style="background:rgba(29,78,216,0.15);color:#4d8ef8;border:1px solid rgba(29,78,216,0.3)">Tuesday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:20</span></div>
+      <div><div class="plan-day-title" style="color:#60a0ff">PULL A</div><div class="plan-day-focus">Back thickness and width. Rear delt health for shoulder longevity.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(77,134,245,0.12);color:#60a0ff;border:1px solid rgba(77,134,245,0.28)">Tuesday</span><span class="badge" style="background:#13141f;color:#f5a623;border:1px solid #1c1e30">⏱ ~1:20</span></div>
     <button class="clear-day-btn" onclick="clearDayLogs('pull1'); return false;">Clear Logs</button>
       </div>
     <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-pull1', this)">▶ Show Warm-Up</button>
@@ -1886,20 +1897,20 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Weighted Pull-Ups</div><div class="lift-sets-reps">2 working sets × 5–6 reps</div></div><div class="lift-rest">3 min</div><div class="lift-time">~16 min</div><div class="lift-chevron">▼</div><div class="lift-note">Dead hang at the bottom — full scapular depression before each rep. Don't shrug into the pull. Initiate by depressing and retracting the scapulae first, then drive your elbows toward your hips. Chin over bar, lower with control. Add weight using a belt or vest only after you can consistently hit 6 clean reps across all 4 sets. Kipping is cheating here.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Barbell Row</div><div class="lift-sets-reps">2 working sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~14 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hip hinge to about 45°. The bar pulls to your lower ribcage, not your belly button. Think about driving your elbows behind you and squeezing the shoulder blades together at the top — not just lifting the bar with your arms. A slight amount of body English on the last rep of a heavy set is acceptable; bouncing every rep off the floor is a form breakdown. Progressive overload applies here too.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Lat Pulldown</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lean back slightly — about 15° — and pull the bar to your upper chest. The movement is driven by depressing and retracting your scapulae, then driving elbows down toward your hips. You should feel a strong lat stretch at the top of each rep. If your elbows are shooting forward, your lats are checked out. Wide grip emphasizes the outer lat — that's the width you see from the front.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Cable Row (neutral grip)</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit upright, not leaning back for leverage. The cable row builds mid-back thickness — rhomboids, mid-traps, rear delts. Pull the handle to your lower sternum and pause 1 second at peak contraction with your shoulder blades fully retracted. The slow eccentric on the return is where most people cut corners — let the stretch come fully at the front before the next rep.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Face Pulls</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cable at or slightly above eye level. Pull the rope toward your face with your elbows high and wide — think "W" position at the end of the movement. The goal is external rotation of the shoulder, not just pulling weight back. This directly counteracts the internal rotation pattern created by heavy pressing and protects the rotator cuff over years of training. 4 sets, every pull day, no exceptions.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Hammer Curls</div><div class="lift-sets-reps">2 working sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Neutral grip (thumbs up) trains the brachialis — the muscle that sits under the bicep and pushes it up, creating peak. Elbows stay pinned to your sides throughout. You can alternate arms or do both simultaneously. Superset directly with incline curls to save time and keep bicep blood volume up without excessive rest.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Incline DB Curls</div><div class="lift-sets-reps">2 working sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie back on a 45° incline bench with your arms hanging straight down. This position places the long head of the bicep in a fully stretched position before the curl even begins — you cannot achieve this stretch standing. Supinate (rotate palm up) as you curl. The long head is responsible for the peak of your bicep. If you skip this, you're leaving development on the table.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Weighted Pull-Ups</div><div class="lift-sets-reps">2 working sets × 5–6 reps</div></div><div class="lift-rest">3 min</div><div class="lift-time">~16 min</div><div class="lift-chevron">▼</div><div class="lift-note">Dead hang at the bottom — full scapular depression before each rep. Don't shrug into the pull. Initiate by depressing and retracting the scapulae first, then drive your elbows toward your hips. Chin over bar, lower with control. Add weight using a belt or vest only after you can consistently hit 6 clean reps across all 4 sets. Kipping is cheating here.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Barbell Row</div><div class="lift-sets-reps">2 working sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~14 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hip hinge to about 45°. The bar pulls to your lower ribcage, not your belly button. Think about driving your elbows behind you and squeezing the shoulder blades together at the top — not just lifting the bar with your arms. A slight amount of body English on the last rep of a heavy set is acceptable; bouncing every rep off the floor is a form breakdown. Progressive overload applies here too.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Lat Pulldown</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lean back slightly — about 15° — and pull the bar to your upper chest. The movement is driven by depressing and retracting your scapulae, then driving elbows down toward your hips. You should feel a strong lat stretch at the top of each rep. If your elbows are shooting forward, your lats are checked out. Wide grip emphasizes the outer lat — that's the width you see from the front.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Cable Row (neutral grip)</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit upright, not leaning back for leverage. The cable row builds mid-back thickness — rhomboids, mid-traps, rear delts. Pull the handle to your lower sternum and pause 1 second at peak contraction with your shoulder blades fully retracted. The slow eccentric on the return is where most people cut corners — let the stretch come fully at the front before the next rep.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Face Pulls</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cable at or slightly above eye level. Pull the rope toward your face with your elbows high and wide — think "W" position at the end of the movement. The goal is external rotation of the shoulder, not just pulling weight back. This directly counteracts the internal rotation pattern created by heavy pressing and protects the rotator cuff over years of training. 4 sets, every pull day, no exceptions.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Hammer Curls</div><div class="lift-sets-reps">2 working sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Neutral grip (thumbs up) trains the brachialis — the muscle that sits under the bicep and pushes it up, creating peak. Elbows stay pinned to your sides throughout. You can alternate arms or do both simultaneously. Superset directly with incline curls to save time and keep bicep blood volume up without excessive rest.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Incline DB Curls</div><div class="lift-sets-reps">2 working sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie back on a 45° incline bench with your arms hanging straight down. This position places the long head of the bicep in a fully stretched position before the curl even begins — you cannot achieve this stretch standing. Supinate (rotate palm up) as you curl. The long head is responsible for the peak of your bicep. If you skip this, you're leaving development on the table.</div></div>
   </div>
 
   <!-- LEGS A -->
   <div class="plan-content" id="day-legs1">
     <div class="plan-day-header">
-      <div><div class="plan-day-title" style="color:#16a34a">LEGS A</div><div class="plan-day-focus">Squat-focused. Anterior chain priority. Hip mobility mandatory.</div></div>
-      <div class="plan-badges"><span class="badge" style="background:rgba(22,163,74,0.15);color:#16a34a;border:1px solid rgba(22,163,74,0.3)">Wednesday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:25</span></div>
+      <div><div class="plan-day-title" style="color:#30c47a">LEGS A</div><div class="plan-day-focus">Squat-focused. Anterior chain priority. Hip mobility mandatory.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(48,196,122,0.12);color:#30c47a;border:1px solid rgba(48,196,122,0.28)">Wednesday</span><span class="badge" style="background:#13141f;color:#f5a623;border:1px solid #1c1e30">⏱ ~1:25</span></div>
     <button class="clear-day-btn" onclick="clearDayLogs('legs1'); return false;">Clear Logs</button>
       </div>
     <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-legs1', this)">▶ Show Warm-Up</button>
@@ -1914,19 +1925,19 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Back Squat</div><div class="lift-sets-reps">2 working sets × 5 reps</div></div><div class="lift-rest">3–5 min</div><div class="lift-time">~22 min</div><div class="lift-chevron">▼</div><div class="lift-note">The king of this program. 5x5 is not a beginner protocol — it's a high-tension, low-rep strength scheme that drives neuromuscular adaptation at a rate hypertrophy rep ranges cannot match. Add 5 lbs per week. Bar sits on the shelf of your rear delts (low bar), not balanced on your neck. Brace hard before you unrack — 360° of intra-abdominal pressure. Sit into the squat; don't fold forward. 3–5 min rest is what the science says you need to recover CNS output between heavy compound sets. Honor it.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Pause Squat (2-sec pause)</div><div class="lift-sets-reps">2 working sets × 5 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Load at 60–65% of your working squat weight. The 2-second pause at the bottom eliminates the stretch-shortening reflex — you can't use the bounce to get out of the hole. This exposes and directly trains your weakest position. Simultaneously, holding depth for 2 seconds forces hip and ankle mobility under load, which is the most effective way to improve your squat pattern over time.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Press (feet high and wide)</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Feet high and wide on the platform — this shifts load toward glutes and hamstrings and dramatically reduces anterior knee stress compared to a low, narrow stance. Lower all the way down without your lower back rounding off the pad. If your hips are coming up, you're going too deep for your current hip flexibility. Full range within your control; don't ego load and cut the range.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Bulgarian Split Squat</div><div class="lift-sets-reps">2 working sets × 8 reps/leg</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Rear foot elevated on a bench behind you. Your front foot is far enough forward that your shin stays vertical at the bottom — if your knee is diving over your toes, step out further. Lower slowly (3 seconds down), feel the hip flexor stretch in the rear leg. This is one of the best exercises for bilateral hip strength imbalances that compound lifts mask. Heavier than you think you should go once you've got the pattern.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Curl</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">This program squats heavy without conventional deadlifts. That means your hamstrings are getting less hip-hinge stimulus than a typical program — leg curls fill that gap for knee flexion. Curl through full ROM, pause at peak contraction, and lower with a 2-second eccentric. The eccentric is where hamstring strength is built and where hamstring injuries are prevented. Don't drop the weight back down.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Standing Calf Raise</div><div class="lift-sets-reps">2 working sets × 15 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Full range — heel all the way down into a stretch, all the way up onto the ball of your foot at the top. The gastrocnemius (outer calf) responds to standing raises under a straight knee. Hold the top for a beat. Most people never train calves through full range, which is why most people have underdeveloped calves. Short rest is fine here — calves are highly oxidative and recover quickly.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Back Squat</div><div class="lift-sets-reps">2 working sets × 5 reps</div></div><div class="lift-rest">3–5 min</div><div class="lift-time">~22 min</div><div class="lift-chevron">▼</div><div class="lift-note">The king of this program. 5x5 is not a beginner protocol — it's a high-tension, low-rep strength scheme that drives neuromuscular adaptation at a rate hypertrophy rep ranges cannot match. Add 5 lbs per week. Bar sits on the shelf of your rear delts (low bar), not balanced on your neck. Brace hard before you unrack — 360° of intra-abdominal pressure. Sit into the squat; don't fold forward. 3–5 min rest is what the science says you need to recover CNS output between heavy compound sets. Honor it.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Pause Squat (2-sec pause)</div><div class="lift-sets-reps">2 working sets × 5 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Load at 60–65% of your working squat weight. The 2-second pause at the bottom eliminates the stretch-shortening reflex — you can't use the bounce to get out of the hole. This exposes and directly trains your weakest position. Simultaneously, holding depth for 2 seconds forces hip and ankle mobility under load, which is the most effective way to improve your squat pattern over time.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Press (feet high and wide)</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Feet high and wide on the platform — this shifts load toward glutes and hamstrings and dramatically reduces anterior knee stress compared to a low, narrow stance. Lower all the way down without your lower back rounding off the pad. If your hips are coming up, you're going too deep for your current hip flexibility. Full range within your control; don't ego load and cut the range.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Bulgarian Split Squat</div><div class="lift-sets-reps">2 working sets × 8 reps/leg</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Rear foot elevated on a bench behind you. Your front foot is far enough forward that your shin stays vertical at the bottom — if your knee is diving over your toes, step out further. Lower slowly (3 seconds down), feel the hip flexor stretch in the rear leg. This is one of the best exercises for bilateral hip strength imbalances that compound lifts mask. Heavier than you think you should go once you've got the pattern.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Curl</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">This program squats heavy without conventional deadlifts. That means your hamstrings are getting less hip-hinge stimulus than a typical program — leg curls fill that gap for knee flexion. Curl through full ROM, pause at peak contraction, and lower with a 2-second eccentric. The eccentric is where hamstring strength is built and where hamstring injuries are prevented. Don't drop the weight back down.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Standing Calf Raise</div><div class="lift-sets-reps">2 working sets × 15 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Full range — heel all the way down into a stretch, all the way up onto the ball of your foot at the top. The gastrocnemius (outer calf) responds to standing raises under a straight knee. Hold the top for a beat. Most people never train calves through full range, which is why most people have underdeveloped calves. Short rest is fine here — calves are highly oxidative and recover quickly.</div></div>
   </div>
 
   <!-- PUSH B -->
   <div class="plan-content" id="day-push2">
     <div class="plan-day-header">
-      <div><div class="plan-day-title" style="color:#e8412a">PUSH B</div><div class="plan-day-focus">OHP variation + chest volume. More hypertrophy emphasis than Push A.</div></div>
-      <div class="plan-badges"><span class="badge" style="background:rgba(232,65,42,0.15);color:#e8412a;border:1px solid rgba(232,65,42,0.3)">Thursday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:20</span></div>
+      <div><div class="plan-day-title" style="color:#f04060">PUSH B</div><div class="plan-day-focus">OHP variation + chest volume. More hypertrophy emphasis than Push A.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(240,64,96,0.12);color:#f04060;border:1px solid rgba(240,64,96,0.28)">Thursday</span><span class="badge" style="background:#13141f;color:#f5a623;border:1px solid #1c1e30">⏱ ~1:20</span></div>
     <button class="clear-day-btn" onclick="clearDayLogs('push2'); return false;">Clear Logs</button>
       </div>
     <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-push2', this)">▶ Show Warm-Up</button>
@@ -1940,20 +1951,20 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Seated Barbell OHP</div><div class="lift-sets-reps">2 working sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~15 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seated to eliminate leg drive — this keeps it honest. The bar starts at your clavicle and presses in a straight line overhead, finishing slightly behind your ears at the top. Brace your core hard; don't hyperextend your lower back to get the bar up. This is your secondary strength indicator for the program — track it week over week. You should be pressing 2–3 lbs more each week. Overhead strength also directly carries over to your bench stability.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Dumbbell Bench Press</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Greater range of motion than barbell — the dumbbells can travel lower, fully stretching the pec fibers. Elbows at about 45–60° from your torso, same as barbell bench. Dumbbells also allow each shoulder to move independently, exposing and correcting strength imbalances that a barbell masks. This is higher rep than Push A's bench — you're accumulating volume and time under tension, not chasing a new max.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Low-to-High Cable Fly</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div><div class="lift-alts"><span>ALT:</span>Pec Dec Machine · Incline Dumbbell Fly</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cables at the lowest pulley position and bring them up and across your body. This angle of pull targets the upper pec fibers — the same fibers the incline DB press hits, but with constant cable tension through the entire ROM. Feel the stretch at the bottom. If you're using so much weight you can't feel the pec working, you've lost the point of the exercise.<br><br><strong>Pec Dec Machine:</strong> Most pec dec machines allow you to adjust the seat height — set it so the handles are at lower-chest level to replicate the low-to-high angle. Same 12–15 rep range. Focus on the stretch at the open position and squeeze at the close.<br><br><strong>Incline Dumbbell Fly:</strong> Set the bench to 30–45°. This angle shifts the load toward the upper pec fibers, matching the intent of the low-to-high cable. Slight elbow bend, wide arc down to a deep stretch, drive back up with the pec — not the shoulder. Go lighter than you expect. 12–15 reps with control.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Arnold Press</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Start with palms facing you (like the top of a curl), rotate as you press so palms face forward at the top. This rotation recruits all three heads of the deltoid — anterior, medial, and posterior — across the full range of motion. It also trains the rotator cuff through active rotation under load. Go controlled; this isn't a speed movement. Lighter than a standard DB press, but the stimulus is superior for shoulder development.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raises (cable)</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable lateral raises maintain constant tension through the full arc — dumbbells lose tension at the bottom where the cable is strongest. Stand sideways to the cable, cross-body cable attachment. Same technique as DB laterals: elbow leads, slight lean, thumb below pinky at the top. This is the second lateral raise session of the week — shoulder width comes from frequency and volume on the medial delt.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Skull Crushers</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Use an EZ-bar — the angled grip reduces wrist and elbow stress compared to a straight bar. Lower to your forehead or slightly behind your head (the latter increases long head stretch). Elbows stay pointed at the ceiling throughout. Don't let them flare out. This is one of the best long head tricep movements; the long head won't reach full stretch in pushdowns. Control the negative — if your elbows are hurting, drop the weight and slow down.</div></div>
-    <div class="lift-row" style="--dc:#e8412a" onclick="toggleNote(this)"><div><div class="lift-name">Close Grip Bench</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hands just inside shoulder width — not your palms touching, which is too narrow and creates wrist torque. This shifts the prime mover emphasis from pec to tricep while still involving the chest. Touch the bar to your lower chest, elbows tucked. This is the closest thing to a direct tricep mass builder using a barbell, and it directly strengthens the lockout portion of your standard bench press. Run it at the end of Push B while your CNS is still switched on.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Seated Barbell OHP</div><div class="lift-sets-reps">2 working sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~15 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seated to eliminate leg drive — this keeps it honest. The bar starts at your clavicle and presses in a straight line overhead, finishing slightly behind your ears at the top. Brace your core hard; don't hyperextend your lower back to get the bar up. This is your secondary strength indicator for the program — track it week over week. You should be pressing 2–3 lbs more each week. Overhead strength also directly carries over to your bench stability.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Dumbbell Bench Press</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Greater range of motion than barbell — the dumbbells can travel lower, fully stretching the pec fibers. Elbows at about 45–60° from your torso, same as barbell bench. Dumbbells also allow each shoulder to move independently, exposing and correcting strength imbalances that a barbell masks. This is higher rep than Push A's bench — you're accumulating volume and time under tension, not chasing a new max.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Low-to-High Cable Fly</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div><div class="lift-alts"><span>ALT:</span>Pec Dec Machine · Incline Dumbbell Fly</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cables at the lowest pulley position and bring them up and across your body. This angle of pull targets the upper pec fibers — the same fibers the incline DB press hits, but with constant cable tension through the entire ROM. Feel the stretch at the bottom. If you're using so much weight you can't feel the pec working, you've lost the point of the exercise.<br><br><strong>Pec Dec Machine:</strong> Most pec dec machines allow you to adjust the seat height — set it so the handles are at lower-chest level to replicate the low-to-high angle. Same 12–15 rep range. Focus on the stretch at the open position and squeeze at the close.<br><br><strong>Incline Dumbbell Fly:</strong> Set the bench to 30–45°. This angle shifts the load toward the upper pec fibers, matching the intent of the low-to-high cable. Slight elbow bend, wide arc down to a deep stretch, drive back up with the pec — not the shoulder. Go lighter than you expect. 12–15 reps with control.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Arnold Press</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Start with palms facing you (like the top of a curl), rotate as you press so palms face forward at the top. This rotation recruits all three heads of the deltoid — anterior, medial, and posterior — across the full range of motion. It also trains the rotator cuff through active rotation under load. Go controlled; this isn't a speed movement. Lighter than a standard DB press, but the stimulus is superior for shoulder development.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raises (cable)</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable lateral raises maintain constant tension through the full arc — dumbbells lose tension at the bottom where the cable is strongest. Stand sideways to the cable, cross-body cable attachment. Same technique as DB laterals: elbow leads, slight lean, thumb below pinky at the top. This is the second lateral raise session of the week — shoulder width comes from frequency and volume on the medial delt.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Skull Crushers</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Use an EZ-bar — the angled grip reduces wrist and elbow stress compared to a straight bar. Lower to your forehead or slightly behind your head (the latter increases long head stretch). Elbows stay pointed at the ceiling throughout. Don't let them flare out. This is one of the best long head tricep movements; the long head won't reach full stretch in pushdowns. Control the negative — if your elbows are hurting, drop the weight and slow down.</div></div>
+    <div class="lift-row" style="--dc:#f04060" onclick="toggleNote(this)"><div><div class="lift-name">Close Grip Bench</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hands just inside shoulder width — not your palms touching, which is too narrow and creates wrist torque. This shifts the prime mover emphasis from pec to tricep while still involving the chest. Touch the bar to your lower chest, elbows tucked. This is the closest thing to a direct tricep mass builder using a barbell, and it directly strengthens the lockout portion of your standard bench press. Run it at the end of Push B while your CNS is still switched on.</div></div>
   </div>
 
   <!-- PULL B -->
   <div class="plan-content" id="day-pull2">
     <div class="plan-day-header">
-      <div><div class="plan-day-title" style="color:#4d8ef8">PULL B</div><div class="plan-day-focus">Back width and arm hypertrophy. Slightly higher volume, more isolation.</div></div>
-      <div class="plan-badges"><span class="badge" style="background:rgba(29,78,216,0.15);color:#4d8ef8;border:1px solid rgba(29,78,216,0.3)">Friday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:20</span></div>
+      <div><div class="plan-day-title" style="color:#60a0ff">PULL B</div><div class="plan-day-focus">Back width and arm hypertrophy. Slightly higher volume, more isolation.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(77,134,245,0.12);color:#60a0ff;border:1px solid rgba(77,134,245,0.28)">Friday</span><span class="badge" style="background:#13141f;color:#f5a623;border:1px solid #1c1e30">⏱ ~1:20</span></div>
     <button class="clear-day-btn" onclick="clearDayLogs('pull2'); return false;">Clear Logs</button>
       </div>
     <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-pull2', this)">▶ Show Warm-Up</button>
@@ -1967,21 +1978,21 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Seated Cable Row (wide grip)</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Wide grip with a wide-bar attachment pulls your elbows out to the sides, targeting the upper back — traps, rhomboids, and rear delts — rather than the lats. Sit upright, row to your upper abs, and squeeze the shoulder blades together hard at the peak. The difference between a back that looks wide from the front vs. thick from the side comes down to how much you prioritize this kind of upper back work.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Single Arm DB Row</div><div class="lift-sets-reps">2 working sets × 10 reps/side</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Brace your free hand on the bench, keep your spine neutral — no rotation to swing the weight up. The DB should travel in a straight line from full lat stretch at the bottom to a strong elbow-behind-the-hip position at the top. Go heavy. This is one of the few unilateral back exercises where you can genuinely load up and feel the full lat from origin to insertion. If the weight is easy at 10 reps, add more next set.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Straight Arm Pulldown</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Arms stay nearly straight — just a soft elbow bend to protect the joint. Hinge forward slightly at the hips and pull the bar from overhead down to your thighs, thinking about your elbows moving toward your hips. Because no bicep is involved in the movement, this isolates the lat completely. You'll feel exactly where your lat is. Use this as a mind-muscle connection exercise before heavier pulling, or as a burnout finisher after.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Chest-Supported Row</div><div class="lift-sets-reps">2 working sets × 12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">The chest pad eliminates lower back fatigue and the temptation to use momentum — your back has to do every rep honestly. Set the bench at 30–45°, lie face down, and row with elbows at about 60° from your body. This angle hits the mid-trap and rhomboid region that creates the 3D thickness in your upper back. Focus on the squeeze at the top rather than the weight on the stack.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Dumbbell Shrugs</div><div class="lift-sets-reps">2 working sets × 15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hold a dumbbell in each hand at your sides, arms straight. Elevate your shoulders straight up — don't roll them forward or back, which reduces trap activation and adds unnecessary shoulder joint stress. Hold the top position for 1 second and squeeze. The upper trap is a thick, powerful muscle that responds well to both heavy loading and controlled reps. Keep your neck long and neutral throughout — you're shrugging, not crunching your neck into your shoulders.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Face Pulls</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Every pull day. This is not optional. The external rotation component of the face pull is the direct antidote to the internal rotation load of benching and pressing. Every time you bench heavy without training the opposing rotation pattern, you're creating an imbalance that will eventually show up as shoulder impingement, bicep tendon pain, or AC joint issues. 15–20 reps, high elbows, "W" at the finish. Always.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">EZ Bar Curl</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">The EZ bar's angled grip reduces wrist and elbow stress compared to a straight bar while keeping the bicep in a strong curling position. This is your strength curl — treat it like a compound lift for biceps. Track the weight and add load over time. Elbows stay fixed at your sides. Slight forward lean at the waist is acceptable; full-body swing is not. Supinate slightly at the top to ensure full peak contraction. This should be heavier than any other curl variation you're doing.</div></div>
-    <div class="lift-row" style="--dc:#1d4ed8" onclick="toggleNote(this)"><div><div class="lift-name">Cable Curl (single arm)</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable provides consistent tension through the full arc — unlike dumbbells, the bicep is maximally loaded at every point in the range. Pull to peak contraction and hold 1 second — you should feel a hard squeeze in the bicep, not just feel the arm coming up. Slow the return down to 2 seconds. The pump you're feeling at this point in the session is maximizing cellular swelling stimulus. Don't rush through it.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Seated Cable Row (wide grip)</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Wide grip with a wide-bar attachment pulls your elbows out to the sides, targeting the upper back — traps, rhomboids, and rear delts — rather than the lats. Sit upright, row to your upper abs, and squeeze the shoulder blades together hard at the peak. The difference between a back that looks wide from the front vs. thick from the side comes down to how much you prioritize this kind of upper back work.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Single Arm DB Row</div><div class="lift-sets-reps">2 working sets × 10 reps/side</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Brace your free hand on the bench, keep your spine neutral — no rotation to swing the weight up. The DB should travel in a straight line from full lat stretch at the bottom to a strong elbow-behind-the-hip position at the top. Go heavy. This is one of the few unilateral back exercises where you can genuinely load up and feel the full lat from origin to insertion. If the weight is easy at 10 reps, add more next set.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Straight Arm Pulldown</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Arms stay nearly straight — just a soft elbow bend to protect the joint. Hinge forward slightly at the hips and pull the bar from overhead down to your thighs, thinking about your elbows moving toward your hips. Because no bicep is involved in the movement, this isolates the lat completely. You'll feel exactly where your lat is. Use this as a mind-muscle connection exercise before heavier pulling, or as a burnout finisher after.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Chest-Supported Row</div><div class="lift-sets-reps">2 working sets × 12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">The chest pad eliminates lower back fatigue and the temptation to use momentum — your back has to do every rep honestly. Set the bench at 30–45°, lie face down, and row with elbows at about 60° from your body. This angle hits the mid-trap and rhomboid region that creates the 3D thickness in your upper back. Focus on the squeeze at the top rather than the weight on the stack.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Dumbbell Shrugs</div><div class="lift-sets-reps">2 working sets × 15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hold a dumbbell in each hand at your sides, arms straight. Elevate your shoulders straight up — don't roll them forward or back, which reduces trap activation and adds unnecessary shoulder joint stress. Hold the top position for 1 second and squeeze. The upper trap is a thick, powerful muscle that responds well to both heavy loading and controlled reps. Keep your neck long and neutral throughout — you're shrugging, not crunching your neck into your shoulders.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Face Pulls</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Every pull day. This is not optional. The external rotation component of the face pull is the direct antidote to the internal rotation load of benching and pressing. Every time you bench heavy without training the opposing rotation pattern, you're creating an imbalance that will eventually show up as shoulder impingement, bicep tendon pain, or AC joint issues. 15–20 reps, high elbows, "W" at the finish. Always.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">EZ Bar Curl</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">The EZ bar's angled grip reduces wrist and elbow stress compared to a straight bar while keeping the bicep in a strong curling position. This is your strength curl — treat it like a compound lift for biceps. Track the weight and add load over time. Elbows stay fixed at your sides. Slight forward lean at the waist is acceptable; full-body swing is not. Supinate slightly at the top to ensure full peak contraction. This should be heavier than any other curl variation you're doing.</div></div>
+    <div class="lift-row" style="--dc:#4d86f5" onclick="toggleNote(this)"><div><div class="lift-name">Cable Curl (single arm)</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable provides consistent tension through the full arc — unlike dumbbells, the bicep is maximally loaded at every point in the range. Pull to peak contraction and hold 1 second — you should feel a hard squeeze in the bicep, not just feel the arm coming up. Slow the return down to 2 seconds. The pump you're feeling at this point in the session is maximizing cellular swelling stimulus. Don't rush through it.</div></div>
   </div>
 
   <!-- LEGS B -->
   <div class="plan-content" id="day-legs2">
     <div class="plan-day-header">
-      <div><div class="plan-day-title" style="color:#16a34a">LEGS B</div><div class="plan-day-focus">Posterior chain + quad volume. Less CNS demand than Legs A.</div></div>
-      <div class="plan-badges"><span class="badge" style="background:rgba(22,163,74,0.15);color:#16a34a;border:1px solid rgba(22,163,74,0.3)">Saturday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~1:25</span></div>
+      <div><div class="plan-day-title" style="color:#30c47a">LEGS B</div><div class="plan-day-focus">Posterior chain + quad volume. Less CNS demand than Legs A.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(48,196,122,0.12);color:#30c47a;border:1px solid rgba(48,196,122,0.28)">Saturday</span><span class="badge" style="background:#13141f;color:#f5a623;border:1px solid #1c1e30">⏱ ~1:25</span></div>
     <button class="clear-day-btn" onclick="clearDayLogs('legs2'); return false;">Clear Logs</button>
       </div>
     <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-legs2', this)">▶ Show Warm-Up</button>
@@ -1995,23 +2006,23 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Front Squat or Hack Squat</div><div class="lift-sets-reps">2 working sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~15 min</div><div class="lift-chevron">▼</div><div class="lift-note">The front squat keeps the torso more upright than the back squat, which places the load directly over the quad — making it one of the most effective exercises for quad hypertrophy while simultaneously training hip mobility under load. If the front rack position causes shoulder discomfort, cross your arms (clean grip alternative) or switch to hack squat machine. Hack squat is a legitimate substitute — full depth, controlled tempo. Either way, this is your main squat variation for Legs B.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Romanian Deadlift (RDL)</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~13 min</div><div class="lift-chevron">▼</div><div class="lift-note">This is a hip hinge, not a deadlift. Soft knees throughout — about 15–20° of bend. Push your hips back as the bar travels down your legs, keeping it close to your body. You should feel a strong hamstring stretch at the bottom. Stop when you feel your lower back start to round — that's your end range. Go heavy, but never at the expense of a neutral spine. This is the primary posterior chain builder on Legs B and directly complements the squat-dominant loading of Legs A.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Extension</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Targeted VMO (inner quad) and teardrop development. Sit all the way back in the pad, toes pointed slightly outward to bias the inner quad. Extend fully and hold 1 second at the top — most people let the weight drop before full quad contraction. Slow eccentric on the way down. This is not a joint-destructive exercise when done correctly; the danger comes from loading excessively heavy and using momentum rather than muscle control.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Curl</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Second leg curl session of the week. Can superset with leg extensions to save time — the joints aren't competing and the brief active rest between antagonists keeps quality high. Feet slightly turned in (internal rotation) shifts emphasis to the outer hamstring bicep femoris. Keep hips flat on the pad — if your hips are rising to get the weight up, you've overloaded it.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Walking Lunges</div><div class="lift-sets-reps">2 working sets × 12 reps/leg</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Keep your torso upright and step long enough that your shin stays vertical at the bottom of each rep. Walking lunges train single-leg strength, hip flexor length under load, and proprioception simultaneously. This is functional leg training — the kind that makes you athletic, not just big. Add dumbbells once bodyweight becomes easy. The stretch in the rear hip at the bottom of each step is the hip flexor work you need between squat sessions.</div></div>
-    <div class="lift-row" style="--dc:#16a34a" onclick="toggleNote(this)"><div><div class="lift-name">Seated Calf Raise</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The seated position bends the knee, which puts the gastrocnemius in a shortened position and shifts all the load to the soleus — the flat, wide muscle that sits underneath. Training both the standing and seated calf raise is the only way to fully develop the lower leg. Full range, full stretch at the bottom. The soleus responds to higher reps. 15–20 is the right zone here.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Front Squat or Hack Squat</div><div class="lift-sets-reps">2 working sets × 6–8 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~15 min</div><div class="lift-chevron">▼</div><div class="lift-note">The front squat keeps the torso more upright than the back squat, which places the load directly over the quad — making it one of the most effective exercises for quad hypertrophy while simultaneously training hip mobility under load. If the front rack position causes shoulder discomfort, cross your arms (clean grip alternative) or switch to hack squat machine. Hack squat is a legitimate substitute — full depth, controlled tempo. Either way, this is your main squat variation for Legs B.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Romanian Deadlift (RDL)</div><div class="lift-sets-reps">2 working sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~13 min</div><div class="lift-chevron">▼</div><div class="lift-note">This is a hip hinge, not a deadlift. Soft knees throughout — about 15–20° of bend. Push your hips back as the bar travels down your legs, keeping it close to your body. You should feel a strong hamstring stretch at the bottom. Stop when you feel your lower back start to round — that's your end range. Go heavy, but never at the expense of a neutral spine. This is the primary posterior chain builder on Legs B and directly complements the squat-dominant loading of Legs A.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Extension</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Targeted VMO (inner quad) and teardrop development. Sit all the way back in the pad, toes pointed slightly outward to bias the inner quad. Extend fully and hold 1 second at the top — most people let the weight drop before full quad contraction. Slow eccentric on the way down. This is not a joint-destructive exercise when done correctly; the danger comes from loading excessively heavy and using momentum rather than muscle control.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Leg Curl</div><div class="lift-sets-reps">2 working sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Second leg curl session of the week. Can superset with leg extensions to save time — the joints aren't competing and the brief active rest between antagonists keeps quality high. Feet slightly turned in (internal rotation) shifts emphasis to the outer hamstring bicep femoris. Keep hips flat on the pad — if your hips are rising to get the weight up, you've overloaded it.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Walking Lunges</div><div class="lift-sets-reps">2 working sets × 12 reps/leg</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Keep your torso upright and step long enough that your shin stays vertical at the bottom of each rep. Walking lunges train single-leg strength, hip flexor length under load, and proprioception simultaneously. This is functional leg training — the kind that makes you athletic, not just big. Add dumbbells once bodyweight becomes easy. The stretch in the rear hip at the bottom of each step is the hip flexor work you need between squat sessions.</div></div>
+    <div class="lift-row" style="--dc:#30c47a" onclick="toggleNote(this)"><div><div class="lift-name">Seated Calf Raise</div><div class="lift-sets-reps">2 working sets × 15–20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The seated position bends the knee, which puts the gastrocnemius in a shortened position and shifts all the load to the soleus — the flat, wide muscle that sits underneath. Training both the standing and seated calf raise is the only way to fully develop the lower leg. Full range, full stretch at the bottom. The soleus responds to higher reps. 15–20 is the right zone here.</div></div>
   </div>
 
   <!-- ACCESSORY -->
   <div class="plan-content" id="day-accessory">
     <div class="plan-day-header">
-      <div><div class="plan-day-title" style="color:#a78bfa">ACCESSORY</div><div class="plan-day-focus">Mobility, core stability, and athletic maintenance. No heavy loading.</div></div>
-      <div class="plan-badges"><span class="badge" style="background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.3)">Sunday</span><span class="badge" style="background:#1a1a1a;color:#f59e0b;border:1px solid #2a2a2a">⏱ ~55 min</span></div>
+      <div><div class="plan-day-title" style="color:#bf84fa">ACCESSORY</div><div class="plan-day-focus">Mobility, core stability, and athletic maintenance. No heavy loading.</div></div>
+      <div class="plan-badges"><span class="badge" style="background:rgba(156,92,245,0.12);color:#bf84fa;border:1px solid rgba(156,92,245,0.28)">Sunday</span><span class="badge" style="background:#13141f;color:#f5a623;border:1px solid #1c1e30">⏱ ~55 min</span></div>
     <button class="clear-day-btn" onclick="clearDayLogs('accessory'); return false;">Clear Logs</button>
       </div>
-    <div style="padding:20px 24px;background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.2);border-left:4px solid #7c3aed;margin-bottom:32px">
-      <div style="font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#a78bfa;margin-bottom:16px">Foam Roll First: quads, hip flexors, t-spine, 5 min. Then 10 deep diaphragmatic breaths.</div>
+    <div style="padding:20px 24px;background:rgba(156,92,245,0.05);border:1px solid rgba(156,92,245,0.18);border-left:4px solid #9c5cf5;margin-bottom:32px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#bf84fa;margin-bottom:16px">Foam Roll First: quads, hip flexors, t-spine, 5 min. Then 10 deep diaphragmatic breaths.</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
         <span style="font-size:13px;color:var(--muted)">No heavy loading.</span>
         <span style="font-size:13px;color:var(--muted)">Hip work is the priority.</span>
@@ -2020,17 +2031,17 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Movement</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Hip Flexor Stretch (couch stretch)</div><div class="lift-sets-reps">2 working sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The single most important mobility exercise for anyone who squats and sits. Tight psoas and rectus femoris cause anterior pelvic tilt, which limits squat depth, increases lower back stress, and flattens the glute response. Rear foot on a bench or couch, front shin vertical, drive your hip toward the floor. You should feel this deep in the front of the rear hip. Hold the tension — don't wiggle around. 60 seconds is the minimum effective dose for actual tissue change.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Hip 90/90 Switches</div><div class="lift-sets-reps">2 working sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit with both knees bent at 90° — one in front, one to the side. Rotate your pelvis to switch sides, moving through internal and external rotation of the hip joint. This is the most direct way to train hip mobility in the pattern that affects squatting and sprinting. Don't use your hands to push your knee down. Let the range come from actual hip rotation. Over 10 weeks of Sunday sessions this will measurably change your squat depth.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Pigeon Pose</div><div class="lift-sets-reps">2 working sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Targets the piriformis and external hip rotators — the muscles responsible for hip tightness that presents as knee cave during squats. Front shin as close to horizontal as your current mobility allows. Don't let your pelvis rotate — keep both hips square to the floor. Breathe into the tension. 60 seconds minimum per side. If you're rushing through this, you're not getting the adaptation. It's supposed to be uncomfortable. That discomfort is the work.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Band Pull-Aparts</div><div class="lift-sets-reps">2 working sets × 20 reps</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hold the band at shoulder width, keep arms straight, and pull it apart to chest level — ending in a "T" position. Pinch your shoulder blades together hard at the end range. This trains the posterior deltoid and external rotators in a way that directly counterbalances the internal rotation load of pressing. Four sets of 20 on your rest day keeps the shoulder infrastructure healthy between heavy push and pull sessions.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Face Pull with External Rotation</div><div class="lift-sets-reps">2 working sets × 20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Light load — the goal is rotator cuff activation, not strength stimulus. Pull to your face with high elbows, then add an external rotation at the end: press the handles up and outward so your hands end above your elbows. This end-range external rotation is what makes this version more effective than a standard face pull. Think of this as shoulder maintenance — the reason this shoulder will still be training heavy at 40.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Dead Bug</div><div class="lift-sets-reps">2 working sets × 10/side</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie on your back, arms straight to the ceiling, hips and knees at 90°. Lower the opposite arm and leg simultaneously toward the floor — without letting your lower back come off the ground. That's the whole exercise. The lower back must stay in contact with the floor throughout. This trains anti-extension core stability — the ability to resist lumbar extension under load. That's the same stability you need to brace properly under a squat bar. Don't rush the reps.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Pallof Press</div><div class="lift-sets-reps">2 working sets × 12/side</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Stand sideways to a cable stack at chest height. Hold the handle at your sternum, brace hard, and press straight out in front of you — the cable will try to rotate you toward it. Resist that rotation completely. This trains anti-rotation core strength, which is the stability pattern used in almost every athletic movement and heavy compound lift. You should feel this in your obliques and deep core. Pause at full extension for 1 second.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Ab Wheel Rollout</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">One of the highest difficulty core exercises — don't let the simple appearance fool you. Roll out to a position where your body is parallel or near-parallel to the floor, maintaining a completely neutral spine. The moment your lower back arches, you've gone too far. Start from your knees until you can control the full range. This builds the same bracing pattern you use in heavy squats and deadlifts — core rigidity under axial load.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Single Leg Glute Bridge</div><div class="lift-sets-reps">2 working sets × 15/side</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie on your back, one foot flat on the floor, the other leg extended. Drive through the heel and lift your hips until your body forms a straight line from shoulder to knee. Squeeze the glute hard at the top — most people fire their hamstring and back instead. The glute should be doing the work. Single-leg variation addresses bilateral glute strength imbalances that develop from asymmetrical squat patterns, and directly improves hip stability for squatting and sprinting.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">T-Spine Rotation (foam roller)</div><div class="lift-sets-reps">2 working sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~4 min</div><div class="lift-chevron">▼</div><div class="lift-note">Place the foam roller perpendicular to your spine at mid-back level (thoracic spine, not lower back). Support your head, cross your arms, and rotate to each side. Thoracic mobility is critical for overhead pressing mechanics — a stiff t-spine forces the shoulder to compensate, which is where impingement patterns develop. Also directly affects your ability to keep an upright torso in the front squat. 10 reps each side, letting the weight of your arms rotate you further each rep.</div></div>
-    <div class="lift-row" style="--dc:#7c3aed" onclick="toggleNote(this)"><div><div class="lift-name">Jefferson Curl (very light)</div><div class="lift-sets-reps">2 working sets × 8 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~4 min</div><div class="lift-chevron">▼</div><div class="lift-note">Stand on a box or step, hold 10–25 lbs, and slowly curl your spine down vertebra by vertebra — chin to chest first, then thoracic, then lumbar. This is controlled spinal flexion under minimal load, which builds tensile strength in the spinal erectors and improves flexion range of motion. Never heavy. Never rushed. This is the opposite of every other movement in this program — the spine is rounding deliberately. That deliberate control is what makes it safe and beneficial.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Hip Flexor Stretch (couch stretch)</div><div class="lift-sets-reps">2 working sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The single most important mobility exercise for anyone who squats and sits. Tight psoas and rectus femoris cause anterior pelvic tilt, which limits squat depth, increases lower back stress, and flattens the glute response. Rear foot on a bench or couch, front shin vertical, drive your hip toward the floor. You should feel this deep in the front of the rear hip. Hold the tension — don't wiggle around. 60 seconds is the minimum effective dose for actual tissue change.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Hip 90/90 Switches</div><div class="lift-sets-reps">2 working sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit with both knees bent at 90° — one in front, one to the side. Rotate your pelvis to switch sides, moving through internal and external rotation of the hip joint. This is the most direct way to train hip mobility in the pattern that affects squatting and sprinting. Don't use your hands to push your knee down. Let the range come from actual hip rotation. Over 10 weeks of Sunday sessions this will measurably change your squat depth.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Pigeon Pose</div><div class="lift-sets-reps">2 working sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Targets the piriformis and external hip rotators — the muscles responsible for hip tightness that presents as knee cave during squats. Front shin as close to horizontal as your current mobility allows. Don't let your pelvis rotate — keep both hips square to the floor. Breathe into the tension. 60 seconds minimum per side. If you're rushing through this, you're not getting the adaptation. It's supposed to be uncomfortable. That discomfort is the work.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Band Pull-Aparts</div><div class="lift-sets-reps">2 working sets × 20 reps</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hold the band at shoulder width, keep arms straight, and pull it apart to chest level — ending in a "T" position. Pinch your shoulder blades together hard at the end range. This trains the posterior deltoid and external rotators in a way that directly counterbalances the internal rotation load of pressing. Four sets of 20 on your rest day keeps the shoulder infrastructure healthy between heavy push and pull sessions.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Face Pull with External Rotation</div><div class="lift-sets-reps">2 working sets × 20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Light load — the goal is rotator cuff activation, not strength stimulus. Pull to your face with high elbows, then add an external rotation at the end: press the handles up and outward so your hands end above your elbows. This end-range external rotation is what makes this version more effective than a standard face pull. Think of this as shoulder maintenance — the reason this shoulder will still be training heavy at 40.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Dead Bug</div><div class="lift-sets-reps">2 working sets × 10/side</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie on your back, arms straight to the ceiling, hips and knees at 90°. Lower the opposite arm and leg simultaneously toward the floor — without letting your lower back come off the ground. That's the whole exercise. The lower back must stay in contact with the floor throughout. This trains anti-extension core stability — the ability to resist lumbar extension under load. That's the same stability you need to brace properly under a squat bar. Don't rush the reps.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Pallof Press</div><div class="lift-sets-reps">2 working sets × 12/side</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Stand sideways to a cable stack at chest height. Hold the handle at your sternum, brace hard, and press straight out in front of you — the cable will try to rotate you toward it. Resist that rotation completely. This trains anti-rotation core strength, which is the stability pattern used in almost every athletic movement and heavy compound lift. You should feel this in your obliques and deep core. Pause at full extension for 1 second.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Ab Wheel Rollout</div><div class="lift-sets-reps">2 working sets × 10–12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">One of the highest difficulty core exercises — don't let the simple appearance fool you. Roll out to a position where your body is parallel or near-parallel to the floor, maintaining a completely neutral spine. The moment your lower back arches, you've gone too far. Start from your knees until you can control the full range. This builds the same bracing pattern you use in heavy squats and deadlifts — core rigidity under axial load.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Single Leg Glute Bridge</div><div class="lift-sets-reps">2 working sets × 15/side</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie on your back, one foot flat on the floor, the other leg extended. Drive through the heel and lift your hips until your body forms a straight line from shoulder to knee. Squeeze the glute hard at the top — most people fire their hamstring and back instead. The glute should be doing the work. Single-leg variation addresses bilateral glute strength imbalances that develop from asymmetrical squat patterns, and directly improves hip stability for squatting and sprinting.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">T-Spine Rotation (foam roller)</div><div class="lift-sets-reps">2 working sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~4 min</div><div class="lift-chevron">▼</div><div class="lift-note">Place the foam roller perpendicular to your spine at mid-back level (thoracic spine, not lower back). Support your head, cross your arms, and rotate to each side. Thoracic mobility is critical for overhead pressing mechanics — a stiff t-spine forces the shoulder to compensate, which is where impingement patterns develop. Also directly affects your ability to keep an upright torso in the front squat. 10 reps each side, letting the weight of your arms rotate you further each rep.</div></div>
+    <div class="lift-row" style="--dc:#9c5cf5" onclick="toggleNote(this)"><div><div class="lift-name">Jefferson Curl (very light)</div><div class="lift-sets-reps">2 working sets × 8 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~4 min</div><div class="lift-chevron">▼</div><div class="lift-note">Stand on a box or step, hold 10–25 lbs, and slowly curl your spine down vertebra by vertebra — chin to chest first, then thoracic, then lumbar. This is controlled spinal flexion under minimal load, which builds tensile strength in the spinal erectors and improves flexion range of motion. Never heavy. Never rushed. This is the opposite of every other movement in this program — the spine is rounding deliberately. That deliberate control is what makes it safe and beneficial.</div></div>
   </div>
 </section>
 
@@ -2045,7 +2056,7 @@ body.training-mode footer { display: none; }
     <div class="rest-modal-ring-wrap">
       <svg viewBox="0 0 200 200">
         <circle cx="100" cy="100" r="85" stroke="#f0f0f0" stroke-width="10" fill="none"/>
-        <circle id="restModalRing" cx="100" cy="100" r="85" stroke="#e8412a" stroke-width="10" fill="none"
+        <circle id="restModalRing" cx="100" cy="100" r="85" stroke="#f04060" stroke-width="10" fill="none"
           stroke-dasharray="534" stroke-dashoffset="0" stroke-linecap="round"
           transform="rotate(-90 100 100)" style="transition:stroke-dashoffset 1s linear,stroke 0.4s;"/>
       </svg>
@@ -2389,11 +2400,11 @@ body.training-mode footer { display: none; }
     if (mRing) mRing.style.strokeDashoffset = offset;
     if (secs <= 10 && secs > 0) {
       if (mTime) mTime.className = 'rest-modal-time warning';
-      if (mRing) mRing.style.stroke = '#e8412a';
+      if (mRing) mRing.style.stroke = '#f04060';
     }
     if (secs <= 0) {
       if (mTime) { mTime.textContent = 'GO!'; mTime.className = 'rest-modal-time done'; }
-      if (mRing) { mRing.style.stroke = '#16a34a'; mRing.style.strokeDashoffset = CIRC; }
+      if (mRing) { mRing.style.stroke = '#30c47a'; mRing.style.strokeDashoffset = CIRC; }
       if (mStatus) { mStatus.textContent = 'Next set ready'; mStatus.className = 'rest-modal-status ready'; }
       if (mSkip) { mSkip.textContent = 'Start Next Set'; mSkip.className = 'rest-modal-skip ready-state'; }
     }
@@ -2477,7 +2488,7 @@ body.training-mode footer { display: none; }
     if (toggleBtn) toggleBtn.textContent = 'Pause';
     if (mLift) mLift.textContent = liftName || '';
     if (mTime) { mTime.textContent = formatTime(seconds); mTime.className = 'rest-modal-time'; }
-    if (mRing) { mRing.style.strokeDashoffset = '0'; mRing.style.stroke = '#e8412a'; }
+    if (mRing) { mRing.style.strokeDashoffset = '0'; mRing.style.stroke = '#f04060'; }
     if (mStatus) { mStatus.textContent = ''; mStatus.className = 'rest-modal-status'; }
     if (mSkip) { mSkip.textContent = 'Skip Rest'; mSkip.className = 'rest-modal-skip'; }
     if (modal) modal.classList.add('visible');
@@ -2904,9 +2915,9 @@ body.training-mode footer { display: none; }
     document.querySelectorAll('.train-week-btn').forEach(function(b){
       b.style.background='transparent'; b.style.color='#555'; b.style.borderColor='#222';
     });
-    btn.style.background='rgba(232,65,42,0.15)';
-    btn.style.color='#e8412a';
-    btn.style.borderColor='rgba(232,65,42,0.4)';
+    btn.style.background='rgba(240,64,96,0.14)';
+    btn.style.color='#f04060';
+    btn.style.borderColor='rgba(240,64,96,0.35)';
   }
 
   //     MONK MODE ENTRY FLOW                                                     
