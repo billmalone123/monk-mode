@@ -1,15 +1,6 @@
-const CACHE = 'monk-mode-v2';
-const URLS = [
-  '/monk-mode/',
-  '/monk-mode/index.html',
-];
+const CACHE = 'monk-mode-v3';
 
 self.addEventListener('install', function(e) {
-  e.waitUntil(
-    caches.open(CACHE).then(function(cache) {
-      return cache.addAll(URLS);
-    })
-  );
   self.skipWaiting();
 });
 
@@ -26,6 +17,23 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
+  var url = e.request.url;
+
+  // HTML pages: network-first so updates are always immediate
+  if (e.request.headers.get('accept') && e.request.headers.get('accept').includes('text/html')) {
+    e.respondWith(
+      fetch(e.request).then(function(response) {
+        var clone = response.clone();
+        caches.open(CACHE).then(function(cache) { cache.put(e.request, clone); });
+        return response;
+      }).catch(function() {
+        return caches.match(e.request);
+      })
+    );
+    return;
+  }
+
+  // Everything else: cache-first (fonts, etc)
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       var fresh = fetch(e.request).then(function(response) {
