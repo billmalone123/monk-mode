@@ -774,10 +774,10 @@
   .last-session-chip {
     font-size: 12px;
     color: #44445A;
-    padding: 3px 10px;
+    padding: 3px 12px;
     background: #0F0F1A;
-    border: 1px solid #23232E;
-    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 999px;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -793,10 +793,10 @@
   }
   .log-modal-card {
     background: #16161F;
-    border: 1px solid #23232E;
+    border: 1px solid rgba(255,255,255,0.08);
     border-top: 3px solid var(--green);
-    border-radius: 8px;
-    padding: 28px 32px;
+    border-radius: 22px;
+    padding: 32px 36px;
     width: 320px;
     max-width: 90vw;
     box-shadow: 0 24px 64px rgba(0,0,0,0.6);
@@ -841,7 +841,7 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 22px;
     font-weight: 700;
-    border-radius: 4px;
+    border-radius: 12px;
     width: 100%;
     outline: none;
     transition: border-color 0.15s;
@@ -858,7 +858,7 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 999px;
     width: 100%;
     margin-bottom: 10px;
     transition: all 0.15s;
@@ -876,7 +876,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 999px;
     width: 100%;
     transition: all 0.15s;
   }
@@ -892,7 +892,7 @@
     font-size: 11px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    border-radius: 2px;
+    border-radius: 999px;
     transition: all 0.15s;
     margin-left: 8px;
   }
@@ -1204,7 +1204,7 @@
     letter-spacing: 0.15em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 999px;
     width: 100%;
     margin-bottom: 10px;
     transition: all 0.15s;
@@ -1377,13 +1377,13 @@ body.training-mode .section-label { color: var(--red); }
 body.training-mode .plan-day-title { /* keep colored */ }
 body.training-mode .plan-day-focus { color: #666; }
 body.training-mode .lift-table-header span { color: #aaa; }
-body.training-mode .lift-table-header { border-bottom-color: #e0e0e0; }
-body.training-mode .lift-row { border-bottom-color: #ebebeb; background: #fff; margin-bottom: 2px; }
-body.training-mode .lift-row:hover { background: #fafafa; }
+body.training-mode .lift-table-header { border-bottom-color: transparent; }
+body.training-mode .lift-row { border-bottom: none; background: #fff; border-radius: 16px; margin-bottom: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+body.training-mode .lift-row:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.09); }
 body.training-mode .lift-name { color: #16161F; }
 body.training-mode .lift-sets-reps { color: #888; }
 body.training-mode .lift-chevron { color: #ccc; }
-body.training-mode .lift-note { background: #f9f9f9; color: #555; }
+body.training-mode .lift-note { background: #f6f6f9; color: #555; border-radius: 12px; }
 body.training-mode .warmup-toggle-btn { border-color: #cdeee9; color: #1f8a7e; }
 body.training-mode .warmup-panel { background: rgba(45,212,191,0.03); border-color: rgba(45,212,191,0.22); }
 body.training-mode .warmup-step-text { color: #23232E; }
@@ -1415,8 +1415,9 @@ body.training-mode footer { display: none; }
 }
 .rest-modal-overlay.visible { display: flex; animation: fadeIn 0.2s ease; }
 .rest-modal-card {
-  background: #fff; padding: 44px 52px; text-align: center;
+  background: #fff; padding: 48px 52px; text-align: center;
   width: min(380px, 92vw); position: relative;
+  border-radius: 28px; box-shadow: 0 30px 80px rgba(0,0,0,0.4);
 }
 .rest-modal-eyebrow {
   font-size: 10px; font-weight: 700; letter-spacing: 0.3em;
@@ -1448,8 +1449,9 @@ body.training-mode footer { display: none; }
 .rest-modal-btns { display: flex; gap: 10px; justify-content: center; }
 .rest-modal-add {
   background: transparent; border: 1px solid #e0e0e0; color: #999;
-  padding: 12px 20px; font-family: 'Barlow Condensed', sans-serif;
+  padding: 12px 22px; font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700; font-size: 14px; letter-spacing: 0.1em;
+  border-radius: 999px;
   text-transform: uppercase; cursor: pointer; transition: all 0.15s;
 }
 .rest-modal-add:hover { border-color: #bbb; color: #555; }
@@ -1457,6 +1459,7 @@ body.training-mode footer { display: none; }
   background: #16161F; color: #fff; border: 1px solid #16161F;
   padding: 12px 28px; font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700; font-size: 14px; letter-spacing: 0.1em;
+  border-radius: 999px;
   text-transform: uppercase; cursor: pointer; transition: all 0.15s; flex: 1;
 }
 .rest-modal-skip:hover { background: #333; }
