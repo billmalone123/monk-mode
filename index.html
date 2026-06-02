@@ -2163,41 +2163,41 @@ body.training-mode footer { display: none; }
   function saveLogs(l) { try { localStorage.setItem(STORE_KEY, JSON.stringify(l)); } catch {} }
   let logs = loadLogs();
 
-  //     RAMP-UP HINTS (shown below each exercise's set count)
+  //     RAMP-UP HINTS — arrays of {pct,reps} are calculated from badge weight; strings are shown as-is
   const RAMP_HINTS = {
-    'push1::0': '3 ramp sets: 50%×5 → 65%×3 → 80%×2',
-    'push1::1': '2 ramp sets: 50%×8 → 70%×5',
-    'push1::2': '1 warm-up set: 50%×12',
-    'push1::3': '2 ramp sets: 50%×8 → 70%×5',
-    'push1::4': '1 warm-up set: 50%×15',
-    'push1::5': '1 warm-up set: 50%×12',
-    'pull1::0': '3 ramp sets: BW×5 → BW×3 → light added×2',
-    'pull1::1': '2 ramp sets: 50%×5 → 65%×3',
-    'pull1::2': '1 ramp set: 60%×8',
-    'pull1::3': '1 warm-up set: 50%×10',
-    'pull1::5': '1 warm-up set: 50%×10',
-    'legs1::0': '4 ramp sets: 45%×5 → 60%×3 → 75%×2 → 85%×1',
-    'legs1::1': '1 ramp set: 50%×3 at 60–65% of your back squat',
-    'legs1::2': '2 ramp sets: 50%×8 → 70%×5',
-    'legs1::3': '1 ramp set: BW or light ×5/leg',
-    'legs1::4': '1 warm-up set: 50%×10',
-    'push2::0': '3 ramp sets: 50%×5 → 65%×3 → 80%×2',
-    'push2::1': '2 ramp sets: 50%×8 → 70%×5',
-    'push2::2': '1 warm-up set: 50%×12',
-    'push2::3': '1 ramp set: 60%×8',
-    'push2::5': '1 ramp set: 60%×8',
-    'push2::6': '1 ramp set: 60%×5',
-    'pull2::0': '2 ramp sets: 50%×8 → 70%×5',
-    'pull2::1': '1 ramp set: 60%×8/side',
-    'pull2::2': '1 warm-up set: 50%×12',
-    'pull2::3': '1 ramp set: 60%×8',
-    'pull2::4': '1 warm-up set: 50%×15',
-    'pull2::6': '1 ramp set: 60%×8',
-    'legs2::0': '3 ramp sets: 50%×5 → 65%×3 → 80%×2',
-    'legs2::1': '2 ramp sets: 50%×5 → 70%×3',
-    'legs2::2': '1 warm-up set: 50%×10',
-    'legs2::3': '1 warm-up set: 50%×10',
-    'legs2::4': '1 ramp set: BW ×8/leg',
+    'push1::0': [{pct:0.50,reps:5},{pct:0.65,reps:3},{pct:0.80,reps:2}],
+    'push1::1': [{pct:0.50,reps:8},{pct:0.70,reps:5}],
+    'push1::2': [{pct:0.50,reps:12}],
+    'push1::3': [{pct:0.50,reps:8},{pct:0.70,reps:5}],
+    'push1::4': [{pct:0.50,reps:15}],
+    'push1::5': [{pct:0.50,reps:12}],
+    'pull1::0': 'BW×5 → BW×3 → light added weight×2',
+    'pull1::1': [{pct:0.50,reps:5},{pct:0.65,reps:3}],
+    'pull1::2': [{pct:0.60,reps:8}],
+    'pull1::3': [{pct:0.50,reps:10}],
+    'pull1::5': [{pct:0.50,reps:10}],
+    'legs1::0': [{pct:0.45,reps:5},{pct:0.60,reps:3},{pct:0.75,reps:2},{pct:0.85,reps:1}],
+    'legs1::1': '60–65% of back squat × 3',
+    'legs1::2': [{pct:0.50,reps:8},{pct:0.70,reps:5}],
+    'legs1::3': 'BW or light × 5/leg',
+    'legs1::4': [{pct:0.50,reps:10}],
+    'push2::0': [{pct:0.50,reps:5},{pct:0.65,reps:3},{pct:0.80,reps:2}],
+    'push2::1': [{pct:0.50,reps:8},{pct:0.70,reps:5}],
+    'push2::2': [{pct:0.50,reps:12}],
+    'push2::3': [{pct:0.60,reps:8}],
+    'push2::5': [{pct:0.60,reps:8}],
+    'push2::6': [{pct:0.60,reps:5}],
+    'pull2::0': [{pct:0.50,reps:8},{pct:0.70,reps:5}],
+    'pull2::1': [{pct:0.60,reps:'8/s'}],
+    'pull2::2': [{pct:0.50,reps:12}],
+    'pull2::3': [{pct:0.60,reps:8}],
+    'pull2::4': 'light × 15',
+    'pull2::6': [{pct:0.60,reps:8}],
+    'legs2::0': [{pct:0.50,reps:5},{pct:0.65,reps:3},{pct:0.80,reps:2}],
+    'legs2::1': [{pct:0.50,reps:5},{pct:0.70,reps:3}],
+    'legs2::2': [{pct:0.50,reps:10}],
+    'legs2::3': [{pct:0.50,reps:10}],
+    'legs2::4': 'BW × 8/leg',
   };
 
   //     LIFT SETS DATA
@@ -2225,13 +2225,18 @@ body.training-mode footer { display: none; }
         const liftName = row.querySelector('.lift-name') ? row.querySelector('.lift-name').textContent : '';
         row.setAttribute('data-day', dayId);
         row.setAttribute('data-lift', liftIdx);
-        const rampText = RAMP_HINTS[key];
-        if (rampText) {
+        const rampData = RAMP_HINTS[key];
+        if (rampData) {
           const setsRepsEl = row.querySelector('.lift-sets-reps');
           if (setsRepsEl) {
             const hintEl = document.createElement('div');
-            hintEl.className = 'ramp-hint';
-            hintEl.textContent = '↑ ' + rampText;
+            if (typeof rampData === 'string') {
+              hintEl.className = 'ramp-hint';
+              hintEl.textContent = '↑ ' + rampData;
+            } else {
+              hintEl.className = 'ramp-hint ramp-hint-calc';
+              hintEl.textContent = '↑ Warm-up: enter maxes to calculate';
+            }
             setsRepsEl.insertAdjacentElement('afterend', hintEl);
           }
         }
@@ -2797,6 +2802,22 @@ body.training-mode footer { display: none; }
     if (btn && hasAny) { btn.classList.add('has-data'); btn.textContent = '  Edit Maxes'; }
   }
 
+  function updateRampHint(row, workingWeight) {
+    if (!workingWeight) return;
+    var dayId = row.getAttribute('data-day');
+    var liftIdx = row.getAttribute('data-lift');
+    if (!dayId || liftIdx === null) return;
+    var key = dayId + '::' + liftIdx;
+    var rampData = RAMP_HINTS[key];
+    if (!Array.isArray(rampData)) return;
+    var hintEl = row.querySelector('.ramp-hint-calc');
+    if (!hintEl) return;
+    var steps = rampData.map(function(s) {
+      return roundToNearestFive(workingWeight * s.pct) + '×' + s.reps;
+    });
+    hintEl.textContent = '↑ Warm-up: ' + steps.join(' → ');
+  }
+
   function renderWeightBadges() {
     loadAccBaselines();
     var intensity = WEEK_INTENSITY[currentTrainWeek] || [0.72, 0.78];
@@ -2842,7 +2863,9 @@ body.training-mode footer { display: none; }
             accBadge.className = 'lift-weight-badge' + (entry.cls ? ' ' + entry.cls : '');
             var baseline = accBaselines[name];
             if (baseline) {
-              accBadge.textContent = roundToNearestFive(baseline * (ACCESSORY_PROG[currentTrainWeek] || 1.0)) + ' lbs';
+              var accWeight = roundToNearestFive(baseline * (ACCESSORY_PROG[currentTrainWeek] || 1.0));
+              accBadge.textContent = accWeight + ' lbs';
+              updateRampHint(row, accWeight);
             } else {
               accBadge.textContent = 'Log wk 1 first';
               accBadge.style.cssText = 'color:#555;border-color:rgba(255,255,255,0.08);background:transparent;font-size:11px';
@@ -2856,15 +2879,19 @@ body.training-mode footer { display: none; }
         var max = userMaxes[entry.maxKey];
         if (!max) break;
         var badge;
+        var workingWeight;
         if (entry.pct) {
-          badge = roundToNearestFive(max * entry.pct) + ' lbs';
+          workingWeight = roundToNearestFive(max * entry.pct);
+          badge = workingWeight + ' lbs';
         } else {
+          workingWeight = roundToNearestFive(max * (lowPct + highPct) / 2);
           badge = calcWeightRange(max, lowPct, highPct);
         }
         var badgeEl = document.createElement('span');
         badgeEl.className = 'lift-weight-badge' + (entry.cls ? ' ' + entry.cls : '');
         badgeEl.textContent = badge;
         nameEl.appendChild(badgeEl);
+        updateRampHint(row, workingWeight);
         break;
       }
     });
