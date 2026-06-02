@@ -1837,28 +1837,25 @@ body.training-mode footer { display: none; }
     </div>
   </div>
   <div class="plan-nav" id="planNav">
-    <button class="plan-nav-btn active" style="--dc:#f04060" onclick="switchDay('push1')" id="btn-push1">Mon · Push A</button>
-    <button class="plan-nav-btn" style="--dc:#4d86f5" onclick="switchDay('pull1')" id="btn-pull1">Tue · Pull A</button>
-    <button class="plan-nav-btn" style="--dc:#30c47a" onclick="switchDay('legs1')" id="btn-legs1">Wed · Legs A</button>
-    <button class="plan-nav-btn" style="--dc:#f04060" onclick="switchDay('push2')" id="btn-push2">Thu · Push B</button>
-    <button class="plan-nav-btn" style="--dc:#4d86f5" onclick="switchDay('pull2')" id="btn-pull2">Fri · Pull B</button>
-    <button class="plan-nav-btn" style="--dc:#30c47a" onclick="switchDay('legs2')" id="btn-legs2">Sat · Legs B</button>
-    <button class="plan-nav-btn" style="--dc:#9c5cf5" onclick="switchDay('accessory')" id="btn-accessory">Sun · Accessory</button>
+    <button class="plan-nav-btn active" style="--dc:#f04060" onclick="switchDay('chest')" id="btn-chest">Day 1 · Chest + Back</button>
+    <button class="plan-nav-btn" style="--dc:#4d86f5" onclick="switchDay('arms')" id="btn-arms">Day 2 · Shoulders + Arms</button>
+    <button class="plan-nav-btn" style="--dc:#30c47a" onclick="switchDay('legs')" id="btn-legs">Day 3 · Legs + Abs</button>
+    <button class="plan-nav-btn" style="--dc:#9c5cf5" onclick="switchDay('rest')" id="btn-rest">Day 4 · Rest + Stretch</button>
   </div>
 
-  <!-- PUSH A -->
-  <div class="plan-content active" id="day-push1">
+  <!-- CHEST + BACK -->
+  <div class="plan-content active" id="day-chest">
     <div class="plan-day-header">
       <div>
-        <div class="plan-day-title" style="color:#f04060">PUSH A</div>
-        <div class="plan-day-focus">Bench-focused. Horizontal pressing priority.</div>
+        <div class="plan-day-title" style="color:#f04060">CHEST + BACK</div>
+        <div class="plan-day-focus">Horizontal push and pull. Balanced pressing and rowing volume.</div>
       </div>
       <div class="plan-badges">
-        <span class="badge" style="background:rgba(240,64,96,0.12);color:#f04060;border:1px solid rgba(240,64,96,0.28)">Monday</span>
+        <span class="badge" style="background:rgba(240,64,96,0.12);color:#f04060;border:1px solid rgba(240,64,96,0.28)">Day 1</span>
         <span class="badge" style="background:#13141f;color:#f5a623;border:1px solid #1c1e30">⏱ ~1:20</span>
       </div>
-    <button class="clear-day-btn" onclick="clearDayLogs('push1'); return false;">Clear Logs</button>
-      </div>
+      <button class="clear-day-btn" onclick="clearDayLogs('chest'); return false;">Clear Logs</button>
+    </div>
     <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-push1', this)">▶ Show Warm-Up</button>
     <div class="warmup-panel" id="wu-push1">
       <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
