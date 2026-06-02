@@ -169,9 +169,10 @@
     font-size: 16px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    padding: 16px 36px;
+    padding: 16px 40px;
+    border-radius: 999px;
     border: none; cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.25s ease;
     margin-top: 48px;
     align-self: flex-start;
     box-shadow: 0 4px 24px rgba(123,97,255,0.3);
@@ -222,15 +223,16 @@
   .pillars {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2px;
+    gap: 16px;
   }
   .pillar {
     background: var(--card);
-    padding: 28px 24px;
-    border: 1px solid var(--border);
-    transition: border-color 0.2s;
+    padding: 32px 28px;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 18px;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
   }
-  .pillar:hover { border-color: var(--dim); }
+  .pillar:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.35); }
   .pillar-icon {
     font-size: 24px;
     margin-bottom: 12px;
@@ -255,24 +257,26 @@
   }
   .week-tab {
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.08);
     color: var(--muted);
     padding: 10px 24px;
+    border-radius: 999px;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
     font-size: 15px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s ease;
   }
-  .week-tab:hover { border-color: var(--dim); color: var(--text); }
+  .week-tab:hover { border-color: rgba(255,255,255,0.2); color: var(--text); transform: translateY(-2px); }
   .week-tab.active { background: var(--red); border-color: var(--red); color: #fff; }
   .week-info {
-    padding: 24px 28px;
+    padding: 28px 32px;
     background: var(--card);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.06);
     border-left: 4px solid var(--red);
+    border-radius: 16px;
     margin-bottom: 40px;
     display: flex; gap: 32px; flex-wrap: wrap;
   }
@@ -284,14 +288,15 @@
   .day-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-    gap: 2px;
+    gap: 16px;
   }
   .day-card {
     background: var(--card);
-    border: 1px solid var(--border);
-    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 18px;
+    padding: 32px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
     position: relative;
     overflow: hidden;
   }
@@ -306,7 +311,7 @@
     transition: transform 0.3s;
   }
   .day-card:hover::before { transform: scaleX(1); }
-  .day-card:hover { border-color: #2D2D3D; background: #1A1A26; }
+  .day-card:hover { border-color: rgba(255,255,255,0.12); background: #1A1A26; transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.35); }
   .day-card-tag {
     font-size: 10px;
     font-weight: 700;
@@ -330,8 +335,8 @@
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 2px;
+    padding: 4px 12px;
+    border-radius: 999px;
   }
   .day-duration { font-size: 12px; color: #f59e0b; font-weight: 600; }
   .day-lift-count { font-size: 12px; color: var(--muted); }
@@ -339,26 +344,26 @@
   /* WORKOUT PLAN */
   #plan { background: var(--black); border-top: 1px solid var(--border); }
   .plan-nav {
-    display: flex; gap: 2px;
+    display: flex; gap: 10px;
     margin-bottom: 48px;
     flex-wrap: wrap;
   }
   .plan-nav-btn {
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.08);
     color: var(--muted);
-    padding: 12px 20px;
+    padding: 11px 22px;
+    border-radius: 999px;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
     font-size: 14px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.15s;
-    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
   }
-  .plan-nav-btn:hover { color: var(--text); border-color: var(--dim); }
-  .plan-nav-btn.active { color: #fff; background: #16161F; border-color: var(--dc, var(--red)); border-left-color: var(--dc, var(--red)); }
+  .plan-nav-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+  .plan-nav-btn.active { color: #fff; background: var(--dc, var(--red)); border-color: var(--dc, var(--red)); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
 
   .plan-content { display: none; }
   .plan-content.active { display: block; animation: fadeIn 0.3s ease; }
@@ -449,13 +454,14 @@
     display: grid;
     grid-template-columns: 1fr 80px 90px 90px;
     gap: 12px;
-    padding: 20px 0;
-    border-bottom: 1px solid #1C1C2A;
+    padding: 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: background 0.2s ease;
     align-items: start;
   }
-  .lift-row:hover { background: rgba(255,255,255,0.025); padding-left: 8px; }
+  .lift-row:hover { background: rgba(255,255,255,0.04); }
   .lift-name {
     font-size: 16px;
     font-weight: 600;
@@ -479,9 +485,10 @@
   .lift-note {
     display: none;
     grid-column: 1 / -1;
-    padding: 14px 16px;
+    padding: 16px 20px;
     background: var(--card);
     border-left: 3px solid var(--dc, var(--red));
+    border-radius: 0 12px 12px 0;
     font-size: 14px;
     color: var(--muted);
     line-height: 1.7;
@@ -503,7 +510,8 @@
   .prog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
   .prog-card {
     background: var(--card);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 18px;
     overflow: hidden;
   }
   .prog-card-header {
@@ -544,18 +552,19 @@
   }
   .prog-week-btn {
     background: transparent;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.08);
     color: var(--muted);
-    padding: 8px 20px;
+    padding: 8px 22px;
+    border-radius: 999px;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
     font-size: 14px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all 0.2s ease;
   }
-  .prog-week-btn:hover { border-color: var(--dim); color: var(--text); }
+  .prog-week-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); transform: translateY(-2px); }
   .prog-week-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
 
   /* FOOTER */
@@ -585,11 +594,12 @@
   /* BADGE STYLES */
   .badge {
     display: inline-block;
-    padding: 5px 12px;
+    padding: 5px 14px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+    border-radius: 999px;
   }
 
   /* DIVIDER */
@@ -1354,11 +1364,11 @@ body.training-mode .settings-open-btn {
   box-shadow: 0 2px 12px rgba(123,97,255,0.35);
 }
 body.training-mode .settings-open-btn:hover { background: linear-gradient(135deg, #9D88FF 0%, #5B43E0 100%); border-color: transparent; box-shadow: 0 4px 18px rgba(123,97,255,0.45); }
-.rest-timer-strip { display:flex; align-items:center; gap:10px; margin-bottom:20px; padding:12px 14px; background:#0F0F1A; border:1px solid #23232E; border-radius:4px; flex-wrap:wrap; }
+.rest-timer-strip { display:flex; align-items:center; gap:10px; margin-bottom:20px; padding:12px 14px; background:#0F0F1A; border:1px solid rgba(255,255,255,0.06); border-radius:14px; flex-wrap:wrap; }
 body.training-mode .rest-timer-strip { background:#f0f0f0; border-color:#ddd; }
 .rest-timer-strip-label { font-size:10px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
 body.training-mode .rest-timer-strip-label { color:#888; }
-.rest-preset-btn { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.08em; padding:6px 14px; background:transparent; border:1px solid #23232E; color:#6B6B82; border-radius:3px; cursor:pointer; transition:all 0.15s; }
+.rest-preset-btn { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.08em; padding:6px 16px; background:transparent; border:1px solid rgba(255,255,255,0.08); color:#6B6B82; border-radius:999px; cursor:pointer; transition:all 0.15s; }
 body.training-mode .rest-preset-btn { border-color:#ccc; color:#555; background:transparent; }
 .rest-preset-btn:hover, .rest-preset-btn.active-preset { background:var(--red); border-color:var(--red); color:#fff; }
 body.training-mode .rest-preset-btn:hover, body.training-mode .rest-preset-btn.active-preset { background:var(--red); border-color:var(--red); color:#fff; }
@@ -1545,10 +1555,10 @@ body.training-mode footer { display: none; }
     People say looks don't matter. Those people are lying to you. The world responds differently to a man who carries himself with physical authority. This is not vanity. This is strategy.
   </p>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:2px;margin-bottom:80px;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px;margin-bottom:80px;">
 
     <!-- Confidence -->
-    <div style="background:#16161F;border:1px solid #23232E;padding:40px 36px;position:relative;overflow:hidden;">
+    <div style="background:#16161F;border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(123,97,255,0.05);line-height:1;user-select:none;">01</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">Mental Edge</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Confidence<br>Is Not Born.<br>It's Built.</div>
@@ -1561,7 +1571,7 @@ body.training-mode footer { display: none; }
     </div>
 
     <!-- Social Status -->
-    <div style="background:#16161F;border:1px solid #23232E;padding:40px 36px;position:relative;overflow:hidden;">
+    <div style="background:#16161F;border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(123,97,255,0.05);line-height:1;user-select:none;">02</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">Social Capital</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">People Treat<br>You How You<br>Look.</div>
@@ -1574,7 +1584,7 @@ body.training-mode footer { display: none; }
     </div>
 
     <!-- Athletic Performance -->
-    <div style="background:#16161F;border:1px solid #23232E;padding:40px 36px;position:relative;overflow:hidden;">
+    <div style="background:#16161F;border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(123,97,255,0.05);line-height:1;user-select:none;">03</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--red);margin-bottom:20px;">Athletic Output</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Strong Men<br>Are Useful<br>Men.</div>
@@ -1589,7 +1599,7 @@ body.training-mode footer { display: none; }
   </div>
 
   <!-- Pull quote -->
-  <div style="border-left:4px solid var(--red);padding:32px 40px;background:#0F0F1A;max-width:800px;">
+  <div style="border-left:4px solid var(--red);border-radius:0 16px 16px 0;padding:36px 44px;background:#0F0F1A;max-width:800px;">
     <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(28px,4vw,48px);line-height:1.15;color:#fff;margin-bottom:20px;letter-spacing:0.01em;">
       "The average man will never know what he was capable of. He was too comfortable to find out."
     </div>
@@ -2057,7 +2067,7 @@ body.training-mode footer { display: none; }
       </div>
       <button class="clear-day-btn" onclick="clearDayLogs('rest'); return false;">Clear Logs</button>
     </div>
-    <div style="padding:20px 24px;background:rgba(242,95,158,0.05);border:1px solid rgba(242,95,158,0.18);border-left:4px solid #F25F9E;margin-bottom:32px">
+    <div style="padding:24px 28px;background:rgba(242,95,158,0.05);border:1px solid rgba(242,95,158,0.18);border-left:4px solid #F25F9E;border-radius:0 16px 16px 0;margin-bottom:32px">
       <div style="font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#FF8FC2;margin-bottom:16px">Start with 5 min foam rolling: quads, hip flexors, t-spine. Then 10 deep diaphragmatic breaths.</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
         <span style="font-size:13px;color:var(--muted)">No heavy loading.</span>
