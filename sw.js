@@ -1,4 +1,4 @@
-const CACHE = 'monk-mode-v3';
+const CACHE = 'monk-mode-v4';
 
 self.addEventListener('install', function(e) {
   self.skipWaiting();
@@ -7,9 +7,11 @@ self.addEventListener('install', function(e) {
 self.addEventListener('activate', function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
-      return Promise.all(
-        keys.filter(function(k) { return k !== CACHE; }).map(function(k) { return caches.delete(k); })
-      );
+      return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+    }).then(function() {
+      return self.clients.matchAll({ type: 'window' });
+    }).then(function(clients) {
+      clients.forEach(function(client) { client.navigate(client.url); });
     })
   );
   self.clients.claim();
@@ -17,9 +19,8 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(e) {
   if (e.request.method !== 'GET') return;
-  var url = e.request.url;
 
-  // HTML pages: network-first so updates are always immediate
+  // HTML: always network-first so deploys are instant
   if (e.request.headers.get('accept') && e.request.headers.get('accept').includes('text/html')) {
     e.respondWith(
       fetch(e.request).then(function(response) {
@@ -33,7 +34,7 @@ self.addEventListener('fetch', function(e) {
     return;
   }
 
-  // Everything else: cache-first (fonts, etc)
+  // Everything else: cache-first
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       var fresh = fetch(e.request).then(function(response) {
