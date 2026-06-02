@@ -1478,7 +1478,7 @@ body.training-mode footer { display: none; }
   <div id="sec-home" class="sub-sec on"><section class="hero" id="home">
   <div class="hero-bg"></div>
   <div class="hero-number">MM</div>
-  <div class="hero-eyebrow">10-Week PPL Strength Program</div>
+  <div class="hero-eyebrow">10-Week Arnold Split Program</div>
   <h1 class="hero-title">
     <span style="-webkit-text-stroke:4px rgba(255,255,255,0.9);color:transparent;display:block;text-shadow:0 0 80px rgba(255,255,255,0.08)">MONK</span>
     <span class="line2">MODE</span>
@@ -1487,12 +1487,12 @@ body.training-mode footer { display: none; }
     Enter Monk Mode <span class="hero-cta-arrow">→</span>
   </a>
   <p class="hero-desc">
-    10 weeks. 6 days a week. One goal. Walk into summer undeniable. This program is built to make you stronger, leaner, and impossible to ignore before the season starts.
+    10 weeks. 3 days on, 1 off. One goal. Walk into summer undeniable. This program is built on the Arnold Split — each muscle group trained twice per week, rotating exercises so you never stagnate.
   </p>
   <div class="hero-stats">
     <div class="stat-item">
-      <div class="stat-num">6<span>+1</span></div>
-      <div class="stat-label">Days / Week</div>
+      <div class="stat-num">3<span>+1</span></div>
+      <div class="stat-label">Day Rotation</div>
     </div>
     <div class="stat-item">
       <div class="stat-num">10</div>
@@ -1510,7 +1510,7 @@ body.training-mode footer { display: none; }
   <div class="about-grid">
     <div class="about-text">
       <p>Most guys are spinning their wheels, training consistently for months, even years, and looking exactly the same. Not because they lack effort. Because they lack structure. Random workouts and random progression produce random results. <strong>Monk Mode is not random.</strong></p>
-      <p>This is a <strong>10-week, 4-day Chest/Arms/Legs/Rest program</strong> built around one non-negotiable principle: progressive overload on the compounds that matter. Bench and hack squat increase every single week for three weeks, then you deload and hit it again heavier in Wave 2. Every muscle group is trained with dedicated focus — Chest + Back, Shoulders + Arms, Legs + Abs — giving you the training frequency to drive real adaptation without burning out. Day 4 is rest and stretch: mobility, shoulder maintenance, and recovery work that keeps you training hard for years, not just 10 weeks.</p>
+      <p>This is a <strong>10-week Arnold Split</strong> built around one non-negotiable principle: progressive overload on the compounds that matter. Bench and hack squat increase every single week for three weeks, then you deload and hit it again heavier in Wave 2. The pattern is 3 days on, 1 off — Chest + Back, Shoulders + Arms, Legs + Abs — then rest, then repeat with B-day variations. Each muscle group gets hit twice a week from different angles. Day 4 is rest and stretch: mobility, shoulder maintenance, and recovery work that keeps you training hard for years, not just 10 weeks.</p>
       <p>Face pulls appear on every pull day without exception. Hip mobility is built into every leg session before the first work set. These are not optional extras. They are the reason you will walk out of this program healthier than you walked in. Most strength programs ignore shoulder health until something breaks. This one addresses it from day one.</p>
       <p><strong>The structure is deliberate. The execution is on you.</strong> Two loading waves, each building from baseline through overload, separated by a deload that makes the next wave possible. Ten weeks from now you will squat heavier, press heavier, and look completely different. Most men never commit long enough to find out what they're capable of. You will.</p>
     </div>
@@ -1518,12 +1518,12 @@ body.training-mode footer { display: none; }
       <div class="pillar fade-up">
         <div class="pillar-icon">🏋️</div>
         <div class="pillar-title">Strength First</div>
-        <div class="pillar-desc">Back squat and bench press add load every single week of each wave. Not when you feel like it, every week. Progressive overload on the primary compounds is how your body changes. Everything else is secondary.</div>
+        <div class="pillar-desc">Bench press, hack squat, back squat, and OHP add load every single week of each wave. Not when you feel like it, every week. Progressive overload on the primary compounds is how your body changes. Everything else is secondary.</div>
       </div>
       <div class="pillar fade-up">
         <div class="pillar-icon">🔁</div>
         <div class="pillar-title">Twice a Week</div>
-        <div class="pillar-desc">Each muscle group trained twice per week, the minimum effective frequency for maximizing both strength and hypertrophy. Push A and Push B hit chest and shoulders differently. Pull A and Pull B cover different angles of the back. Legs A is squat-dominant; Legs B hits the posterior chain. Frequency is what separates serious programs from gym noise.</div>
+        <div class="pillar-desc">Each muscle group trained twice per week on the Arnold Split rotation — 3 on, 1 off. Day A exercises and Day B exercises hit the same muscles from different angles so you never adapt and stagnate. Chest + Back A is flat press machine focus. Chest + Back B is incline and cable focus. Frequency is what separates serious programs from gym noise.</div>
       </div>
       <div class="pillar fade-up">
         <div class="pillar-icon">🦵</div>
@@ -1594,7 +1594,7 @@ body.training-mode footer { display: none; }
       "The average man will never know what he was capable of. He was too comfortable to find out."
     </div>
     <div style="font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--red);">
-      Monk Mode — 10-Week PPL Program
+      Monk Mode — 10-Week Arnold Split
     </div>
   </div>
 </section></div>
@@ -1837,10 +1837,13 @@ body.training-mode footer { display: none; }
     </div>
   </div>
   <div class="plan-nav" id="planNav">
-    <button class="plan-nav-btn active" style="--dc:#FF3B30" onclick="switchDay('chest')" id="btn-chest">Day 1 · Chest + Back</button>
-    <button class="plan-nav-btn" style="--dc:#007AFF" onclick="switchDay('arms')" id="btn-arms">Day 2 · Shoulders + Arms</button>
-    <button class="plan-nav-btn" style="--dc:#34C759" onclick="switchDay('legs')" id="btn-legs">Day 3 · Legs + Abs</button>
-    <button class="plan-nav-btn" style="--dc:#AF52DE" onclick="switchDay('rest')" id="btn-rest">Day 4 · Rest + Stretch</button>
+    <button class="plan-nav-btn active" style="--dc:#FF3B30" onclick="switchDay('chest')" id="btn-chest">1A · Chest + Back</button>
+    <button class="plan-nav-btn" style="--dc:#007AFF" onclick="switchDay('arms')" id="btn-arms">2A · Shoulders + Arms</button>
+    <button class="plan-nav-btn" style="--dc:#34C759" onclick="switchDay('legs')" id="btn-legs">3A · Legs + Abs</button>
+    <button class="plan-nav-btn" style="--dc:#AF52DE" onclick="switchDay('rest')" id="btn-rest">Rest + Stretch</button>
+    <button class="plan-nav-btn" style="--dc:#FF3B30" onclick="switchDay('chest-b')" id="btn-chest-b">1B · Chest + Back</button>
+    <button class="plan-nav-btn" style="--dc:#007AFF" onclick="switchDay('arms-b')" id="btn-arms-b">2B · Shoulders + Arms</button>
+    <button class="plan-nav-btn" style="--dc:#34C759" onclick="switchDay('legs-b')" id="btn-legs-b">3B · Legs + Abs</button>
   </div>
 
   <!-- CHEST + BACK -->
@@ -1872,7 +1875,7 @@ body.training-mode footer { display: none; }
     <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Incline Machine Press</div><div class="lift-sets-reps">2 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the seat so the handles start at upper-chest level. Press through full range and control the return — the stretch at the bottom is where upper pec fibers get their stimulus. The fixed path lets you safely push close to failure without a spotter. This is your upper chest builder for the week. Focus on feeling the chest contract, not just moving the handles.</div></div>
     <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Seated Cable Row</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit upright — not leaning back for leverage. Pull the handle to your lower sternum and pause 1 second at peak contraction with shoulder blades fully retracted. Let the stretch come fully at the front before the next rep. Cable provides constant tension through the full arc, making this more effective for mid-back hypertrophy than barbell rows.</div></div>
     <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Pec Dec Machine</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the handles so your elbows are at chest height. Control the return and feel the full stretch at the open position. Squeeze hard at the close. Zero risk to the shoulder joint when set up correctly — the machine keeps the path safe. This is your chest isolation work. Go light enough to feel the pec fully, not just move the weight.</div></div>
-    <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Chest-Supported Row Machine</div><div class="lift-sets-reps">2 sets × 12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">The chest pad eliminates lower back fatigue and the temptation to use momentum — your back has to do every rep honestly. Row with elbows at about 60° from your body. This hits the mid-trap and rhomboid region that creates 3D thickness in your upper back. Squeeze shoulder blades together at the top. The machine ensures the same quality rep on set 2 as set 1.</div></div>
+    <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Chest-Supported Row Machine</div><div class="lift-sets-reps">2 sets × 12 reps</div><div class="lift-alts"><span>Alt:</span>Seated Cable Row (upright, no lean) or Single-Arm Dumbbell Row</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">The chest pad eliminates lower back fatigue and the temptation to use momentum — your back has to do every rep honestly. Row with elbows at about 60° from your body. This hits the mid-trap and rhomboid region that creates 3D thickness in your upper back. Squeeze shoulder blades together at the top. The machine ensures the same quality rep on set 2 as set 1.</div></div>
     <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Face Pulls</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cable at eye level. Pull the rope toward your face with elbows high and wide — "W" position at the end. The goal is external rotation of the shoulder, not just pulling weight. This directly counteracts the internal rotation load of pressing and protects the rotator cuff long-term. Do this every chest day without exception.</div></div>
   </div>
 
@@ -1901,7 +1904,7 @@ body.training-mode footer { display: none; }
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
     <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Seated Barbell OHP</div><div class="lift-sets-reps">2 sets × 5–6 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~15 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seated to eliminate leg drive — this keeps it honest. The bar starts at your clavicle and presses in a straight line overhead, finishing slightly behind your ears at the top. Brace your core hard; don't hyperextend your lower back to get the bar up. This is your overhead strength indicator — track it week over week. Add 2–3 lbs per week. Overhead strength directly carries over to shoulder stability on bench day.</div></div>
-    <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Shoulder Press Machine</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">The machine guides the path so you can focus entirely on feeling the delt work rather than balancing the load. Set the seat so the handles start at shoulder level. Press to near lockout, control the return. This is your shoulder hypertrophy work — go higher rep and feel every set. The stability the machine provides lets you push closer to failure safely, which is exactly what you want for muscle growth.</div></div>
+    <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Shoulder Press Machine</div><div class="lift-sets-reps">2 sets × 10–12 reps</div><div class="lift-alts"><span>Alt:</span>Seated Dumbbell Overhead Press</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">The machine guides the path so you can focus entirely on feeling the delt work rather than balancing the load. Set the seat so the handles start at shoulder level. Press to near lockout, control the return. This is your shoulder hypertrophy work — go higher rep and feel every set. The stability the machine provides lets you push closer to failure safely, which is exactly what you want for muscle growth.</div></div>
     <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raise Machine</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The machine provides consistent resistance through the full arc — no momentum possible. Set the pad just above your elbows, not at your wrists. Lead with your elbow raising to shoulder height — not higher, which recruits the trap instead of the medial delt. Pause at the top for a beat. Wide shoulders come from this exercise done with volume and consistency, not heavy sloppy reps. The machine takes ego out of lateral raises entirely.</div></div>
     <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">EZ Bar Curl</div><div class="lift-sets-reps">2 sets × 8–10 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">The EZ bar's angled grip reduces wrist and elbow stress compared to a straight bar while keeping the bicep in a strong curling position. This is your strength curl — treat it like a compound lift for biceps. Track the weight and add load over time. Elbows stay fixed at your sides. Slight forward lean at the waist is acceptable; full-body swing is not. Supinate slightly at the top to ensure full peak contraction.</div></div>
     <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Cable Curl (single arm)</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable provides consistent tension through the full arc — unlike dumbbells, the bicep is maximally loaded at every point in the range. Set the cable low, pull to peak contraction and hold 1 second. You should feel a hard squeeze in the bicep, not just feel the arm coming up. Slow the return down to 2 seconds. Single arm lets you fully concentrate on one side at a time without the weaker arm compensating.</div></div>
@@ -1933,13 +1936,112 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Hack Squat Machine</div><div class="lift-sets-reps">2 sets × 6–8 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">The hack squat machine fixes the load path, eliminating the balance demands of a free barbell and significantly reducing lower back stress. Feet shoulder-width, toes out slightly. Go deep — thighs at least parallel, ideally below. The machine forces you to drive through the heel and mid-foot. Add load week over week. This is your lower body strength indicator for the program. Full depth every rep, no partial reps, no ego loading.</div></div>
+    <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Hack Squat Machine</div><div class="lift-sets-reps">2 sets × 6–8 reps</div><div class="lift-alts"><span>Alt:</span>Goblet Squat (heavy DB) or Smith Machine Squat</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">The hack squat machine fixes the load path, eliminating the balance demands of a free barbell and significantly reducing lower back stress. Feet shoulder-width, toes out slightly. Go deep — thighs at least parallel, ideally below. The machine forces you to drive through the heel and mid-foot. Add load week over week. This is your lower body strength indicator for the program. Full depth every rep, no partial reps, no ego loading.</div></div>
     <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Leg Press Machine</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Feet high and wide on the platform — this shifts load toward glutes and hamstrings and reduces anterior knee stress. Lower all the way down without your lower back rounding off the pad. If your hips are coming up, you're going too deep for your current hip flexibility. The machine lets you safely load quad volume without the spinal compression of a barbell squat.</div></div>
     <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Romanian Deadlift (RDL)</div><div class="lift-sets-reps">2 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hip hinge, not a deadlift. Soft knees throughout — about 15–20° of bend. Push your hips back as the bar travels down your legs. You should feel a strong hamstring stretch at the bottom. Stop when your lower back starts to round — that's your end range. Go heavy, but never at the expense of a neutral spine. This is the primary posterior chain movement of the week and directly prevents hamstring injuries.</div></div>
     <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Leg Extension Machine</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit all the way back in the pad, toes pointed slightly outward to bias the inner quad. Extend fully and hold 1 second at the top — most people let the weight drop before full quad contraction. Slow eccentric on the way down. Safe when done correctly; the danger is loading too heavy and using momentum. Can superset with leg curls to save time.</div></div>
     <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Leg Curl Machine</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Curl through full ROM, pause at peak contraction, lower with a 2-second eccentric. The eccentric is where hamstring strength is built and where hamstring injuries are prevented. Keep hips flat on the pad — if they're rising, you've overloaded it. Feet slightly turned in shifts emphasis to the outer bicep femoris. The machine removes lower back from the equation entirely.</div></div>
     <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Seated Calf Raise Machine</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">The seated position bends the knee, shifting all the load to the soleus — the wide flat muscle underneath that gives the lower leg its shape. Full range — heel all the way down into a deep stretch, all the way up at the top. 15–20 reps is the right zone for this muscle type. Short rest is fine; calves recover quickly.</div></div>
     <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Ab Wheel Rollout</div><div class="lift-sets-reps">2 sets × 8–12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Roll out to where your body is parallel or near-parallel to the floor, maintaining a completely neutral spine. The moment your lower back arches, you've gone too far. Start from your knees until you can control the full range. This builds the same core bracing pattern used in heavy squats — rigidity under axial load. Finish legs day with this and your core is locked in for the rest of the week.</div></div>
+  </div>
+
+  <!-- CHEST + BACK B -->
+  <div class="plan-content" id="day-chest-b">
+    <div class="plan-day-header">
+      <div>
+        <div class="plan-day-title" style="color:#FF3B30">CHEST + BACK</div>
+        <div class="plan-day-focus">Incline focus, machine rows, cable isolation. Different angles from Day 1A.</div>
+      </div>
+      <div class="plan-badges">
+        <span class="badge" style="background:rgba(255,59,48,0.12);color:#FF3B30;border:1px solid rgba(255,59,48,0.28)">1B</span>
+        <span class="badge" style="background:#111111;color:#f5a623;border:1px solid #1C1C1E">⏱ ~1:20</span>
+      </div>
+      <button class="clear-day-btn" onclick="clearDayLogs('chest-b'); return false;">Clear Logs</button>
+    </div>
+    <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-chest-b', this)">▶ Show Warm-Up</button>
+    <div class="warmup-panel" id="wu-chest-b">
+      <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
+      <div class="warmup-steps">
+        <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min incline walk or row machine</div><div class="warmup-step-why">Core temp up before incline pressing.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">Band pull-aparts — 2×20</div><div class="warmup-step-why">Rear delt activation before pressing.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Shoulder CARs — 10 slow circles each arm</div><div class="warmup-step-why">Full range joint prep. Non-negotiable before any pressing.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Incline bench ramp: bar×10, 50%×5, 65%×3</div><div class="warmup-step-why">Groove the incline path before hitting working weight.</div></div></div>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Incline Barbell Bench Press</div><div class="lift-sets-reps">2 sets × 5–8 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">The incline targets the upper chest — the most visible part from the front. Bar touches your upper chest, shoulder blades retracted and depressed throughout. This is your second primary compound of the week — track it and add load over time. Upper chest development separates a built chest from a flat one.</div></div>
+    <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Machine Row</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Guided machine eliminates lower back involvement so your back does all the work. Pull to mid-chest, squeeze for 1 second at full contraction. Focus on driving the elbows back — not just pulling with your hands. The machine lets you safely push the last reps harder than free weights.</div></div>
+    <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Machine Chest Press</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Flat machine press after incline barbell work targets the mid-chest from a different angle. Set the seat so handles start at mid-chest. Press through full range — don't stop short. The machine lets you grind the last reps safely. Squeeze the pecs hard at peak contraction, not just move the handles.</div></div>
+    <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Single-Arm Cable Row</div><div class="lift-sets-reps">2 sets × 12 reps/side</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Single arm forces your core to resist rotation — abs work without a single crunch. Pull to your hip with elbow tucked tight, allow full stretch at the front. Your weaker side gets the same volume as the stronger side. Bilateral rows let the dominant side compensate; single arm doesn't. Fix the imbalance here.</div></div>
+    <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Low-to-High Cable Fly</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cables set at the low position. Arc upward and together — this hits upper chest fibers the flat pec dec misses. Slight forward lean at the hips. Control the return completely. Cables provide constant tension through the full arc unlike dumbbells which go slack at the top of the movement.</div></div>
+    <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Straight Arm Pulldown</div><div class="lift-sets-reps">2 sets × 15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable high, slight forward lean at hips, arms nearly straight. Pull the bar down to your thighs by engaging your lats — not by bending your elbows. Pure lat isolation with zero bicep involvement. This builds the V-taper that makes your waist look smaller. Light weight, full range, feel every rep.</div></div>
+    <div class="lift-row" style="--dc:#FF3B30" onclick="toggleNote(this)"><div><div class="lift-name">Rear Delt Machine Fly</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the seat so handles are at shoulder level. Arms nearly straight throughout — the moment you bend your elbows you shift load to your back. Squeeze at the back, control the return. Rear delts are chronically undertrained. This builds the 3D shoulder look and protects the rotator cuff from the pressing volume you're doing twice a week.</div></div>
+  </div>
+
+  <!-- SHOULDERS + ARMS B -->
+  <div class="plan-content" id="day-arms-b">
+    <div class="plan-day-header">
+      <div>
+        <div class="plan-day-title" style="color:#60a0ff">SHOULDERS + ARMS</div>
+        <div class="plan-day-focus">Arnold press, cable lateral work, isolation for bis and tris from different angles.</div>
+      </div>
+      <div class="plan-badges">
+        <span class="badge" style="background:rgba(0,122,255,0.12);color:#60a0ff;border:1px solid rgba(0,122,255,0.28)">2B</span>
+        <span class="badge" style="background:#111111;color:#f5a623;border:1px solid #1C1C1E">⏱ ~1:15</span>
+      </div>
+      <button class="clear-day-btn" onclick="clearDayLogs('arms-b'); return false;">Clear Logs</button>
+    </div>
+    <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-arms-b', this)">▶ Show Warm-Up</button>
+    <div class="warmup-panel" id="wu-arms-b">
+      <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
+      <div class="warmup-steps">
+        <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min bike or treadmill</div><div class="warmup-step-why">Core temp up before pressing overhead.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">Shoulder CARs — 10 each arm</div><div class="warmup-step-why">Full range joint prep before the Arnold press rotation pattern.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Cable face pulls — 2×15 light</div><div class="warmup-step-why">Activate external rotators before any overhead loading.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Arnold press ramp: 25%×10, 40%×5</div><div class="warmup-step-why">Groove the rotation pattern before working weight.</div></div></div>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Dumbbell Arnold Press</div><div class="lift-sets-reps">2 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Start with palms facing you at shoulder height, rotate outward as you press overhead. This rotation recruits all three deltoid heads in a single movement — front, medial, and rear. Far more complete than a standard DB press. Control the rotation both up and down. Arnold popularized this for a reason — the shoulder development from the rotational path is unique and will show at every angle.</div></div>
+    <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Cable Lateral Raise (single arm)</div><div class="lift-sets-reps">2 sets × 15–20 reps/side</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable provides constant tension at the bottom of the arc — the exact position where dumbbells are weakest. Pull from low across your body, lead with your elbow to shoulder height. The cable keeps resistance through full ROM, making this more effective per rep than DB laterals. Single arm means no compensating. Do your weaker side first.</div></div>
+    <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Cable Face Pull</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable at eye height, rope attachment. Pull toward your face and externally rotate at the end — "W" position with elbows high and wide. Trains external rotation of the shoulder, the single most neglected movement in the gym. It is the antidote to years of pressing. Rear delt and rotator cuff in one movement. Never skip it.</div></div>
+    <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Incline Dumbbell Curl</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Bench at 45–60°. Lie back and let your arms hang straight down. Curl from full extension — the incline puts the long head of the bicep in a stretched starting position you cannot replicate standing. This angle builds the peak of the bicep. No swinging. Feel the deep stretch at the bottom of every rep before curling up.</div></div>
+    <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Hammer Curls</div><div class="lift-sets-reps">2 sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Neutral grip (palms facing each other) hits the brachialis — a muscle under the bicep that pushes it up, adding visible arm thickness. Most curl variations miss this entirely. Elbows stay at your sides, curl straight up without rotating. Heavier than supinated curls for most people. The brachialis responds to load and will add thickness to your upper arm that regular curls alone won't build.</div></div>
+    <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">Machine Dip</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Machine dips let you load the triceps through full dip range without the shoulder stability demand of bodyweight dips. Adjust the seat so you reach full tricep extension at the bottom. Drive through the palms at lockout — squeeze hard at the top. This is your heaviest tricep movement on B day. Track the weight and add load over time like a compound lift.</div></div>
+    <div class="lift-row" style="--dc:#007AFF" onclick="toggleNote(this)"><div><div class="lift-name">EZ Bar Skull Crusher</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie flat, EZ bar over your forehead, close grip. Lower to your forehead bending only at the elbows — no shoulder movement. Elbows vertical or slightly back. The EZ bar angles reduce wrist stress versus a straight bar. Best mass builder for the long head of the tricep. Load it progressively — most people go too light on this and miss the adaptation signal.</div></div>
+  </div>
+
+  <!-- LEGS + ABS B -->
+  <div class="plan-content" id="day-legs-b">
+    <div class="plan-day-header">
+      <div>
+        <div class="plan-day-title" style="color:#34C759">LEGS + ABS</div>
+        <div class="plan-day-focus">Free weight squat, unilateral challenge, posterior chain and cable core.</div>
+      </div>
+      <div class="plan-badges">
+        <span class="badge" style="background:rgba(52,199,89,0.12);color:#34C759;border:1px solid rgba(52,199,89,0.28)">3B</span>
+        <span class="badge" style="background:#111111;color:#f5a623;border:1px solid #1C1C1E">⏱ ~1:25</span>
+      </div>
+      <button class="clear-day-btn" onclick="clearDayLogs('legs-b'); return false;">Clear Logs</button>
+    </div>
+    <button class="warmup-toggle-btn" onclick="toggleWarmup('wu-legs-b', this)">▶ Show Warm-Up</button>
+    <div class="warmup-panel" id="wu-legs-b">
+      <div class="warmup-panel-title">Warm-Up. Complete Before First Work Set</div>
+      <div class="warmup-steps">
+        <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min bike (low resistance)</div><div class="warmup-step-why">Get hips and knees moving before heavy barbell squatting.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">Hip 90/90 switches — 2×10 each side</div><div class="warmup-step-why">Opens internal and external hip rotation before high-bar squatting.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Couch stretch — 60 sec each side</div><div class="warmup-step-why">Hip flexor release directly improves squat depth and lower back health.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Squat ramp: bar×10, 50%×5, 65%×3</div><div class="warmup-step-why">Groove the pattern, own the depth before adding working weight.</div></div></div>
+      </div>
+    </div>
+    <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
+    <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Back Squat</div><div class="lift-sets-reps">2 sets × 5–8 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">High-bar, knees track over toes, chest tall, drive through your heels. The free barbell squat demands full body coordination unlike the hack squat machine on Day A — every stabilizer fires. Bar sits across your upper traps. Depth is non-negotiable: thighs parallel or below. If heels rise, ankles need mobility work — do the couch stretch consistently and it will change.</div></div>
+    <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Bulgarian Split Squat</div><div class="lift-sets-reps">2 sets × 10–12 reps/leg</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Rear foot elevated on a bench. This is the hardest leg exercise in this program and the one most people skip — exactly why you do it. It isolates each leg completely, exposing and fixing left-right imbalances. Front shin stays vertical, knee tracks over the foot. The eccentric down is where the real stimulus is — control it completely. Use dumbbells at your sides or a barbell.</div></div>
+    <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Stiff-Leg Deadlift</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Legs nearly straight (soft knee only), hinge at the hip, lower the bar down your legs until you feel a hard hamstring stretch. Straighter legs versus the RDL on Day A increases the hamstring stretch range, shifting more load to the upper hamstring and glute tie-in. Bar stays close to your body throughout. Neutral spine is mandatory — round your back here and the session is over.</div></div>
+    <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Leg Extension Machine</div><div class="lift-sets-reps">2 sets × 15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Same as Day A — full extension, 1-second hold, slow return. Quad isolation volume twice per week. By Day 3B you've hit quads hard with squats and split squats, so this is a finisher. Go lighter if needed and prioritize peak contraction over load. The feel matters more than the weight here.</div></div>
+    <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Lying Leg Curl Machine</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Face down — this position stretches the hamstrings differently than the seated version on Day A, placing the muscle in a more elongated position at the start. Curl to full contraction, don't let hips lift off the pad. The lying variation hits the bicep femoris long head from a stretched position, complementing the seated version's peak contraction bias. Twice a week hamstring training reduces injury risk significantly.</div></div>
+    <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Standing Calf Raise</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Standing hits the gastrocnemius — the large muscle that creates the visible calf shape. Knee stays straight to fully load it. Full range: heel below the step into a deep stretch, all the way up on toes. Paired with seated calf raises on Day A, you're hitting both the gastrocnemius and soleus twice per week — the actual minimum calves need to grow.</div></div>
+    <div class="lift-row" style="--dc:#34C759" onclick="toggleNote(this)"><div><div class="lift-name">Cable Crunch</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Kneel facing the cable, rope behind your head. Crunch your rib cage toward your pelvis — not your head toward the floor. You want spinal flexion from the abs, not neck movement. The cable provides constant weighted resistance through the full range unlike bodyweight crunches that lose tension at the top. This is how you actually build visible abs — loaded, full range, consistent.</div></div>
   </div>
 
   <!-- REST + STRETCH -->
@@ -2115,6 +2217,26 @@ body.training-mode footer { display: none; }
     'legs::3':  [{pct:0.50,reps:10}],
     'legs::4':  [{pct:0.50,reps:10}],
     'legs::5':  [{pct:0.50,reps:15}],
+    'chest-b::0': [{pct:0.50,reps:5},{pct:0.65,reps:3},{pct:0.80,reps:2}],
+    'chest-b::1': [{pct:0.55,reps:8}],
+    'chest-b::2': [{pct:0.50,reps:8},{pct:0.70,reps:5}],
+    'chest-b::3': [{pct:0.50,reps:10}],
+    'chest-b::4': [{pct:0.50,reps:12}],
+    'chest-b::5': [{pct:0.50,reps:12}],
+    'chest-b::6': [{pct:0.50,reps:15}],
+    'arms-b::0':  [{pct:0.50,reps:5},{pct:0.65,reps:3},{pct:0.80,reps:2}],
+    'arms-b::1':  [{pct:0.50,reps:15}],
+    'arms-b::2':  [{pct:0.50,reps:15}],
+    'arms-b::3':  [{pct:0.50,reps:8}],
+    'arms-b::4':  [{pct:0.50,reps:10}],
+    'arms-b::5':  [{pct:0.50,reps:12}],
+    'arms-b::6':  [{pct:0.60,reps:8}],
+    'legs-b::0':  [{pct:0.45,reps:5},{pct:0.60,reps:3},{pct:0.75,reps:2}],
+    'legs-b::1':  [{pct:0.50,reps:10}],
+    'legs-b::2':  [{pct:0.50,reps:5},{pct:0.70,reps:3}],
+    'legs-b::3':  [{pct:0.50,reps:12}],
+    'legs-b::4':  [{pct:0.50,reps:12}],
+    'legs-b::5':  [{pct:0.50,reps:15}],
   };
 
   //     LIFT SETS DATA
@@ -2123,11 +2245,14 @@ body.training-mode footer { display: none; }
     'arms::0':2,'arms::1':2,'arms::2':2,'arms::3':2,'arms::4':2,'arms::5':2,'arms::6':2,
     'legs::0':2,'legs::1':2,'legs::2':2,'legs::3':2,'legs::4':2,'legs::5':2,'legs::6':2,
     'rest::0':2,'rest::1':2,'rest::2':2,'rest::3':2,'rest::4':2,'rest::5':2,'rest::6':2,
+    'chest-b::0':2,'chest-b::1':2,'chest-b::2':2,'chest-b::3':2,'chest-b::4':2,'chest-b::5':2,'chest-b::6':2,
+    'arms-b::0':2,'arms-b::1':2,'arms-b::2':2,'arms-b::3':2,'arms-b::4':2,'arms-b::5':2,'arms-b::6':2,
+    'legs-b::0':2,'legs-b::1':2,'legs-b::2':2,'legs-b::3':2,'legs-b::4':2,'legs-b::5':2,'legs-b::6':2,
   };
 
   //     INIT LIFT ROWS (set circles + last session)                             
   function initLiftRows() {
-    const days = ['chest','arms','legs','rest'];
+    const days = ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
     days.forEach(dayId => {
       const dayEl = document.getElementById('day-' + dayId);
       if (!dayEl) return;
@@ -2565,7 +2690,7 @@ body.training-mode footer { display: none; }
     { match: ['Incline Dumbbell Press'], maxKey: 'bench', cls: '', pctLo: 0.47, pctHi: 0.53 },
     { match: ['Low-to-High Cable Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
     { match: ['Cable Chest Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
-    { match: ['Skull Crushers'], maxKey: 'bench', cls: '', pctLo: 0.35, pctHi: 0.42 },
+    { match: ['Skull Crushers', 'EZ Bar Skull Crusher'], maxKey: 'bench', cls: '', pctLo: 0.35, pctHi: 0.42 },
     { match: ['Tricep Rope Pushdown'], maxKey: 'bench', cls: '', pctLo: 0.25, pctHi: 0.32 },
     { match: ['Overhead Tricep Extension'], maxKey: 'bench', cls: '', pctLo: 0.20, pctHi: 0.28 },
     { match: ['Barbell Row'], maxKey: 'bench', cls: '', pctLo: 0.68, pctHi: 0.75 },
@@ -2574,13 +2699,13 @@ body.training-mode footer { display: none; }
     { match: ['Single Arm DB Row'], maxKey: 'bench', cls: '', pctLo: 0.55, pctHi: 0.65 },
     { match: ['Seated Cable Row'], maxKey: 'bench', cls: '', pctLo: 0.52, pctHi: 0.60 },
     { match: ['EZ Bar Curl'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
-    { match: ['Hammer Curls'], maxKey: 'bench', cls: '', pctLo: 0.22, pctHi: 0.28 },
-    { match: ['Incline DB Curls'], maxKey: 'bench', cls: '', pctLo: 0.18, pctHi: 0.25 },
+    { match: ['Hammer Curls', 'Hammer Curl'], maxKey: 'bench', cls: '', pctLo: 0.22, pctHi: 0.28 },
+    { match: ['Incline DB Curls', 'Incline Dumbbell Curl'], maxKey: 'bench', cls: '', pctLo: 0.18, pctHi: 0.25 },
     { match: ['Cable Curl'], maxKey: 'bench', cls: '', pctLo: 0.18, pctHi: 0.24 },
     { match: ['Seated Barbell OHP'], maxKey: 'ohp', cls: 'ohp' },
     { match: ['Arnold Press'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.45, pctHi: 0.52 },
     { match: ['Seated DB Shoulder Press'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.48, pctHi: 0.56 },
-    { match: ['Lateral Raises (cable)'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.14, pctHi: 0.20 },
+    { match: ['Lateral Raises (cable)', 'Cable Lateral Raise'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.14, pctHi: 0.20 },
     { match: ['Lateral Raises'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.14, pctHi: 0.20 },
     { match: ['Back Squat'], maxKey: 'squat', cls: 'squat' },
     { match: ['Pause Squat'], maxKey: 'squat', cls: 'squat', pct: 0.65 },
@@ -2590,7 +2715,7 @@ body.training-mode footer { display: none; }
     { match: ['Leg Press', 'Leg Press Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.85, pctHi: 0.98 },
     { match: ['Bulgarian Split Squat'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
     { match: ['Leg Extension', 'Leg Extension Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.22, pctHi: 0.30 },
-    { match: ['Leg Curl', 'Leg Curl Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
+    { match: ['Leg Curl', 'Leg Curl Machine', 'Lying Leg Curl Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
     { match: ['Walking Lunges'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
     { match: ['Standing Calf Raise'], maxKey: 'squat', cls: 'squat', pctLo: 0.38, pctHi: 0.48 },
     { match: ['Seated Calf Raise', 'Seated Calf Raise Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.32, pctHi: 0.42 },
@@ -2602,6 +2727,13 @@ body.training-mode footer { display: none; }
     { match: ['Chest-Supported Row Machine'], maxKey: 'bench', cls: '', pctLo: 0.50, pctHi: 0.58 },
     { match: ['Shoulder Press Machine'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.50, pctHi: 0.58 },
     { match: ['Lateral Raise Machine'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.14, pctHi: 0.20 },
+    { match: ['Incline Barbell Bench Press'], maxKey: 'bench', cls: '', pctLo: 0.80, pctHi: 0.90 },
+    { match: ['Machine Row', 'Hammer Strength Row'], maxKey: 'bench', cls: '', pctLo: 0.55, pctHi: 0.65 },
+    { match: ['Machine Chest Press'], maxKey: 'bench', cls: '', pctLo: 0.50, pctHi: 0.60 },
+    { match: ['Rear Delt Machine Fly'], maxKey: 'bench', cls: '', pctLo: 0.12, pctHi: 0.18 },
+    { match: ['Cable Face Pull'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.18, pctHi: 0.26 },
+    { match: ['Machine Dip'], maxKey: 'bench', cls: '', pctLo: 0.35, pctHi: 0.48 },
+    { match: ['Stiff-Leg Deadlift'], maxKey: 'squat', cls: 'squat', pctLo: 0.52, pctHi: 0.65 },
   ];
 
   var userMaxes = {};
@@ -3030,7 +3162,7 @@ body.training-mode footer { display: none; }
 var INFO_SECS = ['home','about','edge','overview','progression'];
 
 function getMostRecentDay() {
-  var order = ['chest','arms','legs','rest'];
+  var order = ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
   try {
     var logs = JSON.parse(localStorage.getItem('ppl_workout_logs_v2')) || {};
     var found = 'chest';
