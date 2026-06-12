@@ -1,4 +1,4 @@
-const CACHE = 'monk-mode-v8';
+const CACHE = 'monk-mode-v9';
 
 self.addEventListener('install', function(e) {
   self.skipWaiting();
@@ -11,7 +11,7 @@ self.addEventListener('activate', function(e) {
     }).then(function() {
       return self.clients.matchAll({ type: 'window' });
     }).then(function(clients) {
-      clients.forEach(function(client) { client.navigate(client.url); });
+      clients.forEach(function(client) { client.postMessage({ type: 'RELOAD' }); });
     })
   );
   self.clients.claim();

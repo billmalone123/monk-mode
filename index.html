@@ -2204,7 +2204,7 @@ body.training-mode footer { display: none; }
 
 <script>
   //     STORAGE                                                                
-  const STORE_KEY = 'ppl_workout_logs_v2';
+  const STORE_KEY = 'ppl_workout_logs_v3';
   function loadLogs() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } }
   function saveLogs(l) { try { localStorage.setItem(STORE_KEY, JSON.stringify(l)); } catch {} }
   let logs = loadLogs();
@@ -2327,8 +2327,10 @@ body.training-mode footer { display: none; }
     renderAllLogs();
   }
 
-  //     RENDER LOGGED DATA                                                      
+  //     RENDER LOGGED DATA
   function renderAllLogs() {
+    var wk = currentTrainWeek;
+    var prevWk = wk > 0 ? wk - 1 : null;
     Object.keys(LIFT_SETS).forEach(key => {
       const numSets = LIFT_SETS[key];
       const setsRow = document.querySelector('[data-sets-row="' + key + '"]');
@@ -2337,10 +2339,13 @@ body.training-mode footer { display: none; }
       const circles = setsRow.querySelectorAll('.set-circle');
       const chips = lastRow.querySelectorAll('[data-chip]');
       for (let s = 0; s < numSets; s++) {
-        const entry = logs[key + '::' + s];
-        if (circles[s]) circles[s].classList.toggle('logged', !!entry);
+        // Circles show whether this week's sets are logged
+        const curEntry = logs['w' + wk + '::' + key + '::' + s];
+        if (circles[s]) circles[s].classList.toggle('logged', !!curEntry);
+        // "Last" chips show the previous week's data for this same exercise
         if (chips[s]) {
-          if (entry) { var _lr = setsRow.closest ? setsRow.closest('.lift-row') : null; var _ln = _lr && _lr.querySelector('.lift-name') ? _lr.querySelector('.lift-name').textContent : ''; chips[s].textContent = entry.weight + ' x ' + entry.reps; chips[s].classList.add('has-data'); }
+          var prevEntry = prevWk !== null ? logs['w' + prevWk + '::' + key + '::' + s] : null;
+          if (prevEntry) { chips[s].textContent = prevEntry.weight + ' x ' + prevEntry.reps; chips[s].classList.add('has-data'); }
           else { chips[s].textContent = '-'; chips[s].classList.remove('has-data'); }
         }
       }
@@ -2353,7 +2358,7 @@ body.training-mode footer { display: none; }
   let activeModal = null;
   function openLogModal(dayId, liftIdx, setIdx, liftName) {
     closeLogModal();
-    const key = dayId + '::' + liftIdx + '::' + setIdx;
+    const key = 'w' + currentTrainWeek + '::' + dayId + '::' + liftIdx + '::' + setIdx;
     const existing = logs[key] || {};
     const overlay = document.createElement('div');
     overlay.className = 'log-modal-overlay';
@@ -2389,7 +2394,7 @@ body.training-mode footer { display: none; }
         if (nameEl) liftName = nameEl.textContent;
       }
     }
-    var key = dayId + '::' + liftIdx + '::' + setIdx;
+    var key = 'w' + currentTrainWeek + '::' + dayId + '::' + liftIdx + '::' + setIdx;
     logs[key] = { weight: weight || '-', reps: reps || '-' };
     saveLogs(logs);
     closeLogModal();
@@ -2410,7 +2415,7 @@ body.training-mode footer { display: none; }
   }
 
   function clearDayLogs(dayId) {
-    var prefix = dayId + '::';
+    var prefix = 'w' + currentTrainWeek + '::' + dayId + '::';
     Object.keys(logs).forEach(function(k){ if (k.startsWith(prefix)) delete logs[k]; });
     saveLogs(logs); renderAllLogs();
   }
@@ -2752,6 +2757,8 @@ body.training-mode footer { display: none; }
   var userMaxes = {};
   var currentTrainWeek = 0;
   const TRAIN_WEEK_KEY = 'monk_mode_train_week_v1';
+  const LAST_TAB_KEY = 'monk_mode_last_tab_v1';
+  const LAST_DAY_KEY = 'monk_mode_last_day_v1';
 
   function loadMaxes() {
     try { userMaxes = JSON.parse(localStorage.getItem(MAXES_KEY)) || {}; } catch { userMaxes = {}; }
@@ -3004,6 +3011,7 @@ body.training-mode footer { display: none; }
     currentTrainWeek = idx;
     try { localStorage.setItem(TRAIN_WEEK_KEY, idx); } catch(e) {}
     renderWeightBadges();
+    renderAllLogs();
   }
 
   function highlightTrainWeek(idx, btn) {
@@ -3088,6 +3096,7 @@ body.training-mode footer { display: none; }
     var btn = document.getElementById('btn-' + dayId);
     if (day) day.classList.add('active');
     if (btn) btn.classList.add('active');
+    try { localStorage.setItem(LAST_DAY_KEY, dayId); } catch(e) {}
   }
 
   //     LIFT NOTE TOGGLE                                                        
@@ -3189,16 +3198,12 @@ body.training-mode footer { display: none; }
 var INFO_SECS = ['home','about','edge','overview','progression'];
 
 function getMostRecentDay() {
-  var order = ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
+  var valid = ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
   try {
-    var logs = JSON.parse(localStorage.getItem('ppl_workout_logs_v2')) || {};
-    var found = 'chest';
-    order.forEach(function(day) {
-      var hasLog = Object.keys(logs).some(function(k) { return k.indexOf(day + '::') === 0; });
-      if (hasLog) found = day;
-    });
-    return found;
-  } catch(e) { return 'chest'; }
+    var saved = localStorage.getItem(LAST_DAY_KEY);
+    if (saved && valid.indexOf(saved) !== -1) return saved;
+  } catch(e) {}
+  return 'chest';
 }
 
 function updateTrainLock() {
@@ -3221,6 +3226,7 @@ function goTab(t) {
       return;
     }
   }
+  try { localStorage.setItem(LAST_TAB_KEY, t); } catch(e) {}
   document.getElementById('tab-info').style.display = t === 'info' ? 'block' : 'none';
   document.getElementById('tab-training').style.display = t === 'training' ? 'block' : 'none';
   document.getElementById('info-subnav').style.display = t === 'info' ? 'flex' : 'none';
@@ -3250,18 +3256,27 @@ function goSec(id) {
 // Override the old switchTab to use goTab
 window.switchTab = function(t) { goTab(t); };
 
-// Init: use inline display instead of classes
+// Init: use inline display instead of classes, then restore last tab
 document.addEventListener('DOMContentLoaded', function() {
   INFO_SECS.forEach(function(s) {
     var sec = document.getElementById('sec-' + s);
     if (sec) sec.style.display = s === 'home' ? 'block' : 'none';
   });
+  var lastTab = 'info';
+  try {
+    var saved = localStorage.getItem(LAST_TAB_KEY);
+    if (saved === 'info' || saved === 'training') lastTab = saved;
+  } catch(e) {}
+  goTab(lastTab);
 });
 
 // Service worker registration for offline/PWA persistence
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/monk-mode/sw.js').catch(function() {});
+  });
+  navigator.serviceWorker.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'RELOAD') window.location.reload();
   });
 }
 </script>
