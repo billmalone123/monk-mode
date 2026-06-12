@@ -2147,7 +2147,7 @@ body.training-mode footer { display: none; }
 
 <script>
   //     STORAGE                                                                
-  const STORE_KEY = 'ppl_workout_logs_v2';
+  const STORE_KEY = 'ppl_workout_logs_v3';
   function loadLogs() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } }
   function saveLogs(l) { try { localStorage.setItem(STORE_KEY, JSON.stringify(l)); } catch {} }
   let logs = loadLogs();
@@ -2672,6 +2672,9 @@ body.training-mode footer { display: none; }
 
   var userMaxes = {};
   var currentTrainWeek = 0;
+  const TRAIN_WEEK_KEY = 'monk_mode_train_week_v1';
+  const LAST_TAB_KEY = 'monk_mode_last_tab_v1';
+  const LAST_DAY_KEY = 'monk_mode_last_day_v1';
 
   function loadMaxes() {
     try { userMaxes = JSON.parse(localStorage.getItem(MAXES_KEY)) || {}; } catch { userMaxes = {}; }
@@ -2982,6 +2985,7 @@ body.training-mode footer { display: none; }
     var btn = document.getElementById('btn-' + dayId);
     if (day) day.classList.add('active');
     if (btn) btn.classList.add('active');
+    try { localStorage.setItem(LAST_DAY_KEY, dayId); } catch(e) {}
   }
 
   //     LIFT NOTE TOGGLE                                                        
@@ -3074,16 +3078,12 @@ body.training-mode footer { display: none; }
 var INFO_SECS = ['home','about','edge','overview','progression'];
 
 function getMostRecentDay() {
-  var order = ['push1','pull1','legs1','push2','pull2','legs2','accessory'];
+  var valid = ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
   try {
-    var logs = JSON.parse(localStorage.getItem('ppl_workout_logs_v2')) || {};
-    var found = 'push1';
-    order.forEach(function(day) {
-      var hasLog = Object.keys(logs).some(function(k) { return k.indexOf(day + '::') === 0; });
-      if (hasLog) found = day;
-    });
-    return found;
-  } catch(e) { return 'push1'; }
+    var saved = localStorage.getItem(LAST_DAY_KEY);
+    if (saved && valid.indexOf(saved) !== -1) return saved;
+  } catch(e) {}
+  return 'chest';
 }
 
 function updateTrainLock() {
@@ -3106,6 +3106,7 @@ function goTab(t) {
       return;
     }
   }
+  try { localStorage.setItem(LAST_TAB_KEY, t); } catch(e) {}
   document.getElementById('tab-info').style.display = t === 'info' ? 'block' : 'none';
   document.getElementById('tab-training').style.display = t === 'training' ? 'block' : 'none';
   document.getElementById('info-subnav').style.display = t === 'info' ? 'flex' : 'none';
@@ -3141,12 +3142,22 @@ document.addEventListener('DOMContentLoaded', function() {
     var sec = document.getElementById('sec-' + s);
     if (sec) sec.style.display = s === 'home' ? 'block' : 'none';
   });
+  // Restore last active tab (info or training)
+  var lastTab = 'info';
+  try {
+    var saved = localStorage.getItem(LAST_TAB_KEY);
+    if (saved === 'info' || saved === 'training') lastTab = saved;
+  } catch(e) {}
+  goTab(lastTab);
 });
 
 // Service worker registration for offline/PWA persistence
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/monk-mode/sw.js').catch(function() {});
+  });
+  navigator.serviceWorker.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'RELOAD') window.location.reload();
   });
 }
 </script>
