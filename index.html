@@ -2751,6 +2751,7 @@ body.training-mode footer { display: none; }
 
   var userMaxes = {};
   var currentTrainWeek = 0;
+  const TRAIN_WEEK_KEY = 'monk_mode_train_week_v1';
 
   function loadMaxes() {
     try { userMaxes = JSON.parse(localStorage.getItem(MAXES_KEY)) || {}; } catch { userMaxes = {}; }
@@ -2999,7 +3000,11 @@ body.training-mode footer { display: none; }
     }
   }
 
-  function setTrainWeek(idx) { currentTrainWeek = idx; renderWeightBadges(); }
+  function setTrainWeek(idx) {
+    currentTrainWeek = idx;
+    try { localStorage.setItem(TRAIN_WEEK_KEY, idx); } catch(e) {}
+    renderWeightBadges();
+  }
 
   function highlightTrainWeek(idx, btn) {
     document.querySelectorAll('.train-week-btn').forEach(function(b){
@@ -3158,6 +3163,15 @@ body.training-mode footer { display: none; }
     initLiftRows();
     loadMaxes();
     loadAccBaselines();
+    // Restore saved training week
+    try {
+      var saved = parseInt(localStorage.getItem(TRAIN_WEEK_KEY));
+      if (!isNaN(saved) && saved >= 0 && saved <= 9) {
+        currentTrainWeek = saved;
+        var weekBtns = document.querySelectorAll('.train-week-btn');
+        if (weekBtns[saved]) highlightTrainWeek(saved, weekBtns[saved]);
+      }
+    } catch(e) {}
     updateMaxChips();
     renderWeightBadges();
     renderProgressionTable();
