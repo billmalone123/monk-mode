@@ -12,23 +12,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;500;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --accent:      #D4A843;
-    --accent-lo:   rgba(212,168,67,0.08);
-    --accent-dim:  rgba(212,168,67,0.22);
-    --accent-glow: rgba(212,168,67,0.32);
-    --bg:          #0C0D1F;
-    --surface:     #131528;
-    --surface-2:   #181A2E;
-    --border:      #1D1F3A;
-    --border-hi:   #262848;
-    --text:        #DEDFF0;
-    --muted:       #64658A;
-    --dim:         #2C2E50;
+    --accent:      #F5A623;
+    --accent-lo:   rgba(245,166,35,0.10);
+    --accent-dim:  rgba(245,166,35,0.28);
+    --accent-glow: rgba(245,166,35,0.45);
+    --bg:          #080918;
+    --surface:     #0F1024;
+    --surface-2:   #141630;
+    --border:      #1A1C38;
+    --border-hi:   #252748;
+    --text:        #EEEFFE;
+    --muted:       #6E6F98;
+    --dim:         #282A4A;
     /* backward-compat aliases */
-    --red:    #D4A843;
-    --blue:   #D4A843;
-    --green:  #D4A843;
-    --purple: #D4A843;
+    --red:    #F5A623;
+    --blue:   #F5A623;
+    --green:  #F5A623;
+    --purple: #F5A623;
     --black:  #0C0D1F;
     --dark:   #0F1127;
     --card:   #131528;
@@ -41,6 +41,7 @@
   body {
     font-family: var(--font-body);
     background: var(--bg);
+    background-image: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(245,166,35,0.06) 0%, transparent 65%);
     color: var(--text);
     overflow-x: hidden;
     padding-top: 60px;
@@ -95,6 +96,7 @@
     padding: 80px 40px 60px;
     position: relative;
     background: var(--bg);
+    background-image: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(245,166,35,0.07) 0%, transparent 70%);
     gap: 48px;
   }
   .hero-ring-wrap {
@@ -110,14 +112,15 @@
   }
   .ring-track {
     fill: none;
-    stroke: rgba(255,255,255,0.05);
-    stroke-width: 1.5;
+    stroke: rgba(255,255,255,0.07);
+    stroke-width: 2;
   }
   .ring-fill {
     fill: none;
     stroke: var(--accent);
-    stroke-width: 1.5;
+    stroke-width: 2.5;
     stroke-linecap: butt;
+    filter: drop-shadow(0 0 6px rgba(245,166,35,0.6));
     transition: stroke-dashoffset 1.2s cubic-bezier(0.25, 1, 0.5, 1);
   }
   .ring-center {
@@ -355,7 +358,7 @@
     padding: 4px 12px;
     border-radius: 999px;
   }
-  .day-duration { font-size: 12px; color: #D4A843; font-weight: 600; }
+  .day-duration { font-size: 12px; color: #F5A623; font-weight: 600; }
   .day-lift-count { font-size: 12px; color: var(--muted); }
 
   /* WORKOUT PLAN */
@@ -404,8 +407,8 @@
   /* WARMUP SECTION */
   .warmup-toggle-btn {
     background: transparent;
-    border: 1px solid rgba(212,168,67,0.22);
-    color: rgba(212,168,67,0.6);
+    border: 1px solid rgba(245,166,35,0.22);
+    color: rgba(245,166,35,0.6);
     padding: 12px 24px;
     font-family: var(--font-display);
     font-weight: 700;
@@ -418,13 +421,13 @@
     display: flex; align-items: center; gap: 10px;
   }
   .warmup-toggle-btn:hover, .warmup-toggle-btn.open {
-    border-color: var(--accent); color: var(--accent); background: rgba(212,168,67,0.05);
+    border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.05);
   }
   .warmup-panel {
     display: none;
-    background: rgba(212,168,67,0.03);
-    border: 1px solid rgba(212,168,67,0.15);
-    border-left: 3px solid rgba(212,168,67,0.5);
+    background: rgba(245,166,35,0.03);
+    border: 1px solid rgba(245,166,35,0.15);
+    border-left: 3px solid rgba(245,166,35,0.5);
     padding: 28px 32px;
     margin-bottom: 32px;
     animation: fadeIn 0.2s ease;
@@ -554,7 +557,7 @@
   }
   .prog-row:last-child { border-bottom: none; }
   .prog-row:hover { background: rgba(255,255,255,0.02); }
-  .prog-row.highlight { background: rgba(212,168,67,0.06); border-left: 2px solid var(--accent); }
+  .prog-row.highlight { background: rgba(245,166,35,0.06); border-left: 2px solid var(--accent); }
   .prog-week { font-size: 13px; color: var(--muted); font-weight: 500; }
   .prog-week.active-week { color: #fff; font-weight: 700; }
   .prog-weight {
@@ -797,8 +800,8 @@
     flex-shrink: 0;
     position: relative;
   }
-  .set-circle:hover { border-color: var(--dim); color: var(--text); background: rgba(212,168,67,0.06); }
-  .set-circle.logged { border-color: var(--accent); color: var(--accent); background: rgba(212,168,67,0.10); }
+  .set-circle:hover { border-color: var(--dim); color: var(--text); background: rgba(245,166,35,0.06); }
+  .set-circle.logged { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.10); }
   .set-circle.flash { background: var(--accent); color: #0C0D1F; border-color: var(--accent); }
   .last-session-row {
     grid-column: 1 / -1;
@@ -890,9 +893,9 @@
     outline: none;
     transition: border-color 0.15s;
   }
-  .log-input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(212,168,67,0.12); }
+  .log-input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(245,166,35,0.12); }
   .log-save-btn {
-    background: linear-gradient(135deg, #D4A843 0%, #B8902A 100%);
+    background: linear-gradient(135deg, #F5A623 0%, #B8902A 100%);
     color: #fff;
     border: none;
     padding: 14px;
@@ -906,9 +909,9 @@
     width: 100%;
     margin-bottom: 10px;
     transition: all 0.15s;
-    box-shadow: 0 4px 16px rgba(212,168,67,0.25);
+    box-shadow: 0 4px 16px rgba(245,166,35,0.25);
   }
-  .log-save-btn:hover { background: linear-gradient(135deg, #E0BC5A 0%, #B8902A 100%); box-shadow: 0 6px 20px rgba(212,168,67,0.35); }
+  .log-save-btn:hover { background: linear-gradient(135deg, #E0BC5A 0%, #B8902A 100%); box-shadow: 0 6px 20px rgba(245,166,35,0.35); }
   .log-cancel-btn {
     background: transparent;
     color: var(--muted);
@@ -940,7 +943,7 @@
     transition: all 0.15s;
     margin-left: 8px;
   }
-  .clear-day-btn:hover { border-color: rgba(212,168,67,0.4); color: rgba(212,168,67,0.65); }
+  .clear-day-btn:hover { border-color: rgba(245,166,35,0.4); color: rgba(245,166,35,0.65); }
 
 
   /* ── REST TIMER ─────────────────────────────────────────────────────────── */
@@ -969,7 +972,7 @@
     width: 100%;
     transition: width 1s linear, background 0.5s ease;
   }
-  .timer-progress-fill.warning { background: #D4A843; }
+  .timer-progress-fill.warning { background: #F5A623; }
   .timer-progress-fill.done { background: var(--red); }
   .timer-inner {
     display: flex;
@@ -1008,7 +1011,7 @@
     text-align: center;
     transition: color 0.3s;
   }
-  .timer-display.warning { color: #D4A843; }
+  .timer-display.warning { color: #F5A623; }
   .timer-display.done { color: var(--red); }
   .timer-right { display: flex; align-items: center; gap: 10px; }
   .timer-btn {
@@ -1028,13 +1031,13 @@
   }
   .timer-btn:hover { border-color: var(--dim); color: var(--text); }
   .timer-btn.primary {
-    background: linear-gradient(135deg, #D4A843 0%, #B8902A 100%);
+    background: linear-gradient(135deg, #F5A623 0%, #B8902A 100%);
     border-color: transparent;
     color: #fff;
-    box-shadow: 0 2px 10px rgba(212,168,67,0.3);
+    box-shadow: 0 2px 10px rgba(245,166,35,0.3);
   }
   .timer-btn.primary:hover { background: linear-gradient(135deg, #E0BC5A 0%, #B8902A 100%); }
-  .timer-btn.danger { border-color: rgba(212,168,67,0.35); color: rgba(212,168,67,0.65); }
+  .timer-btn.danger { border-color: rgba(245,166,35,0.35); color: rgba(245,166,35,0.65); }
   .timer-btn.danger:hover { border-color: var(--red); color: var(--red); }
   @media (max-width: 600px) {
     .timer-inner { padding: 12px 16px; gap: 12px; }
@@ -1230,7 +1233,7 @@
     transition: border-color 0.15s;
     letter-spacing: 0.02em;
   }
-  .settings-input-field:focus { border-color: var(--red); box-shadow: 0 0 0 2px rgba(212,168,67,0.12); }
+  .settings-input-field:focus { border-color: var(--red); box-shadow: 0 0 0 2px rgba(245,166,35,0.12); }
   .settings-input-hint {
     font-size: 11px;
     color: var(--dim);
@@ -1238,7 +1241,7 @@
     line-height: 1.5;
   }
   .settings-save-btn {
-    background: linear-gradient(135deg, #D4A843 0%, #B8902A 100%);
+    background: linear-gradient(135deg, #F5A623 0%, #B8902A 100%);
     color: #fff;
     border: none;
     padding: 16px;
@@ -1252,7 +1255,7 @@
     width: 100%;
     margin-bottom: 10px;
     transition: all 0.15s;
-    box-shadow: 0 4px 16px rgba(212,168,67,0.25);
+    box-shadow: 0 4px 16px rgba(245,166,35,0.25);
   }
   .settings-save-btn:hover { background: linear-gradient(135deg, #E0BC5A 0%, #B8902A 100%); }
   .settings-cancel-btn {
@@ -1329,9 +1332,9 @@
   /* Weight badge on lift rows */
   .lift-weight-badge {
     display: inline-block;
-    background: rgba(212,168,67,0.1);
-    border: 1px solid rgba(212,168,67,0.28);
-    color: #D4A843;
+    background: rgba(245,166,35,0.1);
+    border: 1px solid rgba(245,166,35,0.28);
+    color: #F5A623;
     padding: 2px 10px;
     border-radius: 2px;
     font-family: var(--font-display);
@@ -1341,18 +1344,18 @@
     margin-left: 10px;
     vertical-align: middle;
   }
-  .lift-weight-badge.squat { background: rgba(212,168,67,0.08); border-color: rgba(212,168,67,0.28); color: var(--accent); }
-  .lift-weight-badge.ohp { background: rgba(212,168,67,0.08); border-color: rgba(212,168,67,0.28); color: var(--accent); }
-  .lift-weight-badge.pullup { background: rgba(212,168,67,0.08); border-color: rgba(212,168,67,0.28); color: var(--accent); }
+  .lift-weight-badge.squat { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.28); color: var(--accent); }
+  .lift-weight-badge.ohp { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.28); color: var(--accent); }
+  .lift-weight-badge.pullup { background: rgba(245,166,35,0.08); border-color: rgba(245,166,35,0.28); color: var(--accent); }
   .acc-log-wrap { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; vertical-align: middle; }
   .acc-input {
-    width: 72px; background: rgba(212,168,67,0.08); border: 1px solid rgba(212,168,67,0.35);
-    color: #D4A843; padding: 2px 8px; border-radius: 2px;
+    width: 72px; background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.35);
+    color: #F5A623; padding: 2px 8px; border-radius: 2px;
     font-family: var(--font-display); font-weight: 700; font-size: 14px;
     text-align: center; outline: none; letter-spacing: 0.05em;
   }
-  .acc-input:focus { border-color: rgba(212,168,67,0.7); background: rgba(212,168,67,0.12); }
-  .acc-input::placeholder { color: rgba(212,168,67,0.35); }
+  .acc-input:focus { border-color: rgba(245,166,35,0.7); background: rgba(245,166,35,0.12); }
+  .acc-input::placeholder { color: rgba(245,166,35,0.35); }
   .acc-rpe-hint { font-size: 10px; color: var(--muted); font-family: var(--font-display); letter-spacing: 0.06em; white-space: nowrap; }
 
 
@@ -1405,58 +1408,62 @@ body.training-mode .nav-logo { color: #fff; }
 body.training-mode .nav-logo span { color: var(--accent); }
 body.training-mode .nav-tab { color: var(--muted); }
 body.training-mode .nav-tab.active { color: #fff; border-bottom-color: var(--accent); }
-body.training-mode #plan { background: var(--bg); border-top: none; }
-body.training-mode .settings-bar { background: var(--bg); border-bottom: 1px solid var(--border); }
-body.training-mode .settings-max-chip { background: var(--surface); border-color: var(--border); }
-body.training-mode .settings-max-label { color: var(--muted); }
-body.training-mode .settings-max-val { color: var(--text); }
-body.training-mode .settings-max-val.unset { color: var(--dim); }
+body.training-mode #plan { background: var(--bg); border-top: none; padding-top: 0; padding-bottom: 60px; }
+body.training-mode .settings-bar { background: rgba(245,166,35,0.03); border-bottom: 1px solid rgba(245,166,35,0.15); padding: 20px 0 20px; margin-bottom: 24px; }
+body.training-mode .settings-max-chip { background: var(--surface); border-color: rgba(245,166,35,0.2); gap: 10px; padding: 10px 18px; }
+body.training-mode .settings-max-label { color: var(--muted); font-size: 9px; letter-spacing: 0.18em; }
+body.training-mode .settings-max-val { color: var(--accent); font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+body.training-mode .settings-max-val.unset { color: var(--dim); font-size: 13px; }
 body.training-mode .settings-open-btn {
   border-color: var(--accent);
-  color: var(--accent);
-  background: transparent;
-  font-size: 13px;
-  padding: 9px 20px;
+  color: #080918;
+  background: var(--accent);
+  font-size: 12px;
+  padding: 10px 22px;
+  letter-spacing: 0.12em;
 }
-body.training-mode .settings-open-btn:hover { background: var(--accent-lo); }
+body.training-mode .settings-open-btn:hover { background: #ffbe0b; border-color: #ffbe0b; }
 body.training-mode .rest-timer-strip { background: var(--surface); border-color: var(--border); }
 body.training-mode .rest-timer-strip-label { color: var(--muted); }
 body.training-mode .rest-preset-btn { border-color: var(--border-hi); color: var(--muted); background: transparent; }
 body.training-mode .rest-preset-btn:hover,
 body.training-mode .rest-preset-btn.active-preset { background: var(--accent); border-color: var(--accent); color: #0C0D1F; }
-body.training-mode .section-title { color: var(--text); }
+body.training-mode .section-title { color: #fff; }
 body.training-mode .section-label { color: var(--accent); }
+body.training-mode .train-title { font-size: clamp(56px, 8vw, 100px); margin-bottom: 32px; }
+body.training-mode .accent-word { color: var(--accent); text-shadow: 0 0 40px rgba(245,166,35,0.4); }
 body.training-mode .plan-day-focus { color: var(--muted); }
 body.training-mode .lift-table-header span { color: var(--muted); }
 body.training-mode .lift-table-header { border-bottom-color: var(--border); }
-body.training-mode .lift-row { border-bottom: none; background: var(--surface); border-radius: 14px; margin-bottom: 8px; box-shadow: none; transition: background 0.15s; border: 1px solid var(--border); }
-body.training-mode .lift-row:hover { background: var(--surface-2); border-color: var(--border-hi); transform: none; }
+body.training-mode .lift-row { border-bottom: none; background: var(--surface); border-radius: 14px; margin-bottom: 8px; box-shadow: none; transition: background 0.18s, border-color 0.18s, box-shadow 0.18s; border: 1px solid var(--border); border-left: 3px solid transparent; }
+body.training-mode .lift-row:hover { background: var(--surface-2); border-color: var(--border-hi); border-left-color: rgba(245,166,35,0.5); transform: none; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+body.training-mode .lift-row.has-logs { border-left-color: var(--accent); }
 body.training-mode .lift-name { color: var(--text); }
 body.training-mode .lift-sets-reps { color: var(--muted); }
 body.training-mode .lift-chevron { color: var(--dim); }
 body.training-mode .lift-note { background: var(--surface-2); color: var(--muted); border-radius: 0 10px 10px 0; border-left-color: var(--accent); }
-body.training-mode .warmup-toggle-btn { border-color: rgba(212,168,67,0.25); color: rgba(212,168,67,0.6); }
+body.training-mode .warmup-toggle-btn { border-color: rgba(245,166,35,0.25); color: rgba(245,166,35,0.6); }
 body.training-mode .warmup-toggle-btn:hover, body.training-mode .warmup-toggle-btn.open { border-color: var(--accent); color: var(--accent); background: var(--accent-lo); }
-body.training-mode .warmup-panel { background: rgba(212,168,67,0.03); border-color: rgba(212,168,67,0.16); border-left-color: rgba(212,168,67,0.45); }
+body.training-mode .warmup-panel { background: rgba(245,166,35,0.03); border-color: rgba(245,166,35,0.16); border-left-color: rgba(245,166,35,0.45); }
 body.training-mode .warmup-step-text { color: var(--text); }
 body.training-mode .warmup-step-why { color: var(--muted); }
 body.training-mode #planNav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 32px; }
-body.training-mode .plan-nav-btn { border-color: var(--border); color: var(--muted); background: var(--surface); }
-body.training-mode .plan-nav-btn:hover { border-color: var(--border-hi); color: var(--text); background: var(--surface-2); }
-body.training-mode .plan-nav-btn.active { color: #0C0D1F; background: var(--accent); border-color: var(--accent); }
+body.training-mode .plan-nav-btn { border-color: var(--border-hi); color: var(--muted); background: var(--surface); font-weight: 600; }
+body.training-mode .plan-nav-btn:hover { border-color: rgba(245,166,35,0.4); color: #fff; background: var(--surface-2); }
+body.training-mode .plan-nav-btn.active { color: #080918; background: var(--accent); border-color: var(--accent); font-weight: 700; box-shadow: 0 2px 16px rgba(245,166,35,0.35); }
 /* Week selector */
 body.training-mode .train-week-btn { border: 1px solid var(--border) !important; color: var(--muted) !important; background: var(--surface) !important; border-radius: 3px !important; }
 body.training-mode .train-week-btn:hover { border-color: var(--border-hi) !important; color: var(--text) !important; background: var(--surface-2) !important; }
-body.training-mode .train-week-btn.twb-active { background: var(--accent) !important; border-color: var(--accent) !important; color: #0C0D1F !important; font-weight: 700 !important; box-shadow: 0 2px 12px rgba(212,168,67,0.35) !important; transform: scale(1.07) !important; }
+body.training-mode .train-week-btn.twb-active { background: var(--accent) !important; border-color: var(--accent) !important; color: #0C0D1F !important; font-weight: 700 !important; box-shadow: 0 2px 12px rgba(245,166,35,0.35) !important; transform: scale(1.07) !important; }
 body.training-mode .train-week-label { color: var(--muted); }
 body.training-mode .timer-bar { background: rgba(12,13,31,0.97); border-top-color: var(--border); }
 body.training-mode .timer-label { color: var(--muted); }
 body.training-mode .timer-lift-name { color: var(--muted); }
 body.training-mode .timer-display { color: #fff; }
 body.training-mode .clear-day-btn { border-color: var(--border); color: var(--dim); }
-body.training-mode .clear-day-btn:hover { border-color: rgba(212,168,67,0.35); color: rgba(212,168,67,0.65); }
+body.training-mode .clear-day-btn:hover { border-color: rgba(245,166,35,0.35); color: rgba(245,166,35,0.65); }
 body.training-mode .log-sets-row .set-circle { border-color: var(--border-hi); color: var(--muted); background: transparent; }
-body.training-mode .log-sets-row .set-circle.logged { border-color: var(--accent); color: var(--accent); background: rgba(212,168,67,0.08); }
+body.training-mode .log-sets-row .set-circle.logged { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.08); }
 body.training-mode .last-session { color: var(--muted); }
 body.training-mode footer { display: none; }
 
@@ -1492,14 +1499,14 @@ body.training-mode footer { display: none; }
   font-family: var(--font-display); font-weight: 900;
   font-size: 62px; line-height: 1; color: var(--text); letter-spacing: -0.02em;
 }
-.rest-modal-time.warning { color: #D4A843; }
-.rest-modal-time.done { color: #D4A843; font-size: 46px; }
+.rest-modal-time.warning { color: #F5A623; }
+.rest-modal-time.done { color: #F5A623; font-size: 46px; }
 .rest-modal-status {
   font-family: var(--font-display); font-weight: 700;
   font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--muted); margin-bottom: 24px; min-height: 16px;
 }
-.rest-modal-status.ready { color: #D4A843; }
+.rest-modal-status.ready { color: #F5A623; }
 .rest-modal-btns { display: flex; gap: 10px; justify-content: center; }
 .rest-modal-add {
   background: transparent; border: 1px solid var(--border); color: var(--muted);
@@ -1517,7 +1524,7 @@ body.training-mode footer { display: none; }
   text-transform: uppercase; cursor: pointer; transition: all 0.15s; flex: 1;
 }
 .rest-modal-skip:hover { background: var(--border-hi); }
-.rest-modal-skip.ready-state { background: #D4A843; border-color: #D4A843; }
+.rest-modal-skip.ready-state { background: #F5A623; border-color: #F5A623; }
 </style>
 </head>
 <body>
@@ -1604,7 +1611,7 @@ body.training-mode footer { display: none; }
 
     <!-- Confidence -->
     <div style="background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(212,168,67,0.05);line-height:1;user-select:none;">01</div>
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(245,166,35,0.05);line-height:1;user-select:none;">01</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Mental Edge</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Confidence<br>Is Not Born.<br>It's Built.</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
@@ -1617,7 +1624,7 @@ body.training-mode footer { display: none; }
 
     <!-- Social Status -->
     <div style="background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(212,168,67,0.05);line-height:1;user-select:none;">02</div>
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(245,166,35,0.05);line-height:1;user-select:none;">02</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Social Capital</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">People Treat<br>You How You<br>Look.</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
@@ -1630,7 +1637,7 @@ body.training-mode footer { display: none; }
 
     <!-- Athletic Performance -->
     <div style="background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(212,168,67,0.05);line-height:1;user-select:none;">03</div>
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(245,166,35,0.05);line-height:1;user-select:none;">03</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Athletic Output</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Strong Men<br>Are Useful<br>Men.</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
@@ -1658,45 +1665,45 @@ body.training-mode footer { display: none; }
   <h2 class="section-title">10 WEEKS.<br>NO EXCUSES.</h2>
 
   <div class="week-tabs" id="weekTabs" style="flex-wrap:wrap;">
-    <button class="week-tab active" onclick="selectWeek(0, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 1</button>
-    <button class="week-tab" onclick="selectWeek(1, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 2</button>
-    <button class="week-tab" onclick="selectWeek(2, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 3</button>
-    <button class="week-tab" onclick="selectWeek(3, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 4</button>
-    <button class="week-tab" onclick="selectWeek(4, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 5</button>
-    <button class="week-tab" onclick="selectWeek(5, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 6</button>
-    <button class="week-tab" onclick="selectWeek(6, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 7</button>
-    <button class="week-tab" onclick="selectWeek(7, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 8</button>
-    <button class="week-tab" onclick="selectWeek(8, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 9</button>
-    <button class="week-tab" onclick="selectWeek(9, this)" style="position:relative;"><span style="font-size:9px;color:#D4A843;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 10</button>
+    <button class="week-tab active" onclick="selectWeek(0, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 1</button>
+    <button class="week-tab" onclick="selectWeek(1, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 2</button>
+    <button class="week-tab" onclick="selectWeek(2, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 3</button>
+    <button class="week-tab" onclick="selectWeek(3, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 4</button>
+    <button class="week-tab" onclick="selectWeek(4, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 5</button>
+    <button class="week-tab" onclick="selectWeek(5, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 6</button>
+    <button class="week-tab" onclick="selectWeek(6, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 7</button>
+    <button class="week-tab" onclick="selectWeek(7, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 8</button>
+    <button class="week-tab" onclick="selectWeek(8, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 9</button>
+    <button class="week-tab" onclick="selectWeek(9, this)" style="position:relative;"><span style="font-size:9px;color:#F5A623;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 10</button>
   </div>
 
   <div id="weekInfoPanels">
     <div class="week-info" id="winfo0">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 1</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#D4A84322;color:#D4A843;border:1px solid #D4A84344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F5A62322;color:#F5A623;border:1px solid #F5A62344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Baseline, establish working weights, own the movement</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">65–70%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Intro explosive work, box jumps 3x5 before leg days</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Log every set. This is your benchmark. Don't ego load."</div></div>
     </div>
     <div class="week-info" id="winfo1" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 1</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#D4A84322;color:#D4A843;border:1px solid #D4A84344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F5A62322;color:#F5A623;border:1px solid #F5A62344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Load — add weight to every main lift, volume goes up</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">72–76%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 3x5, broad jumps 3x5 before leg days</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Hit every rep before adding weight. Form is non-negotiable."</div></div>
     </div>
     <div class="week-info" id="winfo2" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 1</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#D4A84322;color:#D4A843;border:1px solid #D4A84344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F5A62322;color:#F5A623;border:1px solid #F5A62344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Overload — heaviest week of wave 1, push hard</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">78–83%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 4x5, lateral bounds 3x6 before leg days</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Leave 1 rep in the tank on main lifts. Grind accessories."</div></div>
     </div>
     <div class="week-info" id="winfo3" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 1</div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 1</div></div>
       <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#55522;color:#555;border:1px solid #55544;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">DELOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Deload, back off, move perfectly, let the body adapt</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">~60%</div></div>
@@ -1704,47 +1711,47 @@ body.training-mode footer { display: none; }
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Full ROM every rep. Feel every muscle. CNS recovery."</div></div>
     </div>
     <div class="week-info" id="winfo4" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#D4A84322;color:#D4A843;border:1px solid #D4A84344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F5A62322;color:#F5A623;border:1px solid #F5A62344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Wave 2 Base, return heavier than wave 1 started</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">70–74%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 4x5, depth jumps 3x4 before leg days</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"You are stronger than week 1. Prove it. New baseline."</div></div>
     </div>
     <div class="week-info" id="winfo5" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#D4A84322;color:#D4A843;border:1px solid #D4A84344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F5A62322;color:#F5A623;border:1px solid #F5A62344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Build, volume and load climbing, accessories intensify</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">75–79%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Depth jumps 3x5, broad jumps 3x6, lateral bounds 3x6</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Every main lift heavier than the same position in wave 1."</div></div>
     </div>
     <div class="week-info" id="winfo6" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#D4A84322;color:#D4A843;border:1px solid #D4A84344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F5A62322;color:#F5A623;border:1px solid #F5A62344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Load — highest volume week of the program</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">79–83%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Full explosive circuit before each leg day, 15 min</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"This is where most guys quit. You don't quit."</div></div>
     </div>
     <div class="week-info" id="winfo7" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#D4A84322;color:#D4A843;border:1px solid #D4A84344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F5A62322;color:#F5A623;border:1px solid #F5A62344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Overload — push into new territory, heaviest sets yet</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">83–88%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Reduced, box jumps 3x3 only, save CNS for main lifts</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Beat every week 3 number. This is the point of the whole program."</div></div>
     </div>
     <div class="week-info" id="winfo8" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#D4A84322;color:#D4A843;border:1px solid #D4A84344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">PEAK</span></div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F5A62322;color:#F5A623;border:1px solid #F5A62344;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">PEAK</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Peak — near-max effort, minimal volume, maximum intensity</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">88–93%</div></div>
       <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">None, full CNS focus on peak lifts</div></div>
       <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#ccc;font-style:italic;">"Top sets only. 2-3 heavy sets on main lifts. This is your test week."</div></div>
     </div>
     <div class="week-info" id="winfo9" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#D4A843;font-weight:700;">Wave 2</div></div>
+      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F5A623;font-weight:700;">Wave 2</div></div>
       <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#55522;color:#555;border:1px solid #55544;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">DELOAD</span></div></div>
       <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Final Deload, recover, reflect, come back and test maxes</div></div>
       <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">~55–60%</div></div>
@@ -1781,46 +1788,46 @@ body.training-mode footer { display: none; }
       <div class="prog-card-header">
         <div class="prog-card-lift">Bench Press</div>
       </div>
-      <div class="prog-row highlight" id="bench-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#D4A843">190 lbs</div><div class="prog-note">Set your baseline. Own the movement.</div></div>
-      <div class="prog-row" id="bench-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#D4A843">200 lbs</div><div class="prog-note">5 lb jump. Hit all 4 sets of 5.</div></div>
-      <div class="prog-row" id="bench-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#D4A843">215 lbs</div><div class="prog-note">Heaviest of wave 1. 1 rep in tank.</div></div>
-      <div class="prog-row" id="bench-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#D4A843">~140 lbs</div><div class="prog-note">Deload. Perfect form. Full ROM.</div></div>
-      <div class="prog-row" id="bench-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#D4A843">205 lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
-      <div class="prog-row" id="bench-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#D4A843">215 lbs</div><div class="prog-note">Match week 3. This should feel easier.</div></div>
-      <div class="prog-row" id="bench-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#D4A843">225 lbs</div><div class="prog-note">New territory. Earn it.</div></div>
-      <div class="prog-row" id="bench-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#D4A843">235 lbs</div><div class="prog-note">Beat wave 1 peak by 20 lbs.</div></div>
-      <div class="prog-row" id="bench-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#D4A843">245 lbs, top sets</div><div class="prog-note">2–3 heavy sets. Leave nothing.</div></div>
-      <div class="prog-row" id="bench-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#D4A843">~150 lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
+      <div class="prog-row highlight" id="bench-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#F5A623">190 lbs</div><div class="prog-note">Set your baseline. Own the movement.</div></div>
+      <div class="prog-row" id="bench-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#F5A623">200 lbs</div><div class="prog-note">5 lb jump. Hit all 4 sets of 5.</div></div>
+      <div class="prog-row" id="bench-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#F5A623">215 lbs</div><div class="prog-note">Heaviest of wave 1. 1 rep in tank.</div></div>
+      <div class="prog-row" id="bench-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#F5A623">~140 lbs</div><div class="prog-note">Deload. Perfect form. Full ROM.</div></div>
+      <div class="prog-row" id="bench-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#F5A623">205 lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
+      <div class="prog-row" id="bench-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#F5A623">215 lbs</div><div class="prog-note">Match week 3. This should feel easier.</div></div>
+      <div class="prog-row" id="bench-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#F5A623">225 lbs</div><div class="prog-note">New territory. Earn it.</div></div>
+      <div class="prog-row" id="bench-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#F5A623">235 lbs</div><div class="prog-note">Beat wave 1 peak by 20 lbs.</div></div>
+      <div class="prog-row" id="bench-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#F5A623">245 lbs, top sets</div><div class="prog-note">2–3 heavy sets. Leave nothing.</div></div>
+      <div class="prog-row" id="bench-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#F5A623">~150 lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
     </div>
     <div class="prog-card">
       <div class="prog-card-header">
         <div class="prog-card-lift">Back Squat</div>
       </div>
-      <div class="prog-row highlight" id="squat-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#D4A843">265 lbs</div><div class="prog-note">Set your baseline. Depth first.</div></div>
-      <div class="prog-row" id="squat-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#D4A843">275 lbs</div><div class="prog-note">10 lb jump. All 5 sets of 5.</div></div>
-      <div class="prog-row" id="squat-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#D4A843">295 lbs</div><div class="prog-note">Heaviest of wave 1. Grind it.</div></div>
-      <div class="prog-row" id="squat-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#D4A843">~195 lbs</div><div class="prog-note">Deload. Hips open, depth perfect.</div></div>
-      <div class="prog-row" id="squat-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#D4A843">280 lbs</div><div class="prog-note">Back and building. Stronger base.</div></div>
-      <div class="prog-row" id="squat-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#D4A843">295 lbs</div><div class="prog-note">Match wave 1 peak. It's lighter now.</div></div>
-      <div class="prog-row" id="squat-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#D4A843">310 lbs</div><div class="prog-note">New personal territory.</div></div>
-      <div class="prog-row" id="squat-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#D4A843">325 lbs</div><div class="prog-note">30 lb PR over wave 1 peak.</div></div>
-      <div class="prog-row" id="squat-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#D4A843">335 lbs, top sets</div><div class="prog-note">Near max. 2–3 heavy sets only.</div></div>
-      <div class="prog-row" id="squat-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#D4A843">~210 lbs</div><div class="prog-note">Deload. Test max next week fresh.</div></div>
+      <div class="prog-row highlight" id="squat-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#F5A623">265 lbs</div><div class="prog-note">Set your baseline. Depth first.</div></div>
+      <div class="prog-row" id="squat-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#F5A623">275 lbs</div><div class="prog-note">10 lb jump. All 5 sets of 5.</div></div>
+      <div class="prog-row" id="squat-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#F5A623">295 lbs</div><div class="prog-note">Heaviest of wave 1. Grind it.</div></div>
+      <div class="prog-row" id="squat-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#F5A623">~195 lbs</div><div class="prog-note">Deload. Hips open, depth perfect.</div></div>
+      <div class="prog-row" id="squat-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#F5A623">280 lbs</div><div class="prog-note">Back and building. Stronger base.</div></div>
+      <div class="prog-row" id="squat-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#F5A623">295 lbs</div><div class="prog-note">Match wave 1 peak. It's lighter now.</div></div>
+      <div class="prog-row" id="squat-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#F5A623">310 lbs</div><div class="prog-note">New personal territory.</div></div>
+      <div class="prog-row" id="squat-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#F5A623">325 lbs</div><div class="prog-note">30 lb PR over wave 1 peak.</div></div>
+      <div class="prog-row" id="squat-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#F5A623">335 lbs, top sets</div><div class="prog-note">Near max. 2–3 heavy sets only.</div></div>
+      <div class="prog-row" id="squat-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#F5A623">~210 lbs</div><div class="prog-note">Deload. Test max next week fresh.</div></div>
     </div>
     <div class="prog-card" id="prog-card-ohp" style="display:none">
       <div class="prog-card-header">
         <div class="prog-card-lift">Overhead Press</div>
       </div>
-      <div class="prog-row highlight" id="ohp-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#D4A843">— lbs</div><div class="prog-note">Set your baseline. Strict press, no leg drive.</div></div>
-      <div class="prog-row" id="ohp-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#D4A843">— lbs</div><div class="prog-note">Small jump. Lock in bar path.</div></div>
-      <div class="prog-row" id="ohp-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#D4A843">— lbs</div><div class="prog-note">Heaviest of wave 1. Stay tight.</div></div>
-      <div class="prog-row" id="ohp-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#D4A843">— lbs</div><div class="prog-note">Deload. Perfect technique only.</div></div>
-      <div class="prog-row" id="ohp-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#D4A843">— lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
-      <div class="prog-row" id="ohp-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#D4A843">— lbs</div><div class="prog-note">Match week 3. Should feel manageable.</div></div>
-      <div class="prog-row" id="ohp-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#D4A843">— lbs</div><div class="prog-note">New territory. Brace hard.</div></div>
-      <div class="prog-row" id="ohp-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#D4A843">— lbs</div><div class="prog-note">Building toward your peak.</div></div>
-      <div class="prog-row" id="ohp-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#D4A843">— lbs, top sets</div><div class="prog-note">2–3 heavy sets. Everything you have.</div></div>
-      <div class="prog-row" id="ohp-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#D4A843">— lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
+      <div class="prog-row highlight" id="ohp-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Set your baseline. Strict press, no leg drive.</div></div>
+      <div class="prog-row" id="ohp-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Small jump. Lock in bar path.</div></div>
+      <div class="prog-row" id="ohp-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Heaviest of wave 1. Stay tight.</div></div>
+      <div class="prog-row" id="ohp-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Deload. Perfect technique only.</div></div>
+      <div class="prog-row" id="ohp-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
+      <div class="prog-row" id="ohp-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Match week 3. Should feel manageable.</div></div>
+      <div class="prog-row" id="ohp-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">New territory. Brace hard.</div></div>
+      <div class="prog-row" id="ohp-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Building toward your peak.</div></div>
+      <div class="prog-row" id="ohp-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#F5A623">— lbs, top sets</div><div class="prog-note">2–3 heavy sets. Everything you have.</div></div>
+      <div class="prog-row" id="ohp-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
     </div>
   </div>
   </div>
@@ -1873,7 +1880,7 @@ body.training-mode footer { display: none; }
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
   <div class="section-label">Monk Mode — Daily Training</div>
-  <h2 class="section-title">THIS IS<br>WHERE YOU WIN</h2>
+  <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
@@ -1905,11 +1912,11 @@ body.training-mode footer { display: none; }
   <div class="plan-content active" id="day-chest">
     <div class="plan-day-header">
       <div>
-        <div class="plan-day-title" style="color:#D4A843">CHEST + BACK</div>
+        <div class="plan-day-title" style="color:#F5A623">CHEST + BACK</div>
         <div class="plan-day-focus">Horizontal push and pull. Balanced pressing and rowing volume.</div>
       </div>
       <div class="plan-badges">
-        <span class="badge" style="background:rgba(212,168,67,0.12);color:#D4A843;border:1px solid rgba(212,168,67,0.28)">Day 1</span>
+        <span class="badge" style="background:rgba(245,166,35,0.12);color:#F5A623;border:1px solid rgba(245,166,35,0.28)">Day 1</span>
         <span class="badge" style="background:var(--surface);color:var(--accent);border:1px solid #23232E">⏱ ~1:20</span>
       </div>
       <button class="clear-day-btn" onclick="clearDayLogs('chest'); return false;">Clear Logs</button>
@@ -1938,11 +1945,11 @@ body.training-mode footer { display: none; }
   <div class="plan-content" id="day-arms">
     <div class="plan-day-header">
       <div>
-        <div class="plan-day-title" style="color:#D4A843">SHOULDERS + ARMS</div>
+        <div class="plan-day-title" style="color:#F5A623">SHOULDERS + ARMS</div>
         <div class="plan-day-focus">Overhead pressing, lateral delt volume, bicep and tricep isolation.</div>
       </div>
       <div class="plan-badges">
-        <span class="badge" style="background:rgba(212,168,67,0.12);color:#D4A843;border:1px solid rgba(212,168,67,0.28)">Day 2</span>
+        <span class="badge" style="background:rgba(245,166,35,0.12);color:#F5A623;border:1px solid rgba(245,166,35,0.28)">Day 2</span>
         <span class="badge" style="background:var(--surface);color:var(--accent);border:1px solid #23232E">⏱ ~1:15</span>
       </div>
       <button class="clear-day-btn" onclick="clearDayLogs('arms'); return false;">Clear Logs</button>
@@ -1971,11 +1978,11 @@ body.training-mode footer { display: none; }
   <div class="plan-content" id="day-legs">
     <div class="plan-day-header">
       <div>
-        <div class="plan-day-title" style="color:#D4A843">LEGS + ABS</div>
+        <div class="plan-day-title" style="color:#F5A623">LEGS + ABS</div>
         <div class="plan-day-focus">Quad dominance, posterior chain, and core stability.</div>
       </div>
       <div class="plan-badges">
-        <span class="badge" style="background:rgba(212,168,67,0.12);color:#D4A843;border:1px solid rgba(212,168,67,0.28)">Day 3</span>
+        <span class="badge" style="background:rgba(245,166,35,0.12);color:#F5A623;border:1px solid rgba(245,166,35,0.28)">Day 3</span>
         <span class="badge" style="background:var(--surface);color:var(--accent);border:1px solid #23232E">⏱ ~1:25</span>
       </div>
       <button class="clear-day-btn" onclick="clearDayLogs('legs'); return false;">Clear Logs</button>
@@ -2004,11 +2011,11 @@ body.training-mode footer { display: none; }
   <div class="plan-content" id="day-chest-b">
     <div class="plan-day-header">
       <div>
-        <div class="plan-day-title" style="color:#D4A843">CHEST + BACK</div>
+        <div class="plan-day-title" style="color:#F5A623">CHEST + BACK</div>
         <div class="plan-day-focus">Incline focus, machine rows, cable isolation. Different angles from Day 1A.</div>
       </div>
       <div class="plan-badges">
-        <span class="badge" style="background:rgba(212,168,67,0.12);color:#D4A843;border:1px solid rgba(212,168,67,0.28)">1B</span>
+        <span class="badge" style="background:rgba(245,166,35,0.12);color:#F5A623;border:1px solid rgba(245,166,35,0.28)">1B</span>
         <span class="badge" style="background:var(--surface);color:var(--accent);border:1px solid #23232E">⏱ ~1:20</span>
       </div>
       <button class="clear-day-btn" onclick="clearDayLogs('chest-b'); return false;">Clear Logs</button>
@@ -2037,11 +2044,11 @@ body.training-mode footer { display: none; }
   <div class="plan-content" id="day-arms-b">
     <div class="plan-day-header">
       <div>
-        <div class="plan-day-title" style="color:#D4A843">SHOULDERS + ARMS</div>
+        <div class="plan-day-title" style="color:#F5A623">SHOULDERS + ARMS</div>
         <div class="plan-day-focus">Arnold press, cable lateral work, isolation for bis and tris from different angles.</div>
       </div>
       <div class="plan-badges">
-        <span class="badge" style="background:rgba(212,168,67,0.12);color:#D4A843;border:1px solid rgba(212,168,67,0.28)">2B</span>
+        <span class="badge" style="background:rgba(245,166,35,0.12);color:#F5A623;border:1px solid rgba(245,166,35,0.28)">2B</span>
         <span class="badge" style="background:var(--surface);color:var(--accent);border:1px solid #23232E">⏱ ~1:15</span>
       </div>
       <button class="clear-day-btn" onclick="clearDayLogs('arms-b'); return false;">Clear Logs</button>
@@ -2070,11 +2077,11 @@ body.training-mode footer { display: none; }
   <div class="plan-content" id="day-legs-b">
     <div class="plan-day-header">
       <div>
-        <div class="plan-day-title" style="color:#D4A843">LEGS + ABS</div>
+        <div class="plan-day-title" style="color:#F5A623">LEGS + ABS</div>
         <div class="plan-day-focus">Free weight squat, unilateral challenge, posterior chain and cable core.</div>
       </div>
       <div class="plan-badges">
-        <span class="badge" style="background:rgba(212,168,67,0.12);color:#D4A843;border:1px solid rgba(212,168,67,0.28)">3B</span>
+        <span class="badge" style="background:rgba(245,166,35,0.12);color:#F5A623;border:1px solid rgba(245,166,35,0.28)">3B</span>
         <span class="badge" style="background:var(--surface);color:var(--accent);border:1px solid #23232E">⏱ ~1:25</span>
       </div>
       <button class="clear-day-btn" onclick="clearDayLogs('legs-b'); return false;">Clear Logs</button>
@@ -2107,12 +2114,12 @@ body.training-mode footer { display: none; }
         <div class="plan-day-focus">Recovery, mobility, and shoulder maintenance. No heavy loading.</div>
       </div>
       <div class="plan-badges">
-        <span class="badge" style="background:rgba(212,168,67,0.12);color:#E0BC5A;border:1px solid rgba(212,168,67,0.28)">Day 4</span>
+        <span class="badge" style="background:rgba(245,166,35,0.12);color:#E0BC5A;border:1px solid rgba(245,166,35,0.28)">Day 4</span>
         <span class="badge" style="background:var(--surface);color:var(--accent);border:1px solid #23232E">⏱ ~45 min</span>
       </div>
       <button class="clear-day-btn" onclick="clearDayLogs('rest'); return false;">Clear Logs</button>
     </div>
-    <div style="padding:24px 28px;background:rgba(212,168,67,0.05);border:1px solid rgba(212,168,67,0.18);border-left:4px solid #D4A843;border-radius:0 16px 16px 0;margin-bottom:32px">
+    <div style="padding:24px 28px;background:rgba(245,166,35,0.05);border:1px solid rgba(245,166,35,0.18);border-left:4px solid #F5A623;border-radius:0 16px 16px 0;margin-bottom:32px">
       <div style="font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#E0BC5A;margin-bottom:16px">Start with 5 min foam rolling: quads, hip flexors, t-spine. Then 10 deep diaphragmatic breaths.</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
         <span style="font-size:13px;color:var(--muted)">No heavy loading.</span>
@@ -2144,7 +2151,7 @@ body.training-mode footer { display: none; }
     <div class="rest-modal-ring-wrap">
       <svg viewBox="0 0 200 200">
         <circle cx="100" cy="100" r="85" stroke="#f0f0f0" stroke-width="10" fill="none"/>
-        <circle id="restModalRing" cx="100" cy="100" r="85" stroke="#D4A843" stroke-width="10" fill="none"
+        <circle id="restModalRing" cx="100" cy="100" r="85" stroke="#F5A623" stroke-width="10" fill="none"
           stroke-dasharray="534" stroke-dashoffset="0" stroke-linecap="round"
           transform="rotate(-90 100 100)" style="transition:stroke-dashoffset 1s linear,stroke 0.4s;"/>
       </svg>
@@ -2503,11 +2510,11 @@ body.training-mode footer { display: none; }
     if (mRing) mRing.style.strokeDashoffset = offset;
     if (secs <= 10 && secs > 0) {
       if (mTime) mTime.className = 'rest-modal-time warning';
-      if (mRing) mRing.style.stroke = '#D4A843';
+      if (mRing) mRing.style.stroke = '#F5A623';
     }
     if (secs <= 0) {
       if (mTime) { mTime.textContent = 'GO!'; mTime.className = 'rest-modal-time done'; }
-      if (mRing) { mRing.style.stroke = '#D4A843'; mRing.style.strokeDashoffset = CIRC; }
+      if (mRing) { mRing.style.stroke = '#F5A623'; mRing.style.strokeDashoffset = CIRC; }
       if (mStatus) { mStatus.textContent = 'Next set ready'; mStatus.className = 'rest-modal-status ready'; }
       if (mSkip) { mSkip.textContent = 'Start Next Set'; mSkip.className = 'rest-modal-skip ready-state'; }
     }
@@ -2591,7 +2598,7 @@ body.training-mode footer { display: none; }
     if (toggleBtn) toggleBtn.textContent = 'Pause';
     if (mLift) mLift.textContent = liftName || '';
     if (mTime) { mTime.textContent = formatTime(seconds); mTime.className = 'rest-modal-time'; }
-    if (mRing) { mRing.style.strokeDashoffset = '0'; mRing.style.stroke = '#D4A843'; }
+    if (mRing) { mRing.style.strokeDashoffset = '0'; mRing.style.stroke = '#F5A623'; }
     if (mStatus) { mStatus.textContent = ''; mStatus.className = 'rest-modal-status'; }
     if (mSkip) { mSkip.textContent = 'Skip Rest'; mSkip.className = 'rest-modal-skip'; }
     if (modal) modal.classList.add('visible');
@@ -3360,7 +3367,7 @@ function renderRing() {
     var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', x1); line.setAttribute('y1', y1);
     line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-    line.setAttribute('stroke', isActive ? '#D4A843' : 'rgba(255,255,255,0.13)');
+    line.setAttribute('stroke', isActive ? '#F5A623' : 'rgba(255,255,255,0.13)');
     line.setAttribute('stroke-width', isActive ? '2.5' : '1.5');
     line.setAttribute('stroke-linecap', 'round');
     g.appendChild(line);
