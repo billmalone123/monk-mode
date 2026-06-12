@@ -50,7 +50,7 @@
 
   /* SCROLLBAR */
   ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: var(--black); }
+  ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
 
   /* NAV */
@@ -222,7 +222,7 @@
   }
 
   /* ABOUT */
-  #about { background: var(--black); border-top: 1px solid var(--border); }
+  #about { background: var(--bg); border-top: 1px solid var(--border); }
   .edge-section { padding: 100px 60px; }
   .about-grid {
     display: grid;
@@ -359,7 +359,7 @@
   .day-lift-count { font-size: 12px; color: var(--muted); }
 
   /* WORKOUT PLAN */
-  #plan { background: var(--black); border-top: 1px solid var(--border); }
+  #plan { background: var(--bg); border-top: 1px solid var(--border); }
   .plan-nav {
     display: flex; gap: 10px;
     margin-bottom: 48px;
@@ -418,13 +418,13 @@
     display: flex; align-items: center; gap: 10px;
   }
   .warmup-toggle-btn:hover, .warmup-toggle-btn.open {
-    border-color: var(--green); color: var(--green); background: rgba(212,168,67,0.05);
+    border-color: var(--accent); color: var(--accent); background: rgba(212,168,67,0.05);
   }
   .warmup-panel {
     display: none;
-    background: rgba(212,168,67,0.04);
-    border: 1px solid rgba(212,168,67,0.18);
-    border-left: 4px solid var(--green);
+    background: rgba(212,168,67,0.03);
+    border: 1px solid rgba(212,168,67,0.15);
+    border-left: 3px solid rgba(212,168,67,0.5);
     padding: 28px 32px;
     margin-bottom: 32px;
     animation: fadeIn 0.2s ease;
@@ -435,7 +435,7 @@
     font-weight: 700;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--green);
+    color: var(--accent);
     margin-bottom: 24px;
   }
   .warmup-steps { display: flex; flex-direction: column; gap: 16px; }
@@ -444,7 +444,7 @@
     font-family: var(--font-display);
     font-weight: 800;
     font-size: 20px;
-    color: var(--green);
+    color: var(--accent);
     min-width: 24px;
     line-height: 1.2;
   }
@@ -497,7 +497,7 @@
   }
   .ramp-hint { font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: 0.01em; }
   .lift-alts span { color: var(--accent); font-weight: 600; margin-right: 4px; }
-  .lift-rest { font-size: 14px; color: var(--accent); font-weight: 600; padding-top: 2px; }
+  .lift-rest { font-size: 14px; color: var(--muted); font-weight: 600; padding-top: 2px; }
   .lift-time { font-size: 14px; color: var(--muted); padding-top: 2px; }
   .lift-note {
     display: none;
@@ -586,7 +586,7 @@
 
   /* FOOTER */
   footer {
-    background: var(--black);
+    background: var(--bg);
     border-top: 1px solid var(--border);
     padding: 60px;
     display: flex; justify-content: space-between; align-items: flex-end;
@@ -798,8 +798,8 @@
     position: relative;
   }
   .set-circle:hover { border-color: var(--dim); color: var(--text); background: rgba(212,168,67,0.06); }
-  .set-circle.logged { border-color: var(--green); color: var(--green); background: rgba(212,168,67,0.1); }
-  .set-circle.flash { background: var(--green); color: #fff; border-color: var(--green); }
+  .set-circle.logged { border-color: var(--accent); color: var(--accent); background: rgba(212,168,67,0.10); }
+  .set-circle.flash { background: var(--accent); color: #0C0D1F; border-color: var(--accent); }
   .last-session-row {
     grid-column: 1 / -1;
     display: flex;
@@ -838,7 +838,7 @@
   .log-modal-card {
     background: var(--surface);
     border: 1px solid rgba(255,255,255,0.08);
-    border-top: 3px solid var(--green);
+    border-top: 2px solid var(--accent);
     border-radius: 22px;
     padding: 32px 36px;
     width: 320px;
@@ -851,7 +851,7 @@
     font-size: 11px;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--green);
+    color: var(--accent);
     margin-bottom: 6px;
   }
   .log-modal-lift {
@@ -890,7 +890,7 @@
     outline: none;
     transition: border-color 0.15s;
   }
-  .log-input-field:focus { border-color: var(--green); box-shadow: 0 0 0 2px rgba(212,168,67,0.12); }
+  .log-input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(212,168,67,0.12); }
   .log-save-btn {
     background: linear-gradient(135deg, #D4A843 0%, #B8902A 100%);
     color: #fff;
@@ -965,7 +965,7 @@
   }
   .timer-progress-fill {
     height: 100%;
-    background: var(--green);
+    background: var(--accent);
     width: 100%;
     transition: width 1s linear, background 0.5s ease;
   }
@@ -1341,9 +1341,9 @@
     margin-left: 10px;
     vertical-align: middle;
   }
-  .lift-weight-badge.squat { background: rgba(212,168,67,0.1); border-color: rgba(212,168,67,0.28); color: #D4A843; }
-  .lift-weight-badge.ohp { background: rgba(245,166,35,0.1); border-color: rgba(245,166,35,0.28); color: var(--accent); }
-  .lift-weight-badge.pullup { background: rgba(212,168,67,0.1); border-color: rgba(212,168,67,0.28); color: #D4A843; }
+  .lift-weight-badge.squat { background: rgba(212,168,67,0.08); border-color: rgba(212,168,67,0.28); color: var(--accent); }
+  .lift-weight-badge.ohp { background: rgba(212,168,67,0.08); border-color: rgba(212,168,67,0.28); color: var(--accent); }
+  .lift-weight-badge.pullup { background: rgba(212,168,67,0.08); border-color: rgba(212,168,67,0.28); color: var(--accent); }
   .acc-log-wrap { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; vertical-align: middle; }
   .acc-input {
     width: 72px; background: rgba(212,168,67,0.08); border: 1px solid rgba(212,168,67,0.35);
@@ -1396,7 +1396,7 @@
   font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
   white-space: nowrap;
 }
-.nav-sub button.on { color: #fff; border-bottom-color: #D4A843; }
+.nav-sub button.on { color: #fff; border-bottom-color: var(--accent); }
 
 /* ── TRAINING MODE — dark throughout ─────────────────────────────────────── */
 body.training-mode { background: var(--bg); }
@@ -1604,9 +1604,9 @@ body.training-mode footer { display: none; }
 
     <!-- Confidence -->
     <div style="background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(212,168,67,0.05);line-height:1;user-select:none;">01</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Mental Edge</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Confidence<br>Is Not Born.<br>It's Built.</div>
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(212,168,67,0.05);line-height:1;user-select:none;">01</div>
+      <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Mental Edge</div>
+      <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Confidence<br>Is Not Born.<br>It's Built.</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
         Every rep you finish when you wanted to stop is a deposit into your self-belief. After 10 weeks of this program, you will walk into rooms differently. Not because you told yourself to. Because your body knows what you put into it.
       </p>
@@ -1617,9 +1617,9 @@ body.training-mode footer { display: none; }
 
     <!-- Social Status -->
     <div style="background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(212,168,67,0.05);line-height:1;user-select:none;">02</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Social Capital</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">People Treat<br>You How You<br>Look.</div>
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(212,168,67,0.05);line-height:1;user-select:none;">02</div>
+      <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Social Capital</div>
+      <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">People Treat<br>You How You<br>Look.</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
         This is uncomfortable to say out loud. But you already know it's true. A physically imposing, well-built man is treated with more respect in every room he enters. In job interviews. In negotiations. On the street. At a party.
       </p>
@@ -1630,9 +1630,9 @@ body.training-mode footer { display: none; }
 
     <!-- Athletic Performance -->
     <div style="background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
-      <div style="position:absolute;top:-10px;right:20px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;color:rgba(212,168,67,0.05);line-height:1;user-select:none;">03</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Athletic Output</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Strong Men<br>Are Useful<br>Men.</div>
+      <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(212,168,67,0.05);line-height:1;user-select:none;">03</div>
+      <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Athletic Output</div>
+      <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#fff;line-height:1.1;margin-bottom:20px;">Strong Men<br>Are Useful<br>Men.</div>
       <p style="font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:16px;">
         Mobility work is baked into every session. You will be stronger and move better than 99% of men your age. Pick up anything. Sprint when it matters. Play any sport and be the most physically capable person on the field.
       </p>
@@ -1645,7 +1645,7 @@ body.training-mode footer { display: none; }
 
   <!-- Pull quote -->
   <div style="border-left:4px solid var(--red);border-radius:0 16px 16px 0;padding:36px 44px;background:#0F0F1A;max-width:800px;">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(28px,4vw,48px);line-height:1.15;color:#fff;margin-bottom:20px;letter-spacing:0.01em;">
+    <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:clamp(28px,4vw,48px);line-height:1.15;color:#fff;margin-bottom:20px;letter-spacing:0.01em;">
       "The average man will never know what he was capable of. He was too comfortable to find out."
     </div>
     <div style="font-size:12px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);">
@@ -1879,16 +1879,16 @@ body.training-mode footer { display: none; }
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
     <span style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Training Week</span>
     <div style="display:flex;gap:4px;flex-wrap:wrap;" id="trainWeekSelector">
-      <button onclick="setTrainWeek(0);highlightTrainWeek(0,this)" class="train-week-btn twb-active" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W1</button>
-      <button onclick="setTrainWeek(1);highlightTrainWeek(1,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W2</button>
-      <button onclick="setTrainWeek(2);highlightTrainWeek(2,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W3</button>
-      <button onclick="setTrainWeek(3);highlightTrainWeek(3,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W4</button>
-      <button onclick="setTrainWeek(4);highlightTrainWeek(4,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W5</button>
-      <button onclick="setTrainWeek(5);highlightTrainWeek(5,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W6</button>
-      <button onclick="setTrainWeek(6);highlightTrainWeek(6,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W7</button>
-      <button onclick="setTrainWeek(7);highlightTrainWeek(7,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W8</button>
-      <button onclick="setTrainWeek(8);highlightTrainWeek(8,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W9</button>
-      <button onclick="setTrainWeek(9);highlightTrainWeek(9,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W10</button>
+      <button onclick="setTrainWeek(0);highlightTrainWeek(0,this)" class="train-week-btn twb-active" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W1</button>
+      <button onclick="setTrainWeek(1);highlightTrainWeek(1,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W2</button>
+      <button onclick="setTrainWeek(2);highlightTrainWeek(2,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W3</button>
+      <button onclick="setTrainWeek(3);highlightTrainWeek(3,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W4</button>
+      <button onclick="setTrainWeek(4);highlightTrainWeek(4,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W5</button>
+      <button onclick="setTrainWeek(5);highlightTrainWeek(5,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W6</button>
+      <button onclick="setTrainWeek(6);highlightTrainWeek(6,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W7</button>
+      <button onclick="setTrainWeek(7);highlightTrainWeek(7,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W8</button>
+      <button onclick="setTrainWeek(8);highlightTrainWeek(8,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W9</button>
+      <button onclick="setTrainWeek(9);highlightTrainWeek(9,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W10</button>
     </div>
   </div>
   <div class="plan-nav" id="planNav">
