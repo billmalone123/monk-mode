@@ -2248,6 +2248,12 @@ body.training-mode footer { display: none; }
   var sessions = loadSessions();
 
   function getHistory(exId) { return sessions[exId] || []; }
+  // Normalize a logged set: new shape {w, r}; legacy shape was reps-only number
+  function normSet(e, s) {
+    if (s == null) return null;
+    if (typeof s === 'number') return { w: e.weight, r: s };
+    return (s && s.r) ? s : null;
+  }
   function todayKey() {
     var d = new Date();
     function p(n) { return n < 10 ? '0' + n : '' + n; }
@@ -2336,10 +2342,18 @@ body.training-mode footer { display: none; }
       + '<input class="log-inline-input" type="number" inputmode="numeric" id="r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)"></div>'
       + '</div>'
       + '<div class="log-row">'
-      + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Reps Hit</span>'
-      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s1-' + ex.id + '"></div>'
-      + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Reps Hit</span>'
-      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s2-' + ex.id + '"></div>'
+      + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Weight</span>'
+      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s1w-' + ex.id + '" oninput="this.dataset.dirty=1"></div>'
+      + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Reps</span>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s1r-' + ex.id + '"></div>'
+      + '</div>'
+      + '<div class="log-row">'
+      + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Weight</span>'
+      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s2w-' + ex.id + '" oninput="this.dataset.dirty=1"></div>'
+      + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Reps</span>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s2r-' + ex.id + '"></div>'
+      + '</div>'
+      + '<div class="log-row">'
       + '<button class="failure-toggle" id="f-' + ex.id + '" onclick="toggleFailure(this)">Failure · No</button>'
       + '<button class="inline-save-btn" id="save-' + ex.id + '" data-ex="' + ex.id + '" onclick="saveExercise(this.dataset.ex)">Save</button>'
       + '</div>'
@@ -2401,10 +2415,14 @@ body.training-mode footer { display: none; }
     var fBtn = document.getElementById('f-' + ex.id);
     if (wInp) wInp.value = loggedToday ? last.weight : (target.weight != null ? target.weight : '');
     if (rInp) rInp.value = loggedToday ? last.reps : target.reps;
-    var s1Inp = document.getElementById('s1-' + ex.id);
-    var s2Inp = document.getElementById('s2-' + ex.id);
-    if (s1Inp) s1Inp.value = loggedToday && last.s1 ? last.s1 : '';
-    if (s2Inp) s2Inp.value = loggedToday && last.s2 ? last.s2 : '';
+    var aimW = wInp ? wInp.value : '';
+    ['s1', 's2'].forEach(function(slot) {
+      var wEl = document.getElementById(slot + 'w-' + ex.id);
+      var rEl = document.getElementById(slot + 'r-' + ex.id);
+      var logged = loggedToday ? normSet(last, last[slot]) : null;
+      if (wEl) { wEl.value = logged ? logged.w : aimW; delete wEl.dataset.dirty; }
+      if (rEl) rEl.value = logged ? logged.r : '';
+    });
     if (fBtn) setFailureBtn(fBtn, loggedToday && last.failure === true);
     var rowEl = document.getElementById('row-' + ex.id);
     if (rowEl) rowEl.classList.toggle('has-logs', loggedToday);
@@ -2414,8 +2432,11 @@ body.training-mode footer { display: none; }
     var out = '';
     if (last) {
       var fTxt = last.failure === true ? ' · to failure' : (last.failure === false ? ' · soft' : '');
-      var setsTxt = (last.s1 || last.s2) ? [last.s1, last.s2].filter(Boolean).join(', ') : last.reps;
-      out += '<span class="last-session-chip has-data">Last: ' + last.weight + ' × ' + setsTxt + fTxt + '</span>';
+      var loggedSets = [normSet(last, last.s1), normSet(last, last.s2)].filter(Boolean);
+      var setsTxt = loggedSets.length
+        ? loggedSets.map(function(s) { return s.w + ' × ' + s.r; }).join(' · ')
+        : last.weight + ' × ' + last.reps;
+      out += '<span class="last-session-chip has-data">Last: ' + setsTxt + fTxt + '</span>';
     }
     if (last && last.failure === false) {
       out += '<div class="soft-set-note">No failure set logged. Soft sets are maintenance, not growth.</div>';
@@ -2431,7 +2452,14 @@ body.training-mode footer { display: none; }
 
   function onAimInput(exId) {
     var ex = EX_BY_ID[exId];
-    if (ex) renderWarmupsAndTargets(ex);
+    if (!ex) return;
+    renderWarmupsAndTargets(ex);
+    // Set-weight boxes follow the aim weight until the user edits them directly
+    var wInp = document.getElementById('w-' + exId);
+    ['s1w-', 's2w-'].forEach(function(p) {
+      var el = document.getElementById(p + exId);
+      if (el && !el.dataset.dirty) el.value = wInp ? wInp.value : '';
+    });
   }
 
   function setFailureBtn(btn, on) {
@@ -2443,17 +2471,23 @@ body.training-mode footer { display: none; }
   function saveExercise(exId) {
     var ex = EX_BY_ID[exId];
     if (!ex) return;
-    var w = parseFloat(document.getElementById('w-' + exId).value);
-    var s1 = parseInt(document.getElementById('s1-' + exId).value, 10);
-    var s2 = parseInt(document.getElementById('s2-' + exId).value, 10);
-    if (isNaN(s1) || s1 <= 0) s1 = null;
-    if (isNaN(s2) || s2 <= 0) s2 = null;
-    if (isNaN(w) || w <= 0 || (!s1 && !s2)) return;
-    var best = Math.max(s1 || 0, s2 || 0);
+    var aimW = parseFloat(document.getElementById('w-' + exId).value);
+    if (isNaN(aimW) || aimW <= 0) aimW = null;
+    function readSet(slot) {
+      var sw = parseFloat(document.getElementById(slot + 'w-' + exId).value);
+      var sr = parseInt(document.getElementById(slot + 'r-' + exId).value, 10);
+      if (isNaN(sr) || sr <= 0) return null;
+      if (isNaN(sw) || sw <= 0) sw = aimW;
+      return sw ? { w: sw, r: sr } : null;
+    }
+    var set1 = readSet('s1'), set2 = readSet('s2');
+    if (!set1 && !set2) return;
+    var best = set1;
+    if (set2 && (!best || set2.w > best.w || (set2.w === best.w && set2.r > best.r))) best = set2;
     var fail = document.getElementById('f-' + exId).classList.contains('on');
     var hist = sessions[exId] = sessions[exId] || [];
     var t = todayKey();
-    var entry = { d: t, week: currentTrainWeek, weight: w, reps: best, s1: s1, s2: s2, failure: fail };
+    var entry = { d: t, week: currentTrainWeek, weight: best.w, reps: best.r, s1: set1, s2: set2, failure: fail };
     var replaced = false;
     for (var i = 0; i < hist.length; i++) {
       if (hist[i].d === t) { hist[i] = entry; replaced = true; break; }
