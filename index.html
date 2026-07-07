@@ -1846,7 +1846,7 @@ body.training-mode footer { display: none; }
 </section><footer>
   <div>
     <div class="footer-logo">MONK<span>.</span>MODE</div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.07f</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.07g</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -1891,7 +1891,7 @@ body.training-mode footer { display: none; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Monk Mode — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.07f</span></div>
+  <div class="section-label">Monk Mode — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.07g</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2131,6 +2131,7 @@ body.training-mode footer { display: none; }
     <div class="settings-input-group">
       <div class="settings-input-label">Bench Press <span>lbs</span></div>
       <input class="settings-input-field" id="max-bench" type="number" placeholder="225" inputmode="decimal">
+      <div class="settings-input-hint">Alt: Incline Barbell Bench or Smith Machine Bench — enter the max for whichever you press</div>
     </div>
     <div class="settings-input-group">
       <div class="settings-input-label">Overhead Press <span>lbs</span></div>
@@ -2194,7 +2195,7 @@ body.training-mode footer { display: none; }
   //     isolation); repRange + increment drive double progression.
   const DAY_ORDER = ['chest','arms','legs','chest-b','arms-b','legs-b']; // 'rest' day stays static
   const EXERCISES = [
-    { id:"flat-bb-bench", day:"chest", name:"Flat Barbell Bench Press", tag:"primary", repRange:[5,8], increment:5, maxKey:"bench", maxPct:0.8, rest:"3–4 min", time:"~18 min", note:"Your primary strength indicator for this program. Add 5 lbs per week — no more, no less. Arch slightly, retract your scapulae, keep your feet planted. The bar should touch your lower chest, not your sternum. If you can't get all 5 reps on both sets, you went too heavy. 3–4 min rest is not optional — this is a CNS-demanding compound and cutting your rest costs you reps." },
+    { id:"flat-bb-bench", day:"chest", name:"Flat Barbell Bench Press", tag:"primary", repRange:[5,8], increment:5, maxKey:"bench", maxPct:0.8, rest:"3–4 min", time:"~18 min", alts:"Incline Barbell Bench Press or Smith Machine Bench Press", note:"Your primary strength indicator for this program. Add 5 lbs per week — no more, no less. Arch slightly, retract your scapulae, keep your feet planted. The bar should touch your lower chest, not your sternum. If you can't get all 5 reps on both sets, you went too heavy. 3–4 min rest is not optional — this is a CNS-demanding compound and cutting your rest costs you reps." },
     { id:"lat-pulldown", day:"chest", name:"Lat Pulldown Machine", tag:"secondary", repRange:[10,12], increment:5, maxKey:"bench", maxPct:0.55, rest:"90 sec", time:"~9 min", note:"Lean back slightly — about 15° — and pull the bar to your upper chest. Drive your elbows down toward your hips, not just pull the bar with your arms. Feel a strong lat stretch at the top of each rep. Wide grip emphasizes the outer lat — that's the width you see from the front. The machine lets you safely push to failure without a spotter." },
     { id:"incline-mach-press", day:"chest", name:"Incline Machine Press", tag:"secondary", repRange:[8,10], increment:5, maxKey:"bench", maxPct:0.5, rest:"2 min", time:"~10 min", alts:"Incline Dumbbell Press or Incline Smith Machine Press", note:"Set the seat so the handles start at upper-chest level. Press through full range and control the return — the stretch at the bottom is where upper pec fibers get their stimulus. The fixed path lets you safely push close to failure without a spotter. This is your upper chest builder for the week. Focus on feeling the chest contract, not just moving the handles." },
     { id:"seated-cable-row", day:"chest", name:"Seated Cable Row", tag:"secondary", repRange:[10,12], increment:5, maxKey:"bench", maxPct:0.55, rest:"90 sec", time:"~9 min", note:"Sit upright — not leaning back for leverage. Pull the handle to your lower sternum and pause 1 second at peak contraction with shoulder blades fully retracted. Let the stretch come fully at the front before the next rep. Cable provides constant tension through the full arc, making this more effective for mid-back hypertrophy than barbell rows." },
