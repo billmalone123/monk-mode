@@ -830,6 +830,72 @@
     letter-spacing: 0.05em;
   }
   .last-session-chip.has-data { color: #8585A0; border-color: #2D2D3D; }
+  /* INLINE EXERCISE LOG — warm-ups, targets, one input area per lift */
+  .warmup-lines { margin-top: 10px; }
+  .warmup-title {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 2px;
+  }
+  .warmup-lines .ramp-hint { font-family: var(--font-mono); margin-top: 2px; }
+  .target-block { margin-top: 10px; }
+  .target-msg { font-size: 11px; color: var(--accent); letter-spacing: 0.02em; margin-bottom: 4px; }
+  .target-line { font-size: 12px; color: var(--text); font-family: var(--font-mono); margin-top: 2px; }
+  .lift-log-inline {
+    grid-column: 1 / -1;
+    display: flex; align-items: flex-end; gap: 10px;
+    margin-top: 14px; flex-wrap: wrap;
+    cursor: default;
+  }
+  .log-inline-group { display: flex; flex-direction: column; gap: 5px; }
+  .log-inline-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .log-inline-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: #fff;
+    padding: 10px 12px;
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 700;
+    border-radius: 10px;
+    width: 92px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .log-inline-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(245,166,35,0.12); }
+  .failure-toggle {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 12px 16px;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 700; font-size: 12px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .failure-toggle:hover { border-color: var(--dim); color: var(--text); }
+  .failure-toggle.on { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.10); }
+  .inline-save-btn {
+    background: linear-gradient(135deg, #F5A623 0%, #B8902A 100%);
+    color: #fff; border: none;
+    padding: 12px 24px;
+    font-family: var(--font-display);
+    font-weight: 800; font-size: 13px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 0.15s;
+    box-shadow: 0 4px 16px rgba(245,166,35,0.25);
+  }
+  .inline-save-btn:hover { background: linear-gradient(135deg, #E0BC5A 0%, #B8902A 100%); box-shadow: 0 6px 20px rgba(245,166,35,0.35); }
+  .lift-status { grid-column: 1 / -1; margin-top: 10px; cursor: default; }
+  .soft-set-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; }
+  .stall-warning { font-size: 12px; color: var(--accent); font-weight: 700; margin-top: 6px; letter-spacing: 0.02em; }
   /* LOG MODAL */
   .log-modal-overlay {
     position: fixed; inset: 0;
@@ -1535,8 +1601,8 @@ body.training-mode footer { display: none; }
     <button class="nav-tab active" id="tab-btn-info" onclick="goTab('info')">
       <span class="nav-tab-icon">&#9675;</span> Overview
     </button>
-    <button class="nav-tab" id="tab-btn-training" onclick="goTab('training')" title="Set your maxes to unlock">
-      <span class="nav-tab-icon">&#9650;</span> Train <span id="train-lock-icon" style="font-size:10px;opacity:0.5;margin-left:2px;">🔒</span>
+    <button class="nav-tab" id="tab-btn-training" onclick="goTab('training')">
+      <span class="nav-tab-icon">&#9650;</span> Train
     </button>
   </div>
 </nav>
@@ -1576,14 +1642,14 @@ body.training-mode footer { display: none; }
   <div class="about-grid">
     <div class="about-text">
       <p>Most guys are spinning their wheels, training consistently for months, even years, and looking exactly the same. Not because they lack effort. Because they lack structure. Random workouts and random progression produce random results. <strong>Monk Mode is not random.</strong></p>
-      <p>This is a <strong>10-week Arnold Split</strong> built around one non-negotiable principle: progressive overload on the compounds that matter. Bench and hack squat increase every single week for three weeks, then you deload and hit it again heavier in Wave 2. The pattern is 3 days on, 1 off — Chest + Back, Shoulders + Arms, Legs + Abs — then rest, then repeat with B-day variations. Each muscle group gets hit twice a week from different angles. Day 4 is rest and stretch: mobility, shoulder maintenance, and recovery work that keeps you training hard for years, not just 10 weeks.</p>
+      <p>This is a <strong>10-week Arnold Split</strong> built around one non-negotiable principle: progressive overload on the compounds that matter. Bench and barbell squat increase every single week for three weeks, then you deload and hit it again heavier in Wave 2. The pattern is 3 days on, 1 off — Chest + Back, Shoulders + Arms, Legs + Abs — then rest, then repeat with B-day variations. Each muscle group gets hit twice a week from different angles. Day 4 is rest and stretch: mobility, shoulder maintenance, and recovery work that keeps you training hard for years, not just 10 weeks.</p>
       <p>Face pulls appear on every pull day without exception. Hip mobility is built into every leg session before the first work set. These are not optional extras. They are the reason you will walk out of this program healthier than you walked in. Most strength programs ignore shoulder health until something breaks. This one addresses it from day one.</p>
       <p><strong>The structure is deliberate. The execution is on you.</strong> Two loading waves, each building from baseline through overload, separated by a deload that makes the next wave possible. Ten weeks from now you will squat heavier, press heavier, and look completely different. Most men never commit long enough to find out what they're capable of. You will.</p>
     </div>
     <div class="pillars">
       <div class="pillar fade-up">
         <div class="pillar-title">Strength First</div>
-        <div class="pillar-desc">Bench press, hack squat, back squat, and OHP add load every single week of each wave. Not when you feel like it, every week. Progressive overload on the primary compounds is how your body changes. Everything else is secondary.</div>
+        <div class="pillar-desc">Bench press, barbell squat, back squat, and OHP add load every single week of each wave. Not when you feel like it, every week. Progressive overload on the primary compounds is how your body changes. Everything else is secondary.</div>
       </div>
       <div class="pillar fade-up">
         <div class="pillar-title">Twice a Week</div>
@@ -1767,69 +1833,10 @@ body.training-mode footer { display: none; }
   <h2 class="section-title">BEAT YOUR<br>LAST SELF</h2>
 
   <div id="prog-intro" style="margin-bottom:28px;font-size:15px;color:var(--muted);max-width:560px;line-height:1.7">
-    Enter your 1RM above and every number in this table matches your inputs exactly. <strong style="color:var(--text)">This model is built around you,</strong> not a generic starting point. Add load each week of the wave, deload, return heavier. Hit every prescribed rep before adding weight. One missed rep means you stay at the same weight. No exceptions, no negotiating with yourself.
+    Every lift runs on <strong style="color:var(--text)">double progression</strong>: two working sets, taken to failure. When your best set hits the top of the rep range on a true failure set, the app prompts the next weight jump — 5 lbs upper body, 10 lbs lower body. Until then the target is simple: beat last session by one rep. Reps dropping back after a weight increase is expected — that is a step up, not a setback. The cards below track every lift you log: this week vs last, the 4-session trend, all-time gain, and how often you actually took your top set to failure.
   </div>
 
-  <div class="prog-week-selector" style="flex-wrap:wrap;">
-    <button class="prog-week-btn active" onclick="selectProgWeek(0,this)">Week 1</button>
-    <button class="prog-week-btn" onclick="selectProgWeek(1,this)">Week 2</button>
-    <button class="prog-week-btn" onclick="selectProgWeek(2,this)">Week 3</button>
-    <button class="prog-week-btn" onclick="selectProgWeek(3,this)">Week 4</button>
-    <button class="prog-week-btn" onclick="selectProgWeek(4,this)">Week 5</button>
-    <button class="prog-week-btn" onclick="selectProgWeek(5,this)">Week 6</button>
-    <button class="prog-week-btn" onclick="selectProgWeek(6,this)">Week 7</button>
-    <button class="prog-week-btn" onclick="selectProgWeek(7,this)">Week 8</button>
-    <button class="prog-week-btn" onclick="selectProgWeek(8,this)">Week 9</button>
-    <button class="prog-week-btn" onclick="selectProgWeek(9,this)">Week 10</button>
-  </div>
-
-  <div class="prog-grid">
-    <div class="prog-card">
-      <div class="prog-card-header">
-        <div class="prog-card-lift">Bench Press</div>
-      </div>
-      <div class="prog-row highlight" id="bench-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#F5A623">190 lbs</div><div class="prog-note">Set your baseline. Own the movement.</div></div>
-      <div class="prog-row" id="bench-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#F5A623">200 lbs</div><div class="prog-note">5 lb jump. Hit all 4 sets of 5.</div></div>
-      <div class="prog-row" id="bench-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#F5A623">215 lbs</div><div class="prog-note">Heaviest of wave 1. 1 rep in tank.</div></div>
-      <div class="prog-row" id="bench-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#F5A623">~140 lbs</div><div class="prog-note">Deload. Perfect form. Full ROM.</div></div>
-      <div class="prog-row" id="bench-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#F5A623">205 lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
-      <div class="prog-row" id="bench-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#F5A623">215 lbs</div><div class="prog-note">Match week 3. This should feel easier.</div></div>
-      <div class="prog-row" id="bench-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#F5A623">225 lbs</div><div class="prog-note">New territory. Earn it.</div></div>
-      <div class="prog-row" id="bench-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#F5A623">235 lbs</div><div class="prog-note">Beat wave 1 peak by 20 lbs.</div></div>
-      <div class="prog-row" id="bench-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#F5A623">245 lbs, top sets</div><div class="prog-note">2–3 heavy sets. Leave nothing.</div></div>
-      <div class="prog-row" id="bench-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#F5A623">~150 lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
-    </div>
-    <div class="prog-card">
-      <div class="prog-card-header">
-        <div class="prog-card-lift">Back Squat</div>
-      </div>
-      <div class="prog-row highlight" id="squat-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#F5A623">265 lbs</div><div class="prog-note">Set your baseline. Depth first.</div></div>
-      <div class="prog-row" id="squat-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#F5A623">275 lbs</div><div class="prog-note">10 lb jump. All 5 sets of 5.</div></div>
-      <div class="prog-row" id="squat-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#F5A623">295 lbs</div><div class="prog-note">Heaviest of wave 1. Grind it.</div></div>
-      <div class="prog-row" id="squat-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#F5A623">~195 lbs</div><div class="prog-note">Deload. Hips open, depth perfect.</div></div>
-      <div class="prog-row" id="squat-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#F5A623">280 lbs</div><div class="prog-note">Back and building. Stronger base.</div></div>
-      <div class="prog-row" id="squat-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#F5A623">295 lbs</div><div class="prog-note">Match wave 1 peak. It's lighter now.</div></div>
-      <div class="prog-row" id="squat-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#F5A623">310 lbs</div><div class="prog-note">New personal territory.</div></div>
-      <div class="prog-row" id="squat-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#F5A623">325 lbs</div><div class="prog-note">30 lb PR over wave 1 peak.</div></div>
-      <div class="prog-row" id="squat-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#F5A623">335 lbs, top sets</div><div class="prog-note">Near max. 2–3 heavy sets only.</div></div>
-      <div class="prog-row" id="squat-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#F5A623">~210 lbs</div><div class="prog-note">Deload. Test max next week fresh.</div></div>
-    </div>
-    <div class="prog-card" id="prog-card-ohp" style="display:none">
-      <div class="prog-card-header">
-        <div class="prog-card-lift">Overhead Press</div>
-      </div>
-      <div class="prog-row highlight" id="ohp-0"><div class="prog-week active-week">Week 1</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Set your baseline. Strict press, no leg drive.</div></div>
-      <div class="prog-row" id="ohp-1"><div class="prog-week">Week 2</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Small jump. Lock in bar path.</div></div>
-      <div class="prog-row" id="ohp-2"><div class="prog-week">Week 3</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Heaviest of wave 1. Stay tight.</div></div>
-      <div class="prog-row" id="ohp-3"><div class="prog-week">Week 4</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Deload. Perfect technique only.</div></div>
-      <div class="prog-row" id="ohp-4"><div class="prog-week">Week 5</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Back heavier than wave 1 start.</div></div>
-      <div class="prog-row" id="ohp-5"><div class="prog-week">Week 6</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Match week 3. Should feel manageable.</div></div>
-      <div class="prog-row" id="ohp-6"><div class="prog-week">Week 7</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">New territory. Brace hard.</div></div>
-      <div class="prog-row" id="ohp-7"><div class="prog-week">Week 8</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Building toward your peak.</div></div>
-      <div class="prog-row" id="ohp-8"><div class="prog-week">Week 9</div><div class="prog-weight" style="color:#F5A623">— lbs, top sets</div><div class="prog-note">2–3 heavy sets. Everything you have.</div></div>
-      <div class="prog-row" id="ohp-9"><div class="prog-week">Week 10</div><div class="prog-weight" style="color:#F5A623">— lbs</div><div class="prog-note">Deload. You've earned the rest.</div></div>
-    </div>
-  </div>
+  <div class="prog-grid" id="progressCards"></div>
   </div>
 </section><footer>
   <div>
@@ -1850,26 +1857,6 @@ body.training-mode footer { display: none; }
 <div id="tab-training" class="tab-main">
 
 <section id="plan">
-  <!-- SETTINGS BAR -->
-  <div class="settings-bar" id="settingsBar">
-    <div class="settings-maxes-display" id="maxesDisplay">
-      <div class="settings-max-chip">
-        <span class="settings-max-label">Squat</span>
-        <span class="settings-max-val unset" id="chip-squat">Not set</span>
-      </div>
-      <div class="settings-max-chip">
-        <span class="settings-max-label">Bench</span>
-        <span class="settings-max-val unset" id="chip-bench">Not set</span>
-      </div>
-      <div class="settings-max-chip">
-        <span class="settings-max-label">OHP</span>
-        <span class="settings-max-val unset" id="chip-ohp">Not set</span>
-      </div>
-    </div>
-    <button class="settings-open-btn" id="settingsOpenBtn" onclick="openSettingsModalFromBtn()">
-      ⚙ Set Your Maxes
-    </button>
-  </div>
   <!-- REST TIMER QUICK-START -->
   <div class="rest-timer-strip">
     <span class="rest-timer-strip-label">Rest Timer</span>
@@ -1932,13 +1919,7 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Flat Barbell Bench Press</div><div class="lift-sets-reps">2 sets × 5 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">Your primary strength indicator for this program. Add 5 lbs per week — no more, no less. Arch slightly, retract your scapulae, keep your feet planted. The bar should touch your lower chest, not your sternum. If you can't get all 5 reps on both sets, you went too heavy. 3–4 min rest is not optional — this is a CNS-demanding compound and cutting your rest costs you reps.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Lat Pulldown Machine</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lean back slightly — about 15° — and pull the bar to your upper chest. Drive your elbows down toward your hips, not just pull the bar with your arms. Feel a strong lat stretch at the top of each rep. Wide grip emphasizes the outer lat — that's the width you see from the front. The machine lets you safely push to failure without a spotter.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Incline Machine Press</div><div class="lift-sets-reps">2 sets × 8–10 reps</div><div class="lift-alts"><span>Alt:</span>Incline Dumbbell Press or Incline Smith Machine Press</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the seat so the handles start at upper-chest level. Press through full range and control the return — the stretch at the bottom is where upper pec fibers get their stimulus. The fixed path lets you safely push close to failure without a spotter. This is your upper chest builder for the week. Focus on feeling the chest contract, not just moving the handles.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Seated Cable Row</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit upright — not leaning back for leverage. Pull the handle to your lower sternum and pause 1 second at peak contraction with shoulder blades fully retracted. Let the stretch come fully at the front before the next rep. Cable provides constant tension through the full arc, making this more effective for mid-back hypertrophy than barbell rows.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Pec Dec Machine</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the handles so your elbows are at chest height. Control the return and feel the full stretch at the open position. Squeeze hard at the close. Zero risk to the shoulder joint when set up correctly — the machine keeps the path safe. This is your chest isolation work. Go light enough to feel the pec fully, not just move the weight.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Chest-Supported Row Machine</div><div class="lift-sets-reps">2 sets × 12 reps</div><div class="lift-alts"><span>Alt:</span>Seated Cable Row (upright, no lean) or Single-Arm Dumbbell Row</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">The chest pad eliminates lower back fatigue and the temptation to use momentum — your back has to do every rep honestly. Row with elbows at about 60° from your body. This hits the mid-trap and rhomboid region that creates 3D thickness in your upper back. Squeeze shoulder blades together at the top. The machine ensures the same quality rep on set 2 as set 1.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Face Pulls</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the cable at eye level. Pull the rope toward your face with elbows high and wide — "W" position at the end. The goal is external rotation of the shoulder, not just pulling weight. This directly counteracts the internal rotation load of pressing and protects the rotator cuff long-term. Do this every chest day without exception.</div></div>
+    <div class="lift-rows" data-rows="chest"></div>
   </div>
 
   <!-- SHOULDERS + ARMS -->
@@ -1965,13 +1946,7 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Seated Barbell OHP</div><div class="lift-sets-reps">2 sets × 5–6 reps</div></div><div class="lift-rest">2–3 min</div><div class="lift-time">~15 min</div><div class="lift-chevron">▼</div><div class="lift-note">Seated to eliminate leg drive — this keeps it honest. The bar starts at your clavicle and presses in a straight line overhead, finishing slightly behind your ears at the top. Brace your core hard; don't hyperextend your lower back to get the bar up. This is your overhead strength indicator — track it week over week. Add 2–3 lbs per week. Overhead strength directly carries over to shoulder stability on bench day.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Shoulder Press Machine</div><div class="lift-sets-reps">2 sets × 10–12 reps</div><div class="lift-alts"><span>Alt:</span>Seated Dumbbell Overhead Press</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">The machine guides the path so you can focus entirely on feeling the delt work rather than balancing the load. Set the seat so the handles start at shoulder level. Press to near lockout, control the return. This is your shoulder hypertrophy work — go higher rep and feel every set. The stability the machine provides lets you push closer to failure safely, which is exactly what you want for muscle growth.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Lateral Raise Machine</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The machine provides consistent resistance through the full arc — no momentum possible. Set the pad just above your elbows, not at your wrists. Lead with your elbow raising to shoulder height — not higher, which recruits the trap instead of the medial delt. Pause at the top for a beat. Wide shoulders come from this exercise done with volume and consistency, not heavy sloppy reps. The machine takes ego out of lateral raises entirely.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">EZ Bar Curl</div><div class="lift-sets-reps">2 sets × 8–10 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">The EZ bar's angled grip reduces wrist and elbow stress compared to a straight bar while keeping the bicep in a strong curling position. This is your strength curl — treat it like a compound lift for biceps. Track the weight and add load over time. Elbows stay fixed at your sides. Slight forward lean at the waist is acceptable; full-body swing is not. Supinate slightly at the top to ensure full peak contraction.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Cable Curl (single arm)</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable provides consistent tension through the full arc — unlike dumbbells, the bicep is maximally loaded at every point in the range. Set the cable low, pull to peak contraction and hold 1 second. You should feel a hard squeeze in the bicep, not just feel the arm coming up. Slow the return down to 2 seconds. Single arm lets you fully concentrate on one side at a time without the weaker arm compensating.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Tricep Rope Pushdown</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Split the rope at the bottom of each rep — this maximizes lateral head contraction. Elbows stay pinned to your sides. Only your forearms move. If your elbows are traveling forward and back, you're involving your lats and losing the isolation. The cable machine provides constant tension the entire way, unlike free weights that lose tension at the top. Can superset with the overhead extension directly after to hit both heads.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Overhead Tricep Extension (cable)</div><div class="lift-sets-reps">2 sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The long head of the tricep only reaches full stretch with the arm overhead — that's why this movement exists and why pushdowns alone aren't enough. Use the rope attachment, face away from the cable stack, and hinge slightly at the hip. Elbows point straight at the ceiling and don't drift outward. Control the return — the stretch position is where you're building thickness in the horseshoe. The cable provides resistance at the stretched position where dumbbells go slack.</div></div>
+    <div class="lift-rows" data-rows="arms"></div>
   </div>
 
   <!-- LEGS + ABS -->
@@ -1994,17 +1969,11 @@ body.training-mode footer { display: none; }
         <div class="warmup-step"><div class="warmup-num">1</div><div><div class="warmup-step-text">5 min bike (low resistance)</div><div class="warmup-step-why">Gets hips and knees moving without taxing CNS before heavy leg work.</div></div></div>
         <div class="warmup-step"><div class="warmup-num">2</div><div><div class="warmup-step-text">Hip 90/90 switches — 2×10 each side</div><div class="warmup-step-why">Internal + external hip rotation. Direct squat depth prep.</div></div></div>
         <div class="warmup-step"><div class="warmup-num">3</div><div><div class="warmup-step-text">Couch stretch — 60 sec each side</div><div class="warmup-step-why">Hip flexor release. Tightness here limits depth and loads the lower back.</div></div></div>
-        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Hack squat ramp: empty×8, 50%×5, 65%×3</div><div class="warmup-step-why">Groove the pattern, open the hips, activate quads before working weight.</div></div></div>
+        <div class="warmup-step"><div class="warmup-num">4</div><div><div class="warmup-step-text">Squat ramp: bar×10, 50%×5, 65%×3</div><div class="warmup-step-why">Groove the pattern, open the hips, activate quads before working weight.</div></div></div>
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Hack Squat Machine</div><div class="lift-sets-reps">2 sets × 6–8 reps</div><div class="lift-alts"><span>Alt:</span>Goblet Squat (heavy DB) or Smith Machine Squat</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">The hack squat machine fixes the load path, eliminating the balance demands of a free barbell and significantly reducing lower back stress. Feet shoulder-width, toes out slightly. Go deep — thighs at least parallel, ideally below. The machine forces you to drive through the heel and mid-foot. Add load week over week. This is your lower body strength indicator for the program. Full depth every rep, no partial reps, no ego loading.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Leg Press Machine</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Feet high and wide on the platform — this shifts load toward glutes and hamstrings and reduces anterior knee stress. Lower all the way down without your lower back rounding off the pad. If your hips are coming up, you're going too deep for your current hip flexibility. The machine lets you safely load quad volume without the spinal compression of a barbell squat.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Romanian Deadlift (RDL)</div><div class="lift-sets-reps">2 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hip hinge, not a deadlift. Soft knees throughout — about 15–20° of bend. Push your hips back as the bar travels down your legs. You should feel a strong hamstring stretch at the bottom. Stop when your lower back starts to round — that's your end range. Go heavy, but never at the expense of a neutral spine. This is the primary posterior chain movement of the week and directly prevents hamstring injuries.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Leg Extension Machine</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit all the way back in the pad, toes pointed slightly outward to bias the inner quad. Extend fully and hold 1 second at the top — most people let the weight drop before full quad contraction. Slow eccentric on the way down. Safe when done correctly; the danger is loading too heavy and using momentum. Can superset with leg curls to save time.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Leg Curl Machine</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Curl through full ROM, pause at peak contraction, lower with a 2-second eccentric. The eccentric is where hamstring strength is built and where hamstring injuries are prevented. Keep hips flat on the pad — if they're rising, you've overloaded it. Feet slightly turned in shifts emphasis to the outer bicep femoris. The machine removes lower back from the equation entirely.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Seated Calf Raise Machine</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">The seated position bends the knee, shifting all the load to the soleus — the wide flat muscle underneath that gives the lower leg its shape. Full range — heel all the way down into a deep stretch, all the way up at the top. 15–20 reps is the right zone for this muscle type. Short rest is fine; calves recover quickly.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Ab Wheel Rollout</div><div class="lift-sets-reps">2 sets × 8–12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Roll out to where your body is parallel or near-parallel to the floor, maintaining a completely neutral spine. The moment your lower back arches, you've gone too far. Start from your knees until you can control the full range. This builds the same core bracing pattern used in heavy squats — rigidity under axial load. Finish legs day with this and your core is locked in for the rest of the week.</div></div>
+    <div class="lift-rows" data-rows="legs"></div>
   </div>
 
   <!-- CHEST + BACK B -->
@@ -2031,13 +2000,7 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Incline Barbell Bench Press</div><div class="lift-sets-reps">2 sets × 5–8 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">The incline targets the upper chest — the most visible part from the front. Bar touches your upper chest, shoulder blades retracted and depressed throughout. This is your second primary compound of the week — track it and add load over time. Upper chest development separates a built chest from a flat one.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Machine Row</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Guided machine eliminates lower back involvement so your back does all the work. Pull to mid-chest, squeeze for 1 second at full contraction. Focus on driving the elbows back — not just pulling with your hands. The machine lets you safely push the last reps harder than free weights.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Machine Chest Press</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~10 min</div><div class="lift-chevron">▼</div><div class="lift-note">Flat machine press after incline barbell work targets the mid-chest from a different angle. Set the seat so handles start at mid-chest. Press through full range — don't stop short. The machine lets you grind the last reps safely. Squeeze the pecs hard at peak contraction, not just move the handles.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Single-Arm Cable Row</div><div class="lift-sets-reps">2 sets × 12 reps/side</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~9 min</div><div class="lift-chevron">▼</div><div class="lift-note">Single arm forces your core to resist rotation — abs work without a single crunch. Pull to your hip with elbow tucked tight, allow full stretch at the front. Your weaker side gets the same volume as the stronger side. Bilateral rows let the dominant side compensate; single arm doesn't. Fix the imbalance here.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Low-to-High Cable Fly</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cables set at the low position. Arc upward and together — this hits upper chest fibers the flat pec dec misses. Slight forward lean at the hips. Control the return completely. Cables provide constant tension through the full arc unlike dumbbells which go slack at the top of the movement.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Straight Arm Pulldown</div><div class="lift-sets-reps">2 sets × 15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable high, slight forward lean at hips, arms nearly straight. Pull the bar down to your thighs by engaging your lats — not by bending your elbows. Pure lat isolation with zero bicep involvement. This builds the V-taper that makes your waist look smaller. Light weight, full range, feel every rep.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Rear Delt Machine Fly</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Set the seat so handles are at shoulder level. Arms nearly straight throughout — the moment you bend your elbows you shift load to your back. Squeeze at the back, control the return. Rear delts are chronically undertrained. This builds the 3D shoulder look and protects the rotator cuff from the pressing volume you're doing twice a week.</div></div>
+    <div class="lift-rows" data-rows="chest-b"></div>
   </div>
 
   <!-- SHOULDERS + ARMS B -->
@@ -2064,13 +2027,7 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Dumbbell Arnold Press</div><div class="lift-sets-reps">2 sets × 8–10 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Start with palms facing you at shoulder height, rotate outward as you press overhead. This rotation recruits all three deltoid heads in a single movement — front, medial, and rear. Far more complete than a standard DB press. Control the rotation both up and down. Arnold popularized this for a reason — the shoulder development from the rotational path is unique and will show at every angle.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Cable Lateral Raise (single arm)</div><div class="lift-sets-reps">2 sets × 15–20 reps/side</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable provides constant tension at the bottom of the arc — the exact position where dumbbells are weakest. Pull from low across your body, lead with your elbow to shoulder height. The cable keeps resistance through full ROM, making this more effective per rep than DB laterals. Single arm means no compensating. Do your weaker side first.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Cable Face Pull</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Cable at eye height, rope attachment. Pull toward your face and externally rotate at the end — "W" position with elbows high and wide. Trains external rotation of the shoulder, the single most neglected movement in the gym. It is the antidote to years of pressing. Rear delt and rotator cuff in one movement. Never skip it.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Incline Dumbbell Curl</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Bench at 45–60°. Lie back and let your arms hang straight down. Curl from full extension — the incline puts the long head of the bicep in a stretched starting position you cannot replicate standing. This angle builds the peak of the bicep. No swinging. Feel the deep stretch at the bottom of every rep before curling up.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Hammer Curls</div><div class="lift-sets-reps">2 sets × 12 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Neutral grip (palms facing each other) hits the brachialis — a muscle under the bicep that pushes it up, adding visible arm thickness. Most curl variations miss this entirely. Elbows stay at your sides, curl straight up without rotating. Heavier than supinated curls for most people. The brachialis responds to load and will add thickness to your upper arm that regular curls alone won't build.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Machine Dip</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Machine dips let you load the triceps through full dip range without the shoulder stability demand of bodyweight dips. Adjust the seat so you reach full tricep extension at the bottom. Drive through the palms at lockout — squeeze hard at the top. This is your heaviest tricep movement on B day. Track the weight and add load over time like a compound lift.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">EZ Bar Skull Crusher</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">90 sec</div><div class="lift-time">~8 min</div><div class="lift-chevron">▼</div><div class="lift-note">Lie flat, EZ bar over your forehead, close grip. Lower to your forehead bending only at the elbows — no shoulder movement. Elbows vertical or slightly back. The EZ bar angles reduce wrist stress versus a straight bar. Best mass builder for the long head of the tricep. Load it progressively — most people go too light on this and miss the adaptation signal.</div></div>
+    <div class="lift-rows" data-rows="arms-b"></div>
   </div>
 
   <!-- LEGS + ABS B -->
@@ -2097,13 +2054,7 @@ body.training-mode footer { display: none; }
       </div>
     </div>
     <div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Back Squat</div><div class="lift-sets-reps">2 sets × 5–8 reps</div></div><div class="lift-rest">3–4 min</div><div class="lift-time">~18 min</div><div class="lift-chevron">▼</div><div class="lift-note">High-bar, knees track over toes, chest tall, drive through your heels. The free barbell squat demands full body coordination unlike the hack squat machine on Day A — every stabilizer fires. Bar sits across your upper traps. Depth is non-negotiable: thighs parallel or below. If heels rise, ankles need mobility work — do the couch stretch consistently and it will change.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Bulgarian Split Squat</div><div class="lift-sets-reps">2 sets × 10–12 reps/leg</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Rear foot elevated on a bench. This is the hardest leg exercise in this program and the one most people skip — exactly why you do it. It isolates each leg completely, exposing and fixing left-right imbalances. Front shin stays vertical, knee tracks over the foot. The eccentric down is where the real stimulus is — control it completely. Use dumbbells at your sides or a barbell.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Stiff-Leg Deadlift</div><div class="lift-sets-reps">2 sets × 10–12 reps</div></div><div class="lift-rest">2 min</div><div class="lift-time">~12 min</div><div class="lift-chevron">▼</div><div class="lift-note">Legs nearly straight (soft knee only), hinge at the hip, lower the bar down your legs until you feel a hard hamstring stretch. Straighter legs versus the RDL on Day A increases the hamstring stretch range, shifting more load to the upper hamstring and glute tie-in. Bar stays close to your body throughout. Neutral spine is mandatory — round your back here and the session is over.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Leg Extension Machine</div><div class="lift-sets-reps">2 sets × 15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Same as Day A — full extension, 1-second hold, slow return. Quad isolation volume twice per week. By Day 3B you've hit quads hard with squats and split squats, so this is a finisher. Go lighter if needed and prioritize peak contraction over load. The feel matters more than the weight here.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Lying Leg Curl Machine</div><div class="lift-sets-reps">2 sets × 12–15 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Face down — this position stretches the hamstrings differently than the seated version on Day A, placing the muscle in a more elongated position at the start. Curl to full contraction, don't let hips lift off the pad. The lying variation hits the bicep femoris long head from a stretched position, complementing the seated version's peak contraction bias. Twice a week hamstring training reduces injury risk significantly.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Standing Calf Raise</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Standing hits the gastrocnemius — the large muscle that creates the visible calf shape. Knee stays straight to fully load it. Full range: heel below the step into a deep stretch, all the way up on toes. Paired with seated calf raises on Day A, you're hitting both the gastrocnemius and soleus twice per week — the actual minimum calves need to grow.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Cable Crunch</div><div class="lift-sets-reps">2 sets × 15–20 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~6 min</div><div class="lift-chevron">▼</div><div class="lift-note">Kneel facing the cable, rope behind your head. Crunch your rib cage toward your pelvis — not your head toward the floor. You want spinal flexion from the abs, not neck movement. The cable provides constant weighted resistance through the full range unlike bodyweight crunches that lose tension at the top. This is how you actually build visible abs — loaded, full range, consistent.</div></div>
+    <div class="lift-rows" data-rows="legs-b"></div>
   </div>
 
   <!-- REST + STRETCH -->
@@ -2184,292 +2135,324 @@ body.training-mode footer { display: none; }
     </div>
   </div>
 </div>
-<!-- MAXES SETTINGS MODAL -->
-<div class="settings-modal-overlay" id="settingsModal" style="display:none;">
-  <div class="settings-modal-card" id="settingsModalCard">
-    <div class="settings-modal-title" id="settingsModalTitle">Your Maxes</div>
-    <div class="settings-modal-sub" id="settingsModalSub">Enter your 1-rep maxes. Weights across the program will auto-calculate and display as ranges for each week. Stored locally on your device.</div>
-
-    <div class="maxes-mode-toggle">
-      <button class="mode-toggle-btn active" id="mode-btn-1rm" onclick="setMaxesMode('1rm')">I Know My 1RM</button>
-      <button class="mode-toggle-btn" id="mode-btn-reps" onclick="setMaxesMode('reps')">Enter a Working Set</button>
-    </div>
-
-    <div class="settings-input-group">
-      <div class="settings-input-label">Back Squat <span>lbs</span></div>
-      <input class="settings-input-field maxes-1rm-input" id="input-squat" type="number" placeholder="315" inputmode="decimal">
-      <div class="maxes-reps-row">
-        <div class="maxes-reps-input-wrap">
-          <div class="maxes-reps-label">Weight (lbs)</div>
-          <input class="settings-input-field" id="reps-weight-squat" type="number" placeholder="275" inputmode="decimal" oninput="updateEpley('squat')">
-        </div>
-        <div class="maxes-reps-input-wrap">
-          <div class="maxes-reps-label">Reps</div>
-          <input class="settings-input-field" id="reps-count-squat" type="number" placeholder="5" inputmode="decimal" min="1" max="30" oninput="updateEpley('squat')">
-        </div>
-      </div>
-      <div class="maxes-est-1rm" id="est-1rm-squat"></div>
-      <div class="settings-input-hint">Used for: Back Squat, Pause Squat, Front Squat</div>
-    </div>
-
-    <div class="settings-input-group">
-      <div class="settings-input-label">Bench Press <span>lbs</span></div>
-      <input class="settings-input-field maxes-1rm-input" id="input-bench" type="number" placeholder="225" inputmode="decimal">
-      <div class="maxes-reps-row">
-        <div class="maxes-reps-input-wrap">
-          <div class="maxes-reps-label">Weight (lbs)</div>
-          <input class="settings-input-field" id="reps-weight-bench" type="number" placeholder="185" inputmode="decimal" oninput="updateEpley('bench')">
-        </div>
-        <div class="maxes-reps-input-wrap">
-          <div class="maxes-reps-label">Reps</div>
-          <input class="settings-input-field" id="reps-count-bench" type="number" placeholder="5" inputmode="decimal" min="1" max="30" oninput="updateEpley('bench')">
-        </div>
-      </div>
-      <div class="maxes-est-1rm" id="est-1rm-bench"></div>
-      <div class="settings-input-hint">Used for: Flat Bench, Close Grip Bench</div>
-    </div>
-
-    <div class="settings-input-group">
-      <div class="settings-input-label">Overhead Press <span>lbs</span></div>
-      <input class="settings-input-field maxes-1rm-input" id="input-ohp" type="number" placeholder="155" inputmode="decimal">
-      <div class="maxes-reps-row">
-        <div class="maxes-reps-input-wrap">
-          <div class="maxes-reps-label">Weight (lbs)</div>
-          <input class="settings-input-field" id="reps-weight-ohp" type="number" placeholder="115" inputmode="decimal" oninput="updateEpley('ohp')">
-        </div>
-        <div class="maxes-reps-input-wrap">
-          <div class="maxes-reps-label">Reps</div>
-          <input class="settings-input-field" id="reps-count-ohp" type="number" placeholder="5" inputmode="decimal" min="1" max="30" oninput="updateEpley('ohp')">
-        </div>
-      </div>
-      <div class="maxes-est-1rm" id="est-1rm-ohp"></div>
-      <div class="settings-input-hint">Used for: Seated Barbell OHP</div>
-    </div>
-
-    <button class="settings-save-btn" id="settingsSaveBtn" onclick="saveMaxes()">Save & Update Program</button>
-    <button class="settings-cancel-btn" id="settingsCancelBtn" onclick="cancelMonkModeEntry()">Cancel</button>
-  </div>
-</div>
-
 <script>
-  //     STORAGE                                                                
-  const STORE_KEY = 'ppl_workout_logs_v3';
-  function loadLogs() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; } }
-  function saveLogs(l) { try { localStorage.setItem(STORE_KEY, JSON.stringify(l)); } catch {} }
-  let logs = loadLogs();
+  //     STORAGE — sessions keyed by exercise id
+  const SESSIONS_KEY = 'monk_sessions_v1';
+  const ARCHIVE_KEY = 'monk_archive_v1';
+  const MIGRATED_KEY = 'monk_migrated_v1';
+  function loadSessions() { try { return JSON.parse(localStorage.getItem(SESSIONS_KEY)) || {}; } catch { return {}; } }
+  function saveSessions() { try { localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions)); } catch {} }
 
-  //     RAMP-UP HINTS — arrays of {pct,reps} are calculated from badge weight; strings are shown as-is
-  const RAMP_HINTS = {
-    'chest::0': [{pct:0.50,reps:5},{pct:0.65,reps:3},{pct:0.80,reps:2}],
-    'chest::1': [{pct:0.60,reps:8}],
-    'chest::2': [{pct:0.50,reps:8},{pct:0.70,reps:5}],
-    'chest::3': [{pct:0.50,reps:10}],
-    'chest::4': [{pct:0.50,reps:12}],
-    'chest::5': [{pct:0.60,reps:8}],
-    'arms::0':  [{pct:0.50,reps:5},{pct:0.65,reps:3},{pct:0.80,reps:2}],
-    'arms::1':  [{pct:0.50,reps:8},{pct:0.70,reps:5}],
-    'arms::2':  [{pct:0.50,reps:15}],
-    'arms::3':  [{pct:0.60,reps:8}],
-    'arms::4':  [{pct:0.50,reps:10}],
-    'arms::5':  [{pct:0.50,reps:12}],
-    'arms::6':  [{pct:0.50,reps:12}],
-    'legs::0':  [{pct:0.45,reps:5},{pct:0.60,reps:3},{pct:0.75,reps:2}],
-    'legs::1':  [{pct:0.50,reps:8},{pct:0.70,reps:5}],
-    'legs::2':  [{pct:0.50,reps:5},{pct:0.70,reps:3}],
-    'legs::3':  [{pct:0.50,reps:10}],
-    'legs::4':  [{pct:0.50,reps:10}],
-    'legs::5':  [{pct:0.50,reps:15}],
-    'chest-b::0': [{pct:0.50,reps:5},{pct:0.65,reps:3},{pct:0.80,reps:2}],
-    'chest-b::1': [{pct:0.55,reps:8}],
-    'chest-b::2': [{pct:0.50,reps:8},{pct:0.70,reps:5}],
-    'chest-b::3': [{pct:0.50,reps:10}],
-    'chest-b::4': [{pct:0.50,reps:12}],
-    'chest-b::5': [{pct:0.50,reps:12}],
-    'chest-b::6': [{pct:0.50,reps:15}],
-    'arms-b::0':  [{pct:0.50,reps:5},{pct:0.65,reps:3},{pct:0.80,reps:2}],
-    'arms-b::1':  [{pct:0.50,reps:15}],
-    'arms-b::2':  [{pct:0.50,reps:15}],
-    'arms-b::3':  [{pct:0.50,reps:8}],
-    'arms-b::4':  [{pct:0.50,reps:10}],
-    'arms-b::5':  [{pct:0.50,reps:12}],
-    'arms-b::6':  [{pct:0.60,reps:8}],
-    'legs-b::0':  [{pct:0.45,reps:5},{pct:0.60,reps:3},{pct:0.75,reps:2}],
-    'legs-b::1':  [{pct:0.50,reps:10}],
-    'legs-b::2':  [{pct:0.50,reps:5},{pct:0.70,reps:3}],
-    'legs-b::3':  [{pct:0.50,reps:12}],
-    'legs-b::4':  [{pct:0.50,reps:12}],
-    'legs-b::5':  [{pct:0.50,reps:15}],
-  };
+  //     EXERCISE CONFIG — the whole split lives here. Add or swap a lift by
+  //     editing one line. tag drives the warm-up scheme (primary | secondary |
+  //     isolation); repRange + increment drive double progression.
+  const DAY_ORDER = ['chest','arms','legs','chest-b','arms-b','legs-b']; // 'rest' day stays static
+  const EXERCISES = [
+    { id:"flat-bb-bench", day:"chest", name:"Flat Barbell Bench Press", tag:"primary", repRange:[5,8], increment:5, rest:"3–4 min", time:"~18 min", note:"Your primary strength indicator for this program. Add 5 lbs per week — no more, no less. Arch slightly, retract your scapulae, keep your feet planted. The bar should touch your lower chest, not your sternum. If you can't get all 5 reps on both sets, you went too heavy. 3–4 min rest is not optional — this is a CNS-demanding compound and cutting your rest costs you reps." },
+    { id:"lat-pulldown", day:"chest", name:"Lat Pulldown Machine", tag:"secondary", repRange:[10,12], increment:5, rest:"90 sec", time:"~9 min", note:"Lean back slightly — about 15° — and pull the bar to your upper chest. Drive your elbows down toward your hips, not just pull the bar with your arms. Feel a strong lat stretch at the top of each rep. Wide grip emphasizes the outer lat — that's the width you see from the front. The machine lets you safely push to failure without a spotter." },
+    { id:"incline-mach-press", day:"chest", name:"Incline Machine Press", tag:"secondary", repRange:[8,10], increment:5, rest:"2 min", time:"~10 min", alts:"Incline Dumbbell Press or Incline Smith Machine Press", note:"Set the seat so the handles start at upper-chest level. Press through full range and control the return — the stretch at the bottom is where upper pec fibers get their stimulus. The fixed path lets you safely push close to failure without a spotter. This is your upper chest builder for the week. Focus on feeling the chest contract, not just moving the handles." },
+    { id:"seated-cable-row", day:"chest", name:"Seated Cable Row", tag:"secondary", repRange:[10,12], increment:5, rest:"90 sec", time:"~9 min", note:"Sit upright — not leaning back for leverage. Pull the handle to your lower sternum and pause 1 second at peak contraction with shoulder blades fully retracted. Let the stretch come fully at the front before the next rep. Cable provides constant tension through the full arc, making this more effective for mid-back hypertrophy than barbell rows." },
+    { id:"pec-dec", day:"chest", name:"Pec Dec Machine", tag:"isolation", repRange:[12,15], increment:5, rest:"60 sec", time:"~7 min", note:"Set the handles so your elbows are at chest height. Control the return and feel the full stretch at the open position. Squeeze hard at the close. Zero risk to the shoulder joint when set up correctly — the machine keeps the path safe. This is your chest isolation work. Go light enough to feel the pec fully, not just move the weight." },
+    { id:"chest-supp-row", day:"chest", name:"Chest-Supported Row Machine", tag:"secondary", repRange:[12,12], increment:5, rest:"90 sec", time:"~9 min", alts:"Seated Cable Row (upright, no lean) or Single-Arm Dumbbell Row", note:"The chest pad eliminates lower back fatigue and the temptation to use momentum — your back has to do every rep honestly. Row with elbows at about 60° from your body. This hits the mid-trap and rhomboid region that creates 3D thickness in your upper back. Squeeze shoulder blades together at the top. The machine ensures the same quality rep on set 2 as set 1." },
+    { id:"face-pulls", day:"chest", name:"Face Pulls", tag:"isolation", repRange:[15,20], increment:5, seedFrom:"cable-face-pull", rest:"60 sec", time:"~7 min", note:"Set the cable at eye level. Pull the rope toward your face with elbows high and wide — \"W\" position at the end. The goal is external rotation of the shoulder, not just pulling weight. This directly counteracts the internal rotation load of pressing and protects the rotator cuff long-term. Do this every chest day without exception." },
+    { id:"seated-ohp", day:"arms", name:"Seated Barbell OHP", tag:"primary", repRange:[5,6], increment:5, rest:"2–3 min", time:"~15 min", note:"Seated to eliminate leg drive — this keeps it honest. The bar starts at your clavicle and presses in a straight line overhead, finishing slightly behind your ears at the top. Brace your core hard; don't hyperextend your lower back to get the bar up. This is your overhead strength indicator — track it week over week. Add 2–3 lbs per week. Overhead strength directly carries over to shoulder stability on bench day." },
+    { id:"shoulder-press-mach", day:"arms", name:"Shoulder Press Machine", tag:"secondary", repRange:[10,12], increment:5, rest:"90 sec", time:"~9 min", alts:"Seated Dumbbell Overhead Press", note:"The machine guides the path so you can focus entirely on feeling the delt work rather than balancing the load. Set the seat so the handles start at shoulder level. Press to near lockout, control the return. This is your shoulder hypertrophy work — go higher rep and feel every set. The stability the machine provides lets you push closer to failure safely, which is exactly what you want for muscle growth." },
+    { id:"lateral-raise-mach", day:"arms", name:"Lateral Raise Machine", tag:"isolation", repRange:[15,20], increment:5, rest:"60 sec", time:"~7 min", note:"The machine provides consistent resistance through the full arc — no momentum possible. Set the pad just above your elbows, not at your wrists. Lead with your elbow raising to shoulder height — not higher, which recruits the trap instead of the medial delt. Pause at the top for a beat. Wide shoulders come from this exercise done with volume and consistency, not heavy sloppy reps. The machine takes ego out of lateral raises entirely." },
+    { id:"ez-bar-curl", day:"arms", name:"EZ Bar Curl", tag:"secondary", repRange:[8,10], increment:5, rest:"90 sec", time:"~8 min", note:"The EZ bar's angled grip reduces wrist and elbow stress compared to a straight bar while keeping the bicep in a strong curling position. This is your strength curl — treat it like a compound lift for biceps. Track the weight and add load over time. Elbows stay fixed at your sides. Slight forward lean at the waist is acceptable; full-body swing is not. Supinate slightly at the top to ensure full peak contraction." },
+    { id:"cable-curl", day:"arms", name:"Cable Curl (single arm)", tag:"isolation", repRange:[12,15], increment:5, rest:"60 sec", time:"~7 min", note:"Cable provides consistent tension through the full arc — unlike dumbbells, the bicep is maximally loaded at every point in the range. Set the cable low, pull to peak contraction and hold 1 second. You should feel a hard squeeze in the bicep, not just feel the arm coming up. Slow the return down to 2 seconds. Single arm lets you fully concentrate on one side at a time without the weaker arm compensating." },
+    { id:"tricep-pushdown", day:"arms", name:"Tricep Rope Pushdown", tag:"isolation", repRange:[12,15], increment:5, rest:"60 sec", time:"~7 min", note:"Split the rope at the bottom of each rep — this maximizes lateral head contraction. Elbows stay pinned to your sides. Only your forearms move. If your elbows are traveling forward and back, you're involving your lats and losing the isolation. The cable machine provides constant tension the entire way, unlike free weights that lose tension at the top. Can superset with the overhead extension directly after to hit both heads." },
+    { id:"oh-tricep-ext", day:"arms", name:"Overhead Tricep Extension (cable)", tag:"isolation", repRange:[12,12], increment:5, rest:"60 sec", time:"~7 min", note:"The long head of the tricep only reaches full stretch with the arm overhead — that's why this movement exists and why pushdowns alone aren't enough. Use the rope attachment, face away from the cable stack, and hinge slightly at the hip. Elbows point straight at the ceiling and don't drift outward. Control the return — the stretch position is where you're building thickness in the horseshoe. The cable provides resistance at the stretched position where dumbbells go slack." },
+    { id:"bb-squat", day:"legs", name:"Barbell Squat", tag:"primary", repRange:[5,8], increment:10, seedFrom:"back-squat-b", rest:"3–4 min", time:"~18 min", alts:"Goblet Squat (heavy DB) or Smith Machine Squat", note:"High-bar barbell squat — your lower body strength indicator for the program. Bar sits across your upper traps, feet shoulder-width, toes out slightly. Brace hard before every descent: big breath, ribs down, core locked. Depth is non-negotiable — thighs at least parallel, ideally below. Drive through the heel and mid-foot with knees tracking over your toes. Unlike a machine, the free bar demands balance and full-body tension, so start conservative and own every rep. Full depth every rep, no partial reps, no ego loading." },
+    { id:"leg-press", day:"legs", name:"Leg Press Machine", tag:"secondary", repRange:[10,12], increment:10, rest:"2 min", time:"~10 min", note:"Feet high and wide on the platform — this shifts load toward glutes and hamstrings and reduces anterior knee stress. Lower all the way down without your lower back rounding off the pad. If your hips are coming up, you're going too deep for your current hip flexibility. The machine lets you safely load quad volume without the spinal compression of a barbell squat." },
+    { id:"rdl", day:"legs", name:"Romanian Deadlift (RDL)", tag:"secondary", repRange:[8,10], increment:10, rest:"2 min", time:"~12 min", note:"Hip hinge, not a deadlift. Soft knees throughout — about 15–20° of bend. Push your hips back as the bar travels down your legs. You should feel a strong hamstring stretch at the bottom. Stop when your lower back starts to round — that's your end range. Go heavy, but never at the expense of a neutral spine. This is the primary posterior chain movement of the week and directly prevents hamstring injuries." },
+    { id:"leg-ext", day:"legs", name:"Leg Extension Machine", tag:"isolation", repRange:[12,15], increment:10, seedFrom:"leg-ext-b", rest:"60 sec", time:"~7 min", note:"Sit all the way back in the pad, toes pointed slightly outward to bias the inner quad. Extend fully and hold 1 second at the top — most people let the weight drop before full quad contraction. Slow eccentric on the way down. Safe when done correctly; the danger is loading too heavy and using momentum. Can superset with leg curls to save time." },
+    { id:"leg-curl", day:"legs", name:"Leg Curl Machine", tag:"isolation", repRange:[12,15], increment:10, rest:"60 sec", time:"~7 min", note:"Curl through full ROM, pause at peak contraction, lower with a 2-second eccentric. The eccentric is where hamstring strength is built and where hamstring injuries are prevented. Keep hips flat on the pad — if they're rising, you've overloaded it. Feet slightly turned in shifts emphasis to the outer bicep femoris. The machine removes lower back from the equation entirely." },
+    { id:"seated-calf", day:"legs", name:"Seated Calf Raise Machine", tag:"isolation", repRange:[15,20], increment:10, rest:"45 sec", time:"~6 min", note:"The seated position bends the knee, shifting all the load to the soleus — the wide flat muscle underneath that gives the lower leg its shape. Full range — heel all the way down into a deep stretch, all the way up at the top. 15–20 reps is the right zone for this muscle type. Short rest is fine; calves recover quickly." },
+    { id:"ab-wheel", day:"legs", name:"Ab Wheel Rollout", tag:"isolation", repRange:[8,12], increment:5, rest:"60 sec", time:"~6 min", note:"Roll out to where your body is parallel or near-parallel to the floor, maintaining a completely neutral spine. The moment your lower back arches, you've gone too far. Start from your knees until you can control the full range. This builds the same core bracing pattern used in heavy squats — rigidity under axial load. Finish legs day with this and your core is locked in for the rest of the week." },
+    { id:"incline-bb-bench", day:"chest-b", name:"Incline Barbell Bench Press", tag:"primary", repRange:[5,8], increment:5, rest:"3–4 min", time:"~18 min", note:"The incline targets the upper chest — the most visible part from the front. Bar touches your upper chest, shoulder blades retracted and depressed throughout. This is your second primary compound of the week — track it and add load over time. Upper chest development separates a built chest from a flat one." },
+    { id:"machine-row", day:"chest-b", name:"Machine Row", tag:"secondary", repRange:[10,12], increment:5, rest:"90 sec", time:"~9 min", note:"Guided machine eliminates lower back involvement so your back does all the work. Pull to mid-chest, squeeze for 1 second at full contraction. Focus on driving the elbows back — not just pulling with your hands. The machine lets you safely push the last reps harder than free weights." },
+    { id:"machine-chest-press", day:"chest-b", name:"Machine Chest Press", tag:"secondary", repRange:[10,12], increment:5, rest:"2 min", time:"~10 min", note:"Flat machine press after incline barbell work targets the mid-chest from a different angle. Set the seat so handles start at mid-chest. Press through full range — don't stop short. The machine lets you grind the last reps safely. Squeeze the pecs hard at peak contraction, not just move the handles." },
+    { id:"sa-cable-row", day:"chest-b", name:"Single-Arm Cable Row", tag:"secondary", repRange:[12,12], increment:5, repsSuffix:"/side", rest:"90 sec", time:"~9 min", note:"Single arm forces your core to resist rotation — abs work without a single crunch. Pull to your hip with elbow tucked tight, allow full stretch at the front. Your weaker side gets the same volume as the stronger side. Bilateral rows let the dominant side compensate; single arm doesn't. Fix the imbalance here." },
+    { id:"low-high-fly", day:"chest-b", name:"Low-to-High Cable Fly", tag:"isolation", repRange:[12,15], increment:5, rest:"60 sec", time:"~7 min", note:"Cables set at the low position. Arc upward and together — this hits upper chest fibers the flat pec dec misses. Slight forward lean at the hips. Control the return completely. Cables provide constant tension through the full arc unlike dumbbells which go slack at the top of the movement." },
+    { id:"straight-arm-pd", day:"chest-b", name:"Straight Arm Pulldown", tag:"isolation", repRange:[15,15], increment:5, rest:"60 sec", time:"~7 min", note:"Cable high, slight forward lean at hips, arms nearly straight. Pull the bar down to your thighs by engaging your lats — not by bending your elbows. Pure lat isolation with zero bicep involvement. This builds the V-taper that makes your waist look smaller. Light weight, full range, feel every rep." },
+    { id:"rear-delt-fly", day:"chest-b", name:"Rear Delt Machine Fly", tag:"isolation", repRange:[15,20], increment:5, rest:"60 sec", time:"~7 min", note:"Set the seat so handles are at shoulder level. Arms nearly straight throughout — the moment you bend your elbows you shift load to your back. Squeeze at the back, control the return. Rear delts are chronically undertrained. This builds the 3D shoulder look and protects the rotator cuff from the pressing volume you're doing twice a week." },
+    { id:"arnold-press", day:"arms-b", name:"Dumbbell Arnold Press", tag:"secondary", repRange:[8,10], increment:5, rest:"2 min", time:"~12 min", note:"Start with palms facing you at shoulder height, rotate outward as you press overhead. This rotation recruits all three deltoid heads in a single movement — front, medial, and rear. Far more complete than a standard DB press. Control the rotation both up and down. Arnold popularized this for a reason — the shoulder development from the rotational path is unique and will show at every angle." },
+    { id:"cable-lat-raise", day:"arms-b", name:"Cable Lateral Raise (single arm)", tag:"isolation", repRange:[15,20], increment:5, repsSuffix:"/side", rest:"60 sec", time:"~8 min", note:"Cable provides constant tension at the bottom of the arc — the exact position where dumbbells are weakest. Pull from low across your body, lead with your elbow to shoulder height. The cable keeps resistance through full ROM, making this more effective per rep than DB laterals. Single arm means no compensating. Do your weaker side first." },
+    { id:"cable-face-pull", day:"arms-b", name:"Cable Face Pull", tag:"isolation", repRange:[15,20], increment:5, seedFrom:"face-pulls", rest:"60 sec", time:"~7 min", note:"Cable at eye height, rope attachment. Pull toward your face and externally rotate at the end — \"W\" position with elbows high and wide. Trains external rotation of the shoulder, the single most neglected movement in the gym. It is the antidote to years of pressing. Rear delt and rotator cuff in one movement. Never skip it." },
+    { id:"incline-db-curl", day:"arms-b", name:"Incline Dumbbell Curl", tag:"isolation", repRange:[10,12], increment:5, rest:"90 sec", time:"~8 min", note:"Bench at 45–60°. Lie back and let your arms hang straight down. Curl from full extension — the incline puts the long head of the bicep in a stretched starting position you cannot replicate standing. This angle builds the peak of the bicep. No swinging. Feel the deep stretch at the bottom of every rep before curling up." },
+    { id:"hammer-curl", day:"arms-b", name:"Hammer Curls", tag:"isolation", repRange:[12,12], increment:5, rest:"60 sec", time:"~7 min", note:"Neutral grip (palms facing each other) hits the brachialis — a muscle under the bicep that pushes it up, adding visible arm thickness. Most curl variations miss this entirely. Elbows stay at your sides, curl straight up without rotating. Heavier than supinated curls for most people. The brachialis responds to load and will add thickness to your upper arm that regular curls alone won't build." },
+    { id:"machine-dip", day:"arms-b", name:"Machine Dip", tag:"secondary", repRange:[12,15], increment:5, rest:"90 sec", time:"~8 min", note:"Machine dips let you load the triceps through full dip range without the shoulder stability demand of bodyweight dips. Adjust the seat so you reach full tricep extension at the bottom. Drive through the palms at lockout — squeeze hard at the top. This is your heaviest tricep movement on B day. Track the weight and add load over time like a compound lift." },
+    { id:"skull-crusher", day:"arms-b", name:"EZ Bar Skull Crusher", tag:"secondary", repRange:[10,12], increment:5, rest:"90 sec", time:"~8 min", note:"Lie flat, EZ bar over your forehead, close grip. Lower to your forehead bending only at the elbows — no shoulder movement. Elbows vertical or slightly back. The EZ bar angles reduce wrist stress versus a straight bar. Best mass builder for the long head of the tricep. Load it progressively — most people go too light on this and miss the adaptation signal." },
+    { id:"back-squat-b", day:"legs-b", name:"Back Squat", tag:"primary", repRange:[5,8], increment:10, seedFrom:"bb-squat", rest:"3–4 min", time:"~18 min", note:"High-bar, knees track over toes, chest tall, drive through your heels. The free barbell squat demands full body coordination — every stabilizer fires. Bar sits across your upper traps. Depth is non-negotiable: thighs parallel or below. If heels rise, ankles need mobility work — do the couch stretch consistently and it will change." },
+    { id:"bulgarian-ss", day:"legs-b", name:"Bulgarian Split Squat", tag:"secondary", repRange:[10,12], increment:10, repsSuffix:"/leg", rest:"2 min", time:"~12 min", note:"Rear foot elevated on a bench. This is the hardest leg exercise in this program and the one most people skip — exactly why you do it. It isolates each leg completely, exposing and fixing left-right imbalances. Front shin stays vertical, knee tracks over the foot. The eccentric down is where the real stimulus is — control it completely. Use dumbbells at your sides or a barbell." },
+    { id:"stiff-leg-dl", day:"legs-b", name:"Stiff-Leg Deadlift", tag:"secondary", repRange:[10,12], increment:10, rest:"2 min", time:"~12 min", note:"Legs nearly straight (soft knee only), hinge at the hip, lower the bar down your legs until you feel a hard hamstring stretch. Straighter legs versus the RDL on Day A increases the hamstring stretch range, shifting more load to the upper hamstring and glute tie-in. Bar stays close to your body throughout. Neutral spine is mandatory — round your back here and the session is over." },
+    { id:"leg-ext-b", day:"legs-b", name:"Leg Extension Machine", tag:"isolation", repRange:[15,15], increment:10, seedFrom:"leg-ext", rest:"60 sec", time:"~7 min", note:"Same as Day A — full extension, 1-second hold, slow return. Quad isolation volume twice per week. By Day 3B you've hit quads hard with squats and split squats, so this is a finisher. Go lighter if needed and prioritize peak contraction over load. The feel matters more than the weight here." },
+    { id:"lying-leg-curl", day:"legs-b", name:"Lying Leg Curl Machine", tag:"isolation", repRange:[12,15], increment:10, rest:"60 sec", time:"~7 min", note:"Face down — this position stretches the hamstrings differently than the seated version on Day A, placing the muscle in a more elongated position at the start. Curl to full contraction, don't let hips lift off the pad. The lying variation hits the bicep femoris long head from a stretched position, complementing the seated version's peak contraction bias. Twice a week hamstring training reduces injury risk significantly." },
+    { id:"standing-calf", day:"legs-b", name:"Standing Calf Raise", tag:"isolation", repRange:[15,20], increment:10, rest:"45 sec", time:"~6 min", note:"Standing hits the gastrocnemius — the large muscle that creates the visible calf shape. Knee stays straight to fully load it. Full range: heel below the step into a deep stretch, all the way up on toes. Paired with seated calf raises on Day A, you're hitting both the gastrocnemius and soleus twice per week — the actual minimum calves need to grow." },
+    { id:"cable-crunch", day:"legs-b", name:"Cable Crunch", tag:"isolation", repRange:[15,20], increment:5, rest:"60 sec", time:"~6 min", note:"Kneel facing the cable, rope behind your head. Crunch your rib cage toward your pelvis — not your head toward the floor. You want spinal flexion from the abs, not neck movement. The cable provides constant weighted resistance through the full range unlike bodyweight crunches that lose tension at the top. This is how you actually build visible abs — loaded, full range, consistent." },
+  ];
+  const EX_BY_ID = {};
+  EXERCISES.forEach(function(ex){ EX_BY_ID[ex.id] = ex; });
 
-  //     LIFT SETS DATA
-  const LIFT_SETS = {
-    'chest::0':2,'chest::1':2,'chest::2':2,'chest::3':2,'chest::4':2,'chest::5':2,'chest::6':2,
-    'arms::0':2,'arms::1':2,'arms::2':2,'arms::3':2,'arms::4':2,'arms::5':2,'arms::6':2,
-    'legs::0':2,'legs::1':2,'legs::2':2,'legs::3':2,'legs::4':2,'legs::5':2,'legs::6':2,
-    'rest::0':2,'rest::1':2,'rest::2':2,'rest::3':2,'rest::4':2,'rest::5':2,'rest::6':2,
-    'chest-b::0':2,'chest-b::1':2,'chest-b::2':2,'chest-b::3':2,'chest-b::4':2,'chest-b::5':2,'chest-b::6':2,
-    'arms-b::0':2,'arms-b::1':2,'arms-b::2':2,'arms-b::3':2,'arms-b::4':2,'arms-b::5':2,'arms-b::6':2,
-    'legs-b::0':2,'legs-b::1':2,'legs-b::2':2,'legs-b::3':2,'legs-b::4':2,'legs-b::5':2,'legs-b::6':2,
-  };
-
-  //     INIT LIFT ROWS (set circles + last session)                             
-  function initLiftRows() {
-    const days = ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
-    days.forEach(dayId => {
-      const dayEl = document.getElementById('day-' + dayId);
-      if (!dayEl) return;
-      const rows = dayEl.querySelectorAll('.lift-row');
-      rows.forEach((row, liftIdx) => {
-        const key = dayId + '::' + liftIdx;
-        const numSets = LIFT_SETS[key] || 3;
-        const liftName = row.querySelector('.lift-name') ? row.querySelector('.lift-name').textContent : '';
-        row.setAttribute('data-day', dayId);
-        row.setAttribute('data-lift', liftIdx);
-        const rampData = RAMP_HINTS[key];
-        if (rampData) {
-          const setsRepsEl = row.querySelector('.lift-sets-reps');
-          if (setsRepsEl) {
-            const hintEl = document.createElement('div');
-            if (typeof rampData === 'string') {
-              hintEl.className = 'ramp-hint';
-              hintEl.textContent = '↑ ' + rampData;
-            } else {
-              hintEl.className = 'ramp-hint ramp-hint-calc';
-              hintEl.textContent = '↑ Warm-up: enter maxes to calculate';
+  //     ONE-TIME MIGRATION from the old per-set logs (ppl_workout_logs_v3).
+  //     Best set per exercise per week carries over with failure unknown.
+  //     Hack squat history is archived, never migrated — machine numbers would
+  //     fake a barbell squat baseline.
+  function migrateOldLogs() {
+    if (localStorage.getItem(MIGRATED_KEY)) return;
+    var old = null;
+    try { old = JSON.parse(localStorage.getItem('ppl_workout_logs_v3')); } catch(e) { old = null; }
+    if (old && Object.keys(old).length) {
+      var OLD_LAYOUT = {
+        'chest':  ['flat-bb-bench','lat-pulldown','incline-mach-press','seated-cable-row','pec-dec','chest-supp-row','face-pulls'],
+        'arms':   ['seated-ohp','shoulder-press-mach','lateral-raise-mach','ez-bar-curl','cable-curl','tricep-pushdown','oh-tricep-ext'],
+        'legs':   ['HACK','leg-press','rdl','leg-ext','leg-curl','seated-calf','ab-wheel'],
+        'chest-b':['incline-bb-bench','machine-row','machine-chest-press','sa-cable-row','low-high-fly','straight-arm-pd','rear-delt-fly'],
+        'arms-b': ['arnold-press','cable-lat-raise','cable-face-pull','incline-db-curl','hammer-curl','machine-dip','skull-crusher'],
+        'legs-b': ['back-squat-b','bulgarian-ss','stiff-leg-dl','leg-ext-b','lying-leg-curl','standing-calf','cable-crunch']
+      };
+      var migrated = {}, hackArch = [];
+      for (var w = 0; w < 10; w++) {
+        Object.keys(OLD_LAYOUT).forEach(function(dayId) {
+          OLD_LAYOUT[dayId].forEach(function(exId, li) {
+            var best = null;
+            for (var s = 0; s < 4; s++) {
+              var e = old['w' + w + '::' + dayId + '::' + li + '::' + s];
+              if (!e) continue;
+              var wt = parseFloat(e.weight), rp = parseInt(e.reps, 10);
+              if (isNaN(wt) || isNaN(rp)) continue;
+              if (!best || wt > best.weight || (wt === best.weight && rp > best.reps)) best = { weight: wt, reps: rp };
             }
-            setsRepsEl.insertAdjacentElement('afterend', hintEl);
-          }
-        }
-        const setsRow = document.createElement('div');
-        setsRow.className = 'log-sets-row';
-        setsRow.setAttribute('data-sets-row', key);
-        const setsLabel = document.createElement('span');
-        setsLabel.className = 'log-sets-label';
-        setsLabel.textContent = 'Log';
-        setsRow.appendChild(setsLabel);
-        for (let s = 0; s < numSets; s++) {
-          const btn = document.createElement('button');
-          btn.className = 'set-circle';
-          btn.textContent = s + 1;
-          btn.setAttribute('data-set', s);
-          btn.onclick = (function(d,l,si,ln){ return function(e){ e.stopPropagation(); openLogModal(d,l,si,ln); }; })(dayId, liftIdx, s, liftName);
-          setsRow.appendChild(btn);
-        }
-        row.appendChild(setsRow);
-        const lastRow = document.createElement('div');
-        lastRow.className = 'last-session-row';
-        lastRow.setAttribute('data-last-row', key);
-        const lastLabel = document.createElement('span');
-        lastLabel.className = 'last-session-label';
-        lastLabel.textContent = 'Last:';
-        lastRow.appendChild(lastLabel);
-        for (let s = 0; s < numSets; s++) {
-          const chip = document.createElement('span');
-          chip.className = 'last-session-chip';
-          chip.setAttribute('data-chip', s);
-          chip.textContent = '-';
-          lastRow.appendChild(chip);
-        }
-        row.appendChild(lastRow);
-      });
-    });
-    renderAllLogs();
+            if (!best) return;
+            var entry = { d: null, week: w, weight: best.weight, reps: best.reps, failure: null };
+            if (exId === 'HACK') { hackArch.push(entry); return; }
+            (migrated[exId] = migrated[exId] || []).push(entry);
+          });
+        });
+      }
+      try {
+        localStorage.setItem(SESSIONS_KEY, JSON.stringify(migrated));
+        localStorage.setItem(ARCHIVE_KEY, JSON.stringify({ oldLogs: old, hackSquat: hackArch }));
+        localStorage.removeItem('ppl_workout_logs_v3');
+        localStorage.removeItem('monk_mode_acc_v1');
+      } catch(e) {}
+    }
+    try { localStorage.setItem(MIGRATED_KEY, '1'); } catch(e) {}
+  }
+  migrateOldLogs();
+  var sessions = loadSessions();
+
+  function getHistory(exId) { return sessions[exId] || []; }
+  function todayKey() {
+    var d = new Date();
+    function p(n) { return n < 10 ? '0' + n : '' + n; }
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+  }
+  function repRangeText(ex) {
+    return ex.repRange[0] === ex.repRange[1] ? '' + ex.repRange[0] : ex.repRange[0] + '–' + ex.repRange[1];
   }
 
-  //     RENDER LOGGED DATA
-  function renderAllLogs() {
-    var wk = currentTrainWeek;
-    var prevWk = wk > 0 ? wk - 1 : null;
-    Object.keys(LIFT_SETS).forEach(key => {
-      const numSets = LIFT_SETS[key];
-      const setsRow = document.querySelector('[data-sets-row="' + key + '"]');
-      const lastRow = document.querySelector('[data-last-row="' + key + '"]');
-      if (!setsRow || !lastRow) return;
-      const circles = setsRow.querySelectorAll('.set-circle');
-      const chips = lastRow.querySelectorAll('[data-chip]');
-      for (let s = 0; s < numSets; s++) {
-        // Circles show whether this week's sets are logged
-        const curEntry = logs['w' + wk + '::' + key + '::' + s];
-        if (circles[s]) circles[s].classList.toggle('logged', !!curEntry);
-        // "Last" chips show the previous week's data for this same exercise
-        if (chips[s]) {
-          var prevEntry = prevWk !== null ? logs['w' + prevWk + '::' + key + '::' + s] : null;
-          if (prevEntry) { chips[s].textContent = prevEntry.weight + ' x ' + prevEntry.reps; chips[s].classList.add('has-data'); }
-          else { chips[s].textContent = '-'; chips[s].classList.remove('has-data'); }
+  //     WARM-UPS — two ramp sets from the aim top-set weight; display only,
+  //     never logged, never counted in progression
+  function computeWarmups(w) {
+    if (!w || w <= 0) return null;
+    return [roundToNearestFive(w * 0.50) + ' × 5', roundToNearestFive(w * 0.75) + ' × 3'];
+  }
+
+  //     DOUBLE PROGRESSION — top of rep range on a true failure set earns the jump
+  function getSessionTarget(ex, hist) {
+    var last = hist.length ? hist[hist.length - 1] : null;
+    if (!last) {
+      // No history: seed the aim from the sibling lift when one is configured
+      if (ex.seedFrom && EX_BY_ID[ex.seedFrom]) {
+        var sh = getHistory(ex.seedFrom);
+        if (sh.length) {
+          var seedW = sh[sh.length - 1].weight;
+          return { mode: 'baseline', weight: seedW, reps: ex.repRange[0],
+            msg: 'Suggested start: ' + seedW + ' lbs, from your ' + EX_BY_ID[ex.seedFrom].name + '. First session sets the baseline.' };
         }
       }
+      return { mode: 'baseline', weight: null, reps: ex.repRange[0],
+        msg: 'First session — establish a baseline in the ' + repRangeText(ex) + ' rep range' };
+    }
+    if (last.failure === true && last.reps >= ex.repRange[1])
+      return { mode: 'increase', weight: last.weight + ex.increment, reps: ex.repRange[0],
+        msg: 'Top of range hit to failure — new weight: ' + (last.weight + ex.increment) + ' lbs' };
+    return { mode: 'beat', weight: last.weight, reps: Math.min(last.reps + 1, ex.repRange[1]),
+      msg: 'Beat last session by 1 rep' };
+  }
+
+  //     Stall = 3 straight failure-marked sessions, same weight, no rep gain
+  function getStallState(hist) {
+    var hard = hist.filter(function(e) { return e.failure === true; });
+    if (hard.length < 3) return null;
+    var last3 = hard.slice(-3);
+    if (last3[1].weight !== last3[0].weight || last3[2].weight !== last3[0].weight) return null;
+    // Improvement means a new rep high inside the window, not a bounce back to old numbers
+    if (last3[1].reps > last3[0].reps) return null;
+    if (last3[2].reps > Math.max(last3[0].reps, last3[1].reps)) return null;
+    return { weight: last3[0].weight, drop: roundToNearestFive(last3[0].weight * 0.9) };
+  }
+
+  function getFailureStats(hist) {
+    var recent = hist.slice(-4);
+    if (!recent.length) return null;
+    var hard = recent.filter(function(e) { return e.failure === true; }).length;
+    return { hard: hard, total: recent.length, low: hard / recent.length < 0.5 };
+  }
+
+  //     RENDER LIFT ROWS FROM CONFIG
+  function liftRowHTML(ex) {
+    var range = repRangeText(ex) + ' reps' + (ex.repsSuffix || '');
+    return '<div class="lift-row" id="row-' + ex.id + '" onclick="toggleNote(this)">'
+      + '<div>'
+      + '<div class="lift-name">' + ex.name + '</div>'
+      + '<div class="lift-sets-reps">2 sets × ' + range + '</div>'
+      + (ex.alts ? '<div class="lift-alts"><span>Alt:</span>' + ex.alts + '</div>' : '')
+      + '<div class="warmup-lines" data-warmups="' + ex.id + '"></div>'
+      + '<div class="target-block" data-targets="' + ex.id + '"></div>'
+      + '</div>'
+      + '<div class="lift-rest">' + ex.rest + '</div>'
+      + '<div class="lift-time">' + ex.time + '</div>'
+      + '<div class="lift-chevron">▼</div>'
+      + '<div class="lift-note">' + ex.note + '</div>'
+      + '<div class="lift-log-inline" onclick="event.stopPropagation()">'
+      + '<div class="log-inline-group"><span class="log-inline-label">Aim Weight</span>'
+      + '<input class="log-inline-input" type="number" inputmode="decimal" id="w-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)"></div>'
+      + '<div class="log-inline-group"><span class="log-inline-label">Aim Reps</span>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" id="r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)"></div>'
+      + '<button class="failure-toggle" id="f-' + ex.id + '" onclick="toggleFailure(this)">Failure · No</button>'
+      + '<button class="inline-save-btn" id="save-' + ex.id + '" data-ex="' + ex.id + '" onclick="saveExercise(this.dataset.ex)">Save</button>'
+      + '</div>'
+      + '<div class="lift-status" data-status="' + ex.id + '" onclick="event.stopPropagation()"></div>'
+      + '</div>';
+  }
+
+  function renderDaySections() {
+    DAY_ORDER.forEach(function(dayId) {
+      var host = document.querySelector('[data-rows="' + dayId + '"]');
+      if (!host) return;
+      host.innerHTML = EXERCISES.filter(function(ex) { return ex.day === dayId; }).map(liftRowHTML).join('');
     });
   }
 
-  //     LOG MODAL
-  function isCableExercise(name) { return false; }
-
-  let activeModal = null;
-  function openLogModal(dayId, liftIdx, setIdx, liftName) {
-    closeLogModal();
-    const key = 'w' + currentTrainWeek + '::' + dayId + '::' + liftIdx + '::' + setIdx;
-    const existing = logs[key] || {};
-    const overlay = document.createElement('div');
-    overlay.className = 'log-modal-overlay';
-    overlay.onclick = function(e) { if (e.target === overlay) closeLogModal(); };
-    var _wLabel = 'Weight';
-    var _wPlaceholder = '';
-    overlay.innerHTML = '<div class="log-modal-card"><div class="log-modal-title">Set ' + (setIdx+1) + '</div><div class="log-modal-lift">' + liftName + '</div><div class="log-inputs"><div class="log-input-group"><div class="log-input-label">' + _wLabel + '</div><input class="log-input-field" id="log-weight" type="number" placeholder="' + _wPlaceholder + '" value="' + (existing.weight||'') + '" inputmode="decimal"></div><div class="log-input-group"><div class="log-input-label">Reps</div><input class="log-input-field" id="log-reps" type="number" placeholder="5" value="' + (existing.reps||'') + '" inputmode="numeric"></div></div><button class="log-save-btn" onclick="saveSet(\'' + dayId + '\',' + liftIdx + ',' + setIdx + ')">Save Set</button><button class="log-cancel-btn" onclick="closeLogModal()">Cancel</button></div>';
-    document.body.appendChild(overlay);
-    activeModal = overlay;
-    setTimeout(function(){ var w=document.getElementById('log-weight'); if(w) w.focus(); }, 50);
-    overlay.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') saveSet(dayId, liftIdx, setIdx);
-      if (e.key === 'Escape') closeLogModal();
-    });
+  function currentInputWeight(ex, target) {
+    var inp = document.getElementById('w-' + ex.id);
+    var v = inp ? parseFloat(inp.value) : NaN;
+    if (!isNaN(v) && v > 0) return v;
+    return target.weight;
   }
 
-  function closeLogModal() { if (activeModal) { activeModal.remove(); activeModal = null; } }
+  //     WARM-UPS + TARGETS — the aim top set (weight × reps input) drives all
+  //     four lines: two warm-up sets and both working sets, recalculated live
+  function renderWarmupsAndTargets(ex) {
+    var hist = getHistory(ex.id);
+    var target = getSessionTarget(ex, hist);
+    var w = currentInputWeight(ex, target);
+    var rInp = document.getElementById('r-' + ex.id);
+    var rv = rInp ? parseInt(rInp.value, 10) : NaN;
+    var wuEl = document.querySelector('[data-warmups="' + ex.id + '"]');
+    if (wuEl) {
+      var lines = computeWarmups(w);
+      wuEl.innerHTML = '<div class="warmup-title">Warm-up</div>' + (lines
+        ? lines.map(function(l) { return '<div class="ramp-hint">' + l + '</div>'; }).join('')
+        : '<div class="ramp-hint">Enter an aim weight to calculate</div>');
+    }
+    var tEl = document.querySelector('[data-targets="' + ex.id + '"]');
+    if (tEl) {
+      var wTxt = w ? w + ' lbs' : '—';
+      var repsTxt;
+      if (!isNaN(rv) && rv > 0) repsTxt = rv + ' goal';
+      else if (target.mode === 'baseline') repsTxt = repRangeText(ex);
+      else repsTxt = target.reps + ' goal';
+      tEl.innerHTML = '<div class="target-msg">' + target.msg + '</div>'
+        + '<div class="target-line">Set 1 · ' + wTxt + ' × ' + repsTxt + '</div>'
+        + '<div class="target-line">Set 2 · ' + wTxt + ' × ' + repsTxt + '</div>';
+    }
+  }
 
-  function saveSet(dayId, liftIdx, setIdx) {
-    var weight = document.getElementById('log-weight') ? document.getElementById('log-weight').value.trim() : '';
-    var reps = document.getElementById('log-reps') ? document.getElementById('log-reps').value.trim() : '';
-    if (!weight && !reps) { closeLogModal(); return; }
-    var liftKey = dayId + '::' + liftIdx;
-    var restSeconds = 90;
-    var liftName = '';
-    var setsRow = document.querySelector('[data-sets-row="' + liftKey + '"]');
-    if (setsRow) {
-      var row = setsRow.closest('.lift-row');
-      if (row) {
-        var restEl = row.querySelector('.lift-rest');
-        if (restEl) restSeconds = parseRestToSeconds(restEl.textContent);
-        var nameEl = row.querySelector('.lift-name');
-        if (nameEl) liftName = nameEl.textContent;
-      }
+  function renderLiftRowState(ex) {
+    var hist = getHistory(ex.id);
+    var target = getSessionTarget(ex, hist);
+    var last = hist.length ? hist[hist.length - 1] : null;
+    var loggedToday = !!(last && last.d === todayKey());
+    var wInp = document.getElementById('w-' + ex.id);
+    var rInp = document.getElementById('r-' + ex.id);
+    var fBtn = document.getElementById('f-' + ex.id);
+    if (wInp) wInp.value = loggedToday ? last.weight : (target.weight != null ? target.weight : '');
+    if (rInp) rInp.value = loggedToday ? last.reps : target.reps;
+    if (fBtn) setFailureBtn(fBtn, loggedToday && last.failure === true);
+    var rowEl = document.getElementById('row-' + ex.id);
+    if (rowEl) rowEl.classList.toggle('has-logs', loggedToday);
+    renderWarmupsAndTargets(ex);
+    var st = document.querySelector('[data-status="' + ex.id + '"]');
+    if (!st) return;
+    var out = '';
+    if (last) {
+      var fTxt = last.failure === true ? ' · to failure' : (last.failure === false ? ' · soft' : '');
+      out += '<span class="last-session-chip has-data">Last: ' + last.weight + ' × ' + last.reps + fTxt + '</span>';
     }
-    var key = 'w' + currentTrainWeek + '::' + dayId + '::' + liftIdx + '::' + setIdx;
-    logs[key] = { weight: weight || '-', reps: reps || '-' };
-    saveLogs(logs);
-    closeLogModal();
-    renderAllLogs();
-    startTimer(restSeconds, liftName);
-    var flashRow = document.querySelector('[data-sets-row="' + liftKey + '"]');
-    if (flashRow) {
-      var circles = flashRow.querySelectorAll('.set-circle');
-      if (circles[setIdx]) {
-        circles[setIdx].classList.add('flash');
-        setTimeout(function(){ circles[setIdx].classList.remove('flash'); }, 800);
-      }
+    if (last && last.failure === false) {
+      out += '<div class="soft-set-note">No failure set logged. Soft sets are maintenance, not growth.</div>';
     }
-    if (window._enteringMonkMode) {
-      window._enteringMonkMode = false;
-      goTab('training');
+    var stall = getStallState(hist);
+    if (stall) {
+      out += '<div class="stall-warning">Stalled: 3 sessions at ' + stall.weight + ' lbs with no rep gain. Check sleep and food, or drop to ' + stall.drop + ' lbs for one session.</div>';
     }
+    st.innerHTML = out;
+  }
+
+  function renderAllRowStates() { EXERCISES.forEach(renderLiftRowState); }
+
+  function onAimInput(exId) {
+    var ex = EX_BY_ID[exId];
+    if (ex) renderWarmupsAndTargets(ex);
+  }
+
+  function setFailureBtn(btn, on) {
+    btn.classList.toggle('on', on);
+    btn.textContent = on ? 'Failure · Yes' : 'Failure · No';
+  }
+  function toggleFailure(btn) { setFailureBtn(btn, !btn.classList.contains('on')); }
+
+  function saveExercise(exId) {
+    var ex = EX_BY_ID[exId];
+    if (!ex) return;
+    var w = parseFloat(document.getElementById('w-' + exId).value);
+    var r = parseInt(document.getElementById('r-' + exId).value, 10);
+    if (isNaN(w) || w <= 0 || isNaN(r) || r <= 0) return;
+    var fail = document.getElementById('f-' + exId).classList.contains('on');
+    var hist = sessions[exId] = sessions[exId] || [];
+    var t = todayKey();
+    var entry = { d: t, week: currentTrainWeek, weight: w, reps: r, failure: fail };
+    var replaced = false;
+    for (var i = 0; i < hist.length; i++) {
+      if (hist[i].d === t) { hist[i] = entry; replaced = true; break; }
+    }
+    if (!replaced) hist.push(entry);
+    saveSessions();
+    renderLiftRowState(ex);
+    renderProgressView();
+    if (typeof renderRing === 'function') renderRing();
+    var btn = document.getElementById('save-' + exId);
+    if (btn) { btn.textContent = '✓ Saved'; setTimeout(function() { btn.textContent = 'Save'; }, 1200); }
+    startTimer(parseRestToSeconds(ex.rest), ex.name);
   }
 
   function clearDayLogs(dayId) {
-    var prefix = 'w' + currentTrainWeek + '::' + dayId + '::';
-    Object.keys(logs).forEach(function(k){ if (k.startsWith(prefix)) delete logs[k]; });
-    saveLogs(logs); renderAllLogs();
+    if (!confirm("Clear this week's logs for this day?")) return;
+    EXERCISES.forEach(function(ex) {
+      if (ex.day !== dayId || !sessions[ex.id]) return;
+      sessions[ex.id] = sessions[ex.id].filter(function(e) { return e.week !== currentTrainWeek; });
+      if (!sessions[ex.id].length) delete sessions[ex.id];
+    });
+    saveSessions();
+    renderAllRowStates();
+    renderProgressView();
+    if (typeof renderRing === 'function') renderRing();
   }
 
-  //     REST TIMER
+    //     REST TIMER
   var TIMER_BG_KEY = 'monk_timer_bg_v1';
   var timerInterval = null;
   var timerSeconds = 0;
@@ -2735,376 +2718,94 @@ body.training-mode footer { display: none; }
     } catch(e) {}
   });
 
-  //     MAXES & WEIGHT CALCULATION                                              
-  const MAXES_KEY = 'monk_mode_maxes_v1';
-  const WEEK_INTENSITY = [
-    [0.65,0.70],[0.72,0.76],[0.78,0.83],[0.58,0.62],
-    [0.70,0.74],[0.75,0.79],[0.79,0.83],[0.83,0.88],[0.88,0.93],[0.55,0.60]
-  ];
-  // Accessory multipliers relative to user's Week 1 logged weight — mirrors the main wave structure
-  const ACCESSORY_PROG = [1.00, 1.10, 1.19, 0.89, 1.07, 1.14, 1.20, 1.27, 1.34, 0.85];
-  const ACC_KEY = 'monk_mode_acc_v1';
-  var accBaselines = {};
-  function loadAccBaselines() {
-    try { accBaselines = JSON.parse(localStorage.getItem(ACC_KEY)) || {}; } catch(e) { accBaselines = {}; }
-  }
-  function persistAccBaselines() {
-    try { localStorage.setItem(ACC_KEY, JSON.stringify(accBaselines)); } catch(e) {} }
-  const LIFT_MAX_MAP = [
-    { match: ['Flat Barbell Bench Press'], maxKey: 'bench', cls: '' },
-    { match: ['Close Grip Bench'], maxKey: 'bench', cls: '', pctLo: 0.70, pctHi: 0.75 },
-    { match: ['Dumbbell Bench Press'], maxKey: 'bench', cls: '', pctLo: 0.55, pctHi: 0.62 },
-    { match: ['Incline Dumbbell Press'], maxKey: 'bench', cls: '', pctLo: 0.47, pctHi: 0.53 },
-    { match: ['Low-to-High Cable Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
-    { match: ['Cable Chest Fly'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
-    { match: ['Skull Crushers', 'EZ Bar Skull Crusher'], maxKey: 'bench', cls: '', pctLo: 0.35, pctHi: 0.42 },
-    { match: ['Tricep Rope Pushdown'], maxKey: 'bench', cls: '', pctLo: 0.25, pctHi: 0.32 },
-    { match: ['Overhead Tricep Extension'], maxKey: 'bench', cls: '', pctLo: 0.20, pctHi: 0.28 },
-    { match: ['Barbell Row'], maxKey: 'bench', cls: '', pctLo: 0.68, pctHi: 0.75 },
-    { match: ['Cable Row'], maxKey: 'bench', cls: '', pctLo: 0.52, pctHi: 0.60 },
-    { match: ['Chest-Supported Row'], maxKey: 'bench', cls: '', pctLo: 0.50, pctHi: 0.58 },
-    { match: ['Single Arm DB Row'], maxKey: 'bench', cls: '', pctLo: 0.55, pctHi: 0.65 },
-    { match: ['Seated Cable Row'], maxKey: 'bench', cls: '', pctLo: 0.52, pctHi: 0.60 },
-    { match: ['EZ Bar Curl'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
-    { match: ['Hammer Curls', 'Hammer Curl'], maxKey: 'bench', cls: '', pctLo: 0.22, pctHi: 0.28 },
-    { match: ['Incline DB Curls', 'Incline Dumbbell Curl'], maxKey: 'bench', cls: '', pctLo: 0.18, pctHi: 0.25 },
-    { match: ['Cable Curl'], maxKey: 'bench', cls: '', pctLo: 0.18, pctHi: 0.24 },
-    { match: ['Seated Barbell OHP'], maxKey: 'ohp', cls: 'ohp' },
-    { match: ['Arnold Press'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.45, pctHi: 0.52 },
-    { match: ['Seated DB Shoulder Press'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.48, pctHi: 0.56 },
-    { match: ['Lateral Raises (cable)', 'Cable Lateral Raise'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.14, pctHi: 0.20 },
-    { match: ['Lateral Raises'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.14, pctHi: 0.20 },
-    { match: ['Back Squat'], maxKey: 'squat', cls: 'squat' },
-    { match: ['Pause Squat'], maxKey: 'squat', cls: 'squat', pct: 0.65 },
-    { match: ['Front Squat'], maxKey: 'squat', cls: 'squat', pctLo: 0.68, pctHi: 0.75 },
-    { match: ['Hack Squat', 'Hack Squat Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.68, pctHi: 0.75 },
-    { match: ['Romanian Deadlift'], maxKey: 'squat', cls: 'squat', pctLo: 0.52, pctHi: 0.60 },
-    { match: ['Leg Press', 'Leg Press Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.85, pctHi: 0.98 },
-    { match: ['Bulgarian Split Squat'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
-    { match: ['Leg Extension', 'Leg Extension Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.22, pctHi: 0.30 },
-    { match: ['Leg Curl', 'Leg Curl Machine', 'Lying Leg Curl Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
-    { match: ['Walking Lunges'], maxKey: 'squat', cls: 'squat', pctLo: 0.28, pctHi: 0.35 },
-    { match: ['Standing Calf Raise'], maxKey: 'squat', cls: 'squat', pctLo: 0.38, pctHi: 0.48 },
-    { match: ['Seated Calf Raise', 'Seated Calf Raise Machine'], maxKey: 'squat', cls: 'squat', pctLo: 0.32, pctHi: 0.42 },
-    { match: ['Weighted Pull-Ups'], maxKey: 'pullup', cls: 'pullup' },
-    { match: ['Lat Pulldown', 'Lat Pulldown Machine'], maxKey: 'pullup', cls: 'pullup', pctLo: 0.55, pctHi: 0.68 },
-    { match: ['Straight Arm Pulldown'], maxKey: 'pullup', cls: 'pullup', pctLo: 0.28, pctHi: 0.36 },
-    { match: ['Incline Machine Press'], maxKey: 'bench', cls: '', pctLo: 0.47, pctHi: 0.53 },
-    { match: ['Pec Dec Machine'], maxKey: 'bench', cls: '', pctLo: 0.28, pctHi: 0.34 },
-    { match: ['Chest-Supported Row Machine'], maxKey: 'bench', cls: '', pctLo: 0.50, pctHi: 0.58 },
-    { match: ['Shoulder Press Machine'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.50, pctHi: 0.58 },
-    { match: ['Lateral Raise Machine'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.14, pctHi: 0.20 },
-    { match: ['Incline Barbell Bench Press'], maxKey: 'bench', cls: '', pctLo: 0.80, pctHi: 0.90 },
-    { match: ['Machine Row', 'Hammer Strength Row'], maxKey: 'bench', cls: '', pctLo: 0.55, pctHi: 0.65 },
-    { match: ['Machine Chest Press'], maxKey: 'bench', cls: '', pctLo: 0.50, pctHi: 0.60 },
-    { match: ['Rear Delt Machine Fly'], maxKey: 'bench', cls: '', pctLo: 0.12, pctHi: 0.18 },
-    { match: ['Cable Face Pull'], maxKey: 'ohp', cls: 'ohp', pctLo: 0.18, pctHi: 0.26 },
-    { match: ['Machine Dip'], maxKey: 'bench', cls: '', pctLo: 0.35, pctHi: 0.48 },
-    { match: ['Stiff-Leg Deadlift'], maxKey: 'squat', cls: 'squat', pctLo: 0.52, pctHi: 0.65 },
-  ];
-
-  var userMaxes = {};
+  //     WEEK / TAB STATE
   var currentTrainWeek = 0;
   const TRAIN_WEEK_KEY = 'monk_mode_train_week_v1';
   const LAST_TAB_KEY = 'monk_mode_last_tab_v1';
   const LAST_DAY_KEY = 'monk_mode_last_day_v1';
-
-  function loadMaxes() {
-    try { userMaxes = JSON.parse(localStorage.getItem(MAXES_KEY)) || {}; } catch { userMaxes = {}; }
-  }
-  function persistMaxes() {
-    try { localStorage.setItem(MAXES_KEY, JSON.stringify(userMaxes)); } catch {} }
   function roundToNearestFive(n) { return Math.round(n / 5) * 5; }
-  function calcWeightRange(max, lo, hi) {
-    var l = roundToNearestFive(max * lo);
-    var h = roundToNearestFive(max * hi);
-    return l === h ? l + ' lbs' : l + '-' + h + ' lbs';
+
+  //     PROGRESS VIEW — real logged history, per exercise
+  var DAY_LABELS = { 'chest':'1A', 'arms':'2A', 'legs':'3A', 'chest-b':'1B', 'arms-b':'2B', 'legs-b':'3B' };
+
+  function progRow(label, value, noteHTML, accent) {
+    return '<div class="prog-row"><div class="prog-week">' + label + '</div>'
+      + '<div class="prog-weight"' + (accent ? ' style="color:#F5A623"' : '') + '>' + value + '</div>'
+      + '<div class="prog-note">' + noteHTML + '</div></div>';
   }
 
-  window._maxesMode = '1rm';
-  function setMaxesMode(mode) {
-    window._maxesMode = mode;
-    var card = document.getElementById('settingsModalCard');
-    var btn1rm = document.getElementById('mode-btn-1rm');
-    var btnReps = document.getElementById('mode-btn-reps');
-    if (mode === 'reps') {
-      if (card) card.classList.add('maxes-mode-reps');
-      if (btn1rm) btn1rm.classList.remove('active');
-      if (btnReps) btnReps.classList.add('active');
+  function progressCardHTML(ex, hist) {
+    var latest = hist[hist.length - 1];
+    var prev = hist.length > 1 ? hist[hist.length - 2] : null;
+    var rows = '';
+    if (prev) {
+      var delta = latest.weight - prev.weight;
+      var pct = prev.weight ? (delta / prev.weight * 100) : 0;
+      var sign = delta > 0 ? '+' : '';
+      var deltaTxt = delta === 0 ? '±0 lbs' : sign + delta + ' lbs';
+      var note = prev.weight + ' → ' + latest.weight + ' lbs '
+        + '<span style="font-size:11px;color:var(--dim)">(' + sign + pct.toFixed(1) + '%)</span>';
+      if (delta > 0 && latest.reps < prev.reps) note += ' — reps reset after the jump. Step up, not a dip.';
+      rows += progRow('This Week', deltaTxt, note, true);
+      if (latest.weight === prev.weight && latest.reps > prev.reps) {
+        rows += progRow('Rep PR', latest.reps + ' @ ' + latest.weight, 'Was ' + prev.reps + ' — more reps at the same weight is progress.', true);
+      }
     } else {
-      if (card) card.classList.remove('maxes-mode-reps');
-      if (btn1rm) btn1rm.classList.add('active');
-      if (btnReps) btnReps.classList.remove('active');
+      rows += progRow('This Week', latest.weight + ' × ' + latest.reps, 'First session logged — baseline set.', true);
     }
-    ['squat','bench','ohp'].forEach(function(l){ document.getElementById('est-1rm-' + l).textContent = ''; });
-  }
-
-  function updateEpley(lift) {
-    var w = parseFloat(document.getElementById('reps-weight-' + lift).value);
-    var r = parseFloat(document.getElementById('reps-count-' + lift).value);
-    var el = document.getElementById('est-1rm-' + lift);
-    if (!el) return;
-    if (!isNaN(w) && !isNaN(r) && r > 0 && r <= 30) {
-      var est = Math.round(w * (1 + r / 30) / 5) * 5;
-      el.textContent = '\u2248 ' + est + ' lbs estimated 1RM';
-    } else {
-      el.textContent = '';
+    var trend = hist.slice(-4).map(function(e) { return e.weight; }).join(' → ');
+    rows += progRow('Trend', latest.weight + ' lbs',
+      '<span style="font-family:var(--font-mono);font-size:12px">' + trend + '</span> — working weight, last ' + Math.min(hist.length, 4) + ' sessions', false);
+    var start = hist[0].weight;
+    var total = latest.weight - start;
+    rows += progRow('All-Time', (total > 0 ? '+' : '') + total + ' lbs', 'Started at ' + start + ' · now ' + latest.weight, false);
+    var fs = getFailureStats(hist);
+    if (fs) {
+      var fnote = 'top sets to failure over the last ' + fs.total + ' sessions.'
+        + (fs.low ? ' <strong style="color:var(--accent)">Below half — progression data is unreliable until effort comes back up.</strong>' : '');
+      rows += progRow('Failure', fs.hard + ' of ' + fs.total, fnote, false);
     }
+    var stall = getStallState(hist);
+    if (stall) {
+      rows += progRow('Stall', stall.weight + ' lbs', '3 failure sessions with no rep gain. Check recovery, or drop to ' + stall.drop + ' lbs for one session.', false);
+    }
+    return '<div class="prog-card">'
+      + '<div class="prog-card-header"><div class="prog-card-lift" style="font-size:22px">' + ex.name + '</div>'
+      + '<span class="badge" style="background:rgba(245,166,35,0.12);color:#F5A623;border:1px solid rgba(245,166,35,0.28);margin-left:auto">' + (DAY_LABELS[ex.day] || '') + '</span></div>'
+      + rows + '</div>';
   }
 
-  function openSettingsModal() {
-    loadMaxes();
-    document.getElementById('input-squat').value = userMaxes.squat || '';
-    document.getElementById('input-bench').value = userMaxes.bench || '';
-    document.getElementById('input-ohp').value = userMaxes.ohp || '';
-    setMaxesMode('1rm');
-    document.getElementById('settingsModal').style.display = 'flex';
-    setTimeout(function(){ var w=document.getElementById('input-squat'); if(w) w.focus(); }, 80);
-  }
-
-  function openSettingsModalFromBtn() {
-    window._enteringMonkMode = false;
-    document.getElementById('settingsModalTitle').textContent = 'Your Maxes';
-    document.getElementById('settingsModalSub').textContent = 'Enter your 1-rep maxes. Weights across the program will auto-calculate and display as ranges for each week. Stored locally on your device.';
-    document.getElementById('settingsSaveBtn').textContent = 'Save & Update Program';
-    document.getElementById('settingsCancelBtn').textContent = 'Cancel';
-    openSettingsModal();
-  }
-
-  function closeSettingsModal() {
-    document.getElementById('settingsModal').style.display = 'none';
-  }
-
-  function saveMaxes() {
-    if (window._maxesMode === 'reps') {
-      ['squat','bench','ohp'].forEach(function(lift) {
-        var w = parseFloat(document.getElementById('reps-weight-' + lift).value);
-        var r = parseFloat(document.getElementById('reps-count-' + lift).value);
-        if (!isNaN(w) && !isNaN(r) && r > 0) {
-          userMaxes[lift] = Math.round(w * (1 + r / 30) / 5) * 5;
-        }
+  function renderProgressView() {
+    var host = document.getElementById('progressCards');
+    if (!host) return;
+    var cards = [];
+    DAY_ORDER.forEach(function(dayId) {
+      EXERCISES.forEach(function(ex) {
+        if (ex.day !== dayId) return;
+        var hist = getHistory(ex.id);
+        if (hist.length) cards.push(progressCardHTML(ex, hist));
       });
-    } else {
-      var sq = parseFloat(document.getElementById('input-squat').value);
-      var bn = parseFloat(document.getElementById('input-bench').value);
-      var oh = parseFloat(document.getElementById('input-ohp').value);
-      if (!isNaN(sq)) userMaxes.squat = sq;
-      if (!isNaN(bn)) userMaxes.bench = bn;
-      if (!isNaN(oh)) userMaxes.ohp = oh;
-    }
-    persistMaxes();
-    closeSettingsModal();
-    updateMaxChips();
-    renderWeightBadges();
-    renderProgressionTable();
-    window._enteringMonkMode = false;
-    if (typeof updateTrainLock === 'function') updateTrainLock();
-    goSec('about');
-  }
-
-  function updateMaxChips() {
-    var fields = { squat:'chip-squat', bench:'chip-bench', ohp:'chip-ohp' };
-    var hasAny = false;
-    Object.entries(fields).forEach(function(e) {
-      var key = e[0]; var chipId = e[1];
-      var el = document.getElementById(chipId);
-      if (!el) return;
-      if (userMaxes[key] !== undefined) {
-        el.textContent = userMaxes[key] + ' lbs';
-        el.classList.remove('unset');
-        hasAny = true;
-      } else {
-        el.textContent = 'Not set';
-        el.classList.add('unset');
-      }
     });
-    var btn = document.getElementById('settingsOpenBtn');
-    if (btn && hasAny) { btn.classList.add('has-data'); btn.textContent = '  Edit Maxes'; }
+    host.innerHTML = cards.length ? cards.join('')
+      : '<div style="grid-column:1/-1;color:var(--muted);font-size:14px;line-height:1.7">No sessions logged yet. Log a lift in the Train tab and its progress — this week vs last, 4-session trend, all-time gain, and failure rate — shows up here.</div>';
   }
 
-  function updateRampHint(row, workingWeight) {
-    if (!workingWeight) return;
-    var dayId = row.getAttribute('data-day');
-    var liftIdx = row.getAttribute('data-lift');
-    if (!dayId || liftIdx === null) return;
-    var key = dayId + '::' + liftIdx;
-    var rampData = RAMP_HINTS[key];
-    if (!Array.isArray(rampData)) return;
-    var hintEl = row.querySelector('.ramp-hint-calc');
-    if (!hintEl) return;
-    var steps = rampData.map(function(s) {
-      return roundToNearestFive(workingWeight * s.pct) + '×' + s.reps;
-    });
-    hintEl.textContent = '↑ Warm-up: ' + steps.join(' → ');
-  }
-
-  function renderWeightBadges() {
-    loadAccBaselines();
-    var intensity = WEEK_INTENSITY[currentTrainWeek] || [0.72, 0.78];
-    var lowPct = intensity[0]; var highPct = intensity[1];
-    document.querySelectorAll('.lift-weight-badge').forEach(function(b){ b.remove(); });
-    var trainingTab = document.getElementById('tab-training');
-    if (!trainingTab) return;
-    trainingTab.querySelectorAll('.lift-row').forEach(function(row) {
-      var nameEl = row.querySelector('.lift-name');
-      if (!nameEl) return;
-      var name = nameEl.textContent.trim();
-      for (var i = 0; i < LIFT_MAX_MAP.length; i++) {
-        var entry = LIFT_MAX_MAP[i];
-        var matched = entry.match.some(function(m){ return name.indexOf(m) !== -1; });
-        if (!matched) continue;
-
-        // ── Accessory lifts: RPE-baseline system ──
-        if (entry.pctLo && entry.pctHi) {
-          var anyMax = userMaxes.bench || userMaxes.squat || userMaxes.ohp || userMaxes.pullup;
-          if (!anyMax) break;
-          if (currentTrainWeek === 0) {
-            // Week 1: show inline input so user logs actual weight at RPE 7
-            var wrap = document.createElement('span');
-            wrap.className = 'lift-weight-badge acc-log-wrap';
-            var inp = document.createElement('input');
-            inp.type = 'number'; inp.className = 'acc-input';
-            inp.placeholder = 'weight';
-            inp.title = 'RPE 7 — stop 3 reps short of failure. Log what you actually use.';
-            var stored = accBaselines[name];
-            if (stored) inp.value = stored;
-            inp.addEventListener('change', (function(n){ return function() {
-              var v = parseFloat(this.value);
-              if (!isNaN(v) && v > 0) { accBaselines[n] = roundToNearestFive(v); persistAccBaselines(); }
-            };})(name));
-            inp.addEventListener('click', function(e){ e.stopPropagation(); });
-            var hint = document.createElement('span');
-            hint.className = 'acc-rpe-hint'; hint.textContent = 'RPE 7';
-            wrap.appendChild(inp); wrap.appendChild(hint);
-            nameEl.appendChild(wrap);
-          } else {
-            // Weeks 2–10: scale from logged Week 1 baseline
-            var accBadge = document.createElement('span');
-            accBadge.className = 'lift-weight-badge' + (entry.cls ? ' ' + entry.cls : '');
-            var baseline = accBaselines[name];
-            if (baseline) {
-              var accWeight = roundToNearestFive(baseline * (ACCESSORY_PROG[currentTrainWeek] || 1.0));
-              accBadge.textContent = accWeight + ' lbs';
-              updateRampHint(row, accWeight);
-            } else {
-              accBadge.textContent = 'Log wk 1 first';
-              accBadge.style.cssText = 'color:#555;border-color:rgba(255,255,255,0.08);background:transparent;font-size:11px';
-            }
-            nameEl.appendChild(accBadge);
-          }
-          break;
-        }
-
-        // ── Main / barbell lifts: 1RM-based ──
-        var max = userMaxes[entry.maxKey];
-        if (!max) break;
-        var badge;
-        var workingWeight;
-        if (entry.pct) {
-          workingWeight = roundToNearestFive(max * entry.pct);
-          badge = workingWeight + ' lbs';
-        } else {
-          workingWeight = roundToNearestFive(max * (lowPct + highPct) / 2);
-          badge = calcWeightRange(max, lowPct, highPct);
-        }
-        var badgeEl = document.createElement('span');
-        badgeEl.className = 'lift-weight-badge' + (entry.cls ? ' ' + entry.cls : '');
-        badgeEl.textContent = badge;
-        nameEl.appendChild(badgeEl);
-        updateRampHint(row, workingWeight);
-        break;
-      }
-    });
-  }
-
-  function renderProgressionTable() {
-    var BENCH_PCTS = [0.84, 0.89, 0.96, 0.62, 0.91, 0.96, 1.00, 1.04, 1.09, 0.67];
-    var SQUAT_PCTS = [0.84, 0.87, 0.94, 0.62, 0.89, 0.94, 0.98, 1.03, 1.06, 0.67];
-    var OHP_PCTS   = [0.84, 0.89, 0.96, 0.62, 0.91, 0.96, 1.00, 1.04, 1.09, 0.67];
-    function applyPcts(liftKey, pcts, prefix) {
-      var max = userMaxes[liftKey];
-      if (!max) return;
-      var tm = Math.round(max * 0.90 / 5) * 5;
-      pcts.forEach(function(pct, i) {
-        var row = document.getElementById(prefix + '-' + i);
-        if (!row) return;
-        var wEl = row.querySelector('.prog-weight');
-        if (!wEl) return;
-        var w = Math.round(tm * pct / 5) * 5;
-        var isDeload = (i === 3 || i === 9);
-        var isTopSet = (i === 8);
-        wEl.textContent = (isDeload ? '~' : '') + w + ' lbs' + (isTopSet ? ', top sets' : '');
-      });
-    }
-    applyPcts('bench', BENCH_PCTS, 'bench');
-    applyPcts('squat', SQUAT_PCTS, 'squat');
-    applyPcts('ohp',   OHP_PCTS,   'ohp');
-    // Show or hide OHP card
-    var ohpCard = document.getElementById('prog-card-ohp');
-    if (ohpCard) ohpCard.style.display = userMaxes.ohp ? 'block' : 'none';
-    // Update intro
-    var intro = document.getElementById('prog-intro');
-    if (intro) {
-      var hasAny = userMaxes.squat || userMaxes.bench || userMaxes.ohp;
-      if (hasAny) {
-        var parts = [];
-        if (userMaxes.squat) parts.push('Squat ' + userMaxes.squat + ' lbs');
-        if (userMaxes.bench) parts.push('Bench ' + userMaxes.bench + ' lbs');
-        if (userMaxes.ohp) parts.push('OHP ' + userMaxes.ohp + ' lbs');
-        intro.innerHTML = 'Your numbers: <strong style="color:var(--accent)">' + parts.join(' / ') + '</strong>. All weights below are calculated from your 1RM using a 90% training max. They climb above your starting point in weeks 7 to 9 because the program builds the capacity first. Hit every prescribed rep before adding weight. One missed rep means you stay at the same weight. No exceptions.';
-      }
-    }
-  }
-
-  function setTrainWeek(idx) {
+    function setTrainWeek(idx) {
     currentTrainWeek = idx;
     try { localStorage.setItem(TRAIN_WEEK_KEY, idx); } catch(e) {}
-    renderWeightBadges();
-    renderAllLogs();
   }
 
-  function highlightTrainWeek(idx, btn) {
+    function highlightTrainWeek(idx, btn) {
     document.querySelectorAll('.train-week-btn').forEach(function(b){
       b.classList.remove('twb-active');
     });
     btn.classList.add('twb-active');
   }
 
-  //     MONK MODE ENTRY FLOW                                                     
-  function enterMonkMode() {
-    loadMaxes();
-    var hasMaxes = userMaxes.squat || userMaxes.bench || userMaxes.ohp;
-    if (!hasMaxes) {
-      // Show maxes modal - they fill in PRs then get taken to Train tab
-      window._enteringMonkMode = true;
-      var title = document.getElementById('settingsModalTitle');
-      var sub = document.getElementById('settingsModalSub');
-      var saveBtn = document.getElementById('settingsSaveBtn');
-      var cancelBtn = document.getElementById('settingsCancelBtn');
-      if (title) title.textContent = 'Set Your Maxes';
-      if (sub) sub.textContent = 'Enter your 1-rep maxes. The program calculates your weights for every lift automatically.';
-      if (saveBtn) saveBtn.textContent = 'Enter Monk Mode';
-      if (cancelBtn) cancelBtn.textContent = 'Skip for now';
-      var sq = document.getElementById('input-squat');
-      var bn = document.getElementById('input-bench');
-      var oh = document.getElementById('input-ohp');
-      if (sq) sq.value = '';
-      if (bn) bn.value = '';
-      if (oh) oh.value = '';
-      setMaxesMode('1rm');
-      var modal = document.getElementById('settingsModal');
-      if (modal) modal.style.display = 'flex';
-    } else {
-      goTab('training');
-    }
-  }
+  //     MONK MODE ENTRY FLOW
+  function enterMonkMode() { goTab('training'); }
 
-  function cancelMonkModeEntry() {
-    window._enteringMonkMode = false;
-    closeSettingsModal();
-  }
-
-  //     INFO SECTION SWITCHER                                                    
+    //     INFO SECTION SWITCHER                                                    
   function showSection(id) {
     var ids = ['home','about','edge','overview','progression'];
     for (var i = 0; i < ids.length; i++) {
@@ -3178,48 +2879,18 @@ body.training-mode footer { display: none; }
     currentWeek = idx;
   }
 
-  var currentProgWeek = 0;
-  function selectProgWeek(idx, btn) {
-    document.querySelectorAll('.prog-week-btn').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    for (var i = 0; i < 10; i++) {
-      var isActive = i === idx;
-      ['bench-', 'squat-'].forEach(function(prefix) {
-        var row = document.getElementById(prefix + i);
-        if (row) {
-          row.classList.toggle('highlight', isActive);
-          var wk = row.querySelector('.prog-week');
-          if (wk) wk.classList.toggle('active-week', isActive);
-        }
-      });
-    }
-    currentProgWeek = idx;
-  }
-
   //     FADE IN OBSERVER                                                        
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(e){ if (e.isIntersecting) e.target.classList.add('visible'); });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(function(el){ observer.observe(el); });
 
-  //     CLOSE MODALS ON OVERLAY CLICK / ESCAPE                                   
-  document.addEventListener('click', function(e) {
-    var sm = document.getElementById('settingsModal');
-    if (sm && e.target === sm) closeSettingsModal();
-  });
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeSettingsModal();
-  });
-
-  //     INIT                                                                     
+  //     INIT
   document.addEventListener('DOMContentLoaded', function() {
     if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
       Notification.requestPermission().catch(function(){});
     }
-    initLiftRows();
-    loadMaxes();
-    loadAccBaselines();
-    // Restore saved training week
+    // Restore saved training week before first render
     try {
       var saved = parseInt(localStorage.getItem(TRAIN_WEEK_KEY));
       if (!isNaN(saved) && saved >= 0 && saved <= 9) {
@@ -3228,16 +2899,9 @@ body.training-mode footer { display: none; }
         if (weekBtns[saved]) highlightTrainWeek(saved, weekBtns[saved]);
       }
     } catch(e) {}
-    updateMaxChips();
-    renderWeightBadges();
-    renderProgressionTable();
-    // Sync train lock state
-    if (typeof updateTrainLock === 'function') updateTrainLock();
-    // Auto-open maxes modal on first visit
-    var hasMaxes = userMaxes.squat || userMaxes.bench || userMaxes.ohp;
-    if (!hasMaxes) {
-      setTimeout(function() { enterMonkMode(); }, 500);
-    }
+    renderDaySections();
+    renderAllRowStates();
+    renderProgressView();
   });
 </script>
 
@@ -3253,26 +2917,7 @@ function getMostRecentDay() {
   return 'chest';
 }
 
-function updateTrainLock() {
-  try {
-    var m = JSON.parse(localStorage.getItem('monk_mode_maxes_v1')) || {};
-    var unlocked = m.squat || m.bench || m.ohp;
-    var icon = document.getElementById('train-lock-icon');
-    if (icon) icon.style.display = unlocked ? 'none' : 'inline';
-    var btn = document.getElementById('tab-btn-training');
-    if (btn) btn.style.opacity = unlocked ? '1' : '0.55';
-    return !!unlocked;
-  } catch(e) { return false; }
-}
-
 function goTab(t) {
-  if (t === 'training') {
-    var unlocked = updateTrainLock();
-    if (!unlocked) {
-      enterMonkMode();
-      return;
-    }
-  }
   try { localStorage.setItem(LAST_TAB_KEY, t); } catch(e) {}
   document.getElementById('tab-info').style.display = t === 'info' ? 'block' : 'none';
   document.getElementById('tab-training').style.display = t === 'training' ? 'block' : 'none';
@@ -3329,8 +2974,9 @@ if ('serviceWorker' in navigator) {
 
 // ── HERO RING ──────────────────────────────────────────────────────────────
 function hasLogsForDay(dayId, week) {
-  var prefix = 'w' + week + '::' + dayId + '::';
-  return Object.keys(logs).some(function(k) { return k.indexOf(prefix) === 0; });
+  return EXERCISES.some(function(ex) {
+    return ex.day === dayId && (sessions[ex.id] || []).some(function(e) { return e.week === week; });
+  });
 }
 
 function renderRing() {
@@ -3402,10 +3048,8 @@ function animateRingOnLoad() {
   }, 350);
 }
 
-// Patch renderAllLogs and setTrainWeek to keep ring in sync
+// Patch setTrainWeek to keep the hero ring in sync
 (function() {
-  var origRender = renderAllLogs;
-  renderAllLogs = function() { origRender(); renderRing(); };
   var origSet = setTrainWeek;
   setTrainWeek = function(idx) { origSet(idx); renderRing(); };
 })();
