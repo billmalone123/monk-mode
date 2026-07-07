@@ -843,14 +843,15 @@
   .target-line { font-size: 12px; color: var(--text); font-family: var(--font-mono); margin-top: 2px; }
   .lift-log-inline {
     grid-column: 1 / -1;
-    display: flex; align-items: flex-end; gap: 10px;
-    margin-top: 14px; flex-wrap: wrap;
+    display: flex; flex-direction: column; gap: 12px;
+    margin-top: 14px;
     cursor: default;
     background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 14px 16px;
   }
+  .log-row { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
   .log-inline-group { display: flex; flex-direction: column; gap: 5px; }
   .log-inline-label {
     font-size: 10px; font-weight: 700;
@@ -2321,12 +2322,20 @@ body.training-mode footer { display: none; }
       + '<div class="lift-chevron">▼</div>'
       + '<div class="lift-note">' + ex.note + '</div>'
       + '<div class="lift-log-inline" onclick="event.stopPropagation()">'
+      + '<div class="log-row">'
       + '<div class="log-inline-group"><span class="log-inline-label">Aim Weight</span>'
       + '<input class="log-inline-input" type="number" inputmode="decimal" id="w-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)"></div>'
       + '<div class="log-inline-group"><span class="log-inline-label">Aim Reps</span>'
       + '<input class="log-inline-input" type="number" inputmode="numeric" id="r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)"></div>'
+      + '</div>'
+      + '<div class="log-row">'
+      + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Reps Hit</span>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s1-' + ex.id + '"></div>'
+      + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Reps Hit</span>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s2-' + ex.id + '"></div>'
       + '<button class="failure-toggle" id="f-' + ex.id + '" onclick="toggleFailure(this)">Failure · No</button>'
       + '<button class="inline-save-btn" id="save-' + ex.id + '" data-ex="' + ex.id + '" onclick="saveExercise(this.dataset.ex)">Save</button>'
+      + '</div>'
       + '</div>'
       + '<div class="lift-status" data-status="' + ex.id + '" onclick="event.stopPropagation()"></div>'
       + '</div>';
@@ -2385,6 +2394,10 @@ body.training-mode footer { display: none; }
     var fBtn = document.getElementById('f-' + ex.id);
     if (wInp) wInp.value = loggedToday ? last.weight : (target.weight != null ? target.weight : '');
     if (rInp) rInp.value = loggedToday ? last.reps : target.reps;
+    var s1Inp = document.getElementById('s1-' + ex.id);
+    var s2Inp = document.getElementById('s2-' + ex.id);
+    if (s1Inp) s1Inp.value = loggedToday && last.s1 ? last.s1 : '';
+    if (s2Inp) s2Inp.value = loggedToday && last.s2 ? last.s2 : '';
     if (fBtn) setFailureBtn(fBtn, loggedToday && last.failure === true);
     var rowEl = document.getElementById('row-' + ex.id);
     if (rowEl) rowEl.classList.toggle('has-logs', loggedToday);
@@ -2394,7 +2407,8 @@ body.training-mode footer { display: none; }
     var out = '';
     if (last) {
       var fTxt = last.failure === true ? ' · to failure' : (last.failure === false ? ' · soft' : '');
-      out += '<span class="last-session-chip has-data">Last: ' + last.weight + ' × ' + last.reps + fTxt + '</span>';
+      var setsTxt = (last.s1 || last.s2) ? [last.s1, last.s2].filter(Boolean).join(', ') : last.reps;
+      out += '<span class="last-session-chip has-data">Last: ' + last.weight + ' × ' + setsTxt + fTxt + '</span>';
     }
     if (last && last.failure === false) {
       out += '<div class="soft-set-note">No failure set logged. Soft sets are maintenance, not growth.</div>';
@@ -2423,12 +2437,16 @@ body.training-mode footer { display: none; }
     var ex = EX_BY_ID[exId];
     if (!ex) return;
     var w = parseFloat(document.getElementById('w-' + exId).value);
-    var r = parseInt(document.getElementById('r-' + exId).value, 10);
-    if (isNaN(w) || w <= 0 || isNaN(r) || r <= 0) return;
+    var s1 = parseInt(document.getElementById('s1-' + exId).value, 10);
+    var s2 = parseInt(document.getElementById('s2-' + exId).value, 10);
+    if (isNaN(s1) || s1 <= 0) s1 = null;
+    if (isNaN(s2) || s2 <= 0) s2 = null;
+    if (isNaN(w) || w <= 0 || (!s1 && !s2)) return;
+    var best = Math.max(s1 || 0, s2 || 0);
     var fail = document.getElementById('f-' + exId).classList.contains('on');
     var hist = sessions[exId] = sessions[exId] || [];
     var t = todayKey();
-    var entry = { d: t, week: currentTrainWeek, weight: w, reps: r, failure: fail };
+    var entry = { d: t, week: currentTrainWeek, weight: w, reps: best, s1: s1, s2: s2, failure: fail };
     var replaced = false;
     for (var i = 0; i < hist.length; i++) {
       if (hist[i].d === t) { hist[i] = entry; replaced = true; break; }
