@@ -2257,11 +2257,18 @@ body.training-mode footer { display: none; }
     return ex.repRange[0] === ex.repRange[1] ? '' + ex.repRange[0] : ex.repRange[0] + '–' + ex.repRange[1];
   }
 
-  //     WARM-UPS — two ramp sets from the aim top-set weight; display only,
-  //     never logged, never counted in progression
-  function computeWarmups(w) {
+  //     WARM-UPS — ramp sets from the aim top-set weight; display only,
+  //     never logged, never counted in progression. Primary barbell lifts get a
+  //     fuller ramp (small final jump); machines and isolation get a quick two.
+  function computeWarmups(tag, w) {
     if (!w || w <= 0) return null;
-    return [roundToNearestFive(w * 0.50) + ' × 5', roundToNearestFive(w * 0.75) + ' × 3'];
+    var r5 = roundToNearestFive;
+    if (tag === 'primary') {
+      var lines = [r5(w * 0.40) + ' × 5', r5(w * 0.60) + ' × 3', r5(w * 0.80) + ' × 2'];
+      if (w > 185) lines.push(r5(w * 0.90) + ' × 1');
+      return lines;
+    }
+    return [r5(w * 0.50) + ' × 5', r5(w * 0.75) + ' × 3'];
   }
 
   //     DOUBLE PROGRESSION — top of rep range on a true failure set earns the jump
@@ -2366,7 +2373,7 @@ body.training-mode footer { display: none; }
     var rv = rInp ? parseInt(rInp.value, 10) : NaN;
     var wuEl = document.querySelector('[data-warmups="' + ex.id + '"]');
     if (wuEl) {
-      var lines = computeWarmups(w);
+      var lines = computeWarmups(ex.tag, w);
       wuEl.innerHTML = '<div class="warmup-title">Warm-up</div>' + (lines
         ? lines.map(function(l) { return '<div class="ramp-hint">' + l + '</div>'; }).join('')
         : '<div class="ramp-hint">Enter an aim weight to calculate</div>');
