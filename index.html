@@ -1846,7 +1846,7 @@ body.training-mode footer { display: none; }
 </section><footer>
   <div>
     <div class="footer-logo">MONK<span>.</span>MODE</div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.07g</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.07h</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -1862,6 +1862,10 @@ body.training-mode footer { display: none; }
 <div id="tab-training" class="tab-main">
 
 <section id="plan">
+  <!-- STORAGE WARNING -->
+  <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(245,166,35,0.10);color:var(--accent);font-size:13px;font-weight:600">
+    ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
+  </div>
   <!-- MAXES BAR -->
   <div class="settings-bar" id="settingsBar">
     <div class="settings-maxes-display" id="maxesDisplay">
@@ -1881,6 +1885,8 @@ body.training-mode footer { display: none; }
     <button class="settings-open-btn" id="settingsOpenBtn" onclick="openMaxesModal()">
       ⚙ Set Your Maxes
     </button>
+    <button class="settings-open-btn" onclick="exportData()">⇩ Backup</button>
+    <label class="settings-open-btn" style="cursor:pointer">⇧ Restore<input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)"></label>
   </div>
   <!-- REST TIMER QUICK-START -->
   <div class="rest-timer-strip">
@@ -1891,7 +1897,7 @@ body.training-mode footer { display: none; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Monk Mode — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.07g</span></div>
+  <div class="section-label">Monk Mode — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.07h</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2188,7 +2194,27 @@ body.training-mode footer { display: none; }
   const ARCHIVE_KEY = 'monk_archive_v1';
   const MIGRATED_KEY = 'monk_migrated_v1';
   function loadSessions() { try { return JSON.parse(localStorage.getItem(SESSIONS_KEY)) || {}; } catch { return {}; } }
-  function saveSessions() { try { localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions)); } catch {} }
+  var storageOK = true;
+  function saveSessions() {
+    var payload = JSON.stringify(sessions);
+    try {
+      localStorage.setItem(SESSIONS_KEY, payload);
+      storageOK = localStorage.getItem(SESSIONS_KEY) === payload;
+    } catch (e) { storageOK = false; }
+    var warn = document.getElementById('storageWarn');
+    if (warn) warn.style.display = storageOK ? 'none' : 'block';
+  }
+  // Cross-tab safety: another tab saving must never be clobbered by this one
+  function syncFromDisk() {
+    if (storageOK) sessions = loadSessions();
+  }
+  window.addEventListener('storage', function(e) {
+    if (e.key !== SESSIONS_KEY) return;
+    sessions = loadSessions();
+    if (typeof renderAllRowStates === 'function') renderAllRowStates();
+    if (typeof renderProgressView === 'function') renderProgressView();
+    if (typeof renderRing === 'function') renderRing();
+  });
 
   //     EXERCISE CONFIG — the whole split lives here. Add or swap a lift by
   //     editing one line. tag drives the warm-up scheme (primary | secondary |
@@ -2247,6 +2273,13 @@ body.training-mode footer { display: none; }
   //     fake a barbell squat baseline.
   function migrateOldLogs() {
     if (localStorage.getItem(MIGRATED_KEY)) return;
+    // Never overwrite a session store that already has data
+    var existing = null;
+    try { existing = JSON.parse(localStorage.getItem(SESSIONS_KEY)); } catch(e) { existing = null; }
+    if (existing && Object.keys(existing).length) {
+      try { localStorage.setItem(MIGRATED_KEY, '1'); } catch(e) {}
+      return;
+    }
     var old = null;
     try { old = JSON.parse(localStorage.getItem('ppl_workout_logs_v3')); } catch(e) { old = null; }
     if (old && Object.keys(old).length) {
@@ -2533,6 +2566,7 @@ body.training-mode footer { display: none; }
     var best = set1;
     if (set2 && (!best || set2.w > best.w || (set2.w === best.w && set2.r > best.r))) best = set2;
     var fail = document.getElementById('f-' + exId).classList.contains('on');
+    syncFromDisk();
     var hist = sessions[exId] = sessions[exId] || [];
     var t = todayKey();
     var entry = { d: t, week: currentTrainWeek, weight: best.w, reps: best.r, s1: set1, s2: set2, failure: fail };
@@ -2552,6 +2586,7 @@ body.training-mode footer { display: none; }
 
   function clearDayLogs(dayId) {
     if (!confirm("Clear this week's logs for this day?")) return;
+    syncFromDisk();
     EXERCISES.forEach(function(ex) {
       if (ex.day !== dayId || !sessions[ex.id]) return;
       sessions[ex.id] = sessions[ex.id].filter(function(e) { return e.week !== currentTrainWeek; });
@@ -2890,6 +2925,52 @@ body.training-mode footer { display: none; }
     if (m && e.target === m) closeMaxesModal();
   });
 
+  //     BACKUP / RESTORE — full history as a JSON file, restorable anywhere
+  function exportData() {
+    var archive = null;
+    try { archive = JSON.parse(localStorage.getItem(ARCHIVE_KEY)); } catch(e) {}
+    var data = {
+      app: 'monk-mode', exportedAt: todayKey(),
+      sessions: sessions, maxes: userMaxes, week: currentTrainWeek, archive: archive
+    };
+    var blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'monk-mode-backup-' + todayKey() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  }
+  function importData(input) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function() {
+      try {
+        var data = JSON.parse(reader.result);
+        if (!data || data.app !== 'monk-mode' || typeof data.sessions !== 'object') throw new Error('bad file');
+        sessions = data.sessions || {};
+        saveSessions();
+        if (data.maxes) { userMaxes = data.maxes; persistMaxes(); }
+        if (data.archive) { try { localStorage.setItem(ARCHIVE_KEY, JSON.stringify(data.archive)); } catch(e) {} }
+        if (typeof data.week === 'number' && data.week >= 0 && data.week <= 9) {
+          currentTrainWeek = data.week;
+          try { localStorage.setItem(TRAIN_WEEK_KEY, data.week); } catch(e) {}
+        }
+        try { localStorage.setItem(MIGRATED_KEY, '1'); } catch(e) {}
+        updateMaxChips();
+        renderAllRowStates();
+        renderProgressView();
+        if (typeof renderRing === 'function') renderRing();
+        alert('Restored history for ' + Object.keys(sessions).length + ' lifts.');
+      } catch(e) {
+        alert('That file is not a Monk Mode backup.');
+      }
+      input.value = '';
+    };
+    reader.readAsText(file);
+  }
+
   //     PROGRESS VIEW — real logged history, per exercise
   var DAY_LABELS = { 'chest':'1A', 'arms':'2A', 'legs':'3A', 'chest-b':'1B', 'arms-b':'2B', 'legs-b':'3B' };
 
@@ -3068,6 +3149,10 @@ body.training-mode footer { display: none; }
         if (weekBtns[saved]) highlightTrainWeek(saved, weekBtns[saved]);
       }
     } catch(e) {}
+    // Ask the browser to protect this origin's storage from eviction
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().catch(function(){});
+    }
     loadMaxes();
     updateMaxChips();
     renderDaySections();
