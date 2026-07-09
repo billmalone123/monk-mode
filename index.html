@@ -885,6 +885,14 @@
   }
   .failure-toggle:hover { border-color: var(--dim); color: var(--text); }
   .failure-toggle.on { border-color: var(--accent); color: var(--accent); background: rgba(245,166,35,0.10); }
+  .autosave-flash {
+    font-family: var(--font-display);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent);
+    min-width: 72px;
+    align-self: center;
+  }
   .inline-save-btn {
     background: linear-gradient(135deg, #F5A623 0%, #B8902A 100%);
     color: #fff; border: none;
@@ -1846,7 +1854,7 @@ body.training-mode footer { display: none; }
 </section><footer>
   <div>
     <div class="footer-logo">MONK<span>.</span>MODE</div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.07i</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.07j</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -1897,7 +1905,7 @@ body.training-mode footer { display: none; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Monk Mode — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.07i</span></div>
+  <div class="section-label">Monk Mode — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.07j</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2424,19 +2432,19 @@ body.training-mode footer { display: none; }
       + '</div>'
       + '<div class="log-row">'
       + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Weight</span>'
-      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s1w-' + ex.id + '" oninput="this.dataset.dirty=1"></div>'
+      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s1w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)"></div>'
       + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Reps</span>'
-      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s1r-' + ex.id + '"></div>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s1r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onSetInput(this)" onchange="onSetCommit(this)"></div>'
       + '</div>'
       + '<div class="log-row">'
       + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Weight</span>'
-      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s2w-' + ex.id + '" oninput="this.dataset.dirty=1"></div>'
+      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s2w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)"></div>'
       + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Reps</span>'
-      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s2r-' + ex.id + '"></div>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s2r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onSetInput(this)" onchange="onSetCommit(this)"></div>'
       + '</div>'
       + '<div class="log-row">'
-      + '<button class="failure-toggle" id="f-' + ex.id + '" onclick="toggleFailure(this)">Failure · No</button>'
-      + '<button class="inline-save-btn" id="save-' + ex.id + '" data-ex="' + ex.id + '" onclick="saveExercise(this.dataset.ex)">Save</button>'
+      + '<button class="failure-toggle" id="f-' + ex.id + '" data-ex="' + ex.id + '" onclick="toggleFailure(this)">Failure · No</button>'
+      + '<span class="autosave-flash" id="save-' + ex.id + '"></span>'
       + '</div>'
       + '</div>'
       + '<div class="lift-status" data-status="' + ex.id + '" onclick="event.stopPropagation()"></div>'
@@ -2505,9 +2513,17 @@ body.training-mode footer { display: none; }
       if (rEl) rEl.value = logged ? logged.r : '';
     });
     if (fBtn) setFailureBtn(fBtn, loggedToday && last.failure === true);
+    renderWarmupsAndTargets(ex);
+    renderRowStatus(ex);
+  }
+
+  // Status area only — safe to call mid-typing, never touches the inputs
+  function renderRowStatus(ex) {
+    var hist = getHistory(ex.id);
+    var last = hist.length ? hist[hist.length - 1] : null;
+    var loggedToday = !!(last && last.d === todayKey());
     var rowEl = document.getElementById('row-' + ex.id);
     if (rowEl) rowEl.classList.toggle('has-logs', loggedToday);
-    renderWarmupsAndTargets(ex);
     var st = document.querySelector('[data-status="' + ex.id + '"]');
     if (!st) return;
     var out = '';
@@ -2535,6 +2551,10 @@ body.training-mode footer { display: none; }
     var ex = EX_BY_ID[exId];
     if (!ex) return;
     renderWarmupsAndTargets(ex);
+    // Planning only: once today is logged, aim edits never rewrite logged sets
+    var hist = getHistory(exId);
+    var last = hist.length ? hist[hist.length - 1] : null;
+    if (last && last.d === todayKey()) return;
     // Set-weight boxes follow the aim weight until the user edits them directly
     var wInp = document.getElementById('w-' + exId);
     ['s1w-', 's2w-'].forEach(function(p) {
@@ -2547,9 +2567,26 @@ body.training-mode footer { display: none; }
     btn.classList.toggle('on', on);
     btn.textContent = on ? 'Failure · Yes' : 'Failure · No';
   }
-  function toggleFailure(btn) { setFailureBtn(btn, !btn.classList.contains('on')); }
+  function toggleFailure(btn) {
+    setFailureBtn(btn, !btn.classList.contains('on'));
+    if (btn.dataset.ex) scheduleAutoSave(btn.dataset.ex, false);
+  }
 
-  function saveExercise(exId) {
+  //     AUTO-SAVE — logging happens as you type; a committed set starts the rest
+  //     timer in the quiet bottom bar. No save button anywhere.
+  var _autoSaveT = {};
+  function scheduleAutoSave(exId, fireTimer) {
+    clearTimeout(_autoSaveT[exId]);
+    _autoSaveT[exId] = setTimeout(function() { autoSaveExercise(exId, fireTimer); }, 1200);
+  }
+  function onSetInput(inp) { scheduleAutoSave(inp.dataset.ex, true); }
+  function onSetCommit(inp) {
+    clearTimeout(_autoSaveT[inp.dataset.ex]);
+    autoSaveExercise(inp.dataset.ex, true);
+  }
+  function onLogEdit(exId) { scheduleAutoSave(exId, false); }
+
+  function autoSaveExercise(exId, fireTimer) {
     var ex = EX_BY_ID[exId];
     if (!ex) return;
     var aimW = parseFloat(document.getElementById('w-' + exId).value);
@@ -2562,26 +2599,49 @@ body.training-mode footer { display: none; }
       return sw ? { w: sw, r: sr } : null;
     }
     var set1 = readSet('s1'), set2 = readSet('s2');
-    if (!set1 && !set2) return;
-    var best = set1;
-    if (set2 && (!best || set2.w > best.w || (set2.w === best.w && set2.r > best.r))) best = set2;
-    var fail = document.getElementById('f-' + exId).classList.contains('on');
     syncFromDisk();
     var hist = sessions[exId] = sessions[exId] || [];
     var t = todayKey();
-    var entry = { d: t, week: currentTrainWeek, weight: best.w, reps: best.r, s1: set1, s2: set2, failure: fail };
-    var replaced = false;
+    var idx = -1;
     for (var i = 0; i < hist.length; i++) {
-      if (hist[i].d === t) { hist[i] = entry; replaced = true; break; }
+      if (hist[i].d === t) { idx = i; break; }
     }
-    if (!replaced) hist.push(entry);
+    var prev = idx >= 0 ? hist[idx] : null;
+    if (!set1 && !set2) {
+      // Everything erased: remove today's entry if it exists
+      if (prev) {
+        hist.splice(idx, 1);
+        if (!hist.length) delete sessions[exId];
+        saveSessions();
+        renderRowStatus(ex);
+        renderProgressView();
+        if (typeof renderRing === 'function') renderRing();
+      }
+      return;
+    }
+    var best = set1;
+    if (set2 && (!best || set2.w > best.w || (set2.w === best.w && set2.r > best.r))) best = set2;
+    var fail = document.getElementById('f-' + exId).classList.contains('on');
+    var entry = { d: t, week: currentTrainWeek, weight: best.w, reps: best.r, s1: set1, s2: set2, failure: fail };
+    var changed = !prev || JSON.stringify(prev) !== JSON.stringify(entry);
+    if (idx >= 0) hist[idx] = entry; else hist.push(entry);
+    if (!changed) return;
     saveSessions();
-    renderLiftRowState(ex);
+    renderRowStatus(ex);
     renderProgressView();
     if (typeof renderRing === 'function') renderRing();
-    var btn = document.getElementById('save-' + exId);
-    if (btn) { btn.textContent = '✓ Saved'; setTimeout(function() { btn.textContent = 'Save'; }, 1200); }
-    // Rest timer no longer auto-starts on save — use the Rest Timer strip when wanted
+    var note = document.getElementById('save-' + exId);
+    if (note) {
+      note.textContent = '✓ Saved';
+      clearTimeout(note._t);
+      note._t = setTimeout(function() { note.textContent = ''; }, 1600);
+    }
+    if (fireTimer) {
+      var prevSets = prev ? JSON.stringify([normSet(prev, prev.s1), normSet(prev, prev.s2)]) : null;
+      if (prevSets !== JSON.stringify([set1, set2])) {
+        startTimer(parseRestToSeconds(ex.rest), ex.name, true);
+      }
+    }
   }
 
   function clearDayLogs(dayId) {
@@ -2703,7 +2763,7 @@ body.training-mode footer { display: none; }
     }
   }
 
-  function startTimer(seconds, liftName) {
+  function startTimer(seconds, liftName, quiet) {
     if (timerInterval) clearInterval(timerInterval);
     if (_notifTimeout) clearTimeout(_notifTimeout);
     timerTotal = seconds; timerSeconds = seconds; timerRunning = true;
@@ -2730,7 +2790,13 @@ body.training-mode footer { display: none; }
     if (mRing) { mRing.style.strokeDashoffset = '0'; mRing.style.stroke = '#F5A623'; }
     if (mStatus) { mStatus.textContent = ''; mStatus.className = 'rest-modal-status'; }
     if (mSkip) { mSkip.textContent = 'Skip Rest'; mSkip.className = 'rest-modal-skip'; }
-    if (modal) modal.classList.add('visible');
+    var bar = document.getElementById('timerBar');
+    if (quiet) {
+      // Auto-started between sets: unobtrusive bottom bar, no full-screen takeover
+      if (bar) bar.classList.add('visible');
+    } else {
+      if (modal) modal.classList.add('visible');
+    }
     if (typeof Notification !== 'undefined') {
       if (Notification.permission === 'granted') {
         _scheduleNotification(seconds * 1000, liftName);
