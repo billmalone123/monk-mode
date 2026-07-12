@@ -2513,9 +2513,25 @@ body.training-mode footer { display: none; }
     ['s1', 's2'].forEach(function(slot) {
       var wEl = document.getElementById(slot + 'w-' + ex.id);
       var rEl = document.getElementById(slot + 'r-' + ex.id);
-      var logged = loggedToday ? normSet(last, last[slot]) : null;
-      if (wEl) { wEl.value = logged ? logged.w : aimW; delete wEl.dataset.dirty; }
-      if (rEl) rEl.value = logged ? logged.r : '';
+      var loggedSet = loggedToday ? normSet(last, last[slot]) : null;
+      // Most recent logged set for this slot, from ANY day — so past lifts stay
+      // visible when you reopen the app the next day. (The data was always saved;
+      // the boxes just used to blank out unless the entry was from *today*, which
+      // read as "not saved".)
+      var lastSet = last ? normSet(last, last[slot]) : null;
+      if (wEl) {
+        // Carry the last session's weight so it shows on reopen. Reps still gate
+        // whether a set is saved, so a carried weight never writes a phantom entry.
+        wEl.value = loggedSet ? loggedSet.w : (lastSet ? lastSet.w : aimW);
+        delete wEl.dataset.dirty;
+      }
+      if (rEl) {
+        // Today's reps stay editable; otherwise leave the field empty but show the
+        // last session's reps as a ghost placeholder — visible proof it saved,
+        // without auto-committing a carried-over set.
+        rEl.value = loggedSet ? loggedSet.r : '';
+        rEl.placeholder = lastSet ? String(lastSet.r) : 'reps';
+      }
     });
     if (fBtn) setFailureBtn(fBtn, loggedToday && last.failure === true);
     renderWarmupsAndTargets(ex);
