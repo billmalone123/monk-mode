@@ -2214,8 +2214,71 @@ body.training-mode footer { display: none; }
       localStorage.setItem(SESSIONS_KEY, payload);
       storageOK = localStorage.getItem(SESSIONS_KEY) === payload;
     } catch (e) { storageOK = false; }
+    idbSet('sessions', sessions);   // durable mirror — survives localStorage eviction
     var warn = document.getElementById('storageWarn');
     if (warn) warn.style.display = storageOK ? 'none' : 'block';
+  }
+
+  //     DURABLE STORAGE MIRROR (IndexedDB)
+  //     iOS Safari can silently clear localStorage between app launches. We mirror
+  //     every save into IndexedDB and, on load, restore from whichever store has
+  //     more history — so a wipe of one store never loses your logs.
+  var IDB_DB = 'monk_mode_store', IDB_STORE = 'kv';
+  function idbOpen() {
+    return new Promise(function(res, rej) {
+      try {
+        if (!self.indexedDB) return rej('no-idb');
+        var r = indexedDB.open(IDB_DB, 1);
+        r.onupgradeneeded = function() { try { r.result.createObjectStore(IDB_STORE); } catch(e) {} };
+        r.onsuccess = function() { res(r.result); };
+        r.onerror = function() { rej(r.error); };
+      } catch (e) { rej(e); }
+    });
+  }
+  function idbSet(key, val) {
+    return idbOpen().then(function(db) {
+      return new Promise(function(res, rej) {
+        var t = db.transaction(IDB_STORE, 'readwrite');
+        t.objectStore(IDB_STORE).put(val, key);
+        t.oncomplete = function() { res(); };
+        t.onerror = function() { rej(t.error); };
+      });
+    }).catch(function() {});
+  }
+  function idbGet(key) {
+    return idbOpen().then(function(db) {
+      return new Promise(function(res, rej) {
+        var t = db.transaction(IDB_STORE, 'readonly');
+        var g = t.objectStore(IDB_STORE).get(key);
+        g.onsuccess = function() { res(g.result); };
+        g.onerror = function() { rej(g.error); };
+      });
+    }).catch(function() { return undefined; });
+  }
+  function entryCount(o) {
+    return Object.keys(o || {}).reduce(function(n, k) { return n + ((o[k] || []).length); }, 0); }
+  // Restore from IndexedDB if localStorage came back with less than the mirror.
+  function restoreFromIDB() {
+    idbGet('sessions').then(function(idbSessions) {
+      if (idbSessions && entryCount(idbSessions) > entryCount(sessions)) {
+        sessions = idbSessions;
+        saveSessions();                       // write recovered data back to localStorage
+        if (typeof renderAllRowStates === 'function') renderAllRowStates();
+        if (typeof renderProgressView === 'function') renderProgressView();
+        if (typeof renderRing === 'function') renderRing();
+      } else {
+        idbSet('sessions', sessions);          // seed the mirror from localStorage
+      }
+    });
+    idbGet('maxes').then(function(idbMaxes) {
+      if (idbMaxes && Object.keys(idbMaxes).length && !Object.keys(userMaxes).length) {
+        userMaxes = idbMaxes; persistMaxes();
+        if (typeof updateMaxChips === 'function') updateMaxChips();
+        if (typeof renderDaySections === 'function') { renderDaySections(); renderAllRowStates(); }
+      } else {
+        idbSet('maxes', userMaxes);
+      }
+    });
   }
   // Cross-tab safety: another tab saving must never be clobbered by this one
   function syncFromDisk() {
@@ -2968,6 +3031,7 @@ body.training-mode footer { display: none; }
   }
   function persistMaxes() {
     try { localStorage.setItem(MAXES_KEY, JSON.stringify(userMaxes)); } catch(e) {}
+    idbSet('maxes', userMaxes);   // durable mirror
   }
   function openMaxesModal() {
     loadMaxes();
@@ -3245,6 +3309,8 @@ body.training-mode footer { display: none; }
     renderDaySections();
     renderAllRowStates();
     renderProgressView();
+    // Recover history/maxes from the IndexedDB mirror if localStorage was wiped
+    restoreFromIDB();
     // First visit: walk straight into the maxes setup
     var hasMaxes = userMaxes.squat || userMaxes.bench || userMaxes.ohp;
     if (!hasMaxes && !Object.keys(sessions).length) {
