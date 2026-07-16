@@ -505,6 +505,32 @@
   }
   .ramp-hint { font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: 0.01em; }
   .lift-alts span { color: var(--accent); font-weight: 600; margin-right: 4px; }
+  /* Exercise variant toggle — pick the movement you actually do */
+  .lift-variants {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 8px; align-items: center;
+  }
+  .lift-variants-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin-right: 2px;
+  }
+  .variant-chip {
+    font-size: 12px; font-weight: 600;
+    color: var(--text);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--muted);
+    border-radius: 999px;
+    padding: 5px 11px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .variant-chip:hover { border-color: var(--accent); }
+  .variant-chip.active {
+    color: #0C0D1F; background: var(--accent);
+    border-color: var(--accent); font-weight: 700;
+  }
   .lift-rest { font-size: 14px; color: var(--muted); font-weight: 600; padding-top: 2px; }
   .lift-time { font-size: 14px; color: var(--muted); padding-top: 2px; }
   .lift-note {
@@ -2279,6 +2305,14 @@ body.training-mode footer { display: none; }
         idbSet('maxes', userMaxes);
       }
     });
+    idbGet('variants').then(function(idbVariants) {
+      if (idbVariants && Object.keys(idbVariants).length && !Object.keys(variantChoice).length) {
+        variantChoice = idbVariants; persistVariants();
+        if (typeof renderDaySections === 'function') { renderDaySections(); renderAllRowStates(); }
+      } else {
+        idbSet('variants', variantChoice);
+      }
+    });
   }
   // Cross-tab safety: another tab saving must never be clobbered by this one
   function syncFromDisk() {
@@ -2342,6 +2376,88 @@ body.training-mode footer { display: none; }
   ];
   const EX_BY_ID = {};
   EXERCISES.forEach(function(ex){ EX_BY_ID[ex.id] = ex; });
+
+  //     EXERCISE ALTERNATIVES — same muscle group, different equipment. Rendered
+  //     as a toggle under each lift so each user can pick the variant they train.
+  //     Switching only changes the label; history and progression stay on the lift.
+  const EX_ALTS = {
+    'flat-bb-bench':      ['Dumbbell Bench Press', 'Machine Chest Press', 'Smith Machine Bench Press'],
+    'lat-pulldown':       ['Pull-Ups', 'Assisted Pull-Up Machine', 'Neutral-Grip Pulldown'],
+    'incline-mach-press': ['Incline Dumbbell Press', 'Incline Barbell Bench Press', 'Incline Smith Machine Press'],
+    'seated-cable-row':   ['Chest-Supported Row', 'Machine Row', 'Single-Arm Dumbbell Row'],
+    'pec-dec':            ['Cable Chest Fly', 'Dumbbell Fly', 'Machine Chest Press'],
+    'chest-supp-row':     ['Seated Cable Row', 'T-Bar Row', 'Single-Arm Dumbbell Row'],
+    'face-pulls':         ['Rear Delt Machine Fly', 'Reverse Pec Dec', 'Band Pull-Aparts'],
+    'seated-ohp':         ['Seated Barbell OHP', 'Shoulder Press Machine', 'Standing Overhead Press'],
+    'shoulder-press-mach':['Seated Dumbbell Press', 'Seated Barbell OHP', 'Arnold Press'],
+    'lateral-raise-mach': ['Dumbbell Lateral Raise', 'Cable Lateral Raise', 'Leaning Cable Raise'],
+    'ez-bar-curl':        ['Barbell Curl', 'Dumbbell Curl', 'Cable Curl'],
+    'cable-curl':         ['Dumbbell Curl', 'EZ Bar Curl', 'Concentration Curl'],
+    'tricep-pushdown':    ['Straight-Bar Pushdown', 'Overhead Cable Extension', 'Dumbbell Kickback'],
+    'oh-tricep-ext':      ['Overhead Dumbbell Extension', 'Skull Crushers', 'Rope Pushdown'],
+    'bb-squat':           ['Goblet Squat', 'Hack Squat Machine', 'Smith Machine Squat'],
+    'leg-press':          ['Hack Squat Machine', 'Goblet Squat', 'Bulgarian Split Squat'],
+    'rdl':                ['Dumbbell RDL', 'Stiff-Leg Deadlift', 'Seated Leg Curl'],
+    'leg-ext':            ['Sissy Squat', 'Goblet Squat', 'Hack Squat Machine'],
+    'leg-curl':           ['Lying Leg Curl', 'Seated Leg Curl', 'Nordic Curl'],
+    'seated-calf':        ['Standing Calf Raise', 'Leg Press Calf Raise', 'Smith Machine Calf Raise'],
+    'ab-wheel':           ['Cable Crunch', 'Hanging Leg Raise', 'Weighted Plank'],
+    'incline-bb-bench':   ['Incline Dumbbell Press', 'Incline Machine Press', 'Incline Smith Machine Press'],
+    'machine-row':        ['Seated Cable Row', 'Chest-Supported Row', 'Single-Arm Dumbbell Row'],
+    'machine-chest-press':['Dumbbell Bench Press', 'Flat Barbell Bench Press', 'Pec Dec'],
+    'sa-cable-row':       ['Single-Arm Dumbbell Row', 'Machine Row', 'Seated Cable Row'],
+    'low-high-fly':       ['Incline Dumbbell Fly', 'Pec Dec', 'Incline Machine Press'],
+    'straight-arm-pd':    ['Cable Pullover', 'Dumbbell Pullover', 'Lat Pulldown'],
+    'rear-delt-fly':      ['Face Pulls', 'Reverse Cable Fly', 'Bent-Over Dumbbell Raise'],
+    'arnold-press':       ['Seated Dumbbell Press', 'Shoulder Press Machine', 'Seated Barbell OHP'],
+    'cable-lat-raise':    ['Dumbbell Lateral Raise', 'Lateral Raise Machine', 'Leaning Cable Raise'],
+    'cable-face-pull':    ['Rear Delt Machine Fly', 'Band Pull-Aparts', 'Reverse Pec Dec'],
+    'incline-db-curl':    ['Dumbbell Curl', 'Cable Curl', 'EZ Bar Curl'],
+    'hammer-curl':        ['Cable Rope Hammer Curl', 'Cross-Body Hammer Curl', 'Reverse Curl'],
+    'machine-dip':        ['Bench Dips', 'Close-Grip Bench Press', 'Tricep Pushdown'],
+    'skull-crusher':      ['Overhead Cable Extension', 'Dumbbell Skull Crusher', 'Close-Grip Bench Press'],
+    'back-squat-b':       ['Goblet Squat', 'Hack Squat Machine', 'Smith Machine Squat'],
+    'bulgarian-ss':       ['Walking Lunges', 'Split Squat', 'Leg Press'],
+    'stiff-leg-dl':       ['Romanian Deadlift', 'Dumbbell RDL', 'Seated Leg Curl'],
+    'leg-ext-b':          ['Sissy Squat', 'Goblet Squat', 'Hack Squat Machine'],
+    'lying-leg-curl':     ['Seated Leg Curl', 'Romanian Deadlift', 'Nordic Curl'],
+    'standing-calf':      ['Seated Calf Raise', 'Leg Press Calf Raise', 'Smith Machine Calf Raise'],
+    'cable-crunch':       ['Hanging Leg Raise', 'Ab Wheel Rollout', 'Weighted Plank'],
+  };
+  const VARIANTS_KEY = 'monk_variants_v1';
+  var variantChoice = {};
+  function loadVariants() {
+    try { variantChoice = JSON.parse(localStorage.getItem(VARIANTS_KEY)) || {}; } catch(e) { variantChoice = {}; }
+  }
+  function persistVariants() {
+    try { localStorage.setItem(VARIANTS_KEY, JSON.stringify(variantChoice)); } catch(e) {}
+    idbSet('variants', variantChoice);   // durable mirror
+  }
+  function exVariants(ex) { return [ex.name].concat(EX_ALTS[ex.id] || []); }
+  function activeVariant(ex) {
+    var c = variantChoice[ex.id];
+    return (c && exVariants(ex).indexOf(c) !== -1) ? c : ex.name;
+  }
+  function variantChipsHTML(ex) {
+    var variants = exVariants(ex);
+    if (variants.length <= 1) return '';
+    var active = activeVariant(ex);
+    var chips = variants.map(function(name) {
+      return '<button class="variant-chip' + (name === active ? ' active' : '') + '" onclick="chooseVariant(event,\'' + ex.id + '\')">' + name + '</button>';
+    }).join('');
+    return '<div class="lift-variants" onclick="event.stopPropagation()"><span class="lift-variants-label">Swap</span>' + chips + '</div>';
+  }
+  function chooseVariant(evt, exId) {
+    evt.stopPropagation();
+    var btn = evt.currentTarget;
+    var name = btn.textContent;
+    variantChoice[exId] = name;
+    persistVariants();
+    var wrap = btn.parentElement;
+    wrap.querySelectorAll('.variant-chip').forEach(function(c) { c.classList.toggle('active', c === btn); });
+    var nameEl = document.getElementById('name-' + exId);
+    if (nameEl) nameEl.textContent = name;
+  }
 
   //     ONE-TIME MIGRATION from the old per-set logs (ppl_workout_logs_v3).
   //     Best set per exercise per week carries over with failure unknown.
@@ -2481,9 +2597,9 @@ body.training-mode footer { display: none; }
     var range = repRangeText(ex) + ' reps' + (ex.repsSuffix || '');
     return '<div class="lift-row" id="row-' + ex.id + '" onclick="toggleNote(this)">'
       + '<div>'
-      + '<div class="lift-name">' + ex.name + '</div>'
+      + '<div class="lift-name" id="name-' + ex.id + '">' + activeVariant(ex) + '</div>'
       + '<div class="lift-sets-reps">2 sets × ' + range + '</div>'
-      + (ex.alts ? '<div class="lift-alts"><span>Alt:</span>' + ex.alts + '</div>' : '')
+      + variantChipsHTML(ex)
       + '<div class="warmup-lines" data-warmups="' + ex.id + '"></div>'
       + '<div class="target-block" data-targets="' + ex.id + '"></div>'
       + '</div>'
@@ -3305,6 +3421,7 @@ body.training-mode footer { display: none; }
       navigator.storage.persist().catch(function(){});
     }
     loadMaxes();
+    loadVariants();
     updateMaxChips();
     renderDaySections();
     renderAllRowStates();
