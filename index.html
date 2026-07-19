@@ -2105,7 +2105,7 @@ body.training-mode footer { display: none; }
     <div class="plan-day-header">
       <div>
         <div class="plan-day-title" style="color:#F5A623">MOBILITY + CORE</div>
-        <div class="plan-day-focus">Light, deep, controlled leg work for mobility and contraction — plus heavy loaded core.</div>
+        <div class="plan-day-focus">Basement day — dumbbell and bodyweight legs for mobility, depth and contraction, plus heavy loaded core. No machines required.</div>
       </div>
       <div class="plan-badges">
         <span class="badge" style="background:rgba(245,166,35,0.12);color:#F5A623;border:1px solid rgba(245,166,35,0.28)">3B</span>
@@ -2369,10 +2369,10 @@ body.training-mode footer { display: none; }
     { id:"goblet-squat-b", day:"legs-b", name:"Deep Goblet Squat", tag:"secondary", repRange:[12,15], increment:5, maxKey:"squat", maxPct:0.25, rest:"90 sec", time:"~10 min", note:"Hold one dumbbell or kettlebell at your chest and sink as deep as your hips allow — below parallel, elbows inside your knees. Pause 2 full seconds at the bottom and drive your knees out. This is about depth and control, not load. Keep it light: the goal is opening the hips and owning the bottom position that carries over to every squat you do." },
     { id:"cossack-squat", day:"legs-b", name:"Cossack Squat", tag:"isolation", repRange:[8,10], increment:5, maxKey:"squat", maxPct:0.10, repsSuffix:"/side", rest:"60 sec", time:"~8 min", note:"Wide stance, shift your weight over one leg and sink deep into that hip while the other leg stays straight with toes up. Bodyweight, or hold a light plate at your chest for balance. Move slowly and feel the stretch through the adductors and ankles. Mobility work disguised as a squat — it unlocks hip and ankle range most lifters never train." },
     { id:"reverse-lunge", day:"legs-b", name:"Reverse Lunge", tag:"secondary", repRange:[10,12], increment:5, maxKey:"squat", maxPct:0.20, repsSuffix:"/leg", rest:"90 sec", time:"~10 min", note:"Step back and lower your back knee toward the floor under full control. Lighter than a heavy split squat — the goal is a deep, controlled stretch at the bottom and a strong contraction driving out of it. Front shin stays vertical, torso tall. Slow the descent; this is quad and glute contraction work, not a load contest." },
-    { id:"leg-ext-b", day:"legs-b", name:"Leg Extension Machine", tag:"isolation", repRange:[15,20], increment:5, maxKey:"squat", maxPct:0.20, seedFrom:"leg-ext", rest:"60 sec", time:"~7 min", note:"Go light. Full extension, squeeze hard and hold 2 seconds at the top, then a slow negative. This is pure quad contraction — the weight is almost irrelevant, the squeeze is everything. Point your toes slightly out to bias the inner quad. Chase the mind-muscle connection and the pump, not the load." },
-    { id:"lying-leg-curl", day:"legs-b", name:"Lying Leg Curl Machine", tag:"isolation", repRange:[15,20], increment:5, maxKey:"squat", maxPct:0.25, rest:"60 sec", time:"~7 min", note:"Light and slow. Curl to a hard peak contraction, squeeze the hamstring, then take 3 full seconds to lower. Keep your hips flat on the pad — if they lift, you're too heavy. Feel the hamstring do the work through the entire range. Contraction and control, never weight for its own sake." },
-    { id:"hanging-leg-raise", day:"legs-b", name:"Hanging Leg Raise", tag:"secondary", repRange:[10,15], increment:5, rest:"75 sec", time:"~8 min", note:"Heavy core. Hang from a bar and raise your legs to parallel or higher with zero swing — control the way down just as much as the way up. Once bodyweight is easy, pinch a dumbbell between your feet and log that weight. This is the heaviest ab movement of the week; treat every set like a working set, not a cooldown." },
-    { id:"cable-crunch", day:"legs-b", name:"Cable Crunch", tag:"secondary", repRange:[12,15], increment:5, maxKey:"bench", maxPct:0.35, rest:"75 sec", time:"~7 min", note:"Load the stack — this is a weighted ab exercise, not an endurance set. Kneel, rope behind your head, and crunch your rib cage down toward your pelvis with a hard squeeze, spine flexing from the abs. Add weight over the weeks. Abs respond to progressive load exactly like every other muscle, so go heavy and earn the reps." },
+    { id:"sissy-squat", day:"legs-b", name:"Sissy Squat", tag:"isolation", repRange:[10,15], increment:5, rest:"60 sec", time:"~7 min", note:"Bodyweight quad isolation — the free-weight answer to the leg extension, no machine needed. Hold a post or rack for balance, rise onto the balls of your feet, and lean back as you bend your knees, driving them forward while your hips stay extended. You'll feel a hard quad stretch. Add a plate on your chest once bodyweight is easy. Slow and controlled — pure quad contraction." },
+    { id:"nordic-curl", day:"legs-b", name:"Nordic Curl", tag:"isolation", repRange:[6,10], increment:5, rest:"90 sec", time:"~8 min", note:"The best bodyweight hamstring builder there is. Kneel and anchor your feet under a loaded barbell, heavy dumbbells, or a bench. Keep a straight line from knees to head and lower yourself forward as slowly as you can, fighting gravity with your hamstrings the whole way, then pull back. Shorten the range or push off your hands if needed. Progress by lowering slower and reaching deeper before you break." },
+    { id:"weighted-leg-raise", day:"legs-b", name:"Weighted Lying Leg Raise", tag:"secondary", repRange:[12,15], increment:5, rest:"75 sec", time:"~7 min", note:"Heavy core, floor version — no bar required. Lie flat, hands under your lower back, and raise straight legs to vertical with control, then lower slowly without letting your heels touch. Pinch a dumbbell between your feet and log that weight; add load over the weeks. Keep your lower back pinned to the floor the whole set. Treat it like a heavy working set." },
+    { id:"weighted-situp", day:"legs-b", name:"Weighted Sit-Up", tag:"secondary", repRange:[12,15], increment:5, rest:"75 sec", time:"~7 min", note:"Heavy loaded abs with just a dumbbell — the free-weight replacement for the cable crunch. Anchor your feet, hold a dumbbell or plate against your chest, and sit up under control, crunching your rib cage toward your hips, then lower slowly. Add weight as the reps get easy. Progressive load is what actually builds abs, so go heavy and own every rep." },
   ];
   const EX_BY_ID = {};
   EXERCISES.forEach(function(ex){ EX_BY_ID[ex.id] = ex; });
@@ -2419,10 +2419,10 @@ body.training-mode footer { display: none; }
     'goblet-squat-b':     ['Heels-Elevated Goblet Squat', 'Deep Front Squat', 'Tempo Box Squat'],
     'cossack-squat':      ['Lateral Lunge', 'Adductor Rock-Back', 'Deep Squat Hold'],
     'reverse-lunge':      ['Walking Lunges', 'Split Squat', 'Step-Ups'],
-    'leg-ext-b':          ['Sissy Squat', 'Spanish Squat', 'Wall Sit'],
-    'lying-leg-curl':     ['Seated Leg Curl', 'Nordic Curl', 'Swiss-Ball Leg Curl'],
-    'hanging-leg-raise':  ['Hanging Knee Raise', 'Lying Leg Raise', 'Reverse Crunch'],
-    'cable-crunch':       ['Hanging Leg Raise', 'Weighted Sit-Up', 'Ab Wheel Rollout'],
+    'sissy-squat':        ['Leg Extension Machine', 'Spanish Squat', 'Wall Sit'],
+    'nordic-curl':        ['Lying Leg Curl Machine', 'Single-Leg Dumbbell RDL', 'Swiss-Ball Leg Curl'],
+    'weighted-leg-raise': ['Hanging Leg Raise', 'Reverse Crunch', 'V-Up'],
+    'weighted-situp':     ['Cable Crunch', 'Decline Sit-Up', 'Ab Wheel Rollout'],
   };
   const VARIANTS_KEY = 'monk_variants_v1';
   var variantChoice = {};
