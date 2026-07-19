@@ -1962,7 +1962,7 @@ body.training-mode footer { display: none; }
     <button class="plan-nav-btn" onclick="switchDay('rest')" id="btn-rest">Rest + Stretch</button>
     <button class="plan-nav-btn" onclick="switchDay('chest-b')" id="btn-chest-b">1B · Chest + Back</button>
     <button class="plan-nav-btn" onclick="switchDay('arms-b')" id="btn-arms-b">2B · Shoulders + Arms</button>
-    <button class="plan-nav-btn" onclick="switchDay('legs-b')" id="btn-legs-b">3B · Legs + Abs</button>
+    <button class="plan-nav-btn" onclick="switchDay('legs-b')" id="btn-legs-b">3B · Mobility + Core</button>
   </div>
 
   <!-- CHEST + BACK -->
@@ -2104,12 +2104,12 @@ body.training-mode footer { display: none; }
   <div class="plan-content" id="day-legs-b">
     <div class="plan-day-header">
       <div>
-        <div class="plan-day-title" style="color:#F5A623">LEGS + ABS</div>
-        <div class="plan-day-focus">Free weight squat, unilateral challenge, posterior chain and cable core.</div>
+        <div class="plan-day-title" style="color:#F5A623">MOBILITY + CORE</div>
+        <div class="plan-day-focus">Light, deep, controlled leg work for mobility and contraction — plus heavy loaded core.</div>
       </div>
       <div class="plan-badges">
         <span class="badge" style="background:rgba(245,166,35,0.12);color:#F5A623;border:1px solid rgba(245,166,35,0.28)">3B</span>
-        <span class="badge" style="background:var(--surface);color:var(--accent);border:1px solid #23232E">⏱ ~1:25</span>
+        <span class="badge" style="background:var(--surface);color:var(--accent);border:1px solid #23232E">⏱ ~1:00</span>
       </div>
       <button class="clear-day-btn" onclick="clearDayLogs('legs-b'); return false;">Clear Logs</button>
     </div>
@@ -2366,13 +2366,13 @@ body.training-mode footer { display: none; }
     { id:"hammer-curl", day:"arms-b", name:"Hammer Curls", tag:"isolation", repRange:[12,12], increment:5, maxKey:"bench", maxPct:0.25, rest:"60 sec", time:"~7 min", note:"Neutral grip (palms facing each other) hits the brachialis — a muscle under the bicep that pushes it up, adding visible arm thickness. Most curl variations miss this entirely. Elbows stay at your sides, curl straight up without rotating. Heavier than supinated curls for most people. The brachialis responds to load and will add thickness to your upper arm that regular curls alone won't build." },
     { id:"machine-dip", day:"arms-b", name:"Machine Dip", tag:"secondary", repRange:[12,15], increment:5, maxKey:"bench", maxPct:0.4, rest:"90 sec", time:"~8 min", note:"Machine dips let you load the triceps through full dip range without the shoulder stability demand of bodyweight dips. Adjust the seat so you reach full tricep extension at the bottom. Drive through the palms at lockout — squeeze hard at the top. This is your heaviest tricep movement on B day. Track the weight and add load over time like a compound lift." },
     { id:"skull-crusher", day:"arms-b", name:"EZ Bar Skull Crusher", tag:"secondary", repRange:[10,12], increment:5, maxKey:"bench", maxPct:0.38, rest:"90 sec", time:"~8 min", note:"Lie flat, EZ bar over your forehead, close grip. Lower to your forehead bending only at the elbows — no shoulder movement. Elbows vertical or slightly back. The EZ bar angles reduce wrist stress versus a straight bar. Best mass builder for the long head of the tricep. Load it progressively — most people go too light on this and miss the adaptation signal." },
-    { id:"back-squat-b", day:"legs-b", name:"Back Squat", tag:"primary", repRange:[5,8], increment:10, maxKey:"squat", maxPct:0.8, seedFrom:"bb-squat", rest:"3–4 min", time:"~18 min", note:"High-bar, knees track over toes, chest tall, drive through your heels. The free barbell squat demands full body coordination — every stabilizer fires. Bar sits across your upper traps. Depth is non-negotiable: thighs parallel or below. If heels rise, ankles need mobility work — do the couch stretch consistently and it will change." },
-    { id:"bulgarian-ss", day:"legs-b", name:"Bulgarian Split Squat", tag:"secondary", repRange:[10,12], increment:10, maxKey:"squat", maxPct:0.3, repsSuffix:"/leg", rest:"2 min", time:"~12 min", note:"Rear foot elevated on a bench. This is the hardest leg exercise in this program and the one most people skip — exactly why you do it. It isolates each leg completely, exposing and fixing left-right imbalances. Front shin stays vertical, knee tracks over the foot. The eccentric down is where the real stimulus is — control it completely. Use dumbbells at your sides or a barbell." },
-    { id:"stiff-leg-dl", day:"legs-b", name:"Stiff-Leg Deadlift", tag:"secondary", repRange:[10,12], increment:10, maxKey:"squat", maxPct:0.55, rest:"2 min", time:"~12 min", note:"Legs nearly straight (soft knee only), hinge at the hip, lower the bar down your legs until you feel a hard hamstring stretch. Straighter legs versus the RDL on Day A increases the hamstring stretch range, shifting more load to the upper hamstring and glute tie-in. Bar stays close to your body throughout. Neutral spine is mandatory — round your back here and the session is over." },
-    { id:"leg-ext-b", day:"legs-b", name:"Leg Extension Machine", tag:"isolation", repRange:[15,15], increment:10, maxKey:"squat", maxPct:0.25, seedFrom:"leg-ext", rest:"60 sec", time:"~7 min", note:"Same as Day A — full extension, 1-second hold, slow return. Quad isolation volume twice per week. By Day 3B you've hit quads hard with squats and split squats, so this is a finisher. Go lighter if needed and prioritize peak contraction over load. The feel matters more than the weight here." },
-    { id:"lying-leg-curl", day:"legs-b", name:"Lying Leg Curl Machine", tag:"isolation", repRange:[12,15], increment:10, maxKey:"squat", maxPct:0.3, rest:"60 sec", time:"~7 min", note:"Face down — this position stretches the hamstrings differently than the seated version on Day A, placing the muscle in a more elongated position at the start. Curl to full contraction, don't let hips lift off the pad. The lying variation hits the bicep femoris long head from a stretched position, complementing the seated version's peak contraction bias. Twice a week hamstring training reduces injury risk significantly." },
-    { id:"standing-calf", day:"legs-b", name:"Standing Calf Raise", tag:"isolation", repRange:[15,20], increment:10, maxKey:"squat", maxPct:0.4, rest:"45 sec", time:"~6 min", note:"Standing hits the gastrocnemius — the large muscle that creates the visible calf shape. Knee stays straight to fully load it. Full range: heel below the step into a deep stretch, all the way up on toes. Paired with seated calf raises on Day A, you're hitting both the gastrocnemius and soleus twice per week — the actual minimum calves need to grow." },
-    { id:"cable-crunch", day:"legs-b", name:"Cable Crunch", tag:"isolation", repRange:[15,20], increment:5, maxKey:"bench", maxPct:0.3, rest:"60 sec", time:"~6 min", note:"Kneel facing the cable, rope behind your head. Crunch your rib cage toward your pelvis — not your head toward the floor. You want spinal flexion from the abs, not neck movement. The cable provides constant weighted resistance through the full range unlike bodyweight crunches that lose tension at the top. This is how you actually build visible abs — loaded, full range, consistent." },
+    { id:"goblet-squat-b", day:"legs-b", name:"Deep Goblet Squat", tag:"secondary", repRange:[12,15], increment:5, maxKey:"squat", maxPct:0.25, rest:"90 sec", time:"~10 min", note:"Hold one dumbbell or kettlebell at your chest and sink as deep as your hips allow — below parallel, elbows inside your knees. Pause 2 full seconds at the bottom and drive your knees out. This is about depth and control, not load. Keep it light: the goal is opening the hips and owning the bottom position that carries over to every squat you do." },
+    { id:"cossack-squat", day:"legs-b", name:"Cossack Squat", tag:"isolation", repRange:[8,10], increment:5, maxKey:"squat", maxPct:0.10, repsSuffix:"/side", rest:"60 sec", time:"~8 min", note:"Wide stance, shift your weight over one leg and sink deep into that hip while the other leg stays straight with toes up. Bodyweight, or hold a light plate at your chest for balance. Move slowly and feel the stretch through the adductors and ankles. Mobility work disguised as a squat — it unlocks hip and ankle range most lifters never train." },
+    { id:"reverse-lunge", day:"legs-b", name:"Reverse Lunge", tag:"secondary", repRange:[10,12], increment:5, maxKey:"squat", maxPct:0.20, repsSuffix:"/leg", rest:"90 sec", time:"~10 min", note:"Step back and lower your back knee toward the floor under full control. Lighter than a heavy split squat — the goal is a deep, controlled stretch at the bottom and a strong contraction driving out of it. Front shin stays vertical, torso tall. Slow the descent; this is quad and glute contraction work, not a load contest." },
+    { id:"leg-ext-b", day:"legs-b", name:"Leg Extension Machine", tag:"isolation", repRange:[15,20], increment:5, maxKey:"squat", maxPct:0.20, seedFrom:"leg-ext", rest:"60 sec", time:"~7 min", note:"Go light. Full extension, squeeze hard and hold 2 seconds at the top, then a slow negative. This is pure quad contraction — the weight is almost irrelevant, the squeeze is everything. Point your toes slightly out to bias the inner quad. Chase the mind-muscle connection and the pump, not the load." },
+    { id:"lying-leg-curl", day:"legs-b", name:"Lying Leg Curl Machine", tag:"isolation", repRange:[15,20], increment:5, maxKey:"squat", maxPct:0.25, rest:"60 sec", time:"~7 min", note:"Light and slow. Curl to a hard peak contraction, squeeze the hamstring, then take 3 full seconds to lower. Keep your hips flat on the pad — if they lift, you're too heavy. Feel the hamstring do the work through the entire range. Contraction and control, never weight for its own sake." },
+    { id:"hanging-leg-raise", day:"legs-b", name:"Hanging Leg Raise", tag:"secondary", repRange:[10,15], increment:5, rest:"75 sec", time:"~8 min", note:"Heavy core. Hang from a bar and raise your legs to parallel or higher with zero swing — control the way down just as much as the way up. Once bodyweight is easy, pinch a dumbbell between your feet and log that weight. This is the heaviest ab movement of the week; treat every set like a working set, not a cooldown." },
+    { id:"cable-crunch", day:"legs-b", name:"Cable Crunch", tag:"secondary", repRange:[12,15], increment:5, maxKey:"bench", maxPct:0.35, rest:"75 sec", time:"~7 min", note:"Load the stack — this is a weighted ab exercise, not an endurance set. Kneel, rope behind your head, and crunch your rib cage down toward your pelvis with a hard squeeze, spine flexing from the abs. Add weight over the weeks. Abs respond to progressive load exactly like every other muscle, so go heavy and earn the reps." },
   ];
   const EX_BY_ID = {};
   EXERCISES.forEach(function(ex){ EX_BY_ID[ex.id] = ex; });
@@ -2416,13 +2416,13 @@ body.training-mode footer { display: none; }
     'hammer-curl':        ['Cable Rope Hammer Curl', 'Cross-Body Hammer Curl', 'Reverse Curl'],
     'machine-dip':        ['Bench Dips', 'Close-Grip Bench Press', 'Tricep Pushdown'],
     'skull-crusher':      ['Overhead Cable Extension', 'Dumbbell Skull Crusher', 'Close-Grip Bench Press'],
-    'back-squat-b':       ['Goblet Squat', 'Hack Squat Machine', 'Smith Machine Squat'],
-    'bulgarian-ss':       ['Walking Lunges', 'Split Squat', 'Leg Press'],
-    'stiff-leg-dl':       ['Romanian Deadlift', 'Dumbbell RDL', 'Seated Leg Curl'],
-    'leg-ext-b':          ['Sissy Squat', 'Goblet Squat', 'Hack Squat Machine'],
-    'lying-leg-curl':     ['Seated Leg Curl', 'Romanian Deadlift', 'Nordic Curl'],
-    'standing-calf':      ['Seated Calf Raise', 'Leg Press Calf Raise', 'Smith Machine Calf Raise'],
-    'cable-crunch':       ['Hanging Leg Raise', 'Ab Wheel Rollout', 'Weighted Plank'],
+    'goblet-squat-b':     ['Heels-Elevated Goblet Squat', 'Deep Front Squat', 'Tempo Box Squat'],
+    'cossack-squat':      ['Lateral Lunge', 'Adductor Rock-Back', 'Deep Squat Hold'],
+    'reverse-lunge':      ['Walking Lunges', 'Split Squat', 'Step-Ups'],
+    'leg-ext-b':          ['Sissy Squat', 'Spanish Squat', 'Wall Sit'],
+    'lying-leg-curl':     ['Seated Leg Curl', 'Nordic Curl', 'Swiss-Ball Leg Curl'],
+    'hanging-leg-raise':  ['Hanging Knee Raise', 'Lying Leg Raise', 'Reverse Crunch'],
+    'cable-crunch':       ['Hanging Leg Raise', 'Weighted Sit-Up', 'Ab Wheel Rollout'],
   };
   const VARIANTS_KEY = 'monk_variants_v1';
   var variantChoice = {};
