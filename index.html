@@ -2545,32 +2545,50 @@ body.training-mode footer { display: none; }
   }
 
   //     DOUBLE PROGRESSION — top of rep range on a true failure set earns the jump
-  function getSessionTarget(ex, hist) {
-    var last = hist.length ? hist[hist.length - 1] : null;
-    if (!last) {
-      // No history: seed the aim from the sibling lift when one is configured
-      if (ex.seedFrom && EX_BY_ID[ex.seedFrom]) {
-        var sh = getHistory(ex.seedFrom);
-        if (sh.length) {
-          var seedW = sh[sh.length - 1].weight;
-          return { mode: 'baseline', weight: seedW, reps: ex.repRange[0],
-            msg: 'Suggested start: ' + seedW + ' lbs, from your ' + EX_BY_ID[ex.seedFrom].name + '. First session sets the baseline.' };
-        }
-      }
-      // Then from your entered maxes (percentage of squat / bench / OHP)
-      if (ex.maxKey && ex.maxPct && userMaxes[ex.maxKey] > 0) {
-        var mW = roundToNearestFive(userMaxes[ex.maxKey] * ex.maxPct);
-        if (mW > 0) return { mode: 'baseline', weight: mW, reps: ex.repRange[0],
-          msg: 'Suggested start: ' + mW + ' lbs, from your ' + MAX_LABELS[ex.maxKey] + ' max. First session sets the baseline.' };
-      }
-      return { mode: 'baseline', weight: null, reps: ex.repRange[0],
-        msg: 'First session — establish a baseline in the ' + repRangeText(ex) + ' rep range' };
+  //     WEEKLY PROGRESSION WAVE — multiplier vs. your Week 1 baseline. Two waves
+  //     that build ~3%/week, deload on weeks 4 and 10, wave 2 climbing higher.
+  var WEEK_MULT = [1.00, 1.03, 1.06, 0.85, 1.04, 1.07, 1.10, 1.13, 1.16, 0.85];
+  function weekMult(wk) { return (wk >= 0 && wk < WEEK_MULT.length) ? WEEK_MULT[wk] : 1.0; }
+
+  //     Week 1 baseline for a lift: your actual logged Week 1 if you have it,
+  //     else the plan's theoretical Week 1 from your max (max × the lift's %),
+  //     else a sibling lift, else a later log normalized back to Week 1.
+  function weekBaseline(ex) {
+    var hist = getHistory(ex.id);
+    for (var i = 0; i < hist.length; i++) {
+      if (hist[i].week === 0 && hist[i].weight) return hist[i].weight;
     }
-    if (last.failure === true && last.reps >= ex.repRange[1])
-      return { mode: 'increase', weight: last.weight + ex.increment, reps: ex.repRange[0],
-        msg: 'Top of range hit to failure — new weight: ' + (last.weight + ex.increment) + ' lbs' };
-    return { mode: 'beat', weight: last.weight, reps: Math.min(last.reps + 1, ex.repRange[1]),
-      msg: 'Beat last session by 1 rep' };
+    if (ex.maxKey && ex.maxPct && userMaxes[ex.maxKey] > 0)
+      return roundToNearestFive(userMaxes[ex.maxKey] * ex.maxPct);
+    if (ex.seedFrom && EX_BY_ID[ex.seedFrom]) {
+      var sh = getHistory(ex.seedFrom);
+      for (var j = 0; j < sh.length; j++) if (sh[j].week === 0 && sh[j].weight) return sh[j].weight;
+      if (sh.length) return roundToNearestFive(sh[sh.length - 1].weight / weekMult(sh[sh.length - 1].week || 0));
+    }
+    if (hist.length) {
+      var e = hist[hist.length - 1];
+      return roundToNearestFive(e.weight / weekMult(e.week || 0));
+    }
+    return null;
+  }
+
+  //     TARGET = Week 1 baseline × this week's wave multiplier. The plan drives the
+  //     weight up week to week instead of carrying last week's lift forward.
+  function getSessionTarget(ex, hist) {
+    var wk = currentTrainWeek;
+    var base = weekBaseline(ex);
+    if (base == null) {
+      return { mode: 'baseline', weight: null, reps: ex.repRange[0],
+        msg: 'First session — establish a baseline in the ' + repRangeText(ex) + ' rep range.' };
+    }
+    var w = roundToNearestFive(base * weekMult(wk));
+    var isDeload = (wk === 3 || wk === 9);
+    var pctUp = Math.round((weekMult(wk) - 1) * 100);
+    var msg;
+    if (wk === 0) msg = 'Week 1 baseline — own this weight in the ' + repRangeText(ex) + ' rep range.';
+    else if (isDeload) msg = 'Deload week — back off to ' + w + ' lbs and move perfectly.';
+    else msg = 'Week ' + (wk + 1) + ' target: ' + w + ' lbs · ' + (pctUp >= 0 ? '+' : '') + pctUp + '% over your Week 1.';
+    return { mode: (wk === 0 ? 'baseline' : 'plan'), weight: w, reps: ex.repRange[0], msg: msg };
   }
 
   //     Stall = 3 straight failure-marked sessions, same weight, no rep gain
@@ -2693,15 +2711,12 @@ body.training-mode footer { display: none; }
       var wEl = document.getElementById(slot + 'w-' + ex.id);
       var rEl = document.getElementById(slot + 'r-' + ex.id);
       var loggedSet = loggedToday ? normSet(last, last[slot]) : null;
-      // Most recent logged set for this slot, from ANY day — so past lifts stay
-      // visible when you reopen the app the next day. (The data was always saved;
-      // the boxes just used to blank out unless the entry was from *today*, which
-      // read as "not saved".)
       var lastSet = last ? normSet(last, last[slot]) : null;
       if (wEl) {
-        // Carry the last session's weight so it shows on reopen. Reps still gate
-        // whether a set is saved, so a carried weight never writes a phantom entry.
-        wEl.value = loggedSet ? loggedSet.w : (lastSet ? lastSet.w : aimW);
+        // Pre-fill with THIS WEEK'S plan target (aim), not last week's weight, so the
+        // plan drives the load up week to week. Today's logged set still shows as-is.
+        // (Your logged history stays visible in the "Last:" line + Progress view.)
+        wEl.value = loggedSet ? loggedSet.w : aimW;
         delete wEl.dataset.dirty;
       }
       if (rEl) {
