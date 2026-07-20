@@ -2545,54 +2545,51 @@ body.training-mode footer { display: none; }
   }
 
   //     DOUBLE PROGRESSION — top of rep range on a true failure set earns the jump
-  //     WEEKLY PROGRESSION WAVE — centered on WEEK 3 (=1.00, your anchor). Weeks 1-2
-  //     ramp up to it; from Week 3 the target climbs ~2.5%/week through Week 9, then
-  //     Week 10 deloads before you retest.
-  var WEEK_MULT = [0.95, 0.975, 1.00, 1.025, 1.05, 1.075, 1.10, 1.125, 1.15, 0.95];
-  function weekMult(wk) { return (wk >= 0 && wk < WEEK_MULT.length) ? WEEK_MULT[wk] : 1.0; }
-
-  //     Anchor week for the wave: increases are calculated off your Week 3 numbers.
-  //     We take your logged Week 3 weight and scale it back to a Week-1-equivalent
-  //     baseline (so the same WEEK_MULT wave still applies to every week).
-  var ANCHOR_WEEK = 2; // 0-indexed → Week 3
-  function baselineFromEntry(e) { return roundToNearestFive(e.weight / weekMult(e.week || 0)); }
-  function weekBaseline(ex) {
-    var hist = getHistory(ex.id);
-    var pick = null;
-    // Prefer your logged Week 3 (your anchor), then Week 1, then your latest session
-    for (var i = hist.length - 1; i >= 0; i--) if (hist[i].week === ANCHOR_WEEK && hist[i].weight) { pick = hist[i]; break; }
-    if (!pick) for (var k = 0; k < hist.length; k++) if (hist[k].week === 0 && hist[k].weight) { pick = hist[k]; break; }
-    if (!pick && hist.length) pick = hist[hist.length - 1];
-    if (pick) return baselineFromEntry(pick);
-    // No logs yet: the plan's theoretical Week 1 from your max
-    if (ex.maxKey && ex.maxPct && userMaxes[ex.maxKey] > 0)
-      return roundToNearestFive(userMaxes[ex.maxKey] * ex.maxPct / weekMult(0));
-    // Or a sibling lift, normalized
-    if (ex.seedFrom && EX_BY_ID[ex.seedFrom]) {
-      var sh = getHistory(ex.seedFrom);
-      for (var j = sh.length - 1; j >= 0; j--) if (sh[j].week === ANCHOR_WEEK && sh[j].weight) return baselineFromEntry(sh[j]);
-      if (sh.length) return baselineFromEntry(sh[sh.length - 1]);
+  //     WEEKLY PROGRESSION — each week's target = what you logged the PREVIOUS week
+  //     plus this percentage. Rolls forward off your real inputs, so it only climbs
+  //     when you actually lifted more (self-regulating).
+  var WEEKLY_PCT = 0.03; // +3% per week
+  //     Most recent logged entry from any week strictly before `wk`.
+  function prevWeekEntry(hist, wk) {
+    var best = null;
+    for (var i = 0; i < hist.length; i++) {
+      var e = hist[i];
+      if (e.week != null && e.week < wk && e.weight) {
+        if (!best || e.week > best.week) best = e;
+      }
     }
-    return null;
+    return best;
   }
 
-  //     TARGET = Week 1 baseline × this week's wave multiplier. The plan drives the
-  //     weight up week to week instead of carrying last week's lift forward.
   function getSessionTarget(ex, hist) {
     var wk = currentTrainWeek;
-    var base = weekBaseline(ex);
-    if (base == null) {
-      return { mode: 'baseline', weight: null, reps: ex.repRange[0],
-        msg: 'First session — establish a baseline in the ' + repRangeText(ex) + ' rep range.' };
+    // 1) Bump last week's logged weight by the weekly percentage
+    var prev = prevWeekEntry(hist, wk);
+    if (prev) {
+      var w = roundToNearestFive(prev.weight * (1 + WEEKLY_PCT));
+      if (w < prev.weight) w = prev.weight;  // never drop below last week
+      return { mode: 'plan', weight: w, reps: ex.repRange[0],
+        msg: 'Week ' + (wk + 1) + ' target: ' + w + ' lbs · +' + Math.round(WEEKLY_PCT * 100) + '% over last week (' + prev.weight + ' lbs).' };
     }
-    var w = roundToNearestFive(base * weekMult(wk));
-    var isDeload = (wk === 9);
-    var pctVs3 = Math.round((weekMult(wk) - 1) * 100);  // vs Week 3 (=1.00)
-    var msg;
-    if (wk === ANCHOR_WEEK) msg = 'Week 3 anchor — own this weight in the ' + repRangeText(ex) + ' rep range.';
-    else if (isDeload) msg = 'Deload week — back off to ' + w + ' lbs and move perfectly.';
-    else msg = 'Week ' + (wk + 1) + ' target: ' + w + ' lbs · ' + (pctVs3 >= 0 ? '+' : '') + pctVs3 + '% vs your Week 3.';
-    return { mode: (wk === ANCHOR_WEEK ? 'baseline' : 'plan'), weight: w, reps: ex.repRange[0], msg: msg };
+    // 2) Already logged THIS week — keep that as the working weight
+    for (var j = hist.length - 1; j >= 0; j--) {
+      if (hist[j].week === wk && hist[j].weight)
+        return { mode: 'baseline', weight: hist[j].weight, reps: ex.repRange[0], msg: 'Logged this week at ' + hist[j].weight + ' lbs.' };
+    }
+    // 3) No prior weeks logged — seed the starting weight from your max
+    if (ex.maxKey && ex.maxPct && userMaxes[ex.maxKey] > 0) {
+      var mW = roundToNearestFive(userMaxes[ex.maxKey] * ex.maxPct);
+      if (mW > 0) return { mode: 'baseline', weight: mW, reps: ex.repRange[0],
+        msg: 'Suggested start: ' + mW + ' lbs from your ' + MAX_LABELS[ex.maxKey] + ' max. Log it to start the progression.' };
+    }
+    // 4) Or from a sibling lift
+    if (ex.seedFrom && EX_BY_ID[ex.seedFrom]) {
+      var sh = getHistory(ex.seedFrom);
+      if (sh.length) { var sw = sh[sh.length - 1].weight;
+        return { mode: 'baseline', weight: sw, reps: ex.repRange[0], msg: 'Suggested start: ' + sw + ' lbs from your ' + EX_BY_ID[ex.seedFrom].name + '.' }; }
+    }
+    return { mode: 'baseline', weight: null, reps: ex.repRange[0],
+      msg: 'First session — establish a baseline in the ' + repRangeText(ex) + ' rep range.' };
   }
 
   //     Stall = 3 straight failure-marked sessions, same weight, no rep gain
