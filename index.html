@@ -1885,7 +1885,7 @@ body.training-mode footer { display: none; }
 </section><footer>
   <div>
     <div class="footer-logo">RUN THE<span>.</span>WEIGHTS</div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.08</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.09</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -1936,7 +1936,7 @@ body.training-mode footer { display: none; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.08</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.09</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2707,38 +2707,42 @@ body.training-mode footer { display: none; }
     }
   }
 
+  //     The logged entry for the week you're currently viewing (not the latest).
+  function entryForWeek(hist, wk) {
+    for (var i = hist.length - 1; i >= 0; i--) if (hist[i].week === wk && hist[i].weight != null) return hist[i];
+    return null;
+  }
+
   function renderLiftRowState(ex) {
     var hist = getHistory(ex.id);
     var target = getSessionTarget(ex, hist);
-    var last = hist.length ? hist[hist.length - 1] : null;
-    var loggedToday = !!(last && last.d === todayKey());
+    var wkEntry = entryForWeek(hist, currentTrainWeek);   // what you logged for THIS week
+    var loggedThisWeek = !!wkEntry;
+    var prevRef = prevWeekEntry(hist, currentTrainWeek);   // last working week, for a reps ghost
     var wInp = document.getElementById('w-' + ex.id);
     var rInp = document.getElementById('r-' + ex.id);
     var fBtn = document.getElementById('f-' + ex.id);
-    if (wInp) wInp.value = loggedToday ? last.weight : (target.weight != null ? target.weight : '');
-    if (rInp) rInp.value = loggedToday ? last.reps : target.reps;
+    if (wInp) wInp.value = loggedThisWeek ? wkEntry.weight : (target.weight != null ? target.weight : '');
+    if (rInp) rInp.value = loggedThisWeek ? wkEntry.reps : target.reps;
     var aimW = wInp ? wInp.value : '';
     ['s1', 's2'].forEach(function(slot) {
       var wEl = document.getElementById(slot + 'w-' + ex.id);
       var rEl = document.getElementById(slot + 'r-' + ex.id);
-      var loggedSet = loggedToday ? normSet(last, last[slot]) : null;
-      var lastSet = last ? normSet(last, last[slot]) : null;
+      var loggedSet = loggedThisWeek ? normSet(wkEntry, wkEntry[slot]) : null;
+      var refSet = prevRef ? normSet(prevRef, prevRef[slot]) : null;
       if (wEl) {
-        // Pre-fill with THIS WEEK'S plan target (aim), not last week's weight, so the
-        // plan drives the load up week to week. Today's logged set still shows as-is.
-        // (Your logged history stays visible in the "Last:" line + Progress view.)
+        // Show THIS week's logged set if present, else the week's plan target.
         wEl.value = loggedSet ? loggedSet.w : aimW;
         delete wEl.dataset.dirty;
       }
       if (rEl) {
-        // Today's reps stay editable; otherwise leave the field empty but show the
-        // last session's reps as a ghost placeholder — visible proof it saved,
-        // without auto-committing a carried-over set.
+        // This week's logged reps if present; otherwise empty with last week's reps
+        // as a ghost placeholder for reference (never auto-saved).
         rEl.value = loggedSet ? loggedSet.r : '';
-        rEl.placeholder = lastSet ? String(lastSet.r) : 'reps';
+        rEl.placeholder = refSet ? String(refSet.r) : 'reps';
       }
     });
-    if (fBtn) setFailureBtn(fBtn, loggedToday && last.failure === true);
+    if (fBtn) setFailureBtn(fBtn, loggedThisWeek && wkEntry.failure === true);
     renderWarmupsAndTargets(ex);
     renderRowStatus(ex);
   }
@@ -2746,22 +2750,24 @@ body.training-mode footer { display: none; }
   // Status area only — safe to call mid-typing, never touches the inputs
   function renderRowStatus(ex) {
     var hist = getHistory(ex.id);
-    var last = hist.length ? hist[hist.length - 1] : null;
-    var loggedToday = !!(last && last.d === todayKey());
+    var wkEntry = entryForWeek(hist, currentTrainWeek);   // this week's log
+    var ref = prevWeekEntry(hist, currentTrainWeek);       // last working week
+    var shown = wkEntry || ref;
+    var label = wkEntry ? 'This week' : 'Last week';
     var rowEl = document.getElementById('row-' + ex.id);
-    if (rowEl) rowEl.classList.toggle('has-logs', loggedToday);
+    if (rowEl) rowEl.classList.toggle('has-logs', !!wkEntry);
     var st = document.querySelector('[data-status="' + ex.id + '"]');
     if (!st) return;
     var out = '';
-    if (last) {
-      var fTxt = last.failure === true ? ' · to failure' : (last.failure === false ? ' · soft' : '');
-      var loggedSets = [normSet(last, last.s1), normSet(last, last.s2)].filter(Boolean);
+    if (shown) {
+      var fTxt = shown.failure === true ? ' · to failure' : (shown.failure === false ? ' · soft' : '');
+      var loggedSets = [normSet(shown, shown.s1), normSet(shown, shown.s2)].filter(Boolean);
       var setsTxt = loggedSets.length
         ? loggedSets.map(function(s) { return s.w + ' × ' + s.r; }).join(' · ')
-        : last.weight + ' × ' + last.reps;
-      out += '<span class="last-session-chip has-data">Last: ' + setsTxt + fTxt + '</span>';
+        : shown.weight + ' × ' + shown.reps;
+      out += '<span class="last-session-chip has-data">' + label + ': ' + setsTxt + fTxt + '</span>';
     }
-    if (last && last.failure === false) {
+    if (wkEntry && wkEntry.failure === false) {
       out += '<div class="soft-set-note">No failure set logged. Soft sets are maintenance, not growth.</div>';
     }
     var stall = getStallState(hist);
@@ -2828,9 +2834,11 @@ body.training-mode footer { display: none; }
     syncFromDisk();
     var hist = sessions[exId] = sessions[exId] || [];
     var t = todayKey();
+    // Key the entry by TRAINING WEEK, not by date — so logging one week never
+    // overwrites another (even when you back-fill several weeks on the same day).
     var idx = -1;
     for (var i = 0; i < hist.length; i++) {
-      if (hist[i].d === t) { idx = i; break; }
+      if (hist[i].week === currentTrainWeek) { idx = i; break; }
     }
     var prev = idx >= 0 ? hist[idx] : null;
     if (!set1 && !set2) {
@@ -3332,6 +3340,10 @@ body.training-mode footer { display: none; }
     function setTrainWeek(idx) {
     currentTrainWeek = idx;
     try { localStorage.setItem(TRAIN_WEEK_KEY, idx); } catch(e) {}
+    // Re-render so every row shows the SELECTED week's logged data / target,
+    // not whatever was on screen before.
+    if (typeof renderAllRowStates === 'function') renderAllRowStates();
+    if (typeof renderProgressView === 'function') renderProgressView();
   }
 
     function highlightTrainWeek(idx, btn) {
