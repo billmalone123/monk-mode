@@ -1892,7 +1892,7 @@ body.training-mode footer { display: none; }
     <div class="footer-rule"><span class="footer-rule-num">01</span>Face pulls every pull day. Every single one.</div>
     <div class="footer-rule"><span class="footer-rule-num">02</span>Hip mobility every leg day. This is what separates you.</div>
     <div class="footer-rule"><span class="footer-rule-num">03</span>Full rest on main lifts. Cutting it short is for amateurs.</div>
-    <div class="footer-rule"><span class="footer-rule-num">04</span>Deload weeks 4 and 10. The weak skip it. You won't.</div>
+    <div class="footer-rule"><span class="footer-rule-num">04</span>Deload every 4th week. The weak skip it. You won't.</div>
     <div class="footer-rule"><span class="footer-rule-num">05</span>Log every set. If you're not tracking, you're not progressing.</div>
   </div>
 </footer></div>
@@ -2545,16 +2545,21 @@ body.training-mode footer { display: none; }
   }
 
   //     DOUBLE PROGRESSION — top of rep range on a true failure set earns the jump
-  //     WEEKLY PROGRESSION — each week's target = what you logged the PREVIOUS week
-  //     plus this percentage. Rolls forward off your real inputs, so it only climbs
-  //     when you actually lifted more (self-regulating).
-  var WEEKLY_PCT = 0.03; // +3% per week
-  //     Most recent logged entry from any week strictly before `wk`.
+  //     WEEKLY PROGRESSION — each working week's target = your last WORKING week's
+  //     logged weight +3%. Every 4th week (4, 8, 12…) is an automatic deload: back
+  //     off ~15% to recover, then climbing resumes from the pre-deload weight (deload
+  //     weeks don't drag the trajectory down). Self-regulating — only climbs when you
+  //     actually lifted more.
+  var WEEKLY_PCT = 0.03;  // +3% per working week
+  var DELOAD_MULT = 0.85; // deload weeks back off to ~85%
+  function isDeloadWeek(wk) { return (wk % 4) === 3; } // weeks 4, 8, 12, …
+  //     Most recent logged entry before `wk`, skipping deload weeks so the next
+  //     working week resumes from the real working weight, not the deloaded one.
   function prevWeekEntry(hist, wk) {
     var best = null;
     for (var i = 0; i < hist.length; i++) {
       var e = hist[i];
-      if (e.week != null && e.week < wk && e.weight) {
+      if (e.week != null && e.week < wk && e.weight && !isDeloadWeek(e.week)) {
         if (!best || e.week > best.week) best = e;
       }
     }
@@ -2563,11 +2568,16 @@ body.training-mode footer { display: none; }
 
   function getSessionTarget(ex, hist) {
     var wk = currentTrainWeek;
-    // 1) Bump last week's logged weight by the weekly percentage
+    // 1) Roll off your last working week
     var prev = prevWeekEntry(hist, wk);
     if (prev) {
+      if (isDeloadWeek(wk)) {
+        var dw = roundToNearestFive(prev.weight * DELOAD_MULT);
+        return { mode: 'plan', weight: dw, reps: ex.repRange[0],
+          msg: 'Deload week — back off to ' + dw + ' lbs (~15% under ' + prev.weight + '). Move perfectly and recover; you climb again next week.' };
+      }
       var w = roundToNearestFive(prev.weight * (1 + WEEKLY_PCT));
-      if (w < prev.weight) w = prev.weight;  // never drop below last week
+      if (w < prev.weight) w = prev.weight;  // never drop below last working week
       return { mode: 'plan', weight: w, reps: ex.repRange[0],
         msg: 'Week ' + (wk + 1) + ' target: ' + w + ' lbs · +' + Math.round(WEEKLY_PCT * 100) + '% over last week (' + prev.weight + ' lbs).' };
     }
