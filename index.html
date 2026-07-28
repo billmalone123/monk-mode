@@ -1885,7 +1885,7 @@ body.training-mode footer { display: none; }
 </section><footer>
   <div>
     <div class="footer-logo">RUN THE<span>.</span>WEIGHTS</div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.09</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.10</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -1936,7 +1936,7 @@ body.training-mode footer { display: none; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.09</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.10</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2457,6 +2457,8 @@ body.training-mode footer { display: none; }
     wrap.querySelectorAll('.variant-chip').forEach(function(c) { c.classList.toggle('active', c === btn); });
     var nameEl = document.getElementById('name-' + exId);
     if (nameEl) nameEl.textContent = name;
+    // Re-render this row so target/boxes reflect the chosen variant's own history
+    if (EX_BY_ID[exId] && typeof renderLiftRowState === 'function') renderLiftRowState(EX_BY_ID[exId]);
   }
 
   //     ONE-TIME MIGRATION from the old per-set logs (ppl_workout_logs_v3).
@@ -2553,23 +2555,29 @@ body.training-mode footer { display: none; }
   var WEEKLY_PCT = 0.03;  // +3% per working week
   var DELOAD_MULT = 0.85; // deload weeks back off to ~85%
   function isDeloadWeek(wk) { return (wk % 4) === 3; } // weeks 4, 8, 12, …
-  //     Most recent logged entry before `wk`, skipping deload weeks so the next
-  //     working week resumes from the real working weight, not the deloaded one.
-  function prevWeekEntry(hist, wk) {
+  //     The exercise variant a logged entry represents (legacy entries with no
+  //     variant field count as the exercise's default/primary movement).
+  function entryVariant(e, ex) { return e.variant || (ex ? ex.name : null); }
+  //     Most recent logged entry before `wk` for the CURRENTLY SELECTED variant,
+  //     skipping deload weeks. Variant filtering means a swapped exercise (e.g. a
+  //     Single-Leg Press week) progresses on its own track and never contaminates
+  //     the main lift's numbers.
+  function prevWeekEntry(hist, wk, ex) {
+    var want = ex ? activeVariant(ex) : null;
     var best = null;
     for (var i = 0; i < hist.length; i++) {
       var e = hist[i];
-      if (e.week != null && e.week < wk && e.weight && !isDeloadWeek(e.week)) {
-        if (!best || e.week > best.week) best = e;
-      }
+      if (e.week == null || e.week >= wk || !e.weight || isDeloadWeek(e.week)) continue;
+      if (want && entryVariant(e, ex) !== want) continue;
+      if (!best || e.week > best.week) best = e;
     }
     return best;
   }
 
   function getSessionTarget(ex, hist) {
     var wk = currentTrainWeek;
-    // 1) Roll off your last working week
-    var prev = prevWeekEntry(hist, wk);
+    // 1) Roll off your last working week (same variant)
+    var prev = prevWeekEntry(hist, wk, ex);
     if (prev) {
       if (isDeloadWeek(wk)) {
         var dw = roundToNearestFive(prev.weight * DELOAD_MULT);
@@ -2707,18 +2715,24 @@ body.training-mode footer { display: none; }
     }
   }
 
-  //     The logged entry for the week you're currently viewing (not the latest).
-  function entryForWeek(hist, wk) {
-    for (var i = hist.length - 1; i >= 0; i--) if (hist[i].week === wk && hist[i].weight != null) return hist[i];
+  //     The logged entry for the week you're viewing AND the currently selected
+  //     variant. If this week was logged under a different movement, it doesn't show
+  //     here (you get the fresh target for the variant you've now switched to).
+  function entryForWeek(hist, wk, ex) {
+    var want = ex ? activeVariant(ex) : null;
+    for (var i = hist.length - 1; i >= 0; i--) {
+      var e = hist[i];
+      if (e.week === wk && e.weight != null && (!want || entryVariant(e, ex) === want)) return e;
+    }
     return null;
   }
 
   function renderLiftRowState(ex) {
     var hist = getHistory(ex.id);
     var target = getSessionTarget(ex, hist);
-    var wkEntry = entryForWeek(hist, currentTrainWeek);   // what you logged for THIS week
+    var wkEntry = entryForWeek(hist, currentTrainWeek, ex);   // this week + this variant
     var loggedThisWeek = !!wkEntry;
-    var prevRef = prevWeekEntry(hist, currentTrainWeek);   // last working week, for a reps ghost
+    var prevRef = prevWeekEntry(hist, currentTrainWeek, ex);   // last working week, same variant
     var wInp = document.getElementById('w-' + ex.id);
     var rInp = document.getElementById('r-' + ex.id);
     var fBtn = document.getElementById('f-' + ex.id);
@@ -2750,8 +2764,8 @@ body.training-mode footer { display: none; }
   // Status area only — safe to call mid-typing, never touches the inputs
   function renderRowStatus(ex) {
     var hist = getHistory(ex.id);
-    var wkEntry = entryForWeek(hist, currentTrainWeek);   // this week's log
-    var ref = prevWeekEntry(hist, currentTrainWeek);       // last working week
+    var wkEntry = entryForWeek(hist, currentTrainWeek, ex);   // this week's log (this variant)
+    var ref = prevWeekEntry(hist, currentTrainWeek, ex);       // last working week (this variant)
     var shown = wkEntry || ref;
     var label = wkEntry ? 'This week' : 'Last week';
     var rowEl = document.getElementById('row-' + ex.id);
@@ -2856,7 +2870,7 @@ body.training-mode footer { display: none; }
     var best = set1;
     if (set2 && (!best || set2.w > best.w || (set2.w === best.w && set2.r > best.r))) best = set2;
     var fail = document.getElementById('f-' + exId).classList.contains('on');
-    var entry = { d: t, week: currentTrainWeek, weight: best.w, reps: best.r, s1: set1, s2: set2, failure: fail };
+    var entry = { d: t, week: currentTrainWeek, weight: best.w, reps: best.r, s1: set1, s2: set2, failure: fail, variant: activeVariant(ex) };
     var changed = !prev || JSON.stringify(prev) !== JSON.stringify(entry);
     if (idx >= 0) hist[idx] = entry; else hist.push(entry);
     if (!changed) return;
