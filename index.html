@@ -793,8 +793,15 @@
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
       animation-delay: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      transition-delay: 0s !important;
+      scroll-behavior: auto !important;
     }
+    html { scroll-behavior: auto !important; }
+    /* These start invisible and are revealed by an IntersectionObserver. With
+       motion off, don't make content wait on a scroll event to exist. */
+    .fade-up { opacity: 1 !important; transform: none !important; }
     .ring-fill { transition: none !important; }
   }
   :focus-visible {
@@ -1873,8 +1880,19 @@ body.training-mode footer { display: none; }
 .run-legend-swatch { width: 14px; height: 10px; border-radius: 2px; }
 .run-legend-swatch.planned { border: 1px solid var(--field); background: transparent; }
 .run-legend-swatch.actual { background: var(--accent); }
-.run-chart-body { padding: 22px 28px 18px; overflow-x: auto; }
-.run-chart-body svg { display: block; width: 100%; height: auto; }
+.run-chart-desc { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.5; }
+.run-chart-body { padding: 20px 28px 14px; overflow-x: auto; }
+/* min-width keeps the value labels legible on a phone — the card scrolls
+   sideways rather than shrinking the type into illegibility */
+.run-chart-body svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.run-chart-footer {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 28px 20px; font-size: 13px; color: var(--text); line-height: 1.5;
+}
+.run-trend-arrow { font-size: 11px; color: var(--muted); }
+.run-trend-arrow.up { color: var(--text); }
+.run-trend-arrow.down { color: var(--muted); }
+.run-trend-text { color: var(--muted); }
 .run-chart-empty { padding: 26px 28px; font-size: 13px; color: var(--muted); line-height: 1.7; }
 .run-clear-btn {
   background: transparent; border: 1px solid var(--border); color: var(--muted);
@@ -2157,7 +2175,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.16</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.17</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2208,7 +2226,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.16</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.17</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2439,7 +2457,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.16</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.17</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -4638,6 +4656,43 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     PLANNED VS ACTUAL — inline SVG, no library, no build step. Planned is
   //     the week's current target (post-adaptation, i.e. what the schedule is
   //     asking for); actual is the sum of logged distances in that week.
+  //  A bar with its top two corners rounded. rect's rx rounds all four, which
+  //  reads wrong on a column sitting on a baseline, so this is a path.
+  function barPath(x, y, w, h, r) {
+    r = Math.min(r, w / 2, Math.max(0, h));
+    if (r <= 0.5) return 'M' + x + ',' + y + 'h' + w + 'v' + h + 'h' + (-w) + 'Z';
+    return 'M' + x.toFixed(1) + ',' + (y + h).toFixed(1)
+      + 'V' + (y + r).toFixed(1)
+      + 'Q' + x.toFixed(1) + ',' + y.toFixed(1) + ' ' + (x + r).toFixed(1) + ',' + y.toFixed(1)
+      + 'H' + (x + w - r).toFixed(1)
+      + 'Q' + (x + w).toFixed(1) + ',' + y.toFixed(1) + ' ' + (x + w).toFixed(1) + ',' + (y + r).toFixed(1)
+      + 'V' + (y + h).toFixed(1) + 'Z';
+  }
+  function chartNum(v) {
+    var n = Math.round(v * 10) / 10;
+    return (n % 1 === 0) ? String(n) : n.toFixed(1);
+  }
+
+  //  TREND — the most recent two weeks that actually have logged mileage.
+  //  Fewer than two and it says so rather than inventing a percentage.
+  function runTrend(rows) {
+    var logged = rows.filter(function(r) { return r.actual > 0; });
+    if (logged.length < 2) {
+      return { enough: false,
+               text: logged.length === 1
+                 ? 'One week logged — log another to see your trend'
+                 : 'Log two weeks to see your trend' };
+    }
+    var last = logged[logged.length - 1], prev = logged[logged.length - 2];
+    var pct = (last.actual - prev.actual) / prev.actual * 100;
+    var dir = pct > 0.5 ? 'up' : (pct < -0.5 ? 'down' : 'flat');
+    var text = dir === 'flat'
+      ? 'Level with last logged week at ' + chartNum(last.actual) + ' mi'
+      : (dir === 'up' ? 'Up ' : 'Down ') + Math.abs(Math.round(pct)) + '% from '
+        + prev.label + ' (' + chartNum(prev.actual) + ' → ' + chartNum(last.actual) + ' mi)';
+    return { enough: true, dir: dir, pct: pct, text: text };
+  }
+
   function runChartHTML(plan) {
     var rows = plan.weeks.map(function(w) {
       var st = runWeekLogStats(w.block);
@@ -4648,50 +4703,79 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var maxY = 0;
     rows.forEach(function(r) { maxY = Math.max(maxY, r.planned, r.actual); });
     if (maxY <= 0) maxY = 10;
-    maxY = Math.ceil(maxY / 5) * 5;                      // round the axis to a clean 5
+    maxY = Math.ceil(maxY / 5) * 5;
 
-    var PAD_L = 34, PAD_R = 8, PAD_T = 10, PAD_B = 26, H = 190;
-    var colW = 46, W = PAD_L + PAD_R + rows.length * colW;
+    //  No Y axis: every bar carries its own value label, so the numbers down
+    //  the side would only be repeating what the labels already say.
+    var PAD_L = 6, PAD_R = 6, PAD_T = 22, PAD_B = 24, H = 210;
+    var colW = 54, W = PAD_L + PAD_R + rows.length * colW;
     var plotH = H - PAD_T - PAD_B;
+    var baseY = PAD_T + plotH;
     function y(v) { return PAD_T + plotH * (1 - v / maxY); }
 
-    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Planned versus actual weekly mileage">';
-    // gridlines + y axis labels
-    [0, 0.25, 0.5, 0.75, 1].forEach(function(f) {
-      var v = maxY * f, yy = y(v);
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" '
+      + 'aria-label="Planned versus logged weekly mileage, week by week">';
+    //  Horizontal gridlines only — no vertical rules, no axis line, no ticks
+    [0.25, 0.5, 0.75, 1].forEach(function(f) {
+      var yy = y(maxY * f);
       svg += '<line x1="' + PAD_L + '" y1="' + yy.toFixed(1) + '" x2="' + (W - PAD_R)
         + '" y2="' + yy.toFixed(1) + '" stroke="#302F2A" stroke-width="1"/>';
-      svg += '<text x="' + (PAD_L - 6) + '" y="' + (yy + 3.5).toFixed(1)
-        + '" text-anchor="end" font-size="9" fill="#9C978A" font-family="monospace">' + Math.round(v) + '</text>';
     });
+    svg += '<line x1="' + PAD_L + '" y1="' + baseY + '" x2="' + (W - PAD_R)
+      + '" y2="' + baseY + '" stroke="#3A3935" stroke-width="1"/>';
+
     rows.forEach(function(r, i) {
       var cx = PAD_L + i * colW + colW / 2;
-      var bw = 13;
-      // planned: outline bar
-      var ph = Math.max(1, plotH * (r.planned / maxY));
-      svg += '<rect x="' + (cx - bw - 1).toFixed(1) + '" y="' + y(r.planned).toFixed(1)
-        + '" width="' + bw + '" height="' + ph.toFixed(1)
-        + '" fill="none" stroke="#78736A" stroke-width="1" rx="2"/>';
-      // actual: filled bar
+      var bw = 15, gap = 2, R = 8;
+      var px = cx - bw - gap / 2, ax = cx + gap / 2;
+      var ph = Math.max(1.5, plotH * (r.planned / maxY)), py = y(r.planned);
+      var ah = Math.max(1.5, plotH * (r.actual / maxY)), ay = y(r.actual);
+      var tip = r.label + ' — planned ' + chartNum(r.planned) + ' mi'
+        + (r.actual > 0 ? ', logged ' + chartNum(r.actual) + ' mi' : ', nothing logged');
+
+      svg += '<path d="' + barPath(px, py, bw, ph, R) + '" fill="none" stroke="#78736A" '
+        + 'stroke-width="1.25"><title>' + tip + '</title></path>';
       if (r.actual > 0) {
-        var ah = Math.max(1, plotH * (r.actual / maxY));
-        svg += '<rect x="' + (cx + 1).toFixed(1) + '" y="' + y(r.actual).toFixed(1)
-          + '" width="' + bw + '" height="' + ah.toFixed(1) + '" fill="#F1EFE1" rx="2"/>';
+        svg += '<path d="' + barPath(ax, ay, bw, ah, R) + '" fill="#F1EFE1">'
+          + '<title>' + tip + '</title></path>';
       }
-      svg += '<text x="' + cx.toFixed(1) + '" y="' + (H - 9)
-        + '" text-anchor="middle" font-size="9" fill="#9C978A" font-family="monospace">' + r.label + '</text>';
+
+      //  Value labels sit above their own bar. Two labels 17px apart would
+      //  collide whenever both are present, so the planned one lifts clear.
+      var bothShown = r.actual > 0;
+      var plannedLabelY = py - 7 - (bothShown && Math.abs(py - ay) < 13 ? 10 : 0);
+      svg += '<text x="' + (px + bw / 2).toFixed(1) + '" y="' + plannedLabelY.toFixed(1) + '" text-anchor="middle" '
+        + 'font-size="9" fill="#9C978A" font-family="monospace">' + chartNum(r.planned) + '</text>';
+      if (bothShown) {
+        svg += '<text x="' + (ax + bw / 2).toFixed(1) + '" y="' + (ay - 7).toFixed(1)
+          + '" text-anchor="middle" font-size="9" fill="#F1EFE1" font-family="monospace" '
+          + 'font-weight="700">' + chartNum(r.actual) + '</text>';
+      }
+      svg += '<text x="' + cx.toFixed(1) + '" y="' + (H - 8)
+        + '" text-anchor="middle" font-size="9" fill="#9C978A" font-family="monospace">'
+        + r.label + '</text>';
     });
     svg += '</svg>';
 
+    var first = plan.weeks[0], range = '';
+    if (first && plan.race) range = fmtRunDate(first.block.start) + ' — ' + fmtRunDate(plan.race);
+    var t = runTrend(rows);
+    var arrow = !t.enough ? '' : (t.dir === 'up' ? '▲' : (t.dir === 'down' ? '▼' : '—'));
+
     return '<div class="run-chart-card">'
       + '<div class="run-chart-header">'
-      + '<div class="run-chart-title">Planned vs Actual</div>'
+      + '<div><div class="run-chart-title">Weekly Mileage</div>'
+      + '<div class="run-chart-desc">' + (range || 'Planned against what you actually logged') + '</div></div>'
       + '<div class="run-chart-legend">'
       + '<span class="run-legend-item"><span class="run-legend-swatch planned"></span>Planned</span>'
       + '<span class="run-legend-item"><span class="run-legend-swatch actual"></span>Logged</span>'
       + (anyLog ? '<button class="run-clear-btn" onclick="clearRunLogs()">Clear Logs</button>' : '')
       + '</div></div>'
       + '<div class="run-chart-body">' + svg + '</div>'
+      + '<div class="run-chart-footer">'
+      + (arrow ? '<span class="run-trend-arrow ' + t.dir + '">' + arrow + '</span>' : '')
+      + '<span class="run-trend-text">' + t.text + '</span>'
+      + '</div>'
       + (anyLog ? '' : '<div class="run-chart-empty">Nothing logged yet. Enter what you actually ran on any past run day below and it appears here, and next week\'s target starts reading off how the running actually felt.</div>')
       + '</div>';
   }
@@ -5126,7 +5210,17 @@ function renderRing() {
   });
 }
 
+//  The stagger below is driven by setTimeout, which no stylesheet can reach —
+//  so the reduced-motion preference has to be honoured here in JS too. The
+//  ring is already drawn by renderRing(); this only adds the entrance.
+function prefersReducedMotion() {
+  try {
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  } catch (e) { return false; }
+}
+
 function animateRingOnLoad() {
+  if (prefersReducedMotion()) return;
   var fill = document.getElementById('heroRingFill');
   if (!fill) return;
   var circ = 2 * Math.PI * 118;
