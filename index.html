@@ -1774,7 +1774,10 @@ body.training-mode footer { display: none; }
   font-family: var(--font-display); font-weight: 900; font-size: 15px;
   letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent);
 }
-.cal-head-dates { font-size: 12px; color: var(--muted); }
+/* The race week is a different clock from the training week, so it is toned
+   down rather than shown in the same weight — two peers would read as one. */
+.cal-head-race { color: var(--muted); font-size: 13px; }
+.cal-head-dates { font-size: 12px; color: var(--muted); margin-left: auto; }
 .cal-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(196px,100%),1fr));
   gap: 12px; margin-bottom: 40px;
@@ -2034,6 +2037,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   <div class="cal-head">
     <div class="cal-head-week" id="calHeadWeek">Training Week 1</div>
+    <div class="cal-head-week cal-head-race" id="calHeadRace"></div>
     <div class="cal-head-dates" id="calHeadDates"></div>
   </div>
   <div class="cal-grid" id="weekCalendar"></div>
@@ -2153,7 +2157,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.15</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.16</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2204,7 +2208,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.15</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.16</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2435,7 +2439,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.15</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.16</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2674,6 +2678,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (typeof initRunPlan === 'function') initRunPlan();
       } else {
         idbSet('runPlan', runPlan);
+      }
+    });
+    idbGet('trainWeek').then(function(idbWeek) {
+      if (typeof idbWeek === 'number' && idbWeek >= 0 && idbWeek <= 9) {
+        var stored = parseInt(localStorage.getItem(TRAIN_WEEK_KEY), 10);
+        // Only recover when localStorage lost it; never override a live choice
+        if (isNaN(stored) && idbWeek !== currentTrainWeek) setTrainWeek(idbWeek);
+      } else {
+        idbSet('trainWeek', currentTrainWeek);
       }
     });
     idbGet('runLogs').then(function(idbRunLogs) {
@@ -3738,20 +3751,61 @@ body.training-mode select.run-input { color: #F1EFE1; }
       : '<div style="grid-column:1/-1;color:var(--muted);font-size:14px;line-height:1.7">No sessions logged yet. Log a lift in the Train tab and its progress — this week vs last, 4-session trend, all-time gain, and failure rate — shows up here.</div>';
   }
 
-    function setTrainWeek(idx) {
+  //     CURRENT WEEK — one pointer, three displays. The Train tab's buttons and
+  //     the Overview's preview tabs are two ways of setting the same thing, so
+  //     both go through setTrainWeek and every surface follows. The Run tab's
+  //     week is NOT this: it is derived from today against the race date and is
+  //     deliberately left alone here.
+  function persistTrainWeek() {
+    try { localStorage.setItem(TRAIN_WEEK_KEY, currentTrainWeek); } catch(e) {}
+    idbSet('trainWeek', currentTrainWeek);   // mirrored like every other store
+  }
+
+  //  Every display that shows the training week, updated from the one value
+  function syncWeekDisplays(idx) {
+    document.querySelectorAll('.train-week-btn').forEach(function(b, i) {
+      b.classList.toggle('twb-active', i === idx);
+    });
+    document.querySelectorAll('.week-tab').forEach(function(b, i) {
+      b.classList.toggle('active', i === idx);
+    });
+    for (var i = 0; i < 10; i++) {
+      var card = document.getElementById('winfo' + i);
+      if (card) card.style.display = (i === idx) ? 'flex' : 'none';
+    }
+    // Set the ring number directly too, so it is right even before the ring
+    // itself has been drawn on first load.
+    var numEl = document.getElementById('ring-week-num');
+    if (numEl) numEl.textContent = idx + 1;
+    if (typeof renderRing === 'function') renderRing();
+    if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
+  }
+
+  function setTrainWeek(idx) {
+    idx = parseInt(idx, 10);
+    if (isNaN(idx)) idx = 0;
+    idx = Math.max(0, Math.min(9, idx));
     currentTrainWeek = idx;
-    try { localStorage.setItem(TRAIN_WEEK_KEY, idx); } catch(e) {}
+    currentWeek = idx;                       // the Overview's own pointer, kept aligned
+    persistTrainWeek();
     // Re-render so every row shows the SELECTED week's logged data / target,
     // not whatever was on screen before.
     if (typeof renderAllRowStates === 'function') renderAllRowStates();
     if (typeof renderProgressView === 'function') renderProgressView();
+    syncWeekDisplays(idx);
   }
 
-    function highlightTrainWeek(idx, btn) {
-    document.querySelectorAll('.train-week-btn').forEach(function(b){
+  //  Kept because the inline handlers call it; the class work now lives in
+  //  syncWeekDisplays, so this stays correct whether called alone or after it.
+  function highlightTrainWeek(idx, btn) {
+    document.querySelectorAll('.train-week-btn').forEach(function(b) {
       b.classList.remove('twb-active');
     });
-    btn.classList.add('twb-active');
+    if (btn) btn.classList.add('twb-active');
+    else {
+      var btns = document.querySelectorAll('.train-week-btn');
+      if (btns[idx]) btns[idx].classList.add('twb-active');
+    }
   }
 
   //     MONK MODE ENTRY FLOW — first entry asks for your maxes
@@ -3825,15 +3879,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   //     WEEK SELECTORS                                                          
   var currentWeek = 0;
-  function selectWeek(idx, btn) {
-    document.querySelectorAll('.week-tab').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    for (var i = 0; i < 10; i++) {
-      var el = document.getElementById('winfo' + i);
-      if (el) el.style.display = i === idx ? 'flex' : 'none';
-    }
-    currentWeek = idx;
-  }
+  //  The Overview's preview tabs are a real week change, not a local display
+  //  flip — they go through the same setter as the Train tab's buttons.
+  function selectWeek(idx, btn) { setTrainWeek(idx); }
 
   //     FADE IN OBSERVER                                                        
   var observer = new IntersectionObserver(function(entries) {
@@ -4862,8 +4910,28 @@ body.training-mode select.run-input { color: #F1EFE1; }
       var monday = addDays(today, -mondayIndex(today));
       var runs = calRunCells(monday);
       var hw = document.getElementById('calHeadWeek');
-      if (hw) hw.textContent = 'Training Week ' + (currentTrainWeek + 1)
+      if (hw) hw.textContent = 'Training Week ' + (currentTrainWeek + 1) + ' of 10'
         + (isDeloadWeek(currentTrainWeek) ? ' · Deload' : '');
+      // Two different clocks. The training week is a pointer you set and it
+      // counts 1 of 10; the race side is fixed to the calendar, so it counts
+      // down to race day rather than pretending to be a second week index —
+      // the plan is rebuilt from today, so a "race week N" would always read 1.
+      var hr = document.getElementById('calHeadRace');
+      if (hr) {
+        var raceOn = (runPlan && runPlan.raceDate) ? parseDateKey(runPlan.raceDate) : null;
+        var txt = '';
+        if (raceOn) {
+          var days = dayDiff(today, raceOn);
+          if (days < 0) txt = 'Race done · ' + fmtRunDate(raceOn);
+          else if (raceOn <= addDays(monday, 6)) txt = 'Race this week · ' + fmtRunDate(raceOn);
+          else {
+            var wks = Math.ceil(days / 7);
+            txt = 'Race in ' + wks + ' week' + (wks === 1 ? '' : 's') + ' · ' + fmtRunDate(raceOn);
+          }
+        }
+        hr.textContent = txt;
+        hr.style.display = txt ? '' : 'none';
+      }
       var hd = document.getElementById('calHeadDates');
       if (hd) hd.textContent = fmtRunDate(monday) + ' to ' + fmtRunDate(addDays(monday, 6));
       host.innerHTML = CAL_WEEK.map(function(slot, i) {
@@ -4903,14 +4971,13 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
       Notification.requestPermission().catch(function(){});
     }
-    // Restore saved training week before first render
+    // Restore the saved training week before first render. The value is set
+    // directly rather than through setTrainWeek because the lift rows do not
+    // exist yet; the init renders below pick it up, and syncWeekDisplays runs
+    // once at the end of init to bring every surface into line.
     try {
       var saved = parseInt(localStorage.getItem(TRAIN_WEEK_KEY));
-      if (!isNaN(saved) && saved >= 0 && saved <= 9) {
-        currentTrainWeek = saved;
-        var weekBtns = document.querySelectorAll('.train-week-btn');
-        if (weekBtns[saved]) highlightTrainWeek(saved, weekBtns[saved]);
-      }
+      if (!isNaN(saved) && saved >= 0 && saved <= 9) currentTrainWeek = saved;
     } catch(e) {}
     // Ask the browser to protect this origin's storage from eviction
     if (navigator.storage && navigator.storage.persist) {
@@ -4924,6 +4991,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     renderProgressView();
     initRunPlan();
     renderWeekCalendar();
+    // Bring the ring, the Overview tabs and the calendar header onto the
+    // restored week — the markup hardcodes week 1 as active otherwise.
+    syncWeekDisplays(currentTrainWeek);
     // Recover history/maxes from the IndexedDB mirror if localStorage was wiped
     restoreFromIDB();
     // First visit: walk straight into the maxes setup
@@ -5086,12 +5156,8 @@ function animateRingOnLoad() {
 
 // Patch setTrainWeek to keep the hero ring in sync
 (function() {
-  var origSet = setTrainWeek;
-  setTrainWeek = function(idx) {
-    origSet(idx);
-    renderRing();
-    if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
-  };
+  // setTrainWeek drives the ring and the calendar itself now, via
+  // syncWeekDisplays, so this wrapper is no longer needed.
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
