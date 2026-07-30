@@ -1718,8 +1718,8 @@ body.training-mode footer { display: none; }
 .run-pace-val { font-family: var(--font-mono); font-size: 12px; color: var(--text); white-space: nowrap; }
 .run-table-wrap { overflow-x: auto; padding-bottom: 8px; margin-bottom: 40px; }
 .run-week {
-  display: grid; grid-template-columns: 116px repeat(7, minmax(134px, 1fr)) 76px;
-  gap: 6px; margin-bottom: 6px; min-width: 1130px;
+  display: grid; grid-template-columns: 116px repeat(7, minmax(172px, 1fr)) 76px;
+  gap: 6px; margin-bottom: 6px; min-width: 1396px;
 }
 .run-head-cell {
   font-family: var(--font-display); font-weight: 700; font-size: 11px;
@@ -1810,11 +1810,77 @@ body.training-mode footer { display: none; }
 .cal-rest { font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.5; }
 .cal-note { font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 32px; max-width: 640px; }
 .cal-note strong { color: var(--text); font-weight: 600; }
+
+/* ── RUN LOGGING — what actually happened, per run day ──────────────────── */
+/* Same treatment as the lift side's .log-inline-* pair, scaled for the grid */
+.run-log { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; }
+.run-log-row { display: flex; gap: 6px; margin-bottom: 6px; }
+.run-log-row:last-child { margin-bottom: 0; }
+.run-log-group { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.run-log-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--muted); white-space: nowrap;
+}
+.run-log-input {
+  background: rgba(241,239,225,0.08);
+  border: 1px solid var(--field);
+  color: #F1EFE1;
+  padding: 6px 8px;
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 700;
+  border-radius: 8px;
+  width: 100%; min-width: 0;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.run-log-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(241,239,225,0.12); }
+.run-log-input.logged { border-color: var(--accent); }
+.run-log-pace {
+  font-family: var(--font-mono); font-size: 10px; color: var(--muted);
+  margin-top: 5px; min-height: 13px;
+}
+.run-log-pace.on { color: var(--text); }
+.run-adapt {
+  display: block; margin-top: 7px; font-size: 10px; line-height: 1.45;
+  color: var(--muted); border-left: 2px solid var(--field); padding-left: 7px;
+}
+
+/* ── PLANNED VS ACTUAL CHART — inline SVG, no library ───────────────────── */
+.run-chart-card {
+  background: var(--card); border: 1px solid rgba(241,239,225,0.06);
+  border-radius: 18px; overflow: hidden; margin-bottom: 28px;
+}
+.run-chart-header {
+  padding: 20px 28px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.run-chart-title {
+  font-family: var(--font-display); font-weight: 800; font-size: 24px;
+  text-transform: uppercase; letter-spacing: 0.03em; color: var(--text);
+}
+.run-chart-legend { display: flex; gap: 14px; align-items: center; margin-left: auto; flex-wrap: wrap; }
+.run-legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase;
+}
+.run-legend-swatch { width: 14px; height: 10px; border-radius: 2px; }
+.run-legend-swatch.planned { border: 1px solid var(--field); background: transparent; }
+.run-legend-swatch.actual { background: var(--accent); }
+.run-chart-body { padding: 22px 28px 18px; overflow-x: auto; }
+.run-chart-body svg { display: block; width: 100%; height: auto; }
+.run-chart-empty { padding: 26px 28px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+.run-clear-btn {
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+  padding: 7px 14px; font-family: var(--font-display); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; border-radius: 2px; transition: all 0.15s;
+}
+.run-clear-btn:hover { border-color: var(--field); color: var(--text); }
 body.training-mode #runplan { background: var(--bg); border-top: none; padding-top: 0; padding-bottom: 60px; }
 body.training-mode .run-field-label { color: var(--muted); }
 body.training-mode select.run-input { color: #F1EFE1; }
 @media (max-width: 768px) {
-  .run-week { grid-template-columns: 100px repeat(7, minmax(126px, 1fr)) 66px; min-width: 1020px; }
+  .run-week { grid-template-columns: 100px repeat(7, minmax(164px, 1fr)) 66px; min-width: 1314px; }
 }
 </style>
 </head>
@@ -2079,7 +2145,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.13</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.14</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2130,7 +2196,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.13</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.14</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2361,7 +2427,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.13</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.14</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2438,6 +2504,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   <div class="run-flags" id="runFlags"></div>
   <div id="runPaces"></div>
+  <div id="runChart"></div>
   <div class="run-table-wrap" id="runSchedule"></div>
 </section>
 
@@ -2599,6 +2666,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (typeof initRunPlan === 'function') initRunPlan();
       } else {
         idbSet('runPlan', runPlan);
+      }
+    });
+    idbGet('runLogs').then(function(idbRunLogs) {
+      if (idbRunLogs && Object.keys(idbRunLogs).length > Object.keys(runLogs).length) {
+        runLogs = idbRunLogs;
+        try { localStorage.setItem(RUN_LOG_KEY, JSON.stringify(runLogs)); } catch(e) {}
+        if (typeof renderRunPlan === 'function') renderRunPlan();
+      } else {
+        idbSet('runLogs', runLogs);
       }
     });
   }
@@ -3535,7 +3611,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var data = {
       app: 'monk-mode', exportedAt: todayKey(),
       sessions: sessions, maxes: userMaxes, week: currentTrainWeek, archive: archive,
-      variants: variantChoice, runPlan: runPlan
+      variants: variantChoice, runPlan: runPlan, runLogs: runLogs
     };
     var blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
     var a = document.createElement('a');
@@ -3570,6 +3646,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
           runPlan = data.runPlan;
           persistRunPlan();
           if (typeof initRunPlan === 'function') initRunPlan();
+        }
+        if (data.runLogs && typeof data.runLogs === 'object') {
+          runLogs = data.runLogs;
+          persistRunLogs();
+          if (typeof renderRunPlan === 'function') renderRunPlan();
         }
         updateMaxChips();
         renderAllRowStates();
@@ -3807,6 +3888,20 @@ body.training-mode select.run-input { color: #F1EFE1; }
     idbSet('runPlan', runPlan);   // durable mirror, same as sessions and maxes
   }
 
+  //     RUN LOGS — what actually happened, keyed by date. The plan is what you
+  //     meant to do; this is what you did, and next week's target reads off it.
+  //     { 'YYYY-MM-DD': { miles, secs, hr, feel } } — every field nullable but
+  //     miles, so a feel-only entry is valid and still counts toward the average.
+  const RUN_LOG_KEY = 'monk_run_logs_v1';
+  var runLogs = {};
+  function loadRunLogs() {
+    try { runLogs = JSON.parse(localStorage.getItem(RUN_LOG_KEY)) || {}; } catch(e) { runLogs = {}; }
+  }
+  function persistRunLogs() {
+    try { localStorage.setItem(RUN_LOG_KEY, JSON.stringify(runLogs)); } catch(e) {}
+    idbSet('runLogs', runLogs);
+  }
+
   //     DATE HELPERS — everything local-midnight so a date input never slips a
   //     day across a timezone boundary
   function parseDateKey(s) {
@@ -3998,6 +4093,29 @@ body.training-mode select.run-input { color: #F1EFE1; }
     return 'run ' + r + ' / walk ' + w + ' × ' + reps;
   }
 
+  //     LOG STATS FOR A WEEK — totals and the feel average across whatever was
+  //     actually entered. Partial logging is expected: three of four runs blank
+  //     still yields a usable average from the one that was filled in.
+  function runWeekLogStats(block) {
+    if (!block) return null;
+    var entries = 0, miles = 0, feelSum = 0, feelN = 0;
+    Object.keys(runLogs).forEach(function(k) {
+      var d = parseDateKey(k);
+      if (!d || d < block.start || d > block.end) return;
+      var e = runLogs[k];
+      if (!e) return;
+      var m = parseFloat(e.miles), f = parseFloat(e.feel);
+      var hasM = !isNaN(m) && m > 0, hasF = !isNaN(f) && f > 0;
+      if (!hasM && !hasF) return;
+      entries++;
+      if (hasM) miles += m;
+      if (hasF) { feelSum += f; feelN++; }
+    });
+    if (!entries) return null;
+    return { entries: entries, miles: miles, feelCount: feelN,
+             avgFeel: feelN ? (feelSum / feelN) : null };
+  }
+
   //     PLAN BUILDER — pure: inputs plus today in, a plan object out
   function generateRunPlan(inp, today) {
     var dist = RACE_DISTANCES[inp.distance];
@@ -4063,10 +4181,34 @@ body.training-mode select.run-input { color: #F1EFE1; }
       cand.slice(0, inp.liftDays).forEach(function(x) { liftSet[x] = true; liftCount++; });
     }
 
-    //  Distribute every build week first — Week 0 and the taper both read off it
+    //  WEEKLY ADAPTATION — the plan proposes, last week's logged feel disposes.
+    //  Feel 7+ advances as planned, 4–6.9 holds at what was actually run, under
+    //  4 steps back 12.5% off it. Missing data never adapts: no logs, or logs
+    //  with no distance, and the original number stands. This moves the weekly
+    //  target only — dates, taper length and race day are already fixed above.
+    var adapt = {};
     var dists = {};
     curve.series.forEach(function(s) {
-      dists[s.week] = runDistribute(s.miles, s.week, cfg, s.phase === 'Peak');
+      var prevBlock = (s.week === 1) ? week0 : main[s.week - 2];
+      var st = runWeekLogStats(prevBlock);
+      var miles = s.miles, reason = null;
+      if (st && st.avgFeel != null && st.miles > 0) {
+        var avg = st.avgFeel.toFixed(1);
+        var want = (st.avgFeel < 4) ? Math.round(st.miles * 0.875)
+                 : (st.avgFeel < 7) ? Math.round(st.miles) : null;
+        if (want != null) {
+          // The week still cannot go below what its run days can carry, so the
+          // note has to quote the number actually scheduled, not the one asked
+          // for — otherwise it claims a total the table does not show.
+          var floorMi = 3 + 2 * Math.max(0, slots.length - 1);
+          miles = Math.max(floorMi, want);
+          reason = (st.avgFeel < 4 ? 'Adjusted to ' : 'Held at ') + miles
+            + 'mi, last week averaged ' + avg + '/10'
+            + (miles > want ? ' (floor for ' + slots.length + ' run days)' : '');
+        }
+      }
+      adapt[s.week] = { miles: miles, planned: s.miles, reason: reason };
+      dists[s.week] = runDistribute(miles, s.week, cfg, s.phase === 'Peak');
     });
     var longDow = inp.longDow;
     var firstEasyDow = null;
@@ -4159,6 +4301,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
         total += c.miles;
       });
       weeks.push({ num: s.week, phase: s.phase, block: block, cells: cells, miles: total,
+        planned: adapt[s.week].planned, adaptReason: adapt[s.week].reason,
         liftDeload: liftCount > 0 && isDeloadWeek(liftWeekFor(s.week)) });
     });
 
@@ -4279,6 +4422,44 @@ body.training-mode select.run-input { color: #F1EFE1; }
     return body || '—';
   }
 
+  //     LOG INPUTS — only on run days that have already happened. You cannot
+  //     log a run you have not done, and hiding them forward keeps the grid
+  //     readable. Same markup shape as the lift side's inline log rows.
+  function runLogInputsHTML(c) {
+    var k = dateKeyOfRun(c.date);
+    var e = runLogs[k] || {};
+    var mi = (e.miles != null && e.miles !== '') ? e.miles : '';
+    var tm = e.secs ? secsToClock(e.secs) : '';
+    var hr = (e.hr != null && e.hr !== '') ? e.hr : '';
+    var fl = (e.feel != null && e.feel !== '') ? e.feel : '';
+    var on = (mi !== '' || tm !== '' || hr !== '' || fl !== '');
+    function inp(id, label, val, extra) {
+      return '<div class="run-log-group"><span class="run-log-label">' + label + '</span>'
+        + '<input class="run-log-input' + (val !== '' ? ' logged' : '') + '" id="rl-' + id + '-' + k
+        + '" data-k="' + k + '" value="' + val + '" ' + extra
+        + ' oninput="onRunLogEdit(this.dataset.k)"></div>';
+    }
+    return '<div class="run-log" onclick="event.stopPropagation()">'
+      + '<div class="run-log-row">'
+      + inp('mi', 'Miles', mi, 'type="number" step="0.1" min="0" inputmode="decimal"')
+      + inp('tm', 'Time', tm, 'type="text" inputmode="numeric" placeholder="32:10"')
+      + '</div>'
+      + '<div class="run-log-row">'
+      + inp('hr', 'Avg HR', hr, 'type="number" min="0" inputmode="numeric"')
+      + inp('fl', 'Feel 1–10', fl, 'type="number" min="1" max="10" inputmode="numeric"')
+      + '</div>'
+      + '<div class="run-log-pace' + (on ? ' on' : '') + '" id="rlp-' + k + '">'
+      + runLogPaceText(e) + '</div></div>';
+  }
+
+  function runLogPaceText(e) {
+    var m = parseFloat(e && e.miles), s = parseFloat(e && e.secs);
+    if (!isNaN(m) && m > 0 && !isNaN(s) && s > 0) return fmtPace(s / m) + ' /mi';
+    var f = parseFloat(e && e.feel);
+    if (!isNaN(f) && f > 0) return 'felt ' + f + '/10 · 1 rough, 10 great';
+    return '1 rough · 10 great';
+  }
+
   function runWeekHTML(w, plan) {
     var out = '<div class="run-week">'
       + '<div class="run-cell-week">'
@@ -4286,7 +4467,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '<div class="run-cell-dates">' + fmtRunDate(w.block.start) + ' to ' + fmtRunDate(w.block.end) + '</div>'
       + '<span class="run-phase' + (w.phase === 'Build' || w.phase === 'Peak' ? '' : ' quiet') + '">' + w.phase + '</span>'
       + (w.liftDeload ? '<span class="run-deload">Lift deload</span>' : '')
+      + (w.adaptReason ? '<span class="run-adapt">' + w.adaptReason + '</span>' : '')
       + '</div>';
+    // The plan is always regenerated from today, so it has no past weeks. Log
+    // inputs therefore go on the week that is currently under way — all of its
+    // run days, not just today's — and each later week opens up as it arrives.
+    var weekStarted = w.block.start <= startOfToday();
     w.cells.forEach(function(c) {
       c.week = w.num;
       var cls = 'run-cell';
@@ -4296,7 +4482,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (c.miles > 0) cls += ' has-run';
         if (c.lift) cls += ' has-lift';
       }
-      out += '<div class="' + cls + '">' + runCellText(c, plan) + '</div>';
+      var loggable = !c.before && !c.after && c.miles > 0 && weekStarted;
+      out += '<div class="' + cls + '">' + runCellText(c, plan)
+        + (loggable ? runLogInputsHTML(c) : '') + '</div>';
     });
     out += '<div class="run-cell-miles">' + fmtMiles(w.miles) + '<span>miles</span></div>';
     return out + '</div>';
@@ -4317,23 +4505,161 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + (plan.paces ? 'Your Pace Zones' : 'Effort Zones — No PR Entered') + '</div>' + rows + '</div>';
   }
 
+  //     TIME ENTRY — elapsed time off the watch, not pace. A mistyped pace is
+  //     invisible; a mistyped time is caught the moment the computed pace looks
+  //     wrong. Accepts mm:ss, h:mm:ss, or plain minutes.
+  function clockToSecs(str) {
+    if (str == null) return null;
+    var s = String(str).trim();
+    if (!s) return null;
+    var p = s.split(':').map(function(x) { return parseFloat(x); });
+    if (p.some(function(x) { return isNaN(x) || x < 0; })) return null;
+    var secs = null;
+    if (p.length === 1) secs = p[0] * 60;
+    else if (p.length === 2) secs = p[0] * 60 + p[1];
+    else if (p.length === 3) secs = p[0] * 3600 + p[1] * 60 + p[2];
+    if (secs == null || !isFinite(secs) || secs <= 0) return null;
+    return Math.round(secs);
+  }
+  function secsToClock(secs) {
+    var s = Math.round(secs);
+    if (!isFinite(s) || s <= 0) return '';
+    var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
+    function p2(n) { return n < 10 ? '0' + n : '' + n; }
+    return h > 0 ? h + ':' + p2(m) + ':' + p2(r) : m + ':' + p2(r);
+  }
+  function dateKeyOfRun(d) {
+    function p(n) { return n < 10 ? '0' + n : '' + n; }
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+  }
+
+  //     AUTO-SAVE — same shape as the lift side: debounce on entry, no save
+  //     button. Re-renders the plan afterwards because a logged feel can move
+  //     next week's target.
+  var _runLogT = {};
+  function onRunLogEdit(k) {
+    clearTimeout(_runLogT[k]);
+    _runLogT[k] = setTimeout(function() { saveRunLog(k); }, 1200);
+  }
+
+  function saveRunLog(k) {
+    function val(p) { var el = document.getElementById('rl-' + p + '-' + k); return el ? el.value : ''; }
+    var miles = parseFloat(val('mi'));
+    var secs = clockToSecs(val('tm'));
+    var hr = parseInt(val('hr'), 10);
+    var feel = parseInt(val('fl'), 10);
+    if (isNaN(miles) || miles <= 0) miles = null;
+    if (isNaN(hr) || hr <= 0) hr = null;
+    if (isNaN(feel) || feel < 1) feel = null;
+    if (feel != null && feel > 10) feel = 10;
+    var entry = null;
+    if (miles != null || secs != null || hr != null || feel != null) {
+      entry = { miles: miles, secs: secs, hr: hr, feel: feel };
+    }
+    var prev = runLogs[k] ? JSON.stringify(runLogs[k]) : null;
+    if (entry) runLogs[k] = entry; else delete runLogs[k];
+    if ((entry ? JSON.stringify(entry) : null) === prev) return;
+    persistRunLogs();
+    var paceEl = document.getElementById('rlp-' + k);
+    if (paceEl) {
+      paceEl.textContent = runLogPaceText(entry || {});
+      paceEl.className = 'run-log-pace' + (entry ? ' on' : '');
+    }
+    // A feel score can change next week's target, so the plan is rebuilt
+    renderRunPlan();
+    if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
+  }
+
+  function clearRunLogs() {
+    if (!Object.keys(runLogs).length) return;
+    if (!confirm('Clear every logged run? The plan itself is not affected.')) return;
+    runLogs = {};
+    persistRunLogs();
+    renderRunPlan();
+    if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
+  }
+
+  //     PLANNED VS ACTUAL — inline SVG, no library, no build step. Planned is
+  //     the week's current target (post-adaptation, i.e. what the schedule is
+  //     asking for); actual is the sum of logged distances in that week.
+  function runChartHTML(plan) {
+    var rows = plan.weeks.map(function(w) {
+      var st = runWeekLogStats(w.block);
+      return { label: w.num === 0 ? 'W0' : 'W' + w.num,
+               planned: w.miles, actual: st ? st.miles : 0, hasLog: !!(st && st.miles > 0) };
+    });
+    var anyLog = rows.some(function(r) { return r.hasLog; });
+    var maxY = 0;
+    rows.forEach(function(r) { maxY = Math.max(maxY, r.planned, r.actual); });
+    if (maxY <= 0) maxY = 10;
+    maxY = Math.ceil(maxY / 5) * 5;                      // round the axis to a clean 5
+
+    var PAD_L = 34, PAD_R = 8, PAD_T = 10, PAD_B = 26, H = 190;
+    var colW = 46, W = PAD_L + PAD_R + rows.length * colW;
+    var plotH = H - PAD_T - PAD_B;
+    function y(v) { return PAD_T + plotH * (1 - v / maxY); }
+
+    var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Planned versus actual weekly mileage">';
+    // gridlines + y axis labels
+    [0, 0.25, 0.5, 0.75, 1].forEach(function(f) {
+      var v = maxY * f, yy = y(v);
+      svg += '<line x1="' + PAD_L + '" y1="' + yy.toFixed(1) + '" x2="' + (W - PAD_R)
+        + '" y2="' + yy.toFixed(1) + '" stroke="#302F2A" stroke-width="1"/>';
+      svg += '<text x="' + (PAD_L - 6) + '" y="' + (yy + 3.5).toFixed(1)
+        + '" text-anchor="end" font-size="9" fill="#9C978A" font-family="monospace">' + Math.round(v) + '</text>';
+    });
+    rows.forEach(function(r, i) {
+      var cx = PAD_L + i * colW + colW / 2;
+      var bw = 13;
+      // planned: outline bar
+      var ph = Math.max(1, plotH * (r.planned / maxY));
+      svg += '<rect x="' + (cx - bw - 1).toFixed(1) + '" y="' + y(r.planned).toFixed(1)
+        + '" width="' + bw + '" height="' + ph.toFixed(1)
+        + '" fill="none" stroke="#78736A" stroke-width="1" rx="2"/>';
+      // actual: filled bar
+      if (r.actual > 0) {
+        var ah = Math.max(1, plotH * (r.actual / maxY));
+        svg += '<rect x="' + (cx + 1).toFixed(1) + '" y="' + y(r.actual).toFixed(1)
+          + '" width="' + bw + '" height="' + ah.toFixed(1) + '" fill="#F1EFE1" rx="2"/>';
+      }
+      svg += '<text x="' + cx.toFixed(1) + '" y="' + (H - 9)
+        + '" text-anchor="middle" font-size="9" fill="#9C978A" font-family="monospace">' + r.label + '</text>';
+    });
+    svg += '</svg>';
+
+    return '<div class="run-chart-card">'
+      + '<div class="run-chart-header">'
+      + '<div class="run-chart-title">Planned vs Actual</div>'
+      + '<div class="run-chart-legend">'
+      + '<span class="run-legend-item"><span class="run-legend-swatch planned"></span>Planned</span>'
+      + '<span class="run-legend-item"><span class="run-legend-swatch actual"></span>Logged</span>'
+      + (anyLog ? '<button class="run-clear-btn" onclick="clearRunLogs()">Clear Logs</button>' : '')
+      + '</div></div>'
+      + '<div class="run-chart-body">' + svg + '</div>'
+      + (anyLog ? '' : '<div class="run-chart-empty">Nothing logged yet. Enter what you actually ran on any past run day below and it appears here, and next week\'s target starts reading off how the running actually felt.</div>')
+      + '</div>';
+  }
+
   //     RENDER — inputs persist, the schedule is rebuilt from them every time
   function renderRunPlan() {
     var host = document.getElementById('runSchedule');
     var flagHost = document.getElementById('runFlags');
     var paceHost = document.getElementById('runPaces');
+    var chartHost = document.getElementById('runChart');
     if (!host) return;
     var inp = readRunInputs();
     var plan = generateRunPlan(inp, startOfToday());
     if (!plan) {
       flagHost.innerHTML = '';
       paceHost.innerHTML = '';
+      if (chartHost) chartHost.innerHTML = '';
       host.innerHTML = '<div class="run-empty">Pick a race date and distance. The plan builds itself from there — week by week, merged with your lifting days, scaled to the volume you are actually running now.</div>';
       return;
     }
     if (plan.error) {
       flagHost.innerHTML = '<div class="run-flag">' + plan.error + '</div>';
       paceHost.innerHTML = '';
+      if (chartHost) chartHost.innerHTML = '';
       host.innerHTML = '';
       return;
     }
@@ -4341,6 +4667,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '<div class="run-flag soft">' + plan.buildCount + ' build weeks, ' + plan.taperWeeks + ' taper week'
       + (plan.taperWeeks === 1 ? '' : 's') + ', peaking at ' + plan.curve.peak + ' mi. Days carrying both a lift and a run: keep the lift upper body and core. Lift-only days are where heavy lower body goes. Weeks marked Lift deload are the split\'s own every-4th-week back-off — where one lands on a running cutback, both simply apply.</div>';
     paceHost.innerHTML = runPacesHTML(plan);
+    if (chartHost) chartHost.innerHTML = runChartHTML(plan);
     var head = '<div class="run-week"><div class="run-head-cell">Week</div>'
       + RUN_DOWS.map(function(d) { return '<div class="run-head-cell">' + d + '</div>'; }).join('')
       + '<div class="run-head-cell">Total</div></div>';
@@ -4439,6 +4766,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   function initRunPlan() {
     loadRunPlan();
+    loadRunLogs();
     if (!runPlan.level) runPlan.level = 'casual';
     // A lifting plan already in the app fills the lifting fields instead of asking again
     if (runPlan.liftDays == null) runPlan.liftDays = runLiftingActive() ? 6 : 0;
