@@ -1726,6 +1726,29 @@ body.training-mode footer { display: none; }
 .asm { display: inline-block; perspective: 600px; }
 .asm span { display: inline-block; transition: transform 0.08s linear; will-change: transform; }
 .asm span.sp { width: 0.3em; }
+/* ── SHARED LIFT-DAYS CONTROL ────────────────────────────────────────────── */
+.liftdays-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.liftdays-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted);
+}
+.liftdays-group { display: flex; gap: 3px; background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 3px; }
+.liftdays-btn {
+  min-width: 30px; padding: 6px 9px; background: transparent; border: none;
+  color: var(--muted); font-family: var(--font-display); font-weight: 700;
+  font-size: 13px; cursor: pointer; border-radius: 2px; transition: all 0.15s;
+}
+.liftdays-btn:hover { color: var(--text); }
+.liftdays-btn.on { background: var(--accent); color: #1A1A18; }
+.liftdays-desc { font-size: 11px; color: var(--muted); }
+.run-readonly {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 12px 14px; font-family: var(--font-display); font-size: 16px; font-weight: 800;
+  border-radius: 4px; letter-spacing: 0.02em;
+}
+#altPlan .plan-content { display: none; }
+#altPlan .plan-content.active { display: block; }
+
 /* ── EDGE CAROUSEL ───────────────────────────────────────────────────────── */
 /* Slides share one grid cell, so the viewport sizes itself to the tallest card
    and nothing has to measure heights in JS. Transforms do the positioning. */
@@ -2314,101 +2337,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div class="section-label">The Battle Plan</div>
   <h2 class="section-title">EVERY WEEK.<br>NO EXCUSES.</h2>
 
-  <div class="week-tabs" id="weekTabs" style="flex-wrap:wrap;">
-    <button class="week-tab active" onclick="selectWeek(0, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 1</button>
-    <button class="week-tab" onclick="selectWeek(1, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 2</button>
-    <button class="week-tab" onclick="selectWeek(2, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 3</button>
-    <button class="week-tab" onclick="selectWeek(3, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 1</span>Week 4</button>
-    <button class="week-tab" onclick="selectWeek(4, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 5</button>
-    <button class="week-tab" onclick="selectWeek(5, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 6</button>
-    <button class="week-tab" onclick="selectWeek(6, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 7</button>
-    <button class="week-tab" onclick="selectWeek(7, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 8</button>
-    <button class="week-tab" onclick="selectWeek(8, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 9</button>
-    <button class="week-tab" onclick="selectWeek(9, this)" style="position:relative;"><span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">WAVE 2</span>Week 10</button>
-  </div>
+  <div class="week-tabs" id="weekTabs" style="flex-wrap:wrap;"></div>
 
-  <div id="weekInfoPanels">
-    <div class="week-info" id="winfo0">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 1</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F1EFE122;color:#F1EFE1;border:1px solid #F1EFE144;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Baseline, establish working weights, own the movement</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">65–70%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Intro explosive work, box jumps 3x5 before leg days</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"Log every set. This is your benchmark. Don't ego load."</div></div>
-    </div>
-    <div class="week-info" id="winfo1" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 1</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F1EFE122;color:#F1EFE1;border:1px solid #F1EFE144;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Load — add weight to every main lift, volume goes up</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">72–76%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 3x5, broad jumps 3x5 before leg days</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"Hit every rep before adding weight. Form is non-negotiable."</div></div>
-    </div>
-    <div class="week-info" id="winfo2" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 1</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F1EFE122;color:#F1EFE1;border:1px solid #F1EFE144;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Overload — heaviest week of wave 1, push hard</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">78–83%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 4x5, lateral bounds 3x6 before leg days</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"Leave 1 rep in the tank on main lifts. Grind accessories."</div></div>
-    </div>
-    <div class="week-info" id="winfo3" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 1</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#2C2B27;color:#56534B;border:1px solid #3A3935;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">DELOAD</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Deload, back off, move perfectly, let the body adapt</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">~60%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Light movement prep only, no heavy explosive work</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"Full ROM every rep. Feel every muscle. CNS recovery."</div></div>
-    </div>
-    <div class="week-info" id="winfo4" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F1EFE122;color:#F1EFE1;border:1px solid #F1EFE144;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">BUILD</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Wave 2 Base, return heavier than wave 1 started</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">70–74%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Box jumps 4x5, depth jumps 3x4 before leg days</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"You are stronger than week 1. Prove it. New baseline."</div></div>
-    </div>
-    <div class="week-info" id="winfo5" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F1EFE122;color:#F1EFE1;border:1px solid #F1EFE144;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Build, volume and load climbing, accessories intensify</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">75–79%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Depth jumps 3x5, broad jumps 3x6, lateral bounds 3x6</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"Every main lift heavier than the same position in wave 1."</div></div>
-    </div>
-    <div class="week-info" id="winfo6" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F1EFE122;color:#F1EFE1;border:1px solid #F1EFE144;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">LOAD</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Load — highest volume week of the program</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">79–83%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Full explosive circuit before each leg day, 15 min</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"This is where most guys quit. You don't quit."</div></div>
-    </div>
-    <div class="week-info" id="winfo7" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F1EFE122;color:#F1EFE1;border:1px solid #F1EFE144;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">OVERLOAD</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Overload — push into new territory, heaviest sets yet</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">83–88%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Reduced, box jumps 3x3 only, save CNS for main lifts</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"Beat every week 3 number. This is the point of the whole program."</div></div>
-    </div>
-    <div class="week-info" id="winfo8" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#F1EFE122;color:#F1EFE1;border:1px solid #F1EFE144;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">PEAK</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Peak — near-max effort, minimal volume, maximum intensity</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">88–93%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">None, full CNS focus on peak lifts</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"Top sets only. 2-3 heavy sets on main lifts. This is your test week."</div></div>
-    </div>
-    <div class="week-info" id="winfo9" style="display:none">
-      <div class="week-info-item"><div class="week-info-label">Wave</div><div class="week-info-val" style="color:#F1EFE1;font-weight:700;">Wave 2</div></div>
-      <div class="week-info-item"><div class="week-info-label">Phase</div><div class="week-info-val"><span style="background:#2C2B27;color:#56534B;border:1px solid #3A3935;padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">DELOAD</span></div></div>
-      <div class="week-info-item"><div class="week-info-label">Focus</div><div class="week-info-val">Final Deload, recover, reflect, come back and test maxes</div></div>
-      <div class="week-info-item"><div class="week-info-label">Intensity</div><div class="week-info-val">~55–60%</div></div>
-      <div class="week-info-item"><div class="week-info-label">Explosive Work</div><div class="week-info-val">Mobility only, foam roll, stretch, move well</div></div>
-      <div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div><div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"You finished. Now recover completely. Test maxes next week fresh."</div></div>
-    </div>
-  </div>
+  <div id="weekInfoPanels"></div>
+  
 
 
 </section></div>
@@ -2425,7 +2357,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.22</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.23</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2464,6 +2396,16 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="settings-open-btn" id="settingsOpenBtn" onclick="openMaxesModal()">
       ⚙ Set Your Maxes
     </button>
+    <div class="liftdays-wrap">
+      <span class="liftdays-label">Lift Days</span>
+      <div class="liftdays-group">
+        <button class="liftdays-btn" data-v="3" onclick="setLiftDays(3)">3</button>
+        <button class="liftdays-btn" data-v="4" onclick="setLiftDays(4)">4</button>
+        <button class="liftdays-btn" data-v="5" onclick="setLiftDays(5)">5</button>
+        <button class="liftdays-btn" data-v="6" onclick="setLiftDays(6)">6</button>
+      </div>
+      <span class="liftdays-desc" id="liftDaysLabel"></span>
+    </div>
     <button class="settings-open-btn" onclick="exportData()">⇩ Backup</button>
     <label class="settings-open-btn" style="cursor:pointer">⇧ Restore<input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)"></label>
   </div>
@@ -2476,25 +2418,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.22</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.23</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
     <span style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Training Week</span>
-    <div style="display:flex;gap:4px;flex-wrap:wrap;" id="trainWeekSelector">
-      <button onclick="setTrainWeek(0);highlightTrainWeek(0,this)" class="train-week-btn twb-active" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W1</button>
-      <button onclick="setTrainWeek(1);highlightTrainWeek(1,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W2</button>
-      <button onclick="setTrainWeek(2);highlightTrainWeek(2,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W3</button>
-      <button onclick="setTrainWeek(3);highlightTrainWeek(3,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W4</button>
-      <button onclick="setTrainWeek(4);highlightTrainWeek(4,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W5</button>
-      <button onclick="setTrainWeek(5);highlightTrainWeek(5,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W6</button>
-      <button onclick="setTrainWeek(6);highlightTrainWeek(6,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W7</button>
-      <button onclick="setTrainWeek(7);highlightTrainWeek(7,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W8</button>
-      <button onclick="setTrainWeek(8);highlightTrainWeek(8,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W9</button>
-      <button onclick="setTrainWeek(9);highlightTrainWeek(9,this)" class="train-week-btn" style="padding:5px 13px;font-family:'Antonio',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W10</button>
-    </div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;" id="trainWeekSelector"></div>
   </div>
+  <div id="altPlan"></div>
   <div class="plan-nav" id="planNav">
     <button class="plan-nav-btn active" onclick="switchDay('chest')" id="btn-chest">1A · Chest + Back</button>
     <button class="plan-nav-btn" onclick="switchDay('arms')" id="btn-arms">2A · Shoulders + Arms</button>
@@ -2707,7 +2639,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.22</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.23</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2763,9 +2695,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
       <div class="run-hint">Leave blank for effort-based zones and a time trial prompt.</div>
     </div>
     <div>
-      <div class="run-field-label">Lifting Days Per Week <span class="run-field-val" id="run-lift-val">6</span></div>
-      <input class="run-range" type="range" id="run-lift-days" min="0" max="7" step="1" oninput="onRunInput()">
-      <div class="run-hint" id="run-lift-hint"></div>
+      <div class="run-field-label">Lifting Days Per Week</div>
+      <div class="run-readonly" id="run-lift-days-readout">6 days</div>
+      <div class="run-hint">Shared with the Train tab — set it there so the split and the merge can never disagree.</div>
     </div>
     <div>
       <div class="run-field-label">Lifting Rest Day</div>
@@ -2793,7 +2725,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.22</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.23</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -2970,8 +2902,16 @@ body.training-mode select.run-input { color: #F1EFE1; }
         idbSet('runPlan', runPlan);
       }
     });
+    idbGet('liftDays').then(function(v) {
+      if (typeof v === 'number' && v >= 3 && v <= 6) {
+        var stored = parseInt(localStorage.getItem(LIFT_DAYS_KEY), 10);
+        if (isNaN(stored) && v !== liftDaysPerWeek) setLiftDays(v);
+      } else {
+        idbSet('liftDays', liftDaysPerWeek);
+      }
+    });
     idbGet('trainWeek').then(function(idbWeek) {
-      if (typeof idbWeek === 'number' && idbWeek >= 0 && idbWeek <= 9) {
+      if (typeof idbWeek === 'number' && idbWeek >= 0) {
         var stored = parseInt(localStorage.getItem(TRAIN_WEEK_KEY), 10);
         // Only recover when localStorage lost it; never override a live choice
         if (isNaN(stored) && idbWeek !== currentTrainWeek) setTrainWeek(idbWeek);
@@ -3004,7 +2944,185 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     EXERCISE CONFIG — the whole split lives here. Add or swap a lift by
   //     editing one line. tag drives the warm-up scheme (primary | secondary |
   //     isolation); repRange + increment drive double progression.
-  const DAY_ORDER = ['chest','arms','legs','chest-b','arms-b','legs-b']; // 'rest' day stays static
+  //     LIFTING DAYS PER WEEK — one shared setting, config not logs. It drives
+  //     which split template the Train tab generates AND is the same number the
+  //     run generator merges against, so the two can no longer disagree. Lift
+  //     history and run logs stay entirely separate stores; only this number is
+  //     unified.
+  const LIFT_DAYS_KEY = 'monk_lift_days_v1';
+  var liftDaysPerWeek = 6;
+  function loadLiftDays() {
+    try {
+      var v = parseInt(localStorage.getItem(LIFT_DAYS_KEY), 10);
+      if (!isNaN(v) && v >= 3 && v <= 6) liftDaysPerWeek = v;
+    } catch(e) {}
+  }
+  function persistLiftDays() {
+    try { localStorage.setItem(LIFT_DAYS_KEY, liftDaysPerWeek); } catch(e) {}
+    idbSet('liftDays', liftDaysPerWeek);
+  }
+
+  //  Day-of-week placement. Rest days are spread rather than clustered, and the
+  //  weekend is kept clear of heavy lower-body work on the shorter templates so
+  //  it never collides with the long run the merge rules already protect.
+  //  Mon..Sun, seven slots, 'rest' wherever the template does not lift.
+  const SPLIT_TEMPLATES = {
+    6: { label: 'Arnold Split', note: '3 on · 1 off · every group twice',
+         week: ['chest','arms','legs','rest','chest-b','arms-b','legs-b'] },
+    5: { label: 'Push / Pull / Legs + Upper / Lower', note: 'PPLUL · every group twice',
+         week: ['push','pull','legs','upper','lower','rest','rest'] },
+    4: { label: 'Upper / Lower', note: 'Upper and lower each twice',
+         week: ['upper-a','lower-a','rest','upper-b','lower-b','rest','rest'] },
+    3: { label: 'Full Body', note: 'Every group three times',
+         week: ['fb-a','rest','fb-b','rest','fb-c','rest','rest'] }
+  };
+
+  //  Day definitions. The 6-day template routes straight through the original
+  //  pools by id so its output is unchanged; the shorter templates name their
+  //  exercises explicitly, recombined from those same pools — no new exercises.
+  const SPLIT_DAYS = {
+    'chest':   { tag:'1A', title:'Chest + Back',       pool:'chest' },
+    'arms':    { tag:'2A', title:'Shoulders + Arms',   pool:'arms' },
+    'legs':    { tag:'3A', title:'Legs + Abs',         pool:'legs' },
+    'chest-b': { tag:'1B', title:'Chest + Back',       pool:'chest-b' },
+    'arms-b':  { tag:'2B', title:'Shoulders + Arms',   pool:'arms-b' },
+    'legs-b':  { tag:'3B', title:'Mobility + Core',    pool:'legs-b' },
+    'rest':    { tag:'',   title:'Rest + Stretch',     rest:true },
+
+    'upper-a': { tag:'UA', title:'Upper A', focus:'Horizontal press and pull, vertical press, arms. One exercise per pattern.',
+      ex:['flat-bb-bench','lat-pulldown','seated-ohp','seated-cable-row','lateral-raise-mach','ez-bar-curl','tricep-pushdown','face-pulls'] },
+    'upper-b': { tag:'UB', title:'Upper B', focus:'Incline and Arnold variants — the same muscles from different angles than Upper A.',
+      ex:['incline-bb-bench','machine-row','arnold-press','sa-cable-row','cable-face-pull','incline-db-curl','machine-dip'] },
+    'lower-a': { tag:'LA', title:'Lower A', pool:'legs' },
+    'lower-b': { tag:'LB', title:'Lower B', pool:'legs-b' },
+
+    'push':    { tag:'P',  title:'Push', focus:'Chest, shoulders, triceps. One exercise per pressing pattern.',
+      ex:['flat-bb-bench','incline-mach-press','seated-ohp','lateral-raise-mach','tricep-pushdown','oh-tricep-ext'] },
+    'pull':    { tag:'PL', title:'Pull', focus:'Back and biceps, with the rear-delt work every pressing week needs.',
+      ex:['lat-pulldown','seated-cable-row','chest-supp-row','ez-bar-curl','cable-curl','face-pulls'] },
+    'upper':   { tag:'U',  title:'Upper', focus:'Second upper session — incline and Arnold variants, different angles from Push and Pull.',
+      ex:['incline-bb-bench','machine-row','arnold-press','sa-cable-row','cable-face-pull','incline-db-curl','machine-dip'] },
+    'lower':   { tag:'L',  title:'Lower', pool:'legs-b' },
+
+    'fb-a':    { tag:'A',  title:'Full Body A', focus:'Squat pattern, flat press, vertical pull, shoulders, biceps, core.',
+      ex:['bb-squat','flat-bb-bench','lat-pulldown','seated-ohp','ez-bar-curl','ab-wheel'] },
+    'fb-b':    { tag:'B',  title:'Full Body B', focus:'Hinge pattern, incline press, horizontal pull, delts, triceps, calves.',
+      ex:['rdl','incline-bb-bench','seated-cable-row','lateral-raise-mach','tricep-pushdown','seated-calf'] },
+    'fb-c':    { tag:'C',  title:'Full Body C', focus:'Machine squat pattern, machine press, row, Arnold press, biceps, rear delts.',
+      ex:['leg-press','machine-chest-press','machine-row','arnold-press','incline-db-curl','cable-face-pull'] }
+  };
+
+  function activeSplit() { return SPLIT_TEMPLATES[liftDaysPerWeek] || SPLIT_TEMPLATES[6]; }
+  function splitDayIds() {
+    var seen = {}, out = [];
+    activeSplit().week.forEach(function(id) {
+      if (id === 'rest' || seen[id]) return;
+      seen[id] = 1; out.push(id);
+    });
+    return out;
+  }
+  //  Exercises for a split day, in order. Pool-backed days keep the original
+  //  array order exactly, which is what makes the 6-day path unchanged.
+  function splitDayExercises(dayId) {
+    var d = SPLIT_DAYS[dayId];
+    if (!d) return [];
+    if (d.pool) return EXERCISES.filter(function(ex) { return ex.day === d.pool; });
+    return (d.ex || []).map(function(id) { return EX_BY_ID[id]; }).filter(Boolean);
+  }
+
+  //     WEEK ARC — the ten-week narrative, previously ten hardcoded markup
+  //     blocks. Generated from here so any week number can render.
+  var WEEK_ARC = [
+    { wave: "Wave 1", phase: "BUILD", intensity: "65–70%",
+      explosive: "Intro explosive work, box jumps 3x5 before leg days",
+      focus: "Baseline, establish working weights, own the movement",
+      mindset: "Log every set. This is your benchmark. Don't ego load." },
+    { wave: "Wave 1", phase: "LOAD", intensity: "72–76%",
+      explosive: "Box jumps 3x5, broad jumps 3x5 before leg days",
+      focus: "Load — add weight to every main lift, volume goes up",
+      mindset: "Hit every rep before adding weight. Form is non-negotiable." },
+    { wave: "Wave 1", phase: "OVERLOAD", intensity: "78–83%",
+      explosive: "Box jumps 4x5, lateral bounds 3x6 before leg days",
+      focus: "Overload — heaviest week of wave 1, push hard",
+      mindset: "Leave 1 rep in the tank on main lifts. Grind accessories." },
+    { wave: "Wave 1", phase: "DELOAD", intensity: "~60%",
+      explosive: "Light movement prep only, no heavy explosive work",
+      focus: "Deload, back off, move perfectly, let the body adapt",
+      mindset: "Full ROM every rep. Feel every muscle. CNS recovery." },
+    { wave: "Wave 2", phase: "BUILD", intensity: "70–74%",
+      explosive: "Box jumps 4x5, depth jumps 3x4 before leg days",
+      focus: "Wave 2 Base, return heavier than wave 1 started",
+      mindset: "You are stronger than week 1. Prove it. New baseline." },
+    { wave: "Wave 2", phase: "LOAD", intensity: "75–79%",
+      explosive: "Depth jumps 3x5, broad jumps 3x6, lateral bounds 3x6",
+      focus: "Build, volume and load climbing, accessories intensify",
+      mindset: "Every main lift heavier than the same position in wave 1." },
+    { wave: "Wave 2", phase: "LOAD", intensity: "79–83%",
+      explosive: "Full explosive circuit before each leg day, 15 min",
+      focus: "Load — highest volume week of the program",
+      mindset: "This is where most guys quit. You don't quit." },
+    { wave: "Wave 2", phase: "OVERLOAD", intensity: "83–88%",
+      explosive: "Reduced, box jumps 3x3 only, save CNS for main lifts",
+      focus: "Overload — push into new territory, heaviest sets yet",
+      mindset: "Beat every week 3 number. This is the point of the whole program." },
+    { wave: "Wave 2", phase: "PEAK", intensity: "88–93%",
+      explosive: "None, full CNS focus on peak lifts",
+      focus: "Peak — near-max effort, minimal volume, maximum intensity",
+      mindset: "Top sets only. 2-3 heavy sets on main lifts. This is your test week." },
+    { wave: "Wave 2", phase: "DELOAD", intensity: "~55–60%",
+      explosive: "Mobility only, foam roll, stretch, move well",
+      focus: "Final Deload, recover, reflect, come back and test maxes",
+      mindset: "You finished. Now recover completely. Test maxes next week fresh." }
+  ];
+
+  //  Past week 10 the same arc repeats, but the copy cannot: week 9 tells you to
+  //  go test new maxes, so week 11 cannot open by introducing you to the bar.
+  //  One variant per slot, reused on every lap after the first.
+  var WEEK_ARC_LAP2 = [
+    { focus: 'Second lap baseline — re-establish working weights on numbers that are already heavier',
+      mindset: 'Same baseline week. Except your baseline is heavier than it was the first time.' },
+    { focus: 'Load again, from a higher floor than the last lap started on',
+      mindset: 'You know what this week feels like now. That is not a reason to take less weight.' },
+    { focus: 'Overload — beat the lap-one numbers for this slot, not just last week',
+      mindset: 'Last lap this week was your ceiling. This lap it is your starting point.' },
+    { focus: 'Deload — you have earned it twice over, take it properly',
+      mindset: 'Backing off is what let you add weight last lap. Do it again. Do not be clever.' },
+    { focus: 'Wave 2 base, second lap — return heavier than this lap started',
+      mindset: 'Two full waves in. Compare against your own log, not against week 1.' },
+    { focus: 'Build — volume climbing on top of everything the last lap added',
+      mindset: 'The numbers on the bar are the only honest record. Beat the ones already there.' },
+    { focus: 'Load — highest volume week again, at a weight the last lap could not carry',
+      mindset: 'This is the week that separated people last lap. You already got through it once.' },
+    { focus: 'Overload — push past the territory the last lap called new',
+      mindset: "Beat your week 8 numbers this time, not just week 3's." },
+    { focus: "Peak — test week, measured against your own best, not the program's",
+      mindset: 'Top sets only. The number to beat is the one you set last peak.' },
+    { focus: 'Final deload of this lap — recover, then test maxes and go again',
+      mindset: 'You finished another one. Recover completely, retest, and start the next lap heavier.' }
+  ];
+
+  //  Total training weeks. Ten by default; when a race is set and the running
+  //  plan runs longer, the lift block extends to match rather than running out.
+  function totalTrainWeeks() {
+    var base = 10;
+    try {
+      if (runPlan && runPlan.raceDate && typeof generateRunPlan === 'function') {
+        var p = generateRunPlan(readRunInputs(), startOfToday());
+        if (p && !p.error && p.totalWeeks > base) base = p.totalWeeks;
+      }
+    } catch(e) {}
+    return base;
+  }
+  function weekArcFor(wk) {
+    var slot = ((wk % 10) + 10) % 10;
+    var a = WEEK_ARC[slot], lap = Math.floor(wk / 10);
+    if (lap < 1) return a;
+    var v = WEEK_ARC_LAP2[slot];
+    return { wave: a.wave, phase: a.phase, intensity: a.intensity, explosive: a.explosive,
+             focus: v.focus, mindset: v.mindset };
+  }
+
+  const DAY_ORDER = ['chest','arms','legs','chest-b','arms-b','legs-b']; // 6-day pools
   const EXERCISES = [
     { id:"flat-bb-bench", day:"chest", name:"Flat Barbell Bench Press", tag:"primary", repRange:[5,8], increment:5, maxKey:"bench", maxPct:0.8, rest:"3–4 min", time:"~18 min", alts:"Incline Barbell Bench Press or Smith Machine Bench Press", note:"Your primary strength indicator for this program. Add 5 lbs per week — no more, no less. Arch slightly, retract your scapulae, keep your feet planted. The bar should touch your lower chest, not your sternum. If you can't get all 5 reps on both sets, you went too heavy. 3–4 min rest is not optional — this is a CNS-demanding compound and cutting your rest costs you reps." },
     { id:"lat-pulldown", day:"chest", name:"Lat Pulldown Machine", tag:"secondary", repRange:[10,12], increment:5, maxKey:"bench", maxPct:0.55, rest:"90 sec", time:"~9 min", note:"Lean back slightly — about 15° — and pull the bar to your upper chest. Drive your elbows down toward your hips, not just pull the bar with your arms. Feel a strong lat stretch at the top of each rep. Wide grip emphasizes the outer lat — that's the width you see from the front. The machine lets you safely push to failure without a spotter." },
@@ -3347,12 +3465,83 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '</div>';
   }
 
+  //  Two render paths on purpose. At 6 days the original hand-written markup is
+  //  used exactly as before, so that path is untouched. The shorter templates
+  //  render into a generated container instead, and whichever path is inactive
+  //  is emptied so an exercise's row ids never exist twice in the document.
   function renderDaySections() {
+    var alt = document.getElementById('altPlan');
+    var orig = document.getElementById('planNav');
+    var sixDay = (liftDaysPerWeek === 6);
+    if (orig) orig.style.display = sixDay ? '' : 'none';
+    document.querySelectorAll('#plan > .plan-content').forEach(function(el) {
+      el.style.display = sixDay ? '' : 'none';
+    });
+    if (alt) alt.style.display = sixDay ? 'none' : '';
     DAY_ORDER.forEach(function(dayId) {
       var host = document.querySelector('[data-rows="' + dayId + '"]');
       if (!host) return;
-      host.innerHTML = EXERCISES.filter(function(ex) { return ex.day === dayId; }).map(liftRowHTML).join('');
+      host.innerHTML = sixDay
+        ? EXERCISES.filter(function(ex) { return ex.day === dayId; }).map(liftRowHTML).join('')
+        : '';
     });
+    if (!alt) return;
+    if (sixDay) { alt.innerHTML = ''; return; }
+    var ids = splitDayIds();
+    var nav = '<div class="plan-nav" id="altPlanNav">' + ids.map(function(id, i) {
+      var d = SPLIT_DAYS[id];
+      return '<button class="plan-nav-btn' + (i === 0 ? ' active' : '') + '" id="altbtn-' + id
+        + '" onclick="switchAltDay(\'' + id + '\')">' + d.tag + ' · ' + d.title + '</button>';
+    }).join('') + '</div>';
+    var body = ids.map(function(id, i) {
+      var d = SPLIT_DAYS[id];
+      var rows = splitDayExercises(id).map(liftRowHTML).join('');
+      return '<div class="plan-content' + (i === 0 ? ' active' : '') + '" id="altday-' + id + '">'
+        + '<div class="plan-day-header"><div>'
+        + '<div class="plan-day-title" style="color:var(--accent)">' + d.title.toUpperCase() + '</div>'
+        + '<div class="plan-day-focus">' + (d.focus || '') + '</div></div>'
+        + '<div class="plan-badges"><span class="badge" style="background:rgba(241,239,225,0.12);color:var(--accent);border:1px solid rgba(241,239,225,0.28)">'
+        + d.tag + '</span></div></div>'
+        + '<div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>'
+        + '<div class="lift-rows">' + rows + '</div></div>';
+    }).join('');
+    alt.innerHTML = nav + body;
+  }
+
+  function switchAltDay(dayId) {
+    document.querySelectorAll('#altPlan .plan-content').forEach(function(el) { el.classList.remove('active'); });
+    document.querySelectorAll('#altPlan .plan-nav-btn').forEach(function(el) { el.classList.remove('active'); });
+    var d = document.getElementById('altday-' + dayId), b = document.getElementById('altbtn-' + dayId);
+    if (d) d.classList.add('active');
+    if (b) b.classList.add('active');
+  }
+
+  function setLiftDays(v) {
+    v = parseInt(v, 10);
+    if (isNaN(v)) v = 6;
+    liftDaysPerWeek = Math.max(3, Math.min(6, v));
+    persistLiftDays();
+    updateLiftDaysUI();
+    updateLiftDaysUI();
+    renderWeekSelectors();
+    renderDaySections();
+    renderAllRowStates();
+    renderProgressView();
+    if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
+    if (typeof renderCalendarTab === 'function') renderCalendarTab();
+    if (typeof renderRunPlan === 'function') renderRunPlan();
+    if (typeof renderRing === 'function') renderRing();
+    if (typeof enhanceAllInputs === 'function') enhanceAllInputs();
+  }
+
+  function updateLiftDaysUI() {
+    document.querySelectorAll('.liftdays-btn').forEach(function(b) {
+      b.classList.toggle('on', parseInt(b.dataset.v, 10) === liftDaysPerWeek);
+    });
+    var lbl = document.getElementById('liftDaysLabel');
+    if (lbl) lbl.textContent = activeSplit().label + ' · ' + activeSplit().note;
+    var mirror = document.getElementById('run-lift-days-readout');
+    if (mirror) mirror.textContent = liftDaysPerWeek + ' days · ' + activeSplit().label;
   }
 
   function currentInputWeight(ex, target) {
@@ -3977,7 +4166,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var data = {
       app: 'monk-mode', exportedAt: todayKey(),
       sessions: sessions, maxes: userMaxes, week: currentTrainWeek, archive: archive,
-      variants: variantChoice, runPlan: runPlan, runLogs: runLogs
+      variants: variantChoice, runPlan: runPlan, runLogs: runLogs, liftDays: liftDaysPerWeek
     };
     var blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
     var a = document.createElement('a');
@@ -3999,7 +4188,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
         saveSessions();
         if (data.maxes) { userMaxes = data.maxes; persistMaxes(); }
         if (data.archive) { try { localStorage.setItem(ARCHIVE_KEY, JSON.stringify(data.archive)); } catch(e) {} }
-        if (typeof data.week === 'number' && data.week >= 0 && data.week <= 9) {
+        if (typeof data.week === 'number' && data.week >= 0) {
           currentTrainWeek = data.week;
           try { localStorage.setItem(TRAIN_WEEK_KEY, data.week); } catch(e) {}
         }
@@ -4012,6 +4201,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
           runPlan = data.runPlan;
           persistRunPlan();
           if (typeof initRunPlan === 'function') initRunPlan();
+        }
+        if (typeof data.liftDays === 'number' && data.liftDays >= 3 && data.liftDays <= 6) {
+          setLiftDays(data.liftDays);
         }
         if (data.runLogs && typeof data.runLogs === 'object') {
           runLogs = data.runLogs;
@@ -4108,13 +4300,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   //  Every display that shows the training week, updated from the one value
   function syncWeekDisplays(idx) {
+    renderWeekSelectors();
     document.querySelectorAll('.train-week-btn').forEach(function(b, i) {
       b.classList.toggle('twb-active', i === idx);
     });
     document.querySelectorAll('.week-tab').forEach(function(b, i) {
       b.classList.toggle('active', i === idx);
     });
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < totalTrainWeeks(); i++) {
       var card = document.getElementById('winfo' + i);
       if (card) card.style.display = (i === idx) ? 'flex' : 'none';
     }
@@ -4130,10 +4323,70 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (typeof renderCalendarTab === 'function') renderCalendarTab();
   }
 
+  //     WEEK SELECTORS AND INFO PANELS — generated, not ten literal blocks, so
+  //     any week number renders without new markup. Length is ten by default and
+  //     stretches to the running plan's total when a race pushes past it.
+  function renderWeekSelectors() {
+    var total = totalTrainWeeks();
+    if (currentTrainWeek > total - 1) currentTrainWeek = total - 1;
+
+    var tabs = document.getElementById('weekTabs');
+    if (tabs) {
+      var out = '';
+      for (var i = 0; i < total; i++) {
+        var a = weekArcFor(i);
+        out += '<button class="week-tab' + (i === currentTrainWeek ? ' active' : '')
+          + '" onclick="selectWeek(' + i + ', this)" style="position:relative;">'
+          + '<span style="font-size:9px;color:inherit;opacity:0.62;display:block;letter-spacing:0.15em;margin-bottom:2px;">'
+          + (a.wave || '') + '</span>Week ' + (i + 1) + '</button>';
+      }
+      tabs.innerHTML = out;
+    }
+
+    var sel = document.getElementById('trainWeekSelector');
+    if (sel) {
+      var o2 = '';
+      for (var j = 0; j < total; j++) {
+        o2 += '<button onclick="setTrainWeek(' + j + ')" class="train-week-btn'
+          + (j === currentTrainWeek ? ' twb-active' : '')
+          + '" style="padding:5px 13px;font-family:\'Antonio\',sans-serif;font-weight:700;font-size:12px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s;">W'
+          + (j + 1) + '</button>';
+      }
+      sel.innerHTML = o2;
+    }
+
+    var panels = document.getElementById('weekInfoPanels');
+    if (panels) {
+      var o3 = '';
+      for (var k = 0; k < total; k++) {
+        var w = weekArcFor(k);
+        var quiet = (w.phase === 'DELOAD');
+        o3 += '<div class="week-info" id="winfo' + k + '"'
+          + (k === currentTrainWeek ? '' : ' style="display:none"') + '>'
+          + item('Wave', '<span style="color:var(--accent);font-weight:700;">' + w.wave + '</span>')
+          + item('Phase', '<span style="background:' + (quiet ? 'var(--surface)' : 'rgba(241,239,225,0.13)')
+              + ';color:' + (quiet ? 'var(--muted)' : 'var(--accent)') + ';border:1px solid '
+              + (quiet ? 'var(--border-hi)' : 'rgba(241,239,225,0.3)')
+              + ';padding:2px 10px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:0.1em;">'
+              + w.phase + '</span>')
+          + item('Focus', w.focus)
+          + item('Intensity', w.intensity)
+          + item('Explosive Work', w.explosive)
+          + '<div class="week-info-item" style="grid-column:1/-1"><div class="week-info-label">Mindset</div>'
+          + '<div class="week-info-val" style="color:#C9C5B6;font-style:italic;">"' + w.mindset + '"</div></div>'
+          + '</div>';
+      }
+      panels.innerHTML = o3;
+    }
+    function item(label, val) {
+      return '<div class="week-info-item"><div class="week-info-label">' + label
+        + '</div><div class="week-info-val">' + val + '</div></div>';
+    }
+  }
   function setTrainWeek(idx) {
     idx = parseInt(idx, 10);
     if (isNaN(idx)) idx = 0;
-    idx = Math.max(0, Math.min(9, idx));
+    idx = Math.max(0, Math.min(totalTrainWeeks() - 1, idx));
     currentTrainWeek = idx;
     currentWeek = idx;                       // the Overview's own pointer, kept aligned
     persistTrainWeek();
@@ -5157,7 +5410,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       peak: num('run-peak', 30),
       longDow: num('run-long-day', 5),
       pr: val('run-pr'),
-      liftDays: num('run-lift-days', 0),
+      liftDays: liftDaysPerWeek,
       liftRestDow: num('run-lift-rest', 6),
       liftOnLongRun: false
     };
@@ -5204,8 +5457,6 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (cur) cur.textContent = inp.current === 0 ? 'Run/walk' : inp.current + ' mi';
     var pk = document.getElementById('run-peak-val');
     if (pk) pk.textContent = inp.peak + ' mi';
-    var lf = document.getElementById('run-lift-val');
-    if (lf) lf.textContent = inp.liftDays === 0 ? 'None' : inp.liftDays;
     var caps = RUN_PEAK_CAPS[inp.level];
     var band = caps ? caps[RACE_DISTANCES[inp.distance].capKey] : null;
     var ph = document.getElementById('run-peak-hint');
@@ -5221,12 +5472,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
         ? Math.floor(dayDiff(startOfToday(), race) / 7) + ' weeks out (' + dayDiff(startOfToday(), race) + ' days).'
         : 'Pick a date — total weeks come from it.';
     }
-    var lh = document.getElementById('run-lift-hint');
-    if (lh) {
-      lh.textContent = runLiftingActive()
-        ? 'Pulled from your active lifting plan. Edit if your week looks different.'
-        : 'Set 0 if you are not lifting alongside this block.';
-    }
+    //  Lifting days is no longer an independent field here — it mirrors the
+    //  shared setting, which updateLiftDaysUI writes into the readout.
+    if (typeof updateLiftDaysUI === 'function') updateLiftDaysUI();
     renderRunPlan();
     if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
   }
@@ -5255,7 +5503,6 @@ body.training-mode select.run-input { color: #F1EFE1; }
     set('run-peak', runPlan.peak);
     set('run-long-day', runPlan.longDow);
     set('run-pr', runPlan.pr || '');
-    set('run-lift-days', runPlan.liftDays);
     set('run-lift-rest', runPlan.liftRestDow);
     setRunLevel(runPlan.level);
   }
@@ -5269,15 +5516,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     ring already counts them as a 7-day week, so they map straight onto
   //     Mon–Sun; (2) dates come from the real calendar week containing today,
   //     because the training week selector is manual and carries no start date.
-  const CAL_WEEK = [
-    { id:'chest',   tag:'1A', title:'Chest + Back' },
-    { id:'arms',    tag:'2A', title:'Shoulders + Arms' },
-    { id:'legs',    tag:'3A', title:'Legs + Abs' },
-    { id:'rest',    tag:'',   title:'Rest + Stretch', rest:true },
-    { id:'chest-b', tag:'1B', title:'Chest + Back' },
-    { id:'arms-b',  tag:'2B', title:'Shoulders + Arms' },
-    { id:'legs-b',  tag:'3B', title:'Mobility + Core' }
-  ];
+  //  The seven Mon-Sun slots for the active split. Rest days come straight from
+  //  the template's own placement, which spreads them and keeps the weekend
+  //  clear of heavy lower-body work on the shorter templates.
+  function calWeekSlots() {
+    return activeSplit().week.map(function(id) {
+      var d = SPLIT_DAYS[id] || SPLIT_DAYS['rest'];
+      return { id: id, tag: d.tag, title: d.title, rest: !!d.rest };
+    });
+  }
 
   //  Run detail per weekday for the given calendar week, or null when no run
   //  plan exists yet. Never throws: a missing, empty, or unbuildable plan
@@ -5340,7 +5587,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function calWeekGrid(monday) {
     var today = startOfToday();
     var runs = calRunCells(monday);
-    var html = CAL_WEEK.map(function(slot, i) {
+    //  Seven weekday slots from whichever split is active, not a fixed array
+    var html = calWeekSlots().map(function(slot, i) {
       var date = addDays(monday, i);
       var isToday = date.getTime() === today.getTime();
       var run = runs ? runs[i] : null;
@@ -5373,7 +5621,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     whichever week is selected rather than only the current one. Week
   //     changes here go through setTrainWeek, so every other surface follows.
   function stepCalendarWeek(delta) {
-    setTrainWeek(Math.max(0, Math.min(9, currentTrainWeek + delta)));
+    setTrainWeek(Math.max(0, Math.min(totalTrainWeeks() - 1, currentTrainWeek + delta)));
   }
 
   function renderCalendarTab() {
@@ -5462,15 +5710,18 @@ body.training-mode select.run-input { color: #F1EFE1; }
     // once at the end of init to bring every surface into line.
     try {
       var saved = parseInt(localStorage.getItem(TRAIN_WEEK_KEY));
-      if (!isNaN(saved) && saved >= 0 && saved <= 9) currentTrainWeek = saved;
+      if (!isNaN(saved) && saved >= 0) currentTrainWeek = saved;
     } catch(e) {}
     // Ask the browser to protect this origin's storage from eviction
     if (navigator.storage && navigator.storage.persist) {
       navigator.storage.persist().catch(function(){});
     }
+    loadLiftDays();
     loadMaxes();
     loadVariants();
     updateMaxChips();
+    updateLiftDaysUI();
+    renderWeekSelectors();
     renderDaySections();
     renderAllRowStates();
     renderProgressView();
