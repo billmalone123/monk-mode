@@ -231,7 +231,23 @@
   .hero-cta-arrow { font-size: 16px; transition: transform 0.2s; }
   .hero-cta:hover .hero-cta-arrow { transform: translateX(4px); }
   .hero-stats { display: none; }
-  .hero-title { display: none; }
+  /* Brought back as real display type. It was retired with the old hero layout
+     and left behind as dead CSS; the ring is the dominant element now, so this
+     is sized to sit above it as a headline rather than to dominate as before. */
+  .hero-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: clamp(34px, 6.2vw, 84px);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-align: center;
+    max-width: 90vw;
+    margin: 0 0 4px;
+    position: relative;
+    z-index: 1;          /* above the spotlight, like the rest of the content */
+  }
   .hero-number { display: none !important; }
 
   /* SECTION BASE */
@@ -711,7 +727,6 @@
     }
     .hero-number { display: none; }
     .hero-eyebrow { font-size: 11px; margin-bottom: 14px; }
-    .hero-title { font-size: 64px; margin-bottom: 20px; }
     .hero-desc { font-size: 14px; margin-bottom: 28px; }
     .hero-stats { gap: 24px; flex-wrap: wrap; }
     .hero-cta { margin-top: 28px; }
@@ -733,7 +748,6 @@
   @media (max-width: 480px) {
     .hero { padding: 32px 20px 40px; }
     .edge-section { padding: 60px 20px; }
-    .hero-title { font-size: 44px; margin-bottom: 16px; }
     .hero-eyebrow { margin-bottom: 12px; }
     .hero-desc { font-size: 13px; margin-bottom: 20px; }
     .hero-stats { gap: 12px; }
@@ -764,7 +778,7 @@
     nav { height: 48px; }
     .nav-sub { top: 48px; }
     .hero { min-height: auto; padding: 60px 32px 40px; }
-    .hero-title { font-size: clamp(48px, 10vw, 80px); margin-bottom: 16px; }
+    .hero-title { font-size: clamp(24px, 4.6vw, 40px); margin-bottom: 8px; }
     .hero-stats { gap: 20px; }
     .hero-cta { margin-top: 20px; padding: 12px 24px; }
     section { padding: 60px 32px; }
@@ -779,7 +793,6 @@
     footer { padding: 48px 40px; }
     .about-grid { gap: 48px; }
     .prog-grid { gap: 24px; }
-    .hero-title { font-size: clamp(72px, 12vw, 150px); }
     .lift-table-header, .lift-row { grid-template-columns: 1fr 70px 80px; }
     .lift-time { display: none; }
   }
@@ -2175,6 +2188,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       <span class="ring-days-done" id="ring-days-done"></span>
     </div>
   </div>
+  <h1 class="hero-title">Strong and fast.</h1>
   <div class="hero-caption">
     <div class="hero-eyebrow">3 on · 1 off · Arnold Split</div>
     <p class="hero-desc">Ten weeks. Full progression. No guesswork.</p>
@@ -2411,7 +2425,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.20</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.21</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2462,7 +2476,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.20</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.21</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2693,7 +2707,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.20</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.21</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2779,7 +2793,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.20</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.21</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -5898,8 +5912,8 @@ function initEdgeCarousel() {
 //     Retarget by changing this one selector — the hero has no large headline
 //     element (only an eyebrow, this tagline and the ring), so it is applied to
 //     the tagline; pointing it at a .section-title instead is a one-line change.
-var ASSEMBLY_SEL = '.hero-desc';
-var ASSEMBLY_SETTLE = 0.5;      // progress at which characters are fully home
+var ASSEMBLY_SEL = '.hero-title';
+var ASSEMBLY_SETTLE = 0.35;     // progress at which characters are fully home
 
 function initScrollAssembly() {
   var el = document.querySelector(ASSEMBLY_SEL);
@@ -5930,17 +5944,18 @@ function initScrollAssembly() {
     for (var i = 0; i < spans.length; i++) {
       var dist = i - mid;
       if (slack <= 0.001) { spans[i].style.transform = ''; continue; }
-      spans[i].style.transform = 'translateX(' + (dist * 9 * slack).toFixed(2) + 'px)'
-        + ' rotateX(' + (dist * 7 * slack).toFixed(2) + 'deg)';
+      spans[i].style.transform = 'translateX(' + (dist * 6 * slack).toFixed(2) + 'px)'
+        + ' rotateX(' + (dist * 5 * slack).toFixed(2) + 'deg)';
     }
   }
 
   function progress() {
+    //  How far the section has been scrolled into, not the enter-from-bottom
+    //  mapping: the hero is already on screen at load, so that version started
+    //  at ~0.5 and the characters never visibly assembled.
     var r = section.getBoundingClientRect();
-    var vh = window.innerHeight || document.documentElement.clientHeight;
-    var span = r.height + vh;
-    if (span <= 0) return 1;
-    return Math.max(0, Math.min(1, (vh - r.top) / span));
+    if (r.height <= 0) return 1;
+    return Math.max(0, Math.min(1, -r.top / r.height));
   }
 
   var ticking = false;
