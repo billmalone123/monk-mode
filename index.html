@@ -1726,6 +1726,27 @@ body.training-mode footer { display: none; }
 .asm { display: inline-block; perspective: 600px; }
 .asm span { display: inline-block; transition: transform 0.08s linear; will-change: transform; }
 .asm span.sp { width: 0.3em; }
+/* ── VARIANT EQUIPMENT TAGS ──────────────────────────────────────────────── */
+.variant-chip { display: inline-flex; align-items: center; gap: 6px; }
+.variant-eq {
+  font-family: var(--font-display); font-size: 8px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 1px 5px; border-radius: 2px;
+  background: rgba(241,239,225,0.08); color: var(--muted);
+  border: 1px solid var(--border-hi);
+}
+/* Minimal-equipment options read brighter — the whole point is spotting them fast */
+.variant-eq.eq-bodyweight, .variant-eq.eq-dumbbell, .variant-eq.eq-band {
+  color: var(--text); border-color: var(--field);
+}
+.variant-chip.active .variant-eq { background: rgba(26,26,24,0.18); color: #1A1A18; border-color: rgba(26,26,24,0.3); }
+.variant-chip.variant-custom { border-style: dashed; }
+.variant-custom-input {
+  background: var(--bg); border: 1px solid var(--accent); color: var(--text);
+  padding: 5px 9px; font-family: var(--font-body); font-size: 12px;
+  border-radius: 3px; outline: none; min-width: 180px; margin-left: 4px;
+}
+
 /* ── SHARED LIFT-DAYS CONTROL ────────────────────────────────────────────── */
 .liftdays-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .liftdays-label {
@@ -2357,7 +2378,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.23</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.24</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2418,7 +2439,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.23</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.24</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2639,7 +2660,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.23</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.24</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2725,7 +2746,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.23</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.24</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3179,7 +3200,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     'incline-mach-press': ['Incline Dumbbell Press', 'Incline Barbell Bench Press', 'Incline Smith Machine Press'],
     'seated-cable-row':   ['Chest-Supported Row', 'Machine Row', 'Single-Arm Dumbbell Row'],
     'pec-dec':            ['Cable Chest Fly', 'Dumbbell Fly', 'Machine Chest Press'],
-    'chest-supp-row':     ['Chest-Supported Row Machine', 'Seated Cable Row', 'T-Bar Row'],
+    'chest-supp-row':     ['Chest-Supported Row Machine', 'Seated Cable Row', 'T-Bar Row', 'Single-Arm Dumbbell Row'],
     'face-pulls':         ['Rear Delt Machine Fly', 'Reverse Pec Dec', 'Band Pull-Aparts'],
     'seated-ohp':         ['Seated Barbell OHP', 'Shoulder Press Machine', 'Standing Overhead Press'],
     'shoulder-press-mach':['Seated Dumbbell Press', 'Seated Barbell OHP', 'Arnold Press'],
@@ -3217,6 +3238,29 @@ body.training-mode select.run-input { color: #F1EFE1; }
     'weighted-leg-raise': ['Hanging Leg Raise', 'Reverse Crunch', 'V-Up'],
     'weighted-situp':     ['Cable Crunch', 'Decline Sit-Up', 'Ab Wheel Rollout'],
   };
+  //     EQUIPMENT TAGS — inferred from the variant name itself, which is enough
+  //     in every case here. Order matters: 'Smith Machine Bench Press' must match
+  //     smith before machine, 'Cable Rope Hammer Curl' cable before dumbbell.
+  const EQUIP_RULES = [
+    [/smith/,                                                              'smith'],
+    [/band |band-|pull-apart|spanish squat/,                               'band'],
+    [/machine|pec dec|hack squat|assisted|leg press|pulldown|leg curl|leg extension|seated calf|calf raise machine|diverging|low row|chest-supported row/, 'machine'],
+    [/cable|rope|pushdown|face pull|crunch/,                               'cable'],
+    [/dumbbell|goblet|kickback|hammer curl|arnold press|concentration curl/, 'dumbbell'],
+    [/barbell|ez bar|t-bar|deadlift|ohp|overhead press|front squat|box squat|close-grip bench|skull crusher|reverse curl/, 'barbell'],
+    [/pull-up|push-up|dip|plank|sit-up|leg raise|v-up|wall sit|nordic|sissy|hold|lunge|step-up|split squat|cossack|rock-back|swiss-ball|ab wheel|bodyweight|standing calf raise|single-leg calf raise/, 'bodyweight']
+  ];
+  const EQUIP_LABEL = { smith:'Smith', band:'Band', machine:'Machine', cable:'Cable',
+                        barbell:'Barbell', dumbbell:'Dumbbell', bodyweight:'Bodyweight', other:'Other' };
+  //  Anything a home gym can cover without a rack or a specific machine.
+  const EQUIP_MINIMAL = { bodyweight:1, dumbbell:1, band:1 };
+  function equipmentOf(name) {
+    var t = String(name || '').toLowerCase();
+    for (var i = 0; i < EQUIP_RULES.length; i++) {
+      if (EQUIP_RULES[i][0].test(t)) return EQUIP_RULES[i][1];
+    }
+    return 'other';
+  }
   const VARIANTS_KEY = 'monk_variants_v1';
   var variantChoice = {};
   function loadVariants() {
@@ -3226,7 +3270,19 @@ body.training-mode select.run-input { color: #F1EFE1; }
     try { localStorage.setItem(VARIANTS_KEY, JSON.stringify(variantChoice)); } catch(e) {}
     idbSet('variants', variantChoice);   // durable mirror
   }
-  function exVariants(ex) { return [ex.name].concat(EX_ALTS[ex.id] || []); }
+  function exCurated(ex) { return [ex.name].concat(EX_ALTS[ex.id] || []); }
+  //  A stored custom name is a legitimate variant, not a separate code path.
+  //  Including it here is the whole fix: activeVariant() validates against this
+  //  list, so a custom pick survives being read back, and prevWeekEntry matches
+  //  history on activeVariant(ex) and therefore follows custom names exactly the
+  //  way it follows curated ones. No downstream special-casing.
+  function exVariants(ex) {
+    var list = exCurated(ex);
+    var c = variantChoice[ex.id];
+    if (c && list.indexOf(c) === -1) list.push(c);
+    return list;
+  }
+  function isCustomVariant(ex, name) { return exCurated(ex).indexOf(name) === -1; }
   function activeVariant(ex) {
     var c = variantChoice[ex.id];
     return (c && exVariants(ex).indexOf(c) !== -1) ? c : ex.name;
@@ -3236,14 +3292,68 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (variants.length <= 1) return '';
     var active = activeVariant(ex);
     var chips = variants.map(function(name) {
-      return '<button class="variant-chip' + (name === active ? ' active' : '') + '" onclick="chooseVariant(event,\'' + ex.id + '\')">' + name + '</button>';
+      var eq = equipmentOf(name);
+      return '<button class="variant-chip' + (name === active ? ' active' : '')
+        + '" data-name="' + name.replace(/"/g, '&quot;') + '" onclick="chooseVariant(event,\'' + ex.id + '\')">'
+        + '<span class="variant-name">' + name + '</span>'
+        + '<span class="variant-eq eq-' + eq + '">' + EQUIP_LABEL[eq] + '</span></button>';
     }).join('');
-    return '<div class="lift-variants" onclick="event.stopPropagation()"><span class="lift-variants-label">Swap</span>' + chips + '</div>';
+    chips += '<button class="variant-chip variant-custom" onclick="openCustomVariant(event,\'' + ex.id + '\')">+ Custom</button>';
+    return '<div class="lift-variants" data-variants="' + ex.id + '" onclick="event.stopPropagation()">'
+      + '<span class="lift-variants-label">Swap</span>' + chips + '</div>';
+  }
+
+  //     CUSTOM VARIANT — the escape hatch when none of the curated options exist
+  //     in the gym you are actually standing in. Stored down the same path as a
+  //     curated pick, so it behaves identically from there on.
+  function openCustomVariant(evt, exId) {
+    evt.stopPropagation();
+    var ex = EX_BY_ID[exId];
+    if (!ex) return;
+    var wrap = document.querySelector('[data-variants="' + exId + '"]');
+    if (!wrap) return;
+    var open = wrap.querySelector('.variant-custom-input');
+    if (open) { open.focus(); return; }
+    var inp = document.createElement('input');
+    inp.className = 'variant-custom-input';
+    inp.type = 'text';
+    inp.maxLength = 40;
+    inp.placeholder = 'What are you actually doing?';
+    var cur = variantChoice[exId];
+    if (cur && isCustomVariant(ex, cur)) inp.value = cur;   // editable again
+    inp.addEventListener('click', function(e) { e.stopPropagation(); });
+    inp.addEventListener('keydown', function(e) {
+      e.stopPropagation();
+      if (e.key === 'Enter') { commitCustomVariant(exId, inp.value); }
+      else if (e.key === 'Escape') { inp.parentNode && inp.parentNode.removeChild(inp); }
+    });
+    inp.addEventListener('blur', function() { commitCustomVariant(exId, inp.value); });
+    wrap.appendChild(inp);
+    inp.focus();
+  }
+
+  function commitCustomVariant(exId, raw) {
+    var ex = EX_BY_ID[exId];
+    if (!ex) return;
+    //  Trim, collapse whitespace, cap the length. Blank never saves as a
+    //  variant — it falls back to the exercise's own name.
+    var name = String(raw == null ? '' : raw).replace(/\s+/g, ' ').replace(/^ | $/g, '').slice(0, 40);
+    variantChoice[exId] = name || ex.name;
+    persistVariants();
+    var wrap = document.querySelector('[data-variants="' + exId + '"]');
+    if (wrap) {
+      var holder = document.createElement('div');
+      holder.innerHTML = variantChipsHTML(ex);
+      if (holder.firstChild) wrap.parentNode.replaceChild(holder.firstChild, wrap);
+    }
+    var nameEl = document.getElementById('name-' + exId);
+    if (nameEl) nameEl.textContent = activeVariant(ex);
+    if (typeof renderLiftRowState === 'function') renderLiftRowState(ex);
   }
   function chooseVariant(evt, exId) {
     evt.stopPropagation();
     var btn = evt.currentTarget;
-    var name = btn.textContent;
+    var name = btn.dataset.name || btn.textContent;
     variantChoice[exId] = name;
     persistVariants();
     var wrap = btn.parentElement;
