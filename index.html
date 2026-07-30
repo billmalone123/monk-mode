@@ -1713,6 +1713,58 @@ body.training-mode footer { display: none; }
 .asm { display: inline-block; perspective: 600px; }
 .asm span { display: inline-block; transition: transform 0.08s linear; will-change: transform; }
 .asm span.sp { width: 0.3em; }
+/* ── EDGE CAROUSEL ───────────────────────────────────────────────────────── */
+/* Slides share one grid cell, so the viewport sizes itself to the tallest card
+   and nothing has to measure heights in JS. Transforms do the positioning. */
+.edge-carousel { margin-bottom: 80px; overflow: hidden; }
+.edge-viewport {
+  display: grid; perspective: 1500px;
+  max-width: 620px; margin: 0 auto; align-items: start;
+}
+.edge-slide {
+  grid-area: 1 / 1;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+.edge-slide.is-active { transform: translateX(0) scale(1) rotateY(0deg); opacity: 1; z-index: 3; }
+.edge-slide.is-prev {
+  transform: translateX(-62%) scale(0.85) rotateY(16deg); opacity: 0.42; z-index: 2;
+}
+.edge-slide.is-next {
+  transform: translateX(62%) scale(0.85) rotateY(-16deg); opacity: 0.42; z-index: 2;
+}
+.edge-slide:not(.is-active) { cursor: pointer; }
+.edge-carousel.dragging .edge-slide { transition: none; }
+.edge-carousel { cursor: grab; }
+.edge-carousel.dragging { cursor: grabbing; }
+.edge-controls {
+  display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 34px;
+}
+.edge-arrow {
+  background: transparent; border: 1px solid var(--field); color: var(--text);
+  width: 40px; height: 40px; flex: 0 0 40px; border-radius: 50%;
+  font-size: 20px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.09s ease;
+}
+.edge-arrow:hover { background: var(--accent); border-color: var(--accent); color: #1A1A18; }
+.edge-arrow:active { transform: scale(0.9); }
+.edge-dots { display: flex; gap: 9px; align-items: center; }
+.edge-dot {
+  width: 8px; height: 8px; border-radius: 50%; padding: 0;
+  background: var(--field); border: none; cursor: pointer;
+  transition: background 0.2s, width 0.2s, transform 0.09s ease;
+}
+.edge-dot:active { transform: scale(0.85); }
+.edge-dot.on { background: var(--accent); width: 22px; border-radius: 4px; }
+@media (max-width: 720px) {
+  /* Neighbours would be more clipping than peek at this width, so the active
+     card stands alone and the dots carry the sense of position instead. */
+  .edge-viewport { max-width: 100%; }
+  .edge-slide.is-prev, .edge-slide.is-next { opacity: 0; pointer-events: none; transform: scale(0.9); }
+}
+
 /* ── TOOLTIPS ────────────────────────────────────────────────────────────── */
 .vtip {
   position: fixed; z-index: 400; max-width: 260px;
@@ -2172,10 +2224,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
     People say looks don't matter. Those people are lying to you. The world responds differently to a man who carries himself with physical authority. This is not vanity. This is strategy.
   </p>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:16px;margin-bottom:80px;">
+  <div class="edge-carousel" id="edgeCarousel">
+    <div class="edge-viewport" id="edgeViewport">
 
     <!-- Confidence -->
-    <div style="background:var(--surface);border:1px solid rgba(241,239,225,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
+    <div class="edge-slide" style="background:var(--surface);border:1px solid rgba(241,239,225,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(241,239,225,0.05);line-height:1;user-select:none;">01</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Mental Edge</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#F1EFE1;line-height:1.1;margin-bottom:20px;">Confidence<br>Is Not Born.<br>It's Built.</div>
@@ -2188,7 +2241,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     </div>
 
     <!-- Social Status -->
-    <div style="background:var(--surface);border:1px solid rgba(241,239,225,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
+    <div class="edge-slide" style="background:var(--surface);border:1px solid rgba(241,239,225,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(241,239,225,0.05);line-height:1;user-select:none;">02</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Social Capital</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#F1EFE1;line-height:1.1;margin-bottom:20px;">People Treat<br>You How You<br>Look.</div>
@@ -2201,7 +2254,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     </div>
 
     <!-- Athletic Performance -->
-    <div style="background:var(--surface);border:1px solid rgba(241,239,225,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
+    <div class="edge-slide" style="background:var(--surface);border:1px solid rgba(241,239,225,0.06);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-10px;right:20px;font-family:'Antonio',sans-serif;font-weight:900;font-size:120px;color:rgba(241,239,225,0.05);line-height:1;user-select:none;">03</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">Athletic Output</div>
       <div style="font-family:'Antonio',sans-serif;font-weight:900;font-size:36px;text-transform:uppercase;letter-spacing:0.02em;color:#F1EFE1;line-height:1.1;margin-bottom:20px;">Strong Men<br>Are Useful<br>Men.</div>
@@ -2213,6 +2266,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
       </p>
     </div>
 
+    </div>
+    <div class="edge-controls">
+      <button class="edge-arrow" id="edgePrev" aria-label="Previous card">&#8249;</button>
+      <div class="edge-dots" id="edgeDots" role="tablist" aria-label="Cards"></div>
+      <button class="edge-arrow" id="edgeNext" aria-label="Next card">&#8250;</button>
+    </div>
   </div>
 
   <!-- Pull quote -->
@@ -2352,7 +2411,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.19</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.20</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2403,7 +2462,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.19</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.20</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2634,7 +2693,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.19</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.20</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2720,7 +2779,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.19</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.20</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -5718,6 +5777,119 @@ function initNavRolls() {
   });
 }
 
+//     EDGE CAROUSEL — the three Real ROI cards, one centred and two rotated
+//     away to the sides. Wraps in both directions, so prev from the first lands
+//     on the last and next from the last lands on the first; with only three
+//     slides, clamping would leave the arrows dead half the time.
+//
+//     No autoplay, deliberately. Each card is a heading plus two paragraphs of
+//     body copy; advancing it out from under someone mid-sentence would be
+//     hostile, and the section is not a photo gallery where drift is harmless.
+function initEdgeCarousel() {
+  var root = document.getElementById('edgeCarousel');
+  var viewport = document.getElementById('edgeViewport');
+  var dotsHost = document.getElementById('edgeDots');
+  if (!root || !viewport || !dotsHost) return;
+  var slides = viewport.querySelectorAll('.edge-slide');
+  if (slides.length < 2) return;
+  var n = slides.length, active = 0;
+
+  var dots = [];
+  for (var i = 0; i < n; i++) {
+    var d = document.createElement('button');
+    d.className = 'edge-dot';
+    d.setAttribute('role', 'tab');
+    d.setAttribute('aria-label', 'Card ' + (i + 1) + ' of ' + n);
+    (function(idx) { d.addEventListener('click', function() { go(idx); }); })(i);
+    dotsHost.appendChild(d);
+    dots.push(d);
+  }
+
+  function render() {
+    for (var i = 0; i < n; i++) {
+      //  Offset normalised into [-1, 1] so each slide is exactly one of
+      //  previous, active or next however the index wraps.
+      var d = i - active;
+      if (d > n / 2) d -= n;
+      if (d < -n / 2) d += n;
+      var s = slides[i];
+      s.classList.remove('is-active', 'is-prev', 'is-next');
+      s.classList.add(d === 0 ? 'is-active' : (d < 0 ? 'is-prev' : 'is-next'));
+      s.setAttribute('aria-hidden', d === 0 ? 'false' : 'true');
+      dots[i].classList.toggle('on', i === active);
+      dots[i].setAttribute('aria-selected', i === active ? 'true' : 'false');
+    }
+  }
+  function go(idx) { active = ((idx % n) + n) % n; render(); }
+  function step(delta) { go(active + delta); }
+
+  var prev = document.getElementById('edgePrev'), next = document.getElementById('edgeNext');
+  if (prev) prev.addEventListener('click', function() { step(-1); });
+  if (next) next.addEventListener('click', function() { step(1); });
+  //  Clicking a side card brings it to the centre
+  for (var k = 0; k < n; k++) {
+    (function(idx) {
+      slides[idx].addEventListener('click', function() { if (idx !== active) go(idx); });
+    })(k);
+  }
+  root.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') { step(-1); e.preventDefault(); }
+    else if (e.key === 'ArrowRight') { step(1); e.preventDefault(); }
+  });
+
+  //     DRAG / SWIPE — one pointer path covers mouse and touch. Past the
+  //     threshold it advances; under it, releasing snaps back.
+  var startX = 0, dx = 0, dragging = false, pid = null;
+  function threshold() { return Math.max(48, viewport.offsetWidth * 0.16); }
+  function down(x, id) {
+    dragging = true; startX = x; dx = 0; pid = id;
+    root.classList.add('dragging');
+  }
+  function move(x) {
+    if (!dragging) return;
+    dx = x - startX;
+    //  Live follow while the finger is down, damped so it feels weighted
+    for (var i = 0; i < n; i++) {
+      var d = i - active;
+      if (d > n / 2) d -= n;
+      if (d < -n / 2) d += n;
+      if (d !== 0) continue;
+      slides[i].style.transform = 'translateX(' + (dx * 0.35).toFixed(1) + 'px) scale(1)';
+    }
+  }
+  function up() {
+    if (!dragging) return;
+    dragging = false;
+    root.classList.remove('dragging');
+    for (var i = 0; i < n; i++) slides[i].style.transform = '';
+    if (Math.abs(dx) > threshold()) step(dx < 0 ? 1 : -1);
+    dx = 0; pid = null;
+  }
+  if (window.PointerEvent) {
+    root.addEventListener('pointerdown', function(e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      down(e.clientX, e.pointerId);
+    });
+    root.addEventListener('pointermove', function(e) { if (e.pointerId === pid) move(e.clientX); });
+    root.addEventListener('pointerup', up);
+    root.addEventListener('pointercancel', up);
+    root.addEventListener('pointerleave', up);
+  } else {
+    root.addEventListener('touchstart', function(e) { down(e.touches[0].clientX, 't'); }, { passive: true });
+    root.addEventListener('touchmove', function(e) { move(e.touches[0].clientX); }, { passive: true });
+    root.addEventListener('touchend', up);
+    root.addEventListener('mousedown', function(e) { if (e.button === 0) down(e.clientX, 'm'); });
+    window.addEventListener('mousemove', function(e) { move(e.clientX); });
+    window.addEventListener('mouseup', up);
+  }
+  //  A drag should not also fire the click-to-centre handler
+  root.addEventListener('click', function(e) {
+    if (Math.abs(dx) > 6) { e.stopPropagation(); e.preventDefault(); }
+  }, true);
+
+  render();
+}
+
 //     SCROLL ASSEMBLY — characters sit offset and rotated by their distance
 //     from the centre of the line, and settle into place as the section scrolls
 //     through its own range. Continuous scrub, not a one-shot reveal, so it is
@@ -5862,6 +6034,7 @@ document.addEventListener('DOMContentLoaded', function() {
   } catch(e) {}
   initNavRolls();
   initScrollAssembly();
+  initEdgeCarousel();
   goTab(lastTab);
   // Fonts can land after first paint and change the label widths
   setTimeout(moveNavIndicator, 260);
