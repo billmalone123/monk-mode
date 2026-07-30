@@ -1824,6 +1824,48 @@ body.training-mode footer { display: none; }
 .cal-rest { font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.5; }
 .cal-note { font-size: 12px; color: var(--muted); line-height: 1.7; margin-bottom: 32px; max-width: 640px; }
 .cal-note strong { color: var(--text); font-weight: 600; }
+.cal-fullview-btn {
+  background: transparent; border: 1px solid var(--field); color: var(--text);
+  padding: 10px 20px; font-family: var(--font-display); font-weight: 700;
+  font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+  cursor: pointer; border-radius: 2px; transition: all 0.15s; margin-bottom: 40px;
+}
+.cal-fullview-btn:hover { background: var(--accent); border-color: var(--accent); color: #1A1A18; }
+
+/* ── CALENDAR TAB — the full-width, any-week version of the same view ───── */
+.calfull-nav {
+  display: flex; align-items: center; gap: 16px;
+  padding: 4px 0 18px; margin-bottom: 4px;
+}
+.calfull-headings { flex: 1; min-width: 0; }
+.calfull-week {
+  font-family: var(--font-display); font-weight: 900; font-size: 20px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); line-height: 1.2;
+}
+.calfull-dates { font-size: 12px; color: var(--muted); margin-top: 5px; }
+.calfull-arrow {
+  background: transparent; border: 1px solid var(--field); color: var(--text);
+  width: 42px; height: 42px; flex: 0 0 42px; border-radius: 50%;
+  font-size: 22px; line-height: 1; cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.calfull-arrow:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: #1A1A18; }
+.calfull-arrow:disabled { opacity: 0.3; cursor: default; }
+.calfull-weekbtns { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 26px; }
+.cal-week-btn {
+  padding: 6px 14px; background: var(--surface); border: 1px solid var(--border);
+  color: var(--muted); border-radius: 3px;
+  font-family: var(--font-display); font-weight: 700; font-size: 12px;
+  letter-spacing: 0.08em; cursor: pointer; transition: all 0.15s;
+}
+.cal-week-btn:hover { border-color: var(--border-hi); color: var(--text); background: var(--surface-2); }
+.cal-week-btn.cwb-active {
+  background: var(--accent); border-color: var(--accent); color: #1A1A18;
+  font-weight: 700; transform: scale(1.07);
+}
+body.training-mode #calendarfull { background: var(--bg); border-top: none; padding-top: 0; padding-bottom: 60px; }
+/* The tab has room the Overview widget does not, so let the cells breathe */
+#calfullGrid { grid-template-columns: repeat(auto-fit, minmax(min(220px,100%),1fr)); }
 
 /* ── RUN LOGGING — what actually happened, per run day ──────────────────── */
 /* Same treatment as the lift side's .log-inline-* pair, scaled for the grid */
@@ -1922,6 +1964,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     </button>
     <button class="nav-tab" id="tab-btn-running" onclick="goTab('running')">
       <span class="nav-tab-icon">&#9655;</span> Run
+    </button>
+    <button class="nav-tab" id="tab-btn-calendar" onclick="goTab('calendar')">
+      <span class="nav-tab-icon">&#9635;</span> Calendar
     </button>
   </div>
 </nav>
@@ -2060,6 +2105,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   </div>
   <div class="cal-grid" id="weekCalendar"></div>
   <div class="cal-note" id="calNote"></div>
+  <button class="cal-fullview-btn" onclick="goTab('calendar')">View full calendar →</button>
 
   <div class="section-label">The Battle Plan</div>
   <h2 class="section-title">10 WEEKS.<br>NO EXCUSES.</h2>
@@ -2175,7 +2221,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.17</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.18</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2226,7 +2272,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.17</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.18</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2457,7 +2503,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.17</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.18</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2536,6 +2582,28 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="runPaces"></div>
   <div id="runChart"></div>
   <div class="run-table-wrap" id="runSchedule"></div>
+</section>
+
+</div>
+
+<div id="tab-calendar" class="tab-main">
+
+<section id="calendarfull">
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.18</span></div>
+  <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
+
+  <div class="calfull-nav">
+    <button class="calfull-arrow" id="calfullPrev" onclick="stepCalendarWeek(-1)" aria-label="Previous week">&#8249;</button>
+    <div class="calfull-headings">
+      <div class="calfull-week" id="calfullWeek">Training Week 1 of 10</div>
+      <div class="calfull-dates" id="calfullDates"></div>
+    </div>
+    <button class="calfull-arrow" id="calfullNext" onclick="stepCalendarWeek(1)" aria-label="Next week">&#8250;</button>
+  </div>
+  <div class="calfull-weekbtns" id="calfullWeekBtns"></div>
+
+  <div class="cal-grid" id="calfullGrid"></div>
+  <div class="cal-note" id="calfullNote"></div>
 </section>
 
 </div>
@@ -3795,8 +3863,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
     // itself has been drawn on first load.
     var numEl = document.getElementById('ring-week-num');
     if (numEl) numEl.textContent = idx + 1;
+    document.querySelectorAll('.cal-week-btn').forEach(function(b, i) {
+      b.classList.toggle('cwb-active', i === idx);
+    });
     if (typeof renderRing === 'function') renderRing();
     if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
+    if (typeof renderCalendarTab === 'function') renderCalendarTab();
   }
 
   function setTrainWeek(idx) {
@@ -4986,6 +5058,99 @@ body.training-mode select.run-input { color: #F1EFE1; }
     } catch (e) { return null; }
   }
 
+  //  The program has no stored start date, so one is derived: whichever week is
+  //  selected when the app loads is taken to be the current calendar week, which
+  //  pins week 1 to a Monday. That anchor is then held for the session, so
+  //  browsing to week 8 shows week 8's real dates instead of re-pinning the
+  //  program to today every time the selector moves. A reload re-derives it from
+  //  wherever you have since said you are, which is the correct reading of
+  //  "I'm on week 6 now".
+  var weekAnchorMonday = null;
+  function weekAnchor() {
+    if (!weekAnchorMonday) {
+      var today = startOfToday();
+      var thisMonday = addDays(today, -mondayIndex(today));
+      weekAnchorMonday = addDays(thisMonday, -currentTrainWeek * 7);
+    }
+    return weekAnchorMonday;
+  }
+  function trainWeekMonday(n) { return addDays(weekAnchor(), n * 7); }
+
+  //  The seven day cells for the week starting `monday`. One implementation,
+  //  two callers: the Overview widget and the Calendar tab.
+  function calWeekGrid(monday) {
+    var today = startOfToday();
+    var runs = calRunCells(monday);
+    var html = CAL_WEEK.map(function(slot, i) {
+      var date = addDays(monday, i);
+      var isToday = date.getTime() === today.getTime();
+      var run = runs ? runs[i] : null;
+      var parts = [];
+      if (slot.rest) {
+        parts.push('<div class="cal-rest">Rest and stretch. Mobility, shoulder maintenance, recovery. No loading.</div>');
+      } else {
+        parts.push('<div><div class="cal-lift-tag">' + slot.tag + ' · Lift</div>'
+          + '<div class="cal-lift-title">' + slot.title + '</div></div>');
+      }
+      if (run) {
+        parts.push('<div class="cal-run' + (run.race ? ' race' : '') + '">'
+          + '<div class="cal-run-tag">Run</div>' + run.text + '</div>');
+      }
+      return '<div class="cal-day' + (!slot.rest || run ? ' has-work' : '') + (isToday ? ' is-today' : '') + '">'
+        + '<div class="cal-dow"><span>' + RUN_DOWS[i] + ' ' + RUN_MONTHS[date.getMonth()] + ' ' + date.getDate() + '</span>'
+        + (isToday ? '<span class="cal-today-chip">Today</span>' : '') + '</div>'
+        + parts.join('') + '</div>';
+    }).join('');
+    return { html: html, runs: runs };
+  }
+
+  function calNoteText(runs) {
+    return runs
+      ? 'Lift sessions follow the split\'s 3 on, 1 off rotation across the week; runs come from your race plan on the <strong>Run</strong> tab. Days carrying both: keep the lift upper body and core.'
+      : 'Lift sessions only — no race plan yet. Set a race date on the <strong>Run</strong> tab and your runs appear here alongside them.';
+  }
+
+  //     CALENDAR TAB — the same combined view as the Overview widget, but for
+  //     whichever week is selected rather than only the current one. Week
+  //     changes here go through setTrainWeek, so every other surface follows.
+  function stepCalendarWeek(delta) {
+    setTrainWeek(Math.max(0, Math.min(9, currentTrainWeek + delta)));
+  }
+
+  function renderCalendarTab() {
+    var host = document.getElementById('calfullGrid');
+    if (!host) return;
+    try {
+      var n = currentTrainWeek;
+      var monday = trainWeekMonday(n);
+      var g = calWeekGrid(monday);
+      host.innerHTML = g.html;
+      var wk = document.getElementById('calfullWeek');
+      if (wk) wk.textContent = 'Training Week ' + (n + 1) + ' of 10'
+        + (isDeloadWeek(n) ? ' · Deload' : '');
+      var dt = document.getElementById('calfullDates');
+      if (dt) dt.textContent = fmtRunDate(monday) + ' to ' + fmtRunDate(addDays(monday, 6));
+      var note = document.getElementById('calfullNote');
+      if (note) note.innerHTML = calNoteText(g.runs);
+      var btns = document.getElementById('calfullWeekBtns');
+      if (btns && !btns.childNodes.length) {
+        var out = '';
+        for (var i = 0; i < 10; i++) {
+          out += '<button class="cal-week-btn" onclick="setTrainWeek(' + i + ')">W' + (i + 1) + '</button>';
+        }
+        btns.innerHTML = out;
+      }
+      document.querySelectorAll('.cal-week-btn').forEach(function(b, i) {
+        b.classList.toggle('cwb-active', i === n);
+      });
+      var prev = document.getElementById('calfullPrev'), next = document.getElementById('calfullNext');
+      if (prev) prev.disabled = (n <= 0);
+      if (next) next.disabled = (n >= 9);
+    } catch (e) {
+      host.innerHTML = '<div class="cal-rest">Week view unavailable — open the Train tab for the full split.</div>';
+    }
+  }
+
   function renderWeekCalendar() {
     var host = document.getElementById('weekCalendar');
     if (!host) return;
@@ -5018,32 +5183,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
       }
       var hd = document.getElementById('calHeadDates');
       if (hd) hd.textContent = fmtRunDate(monday) + ' to ' + fmtRunDate(addDays(monday, 6));
-      host.innerHTML = CAL_WEEK.map(function(slot, i) {
-        var date = addDays(monday, i);
-        var isToday = date.getTime() === today.getTime();
-        var run = runs ? runs[i] : null;
-        var parts = [];
-        if (slot.rest) {
-          parts.push('<div class="cal-rest">Rest and stretch. Mobility, shoulder maintenance, recovery. No loading.</div>');
-        } else {
-          parts.push('<div><div class="cal-lift-tag">' + slot.tag + ' · Lift</div>'
-            + '<div class="cal-lift-title">' + slot.title + '</div></div>');
-        }
-        if (run) {
-          parts.push('<div class="cal-run' + (run.race ? ' race' : '') + '">'
-            + '<div class="cal-run-tag">Run</div>' + run.text + '</div>');
-        }
-        return '<div class="cal-day' + (!slot.rest || run ? ' has-work' : '') + (isToday ? ' is-today' : '') + '">'
-          + '<div class="cal-dow"><span>' + RUN_DOWS[i] + ' ' + RUN_MONTHS[date.getMonth()] + ' ' + date.getDate() + '</span>'
-          + (isToday ? '<span class="cal-today-chip">Today</span>' : '') + '</div>'
-          + parts.join('') + '</div>';
-      }).join('');
+      host.innerHTML = calWeekGrid(monday).html;
       var note = document.getElementById('calNote');
-      if (note) {
-        note.innerHTML = runs
-          ? 'Lift sessions follow the split\'s 3 on, 1 off rotation across the week; runs come from your race plan on the <strong>Run</strong> tab. Days carrying both: keep the lift upper body and core.'
-          : 'Lift sessions only — no race plan yet. Set a race date on the <strong>Run</strong> tab and your runs appear here alongside them.';
-      }
+      if (note) note.innerHTML = calNoteText(runs);
     } catch (e) {
       // Never let the overview go blank on a bad state
       host.innerHTML = '<div class="cal-rest">Week view unavailable — open the Train tab for the full split.</div>';
@@ -5100,7 +5242,7 @@ function getMostRecentDay() {
   return 'chest';
 }
 
-var MAIN_TABS = ['info','training','running'];
+var MAIN_TABS = ['info','training','running','calendar'];
 
 function goTab(t) {
   if (MAIN_TABS.indexOf(t) === -1) t = 'info';
@@ -5117,9 +5259,13 @@ function goTab(t) {
   if (t === 'info') {
     document.body.classList.remove('training-mode');
   } else {
-    // Train and Run both use the dark training chrome
+    // Train, Run and Calendar all use the dark training chrome
     document.body.classList.add('training-mode');
     if (t === 'training') switchDay(getMostRecentDay());
+    else if (t === 'calendar') {
+      // Opens on whatever week is selected app-wide, never resets to week 1
+      if (typeof renderCalendarTab === 'function') renderCalendarTab();
+    }
     else if (typeof renderRunPlan === 'function') renderRunPlan();
   }
   window.scrollTo(0,0);
