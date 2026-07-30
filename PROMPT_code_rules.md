@@ -1,3 +1,38 @@
+> **DONE (second pass) — build 7.27, commit `3dd4edc`, pushed.**
+>
+> **Rules 01–04 read exactly as specified.** All six in sequence:
+>
+> ```
+> 01  Hard lifting and hard running never share a day. One of them always gives.
+> 02  Hip mobility every leg day. It's not just your squat. It's your stride.
+> 03  Full rest on main lifts, full recovery on hard running days. Cutting either short is for amateurs.
+> 04  Deload every 4th week, lifting and running both. The weak skip it. You won't.
+> 05  Log every set. If you're not tracking, you're not progressing.
+> 06  Built around your race, your days, your equipment. Adjust the plan. Never skip the work.
+> ```
+>
+> **05 and 06 are untouched.** `git diff --stat` is **4 insertions, 4 deletions** and the diff contains only the four `01`–`04` lines — 05 and 06 do not appear in it at all, so their byte-for-byte identity is what the diff shows rather than something I am asserting.
+>
+> **Face pulls are gone from The Code:** zero matches inside the `.footer-rules` block. They remain elsewhere in the app as intended — 10 occurrences across the exercise itself, its variants and the warm-up panels, all correctly left alone.
+>
+> **Rule 01 states something the code actually does.** The running generator's merge logic already enforces it, and its own comment reads "a lift and a run can share a day, two hard stimuli never can" — so the first rule of the list is now the load-bearing principle behind the hybrid pitch rather than a single accessory movement.
+>
+> **Voice.** 01 and 03 both close on a flat consequence ("One of them always gives", "Cutting either short is for amateurs"), matching the rhythm of 04 and 06. 02 keeps the original's two-beat structure and swaps the vague "This is what separates you" for the concrete squat/stride pairing, which is more specific rather than softer. Nothing was hedged to accommodate the second discipline.
+>
+> **Layout unchanged:** still six rules, identical markup shape across all six, two-digit numbering `01`–`06`, footer divs balance 11/11, and the diff is markup-only so no CSS moved. Both script blocks parse; all thirteen suites pass.
+>
+> **Push confirmation** (`git log --oneline origin/master -3`):
+>
+> ```
+> 3dd4edc Make The Code hybrid, not lifting-only with a mobility footnote
+> 11c6142 Record the sixth rule summary
+> 1340f89 Add rule 06 to The Code
+> ```
+>
+> Local HEAD `3dd4edcd64028e617805054fd5fceac0313fdd23` matches `origin/master`.
+>
+> ---
+>
 > **DONE — build 7.26, commit `1340f89`, pushed.**
 >
 > **Rule 06 is in place**, exactly as specified: *"Built around your race, your days, your equipment. Adjust the plan. Never skip the work."*
