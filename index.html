@@ -259,6 +259,10 @@
     grid-template-columns: 1fr 1fr;
     gap: 16px;
   }
+  /* Odd card out: an orphan sitting at half width in the last row reads like a
+     mistake, so the fifth pillar spans the pair instead. Harmless in the
+     single-column layout below 768px, where 1 / -1 is already the full width. */
+  .pillar:last-child:nth-child(odd) { grid-column: 1 / -1; }
   .pillar {
     background: var(--card);
     padding: 32px 28px;
@@ -1935,10 +1939,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <h2 class="section-title">NOT FOR<br>EVERYONE</h2>
   <div class="about-grid">
     <div class="about-text">
-      <p>Most guys are spinning their wheels, training consistently for months, even years, and looking exactly the same. Not because they lack effort. Because they lack structure. Random workouts and random progression produce random results. <strong>Run the Weights is not random.</strong></p>
-      <p>This is a <strong>10-week Arnold Split</strong> built around one non-negotiable principle: progressive overload on the compounds that matter. Bench and barbell squat increase every single week for three weeks, then you deload and hit it again heavier in Wave 2. The pattern is 3 days on, 1 off — Chest + Back, Shoulders + Arms, Legs + Abs — then rest, then repeat with B-day variations. Each muscle group gets hit twice a week from different angles. Day 4 is rest and stretch: mobility, shoulder maintenance, and recovery work that keeps you training hard for years, not just 10 weeks.</p>
-      <p>Face pulls appear on every pull day without exception. Hip mobility is built into every leg session before the first work set. These are not optional extras. They are the reason you will walk out of this program healthier than you walked in. Most strength programs ignore shoulder health until something breaks. This one addresses it from day one.</p>
-      <p><strong>The structure is deliberate. The execution is on you.</strong> Two loading waves, each building from baseline through overload, separated by a deload that makes the next wave possible. Ten weeks from now you will squat heavier, press heavier, and look completely different. Most men never commit long enough to find out what they're capable of. You will.</p>
+      <p>Most men pick a lane. Get big and slow, or get lean and fast, and quietly let the other side go. <strong>Run the Weights does not make you choose.</strong> This is a ten week hybrid athlete program: real strength gains on the same calendar as a real running or cycling engine. You add weight to the bar every week. You also show up to your 5k, your half marathon, or your century ride actually ready, not just surviving it.</p>
+      <p>The strength side is the same non-negotiable <strong>Arnold Split</strong> underneath everything here: three days on, one off, bench and squat adding load every single week for three weeks before a deload resets you for Wave 2. Underneath that runs a second engine, a running plan built off your actual race date, current mileage, and experience, that layers onto the same week without wrecking your legs before leg day or your legs before your long run. Hit chest and back in the morning, your easy run or tempo work the same day if the calendar calls for it. <strong>Nothing here is guesswork stitched together from two separate apps.</strong></p>
+      <p>This was built by a <strong>former Division 1 cross country captain</strong> who also spent years in the weight room, not a lifter guessing at running volume, and not a runner guessing at what a real hypertrophy block looks like. Both sides of this program come from <strong>actually having done both</strong>, including the mistakes that come from doing them wrong first.</p>
+      <p>Ten weeks from now you squat heavier, press heavier, and you can still run the distance you signed up for. Most men never build both at once because they assume they have to choose. <strong>You do not.</strong></p>
     </div>
     <div class="pillars">
       <div class="pillar fade-up">
@@ -1956,6 +1960,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
       <div class="pillar fade-up">
         <div class="pillar-title">Built to Last</div>
         <div class="pillar-desc">Face pulls, band pull-aparts, and shoulder CARs appear on every push and pull day. External rotator health is the reason heavy bench pressers blow out their shoulders, and the reason this program's pressing volume is sustainable for the full 10 weeks and beyond.</div>
+      </div>
+      <div class="pillar fade-up">
+        <div class="pillar-title">Two Engines, One Plan</div>
+        <div class="pillar-desc">Built by a former Division 1 cross country captain who also lifts seriously, not a runner's guess at a hypertrophy block or a lifter's guess at a training run. The running side scales to your actual race, your actual mileage, your actual timeline, then sits on the same calendar as your lifting so the two never collide.</div>
       </div>
     </div>
   </div>
@@ -2145,7 +2153,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.14</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.15</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2196,7 +2204,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.14</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.15</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2427,7 +2435,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.14</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.15</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
