@@ -2234,7 +2234,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   </div>
   <h1 class="hero-title">Strong and fast.</h1>
   <div class="hero-caption">
-    <div class="hero-eyebrow">3 on · 1 off · Arnold Split</div>
+    <div class="hero-eyebrow" id="heroEyebrow">6 days · Arnold Split</div>
     <p class="hero-desc">Your goals. Your timeline. No guesswork.</p>
     <a href="#" class="hero-cta" onclick="enterMonkMode(); return false;">
       Enter Run the Weights <span class="hero-cta-arrow">→</span>
@@ -2258,7 +2258,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       </div>
       <div class="pillar fade-up">
         <div class="pillar-title">Twice a Week</div>
-        <div class="pillar-desc">Each muscle group trained twice per week on the Arnold Split rotation — 3 on, 1 off. Day A exercises and Day B exercises hit the same muscles from different angles so you never adapt and stagnate. Chest + Back A is flat press machine focus. Chest + Back B is incline and cable focus. Frequency is what separates serious programs from gym noise.</div>
+        <div class="pillar-desc">Every split option in this program, 3 through 6 days, hits each muscle group at least twice a week. Fewer days means fewer body regions per session, not less frequency. The second session of the week always attacks the same muscles from different angles than the first, so you never adapt and stagnate. Frequency is what separates serious programs from gym noise.</div>
       </div>
       <div class="pillar fade-up">
         <div class="pillar-title">Move Like an Athlete</div>
@@ -2378,7 +2378,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.24</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.25</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2439,7 +2439,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.24</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.25</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2660,7 +2660,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.24</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.25</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2746,7 +2746,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.24</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.25</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3034,6 +3034,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
   };
 
   function activeSplit() { return SPLIT_TEMPLATES[liftDaysPerWeek] || SPLIT_TEMPLATES[6]; }
+  //  The single phrasing for the active split. The hero eyebrow, the Train tab
+  //  control and the Run tab readout all render this, so none of them can drift
+  //  into describing a split the app is not actually running.
+  function splitSummary() { return liftDaysPerWeek + ' days · ' + activeSplit().label; }
   function splitDayIds() {
     var seen = {}, out = [];
     activeSplit().week.forEach(function(id) {
@@ -3651,7 +3655,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var lbl = document.getElementById('liftDaysLabel');
     if (lbl) lbl.textContent = activeSplit().label + ' · ' + activeSplit().note;
     var mirror = document.getElementById('run-lift-days-readout');
-    if (mirror) mirror.textContent = liftDaysPerWeek + ' days · ' + activeSplit().label;
+    if (mirror) mirror.textContent = splitSummary();
+    var eyebrow = document.getElementById('heroEyebrow');
+    if (eyebrow) eyebrow.textContent = splitSummary();
   }
 
   function currentInputWeight(ex, target) {
@@ -6439,14 +6445,23 @@ function hasLogsForDay(dayId, week) {
 }
 
 function renderRing() {
-  var days = ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
+  //  Whichever split is active, not the fixed Arnold array
+  var days = (typeof calWeekSlots === 'function')
+    ? calWeekSlots().map(function(sl) { return sl.id; })
+    : ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
   var wk = currentTrainWeek;
   var activeDays = days.filter(function(d) { return hasLogsForDay(d, wk); }).length;
 
   // Center text
   var numEl = document.getElementById('ring-week-num');
   var doneEl = document.getElementById('ring-days-done');
+  var lblEl = document.getElementById('ring-week-label');
   if (numEl) numEl.textContent = wk + 1;
+  //  Not a second hardcoded 10 — the same totalTrainWeeks() the week selectors
+  //  use, so a race that pushes the block past ten weeks is reflected here too.
+  if (lblEl && typeof totalTrainWeeks === 'function') {
+    lblEl.textContent = '/ ' + totalTrainWeeks() + ' WEEKS';
+  }
   if (doneEl) doneEl.textContent = activeDays > 0 ? activeDays + ' / 7' : '';
 
   // Progress arc
@@ -6493,7 +6508,9 @@ function animateRingOnLoad() {
   var fill = document.getElementById('heroRingFill');
   if (!fill) return;
   var circ = 2 * Math.PI * 118;
-  var days = ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
+  var days = (typeof calWeekSlots === 'function')
+    ? calWeekSlots().map(function(sl) { return sl.id; })
+    : ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
   var activeDays = days.filter(function(d) { return hasLogsForDay(d, currentTrainWeek); }).length;
 
   fill.style.transition = 'none';
