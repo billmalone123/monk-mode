@@ -2494,7 +2494,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.30</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.31</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2556,7 +2556,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.30</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.31</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2777,7 +2777,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.30</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.31</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2863,7 +2863,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.30</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.31</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -2892,16 +2892,16 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <div class="settings-modal-sub">Enter your max weights — your 1-rep max or best heavy single. They set the suggested starting weight on every lift. You can edit them anytime, and every lift's aim stays adjustable as you go. Stored locally on your device.</div>
     <div class="settings-input-group">
       <div class="settings-input-label">Back Squat <span>lbs</span></div>
-      <input class="settings-input-field" id="max-squat" type="number" placeholder="315" inputmode="decimal">
+      <input class="settings-input-field" id="max-squat" type="number" oninput="onMaxInput()" onchange="onMaxCommit()" onblur="onMaxCommit()" placeholder="315" inputmode="decimal">
     </div>
     <div class="settings-input-group">
       <div class="settings-input-label">Bench Press <span>lbs</span></div>
-      <input class="settings-input-field" id="max-bench" type="number" placeholder="225" inputmode="decimal">
+      <input class="settings-input-field" id="max-bench" type="number" oninput="onMaxInput()" onchange="onMaxCommit()" onblur="onMaxCommit()" placeholder="225" inputmode="decimal">
       <div class="settings-input-hint">Alt: Incline Barbell Bench or Smith Machine Bench — enter the max for whichever you press</div>
     </div>
     <div class="settings-input-group">
       <div class="settings-input-label">Dumbbell Shoulder Press <span>lbs</span></div>
-      <input class="settings-input-field" id="max-ohp" type="number" placeholder="70" inputmode="decimal">
+      <input class="settings-input-field" id="max-ohp" type="number" oninput="onMaxInput()" onchange="onMaxCommit()" onblur="onMaxCommit()" placeholder="70" inputmode="decimal">
     </div>
     <button class="settings-save-btn" onclick="saveMaxes()">Save & Enter</button>
     <button class="settings-cancel-btn" onclick="closeMaxesModal(); goTab('training')">Skip for now</button>
@@ -3032,6 +3032,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (typeof renderDaySections === 'function') { renderDaySections(); renderAllRowStates(); }
       } else {
         idbSet('variants', variantChoice);
+      }
+    });
+    idbGet('aims').then(function(idbAims) {
+      if (idbAims && Object.keys(idbAims).length && !Object.keys(aimChoice).length) {
+        aimChoice = idbAims; persistAims();
+        if (typeof renderAllRowStates === 'function') renderAllRowStates();
+      } else {
+        idbSet('aims', aimChoice);
       }
     });
     idbGet('runPlan').then(function(idbRunPlan) {
@@ -3394,6 +3402,28 @@ body.training-mode select.run-input { color: #F1EFE1; }
     try { localStorage.setItem(VARIANTS_KEY, JSON.stringify(variantChoice)); } catch(e) {}
     idbSet('variants', variantChoice);   // durable mirror
   }
+
+  //  A typed aim was previously display-only: autoSaveExercise reads the aim box
+  //  but only ever writes a history entry when a set has reps, and every render
+  //  recomputes the aim from the plan. So typing an aim and leaving lost it.
+  //  Aims get their own small store rather than riding inside a session entry,
+  //  because an entry with no sets would count as logged work in the ring,
+  //  progress view and calendar.
+  //  Keyed by exercise + training week + variant, matching how entryForWeek
+  //  already matches history, so an aim never leaks across weeks or variants.
+  const AIMS_KEY = 'monk_aims_v1';
+  var aimChoice = {};
+  function loadAims() {
+    try { aimChoice = JSON.parse(localStorage.getItem(AIMS_KEY)) || {}; } catch(e) { aimChoice = {}; }
+  }
+  function persistAims() {
+    try { localStorage.setItem(AIMS_KEY, JSON.stringify(aimChoice)); } catch(e) {}
+    idbSet('aims', aimChoice);   // durable mirror
+  }
+  function aimKey(ex) {
+    return ex.id + '|' + currentTrainWeek + '|' + activeVariant(ex);
+  }
+  function storedAim(ex) { return aimChoice[aimKey(ex)] || null; }
   function exCurated(ex) { return [ex.name].concat(EX_ALTS[ex.id] || []); }
   //  A stored custom name is a legitimate variant, not a separate code path.
   //  Including it here is the whole fix: activeVariant() validates against this
@@ -3674,19 +3704,19 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '<div class="lift-log-inline" onclick="event.stopPropagation()">'
       + '<div class="log-row">'
       + '<div class="log-inline-group"><span class="log-inline-label">Top Set Aim Weight</span>'
-      + '<input class="log-inline-input" type="number" inputmode="decimal" id="w-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)"></div>'
+      + '<input class="log-inline-input" type="number" inputmode="decimal" id="w-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)" onchange="onAimCommit(this.dataset.ex)"></div>'
       + '<div class="log-inline-group"><span class="log-inline-label">Top Set Aim Reps</span>'
-      + '<input class="log-inline-input" type="number" inputmode="numeric" id="r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)"></div>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" id="r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)" onchange="onAimCommit(this.dataset.ex)"></div>'
       + '</div>'
       + '<div class="log-row">'
       + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Weight</span>'
-      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s1w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)"></div>'
+      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s1w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)" onchange="onLogCommit(this)"></div>'
       + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Reps</span>'
       + '<input class="log-inline-input" type="number" inputmode="numeric" id="s1r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onSetInput(this)" onchange="onSetCommit(this)"></div>'
       + '</div>'
       + '<div class="log-row">'
       + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Weight</span>'
-      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s2w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)"></div>'
+      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s2w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)" onchange="onLogCommit(this)"></div>'
       + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Reps</span>'
       + '<input class="log-inline-input" type="number" inputmode="numeric" id="s2r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onSetInput(this)" onchange="onSetCommit(this)"></div>'
       + '</div>'
@@ -3836,8 +3866,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var wInp = document.getElementById('w-' + ex.id);
     var rInp = document.getElementById('r-' + ex.id);
     var fBtn = document.getElementById('f-' + ex.id);
-    if (wInp) wInp.value = loggedThisWeek ? wkEntry.weight : (target.weight != null ? target.weight : '');
-    if (rInp) rInp.value = loggedThisWeek ? wkEntry.reps : target.reps;
+    //  A logged set is the truth; failing that, an aim the user actually typed
+    //  for this week and variant beats the computed plan target, which is what
+    //  makes a typed aim survive leaving the page.
+    var aim = loggedThisWeek ? null : storedAim(ex);
+    if (wInp) wInp.value = loggedThisWeek ? wkEntry.weight
+      : (aim && aim.w != null ? aim.w : (target.weight != null ? target.weight : ''));
+    if (rInp) rInp.value = loggedThisWeek ? wkEntry.reps
+      : (aim && aim.r != null ? aim.r : target.reps);
     var aimW = wInp ? wInp.value : '';
     ['s1', 's2'].forEach(function(slot) {
       var wEl = document.getElementById(slot + 'w-' + ex.id);
@@ -3893,9 +3929,32 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   function renderAllRowStates() { EXERCISES.forEach(renderLiftRowState); }
 
+  //  Debounced to match set logging, with a blur commit below so leaving the
+  //  field never waits out the timer.
+  var _aimT = {};
+  function commitAim(exId) {
+    var ex = EX_BY_ID[exId];
+    if (!ex) return;
+    clearTimeout(_aimT[exId]);
+    var wEl = document.getElementById('w-' + exId);
+    var rEl = document.getElementById('r-' + exId);
+    var w = wEl ? parseFloat(wEl.value) : NaN;
+    var r = rEl ? parseInt(rEl.value, 10) : NaN;
+    if (isNaN(w) || w <= 0) w = null;
+    if (isNaN(r) || r <= 0) r = null;
+    var k = aimKey(ex);
+    //  Cleared back to empty means "use the plan again", not "store nothing".
+    if (w === null && r === null) delete aimChoice[k];
+    else aimChoice[k] = { w: w, r: r };
+    persistAims();
+  }
+  function onAimCommit(exId) { commitAim(exId); }
+
   function onAimInput(exId) {
     var ex = EX_BY_ID[exId];
     if (!ex) return;
+    clearTimeout(_aimT[exId]);
+    _aimT[exId] = setTimeout(function() { commitAim(exId); }, 1200);
     renderWarmupsAndTargets(ex);
     // Planning only: once today is logged, aim edits never rewrite logged sets
     var hist = getHistory(exId);
@@ -3931,6 +3990,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
     autoSaveExercise(inp.dataset.ex, true);
   }
   function onLogEdit(exId) { scheduleAutoSave(exId, false); }
+  //  Blur commit for the set-weight boxes. They had the 1200ms debounce but no
+  //  commit, so leaving the field inside that window lost the value — the reps
+  //  boxes have had onSetCommit all along. fireTimer stays false: a weight edit
+  //  is not a completed set and must not start the rest timer.
+  function onLogCommit(inp) {
+    clearTimeout(_autoSaveT[inp.dataset.ex]);
+    autoSaveExercise(inp.dataset.ex, false);
+  }
 
   function autoSaveExercise(exId, fireTimer) {
     var ex = EX_BY_ID[exId];
@@ -4366,15 +4433,34 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var m = document.getElementById('maxesModal');
     if (m) m.style.display = 'none';
   }
-  function saveMaxes() {
+  //     This screen used to persist only when Save & Enter was tapped, so typing
+  //     three maxes and then backgrounding the app lost all three. It now follows
+  //     the same rule as set logging: debounced while typing, immediate on blur.
+  //     Save & Enter is now purely the forward action.
+  var _maxesT = null;
+  function commitMaxes() {
+    clearTimeout(_maxesT);
     ['squat','bench','ohp'].forEach(function(k) {
-      var v = parseFloat(document.getElementById('max-' + k).value);
+      var el = document.getElementById('max-' + k);
+      if (!el) return;
+      var v = parseFloat(el.value);
       if (!isNaN(v) && v > 0) userMaxes[k] = v; else delete userMaxes[k];
     });
     persistMaxes();
-    closeMaxesModal();
     updateMaxChips();
     renderAllRowStates();
+  }
+  function onMaxInput() {
+    clearTimeout(_maxesT);
+    _maxesT = setTimeout(commitMaxes, 1200);
+  }
+  function onMaxCommit() { commitMaxes(); }
+
+  function saveMaxes() {
+    //  Same write the autosave already performs, so tapping this after the
+    //  debounce has fired is a no-op rather than a second, divergent save path.
+    commitMaxes();
+    closeMaxesModal();
     goTab('training');
   }
   function updateMaxChips() {
@@ -4402,7 +4488,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var data = {
       app: 'monk-mode', exportedAt: todayKey(),
       sessions: sessions, maxes: userMaxes, week: currentTrainWeek, archive: archive,
-      variants: variantChoice, runPlan: runPlan, runLogs: runLogs, liftDays: liftDaysPerWeek
+      variants: variantChoice, aims: aimChoice, runPlan: runPlan, runLogs: runLogs, liftDays: liftDaysPerWeek
     };
     var blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
     var a = document.createElement('a');
@@ -4432,6 +4518,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (data.variants && typeof data.variants === 'object') {
           variantChoice = data.variants; persistVariants();
           if (typeof renderDaySections === 'function') renderDaySections();
+        }
+        if (data.aims && typeof data.aims === 'object') {
+          aimChoice = data.aims; persistAims();
         }
         if (data.runPlan && typeof data.runPlan === 'object') {
           runPlan = data.runPlan;
@@ -5331,7 +5420,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       return '<div class="run-log-group"><span class="run-log-label">' + label + '</span>'
         + '<input class="run-log-input' + (val !== '' ? ' logged' : '') + '" id="rl-' + id + '-' + k
         + '" data-k="' + k + '" value="' + val + '" ' + extra
-        + ' oninput="onRunLogEdit(this.dataset.k)"></div>';
+        + ' oninput="onRunLogEdit(this.dataset.k)" onchange="onRunLogCommit(this.dataset.k)"></div>';
     }
     return '<div class="run-log" onclick="event.stopPropagation()">'
       + '<div class="run-log-row">'
@@ -5434,6 +5523,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function onRunLogEdit(k) {
     clearTimeout(_runLogT[k]);
     _runLogT[k] = setTimeout(function() { saveRunLog(k); }, 1200);
+  }
+  //  Same gap the set-weight boxes had: debounce with nothing to flush it when
+  //  the field is left early.
+  function onRunLogCommit(k) {
+    clearTimeout(_runLogT[k]);
+    saveRunLog(k);
   }
 
   function saveRunLog(k) {
@@ -5955,6 +6050,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     loadLiftDays();
     loadMaxes();
     loadVariants();
+    loadAims();
     updateMaxChips();
     updateLiftDaysUI();
     renderWeekSelectors();
