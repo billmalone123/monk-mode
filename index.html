@@ -85,7 +85,17 @@
   /* The wordmark PNG carries the brand background (#1A1A18), identical to the
      page, so its padding is invisible and it sits flush. Height is set so the
      lettering inside matches the type size the text mark used to render at. */
+  .nav-logo {
+    background: none; border: 0; padding: 0; cursor: pointer;
+    display: flex; align-items: center; -webkit-tap-highlight-color: transparent;
+  }
   .nav-logo img { height: 30px; width: auto; display: block; }
+  /* The wordmark is the desktop mark; the square is the compact one. Only one
+     is ever shown. */
+  /* Needs to out-specify .nav-logo img above, which sets display:block on
+     every mark — (0,1,1) beats a bare class. */
+  .nav-logo img.nav-logo-mark { display: none; border-radius: 6px; }
+  .nav-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .nav-logo span { color: var(--red); }
   .nav-tabs { margin-left: 24px; }
   .nav-links { display: flex; gap: 32px; }
@@ -738,8 +748,10 @@
      shows it full size immediately underneath, whereas a tab that is not on
      screen is a feature the user cannot reach. */
   @media (max-width: 520px) {
-    nav .nav-logo { display: none; }
-    nav .nav-tabs { margin-left: 0; }
+    nav .nav-logo { display: flex; flex: 0 0 auto; }
+    nav .nav-logo img.nav-logo-word { display: none; }
+    nav .nav-logo img.nav-logo-mark { display: block; height: 26px; }
+    nav .nav-tabs { margin-left: 8px; }
     nav .nav-tab-icon { display: none; }
     nav .nav-tab { padding: 0 9px; font-size: 12px; letter-spacing: 0.06em; gap: 0; }
   }
@@ -1423,6 +1435,9 @@
     overflow-y: auto;
     box-shadow: 0 24px 64px rgba(0,0,0,0.65);
   }
+  .settings-modal-brand { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+  .settings-modal-brand img { width: 40px; height: 40px; border-radius: 9px; flex: 0 0 auto; display: block; }
+  .settings-modal-brand .settings-modal-title { margin-bottom: 0; }
   .settings-modal-title {
     font-family: var(--font-display);
     font-weight: 900;
@@ -1875,6 +1890,49 @@ body.training-mode footer { display: none; }
   .edge-slide.is-prev, .edge-slide.is-next { opacity: 0; pointer-events: none; transform: scale(0.9); }
 }
 
+/* ── LOGO DROPDOWN ───────────────────────────────────────────────────────── */
+/* Same entrance as .vtip — fade plus a slight scale from a top anchor, same
+   duration and easing — so the two panels in this app open the same way. Also
+   appended to document.body for the same reason the tooltip is: nav is a fixed,
+   clipping ancestor and a panel parented inside it would be cut off. */
+.navmenu {
+  position: fixed; z-index: 500; min-width: 190px; max-width: 260px;
+  background: var(--card); border: 1px solid var(--border-hi); border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0,0,0,0.6); padding: 8px;
+  opacity: 0; transform: scale(0.95); transform-origin: top left;
+  transition: opacity 0.13s ease, transform 0.13s ease;
+  pointer-events: none;
+}
+.navmenu.on { opacity: 1; transform: scale(1); pointer-events: auto; }
+.navmenu-head {
+  display: flex; align-items: center; gap: 9px;
+  padding: 6px 8px 10px; margin-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.navmenu-head img { width: 26px; height: 26px; border-radius: 6px; display: block; }
+.navmenu-head span {
+  font-family: var(--font-display); font-weight: 700; font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+}
+.navmenu-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; background: none; border: 0; cursor: pointer;
+  padding: 10px 10px; border-radius: 8px; text-align: left;
+  font-family: var(--font-display); font-weight: 700; font-size: 13px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+}
+.navmenu-item:hover, .navmenu-item:focus-visible { background: var(--surface-2); color: var(--text); outline: none; }
+.navmenu-item.current { color: var(--text); }
+.navmenu-item.primary { font-size: 15px; color: var(--text); }
+.navmenu-tick { font-size: 10px; color: var(--accent); opacity: 0; }
+.navmenu-item.current .navmenu-tick { opacity: 1; }
+/* The letter-roll from the main tabs, reused here so a destination behaves the
+   same whichever surface it is on. */
+.navmenu-item .nav-roll { vertical-align: baseline; }
+.navmenu-item:hover .nav-roll-row.over span { transform: translateY(-100%); }
+.navmenu-item:hover .nav-roll-row.under span { transform: translateY(0); }
+
 /* ── TOOLTIPS ────────────────────────────────────────────────────────────── */
 .vtip {
   position: fixed; z-index: 400; max-width: 260px;
@@ -2237,7 +2295,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <body>
 
 <nav>
-  <div class="nav-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
+  <button class="nav-logo" id="navLogo" aria-haspopup="menu" aria-expanded="false" aria-label="Run the Weights — open menu">
+    <img class="nav-logo-word" src="assets/brand/rtw-wordmark.png" alt="Run the Weights">
+    <img class="nav-logo-mark" src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
+  </button>
   <div class="nav-tabs">
     <button class="nav-tab active" id="tab-btn-info" onclick="goTab('info')">
       <span class="nav-tab-icon">&#9675;</span> Overview
@@ -2431,7 +2492,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.28</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.29</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2493,7 +2554,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.28</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.29</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2714,7 +2775,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.28</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.29</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2800,7 +2861,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.28</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.29</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -2822,7 +2883,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <!-- MAXES MODAL -->
 <div class="settings-modal-overlay" id="maxesModal" style="display:none;">
   <div class="settings-modal-card">
-    <div class="settings-modal-title">Enter Run the Weights</div>
+    <div class="settings-modal-brand">
+      <img src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
+      <div class="settings-modal-title">Enter Run the Weights</div>
+    </div>
     <div class="settings-modal-sub">Enter your max weights — your 1-rep max or best heavy single. They set the suggested starting weight on every lift. You can edit them anytime, and every lift's aim stays adjustable as you go. Stored locally on your device.</div>
     <div class="settings-input-group">
       <div class="settings-input-label">Back Squat <span>lbs</span></div>
@@ -6392,6 +6456,133 @@ function initScrollAssembly() {
   apply(progress());
 }
 
+//     LOGO DROPDOWN — a second way into the four destinations, anchored to the
+//     brand mark. Additive: the horizontal tab row is untouched.
+//
+//     Nothing here is invented. The panel is appended to document.body and
+//     positioned from the trigger's getBoundingClientRect, which is the same
+//     thing showTooltip does and for the same reason — nav is a fixed, clipping
+//     ancestor, so a panel parented inside it would be cut off. The entrance is
+//     the tooltip's: opacity 0 -> 1 with scale(0.95) -> 1 over 0.13s, which the
+//     global reduced-motion block already neutralises to a snap. The menu items
+//     reuse wrapTextRoll, so a destination rolls the same way whether it is
+//     tapped in the tab row or in here.
+var _navMenu = null;
+
+function buildNavMenu() {
+  if (_navMenu) return _navMenu;
+  var el = document.createElement('div');
+  el.className = 'navmenu';
+  el.id = 'navMenu';
+  el.setAttribute('role', 'menu');
+  var head = '<div class="navmenu-head">'
+    + '<img src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">'
+    + '<span>Run the Weights</span></div>';
+  var items = [
+    { id: 'info', label: 'Overview', primary: true },
+    { id: 'training', label: 'Train' },
+    { id: 'running', label: 'Run' },
+    { id: 'calendar', label: 'Calendar' }
+  ];
+  el.innerHTML = head + items.map(function(it) {
+    return '<button class="navmenu-item' + (it.primary ? ' primary' : '') + '" role="menuitem"'
+      + ' data-tab="' + it.id + '">' + it.label + '<span class="navmenu-tick">&#9679;</span></button>';
+  }).join('');
+  document.body.appendChild(el);
+  el.querySelectorAll('.navmenu-item').forEach(function(b) {
+    b.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeNavMenu();
+      goTab(b.dataset.tab);
+    });
+    //  Same letter-roll as the primary tabs, and skipped under reduced motion
+    //  for the same reason it is skipped there.
+    if (!prefersReducedMotion()) wrapTextRoll(b);
+  });
+  el.addEventListener('click', function(e) { e.stopPropagation(); });
+  _navMenu = el;
+  return el;
+}
+
+function navMenuOpen() { return !!(_navMenu && _navMenu.classList.contains('on')); }
+
+function openNavMenu() {
+  var trigger = document.getElementById('navLogo');
+  if (!trigger) return;
+  var el = buildNavMenu();
+  //  Mark the tab you are already on
+  var current = null;
+  try { current = localStorage.getItem(LAST_TAB_KEY); } catch (e) {}
+  if (MAIN_TABS.indexOf(current) === -1) current = 'info';
+  el.querySelectorAll('.navmenu-item').forEach(function(b) {
+    b.classList.toggle('current', b.dataset.tab === current);
+  });
+
+  positionNavMenu();
+  void el.offsetWidth;
+  el.classList.add('on');
+  trigger.setAttribute('aria-expanded', 'true');
+}
+
+//  Kept separate from opening so a resize can re-anchor the panel without
+//  re-adding .on, which would restart the entrance animation on every one of
+//  the many resize events a window drag fires.
+function positionNavMenu() {
+  var trigger = document.getElementById('navLogo');
+  if (!trigger || !_navMenu) return;
+  var el = _navMenu;
+  var wasOn = el.classList.contains('on');
+  if (!wasOn) { el.style.visibility = 'hidden'; el.style.left = '0px'; el.style.top = '0px'; }
+  var r = trigger.getBoundingClientRect();
+  var vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+  var mw = el.offsetWidth, mh = el.offsetHeight;
+  //  Under the mark by default; flip above if it would run off the bottom, the
+  //  same collision rule the tooltip uses.
+  var top = r.bottom + 8;
+  if (top + mh > vh - 6 && r.top - mh - 8 > 6) top = r.top - mh - 8;
+  var left = Math.max(8, Math.min(r.left, vw - mw - 8));
+  el.style.left = Math.round(left) + 'px';
+  el.style.top = Math.round(top) + 'px';
+  el.style.visibility = '';
+}
+
+//  returnFocus is for keyboard dismissal — closing with Escape has to put focus
+//  back on the trigger, or a keyboard user is dropped at the top of the document.
+function closeNavMenu(returnFocus) {
+  if (!_navMenu) return;
+  _navMenu.classList.remove('on');
+  var t = document.getElementById('navLogo');
+  if (t) {
+    t.setAttribute('aria-expanded', 'false');
+    if (returnFocus) t.focus();
+  }
+}
+
+function toggleNavMenu(e) {
+  if (e) e.stopPropagation();
+  if (navMenuOpen()) closeNavMenu(); else openNavMenu();
+}
+
+//  Tapping anywhere else closes without navigating; so does Escape.
+document.addEventListener('click', function() { if (navMenuOpen()) closeNavMenu(); });
+document.addEventListener('touchstart', function() { if (navMenuOpen()) closeNavMenu(); }, { passive: true });
+document.addEventListener('keydown', function(e) {
+  if (!navMenuOpen()) return;
+  if (e.key === 'Escape') { closeNavMenu(true); return; }
+  //  role="menu" promises arrow-key movement, so honour it rather than leaving
+  //  the roles writing a cheque the keyboard handling does not cover.
+  if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+  var items = [].slice.call(_navMenu.querySelectorAll('.navmenu-item'));
+  if (!items.length) return;
+  e.preventDefault();
+  var i = items.indexOf(document.activeElement);
+  var step = e.key === 'ArrowDown' ? 1 : -1;
+  items[i < 0 ? (step > 0 ? 0 : items.length - 1) : (i + step + items.length) % items.length].focus();
+});
+//  Re-anchor rather than close: a resize here is usually an orientation change
+//  or the mobile URL bar collapsing, and closing on that feels like a glitch.
+window.addEventListener('resize', function() { if (navMenuOpen()) positionNavMenu(); });
+
 //  SLIDING TAB INDICATOR — one bar that moves and resizes to the active tab.
 //  Position is measured, never hardcoded, so any number of tabs works.
 function moveNavIndicator() {
@@ -6481,6 +6672,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (MAIN_TABS.indexOf(saved) !== -1) lastTab = saved;
   } catch(e) {}
   initNavRolls();
+  var _logo = document.getElementById('navLogo');
+  if (_logo) _logo.addEventListener('click', toggleNavMenu);
   initScrollAssembly();
   initEdgeCarousel();
   goTab(lastTab);
