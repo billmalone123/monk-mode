@@ -97,7 +97,6 @@
   .nav-logo img.nav-logo-mark { display: none; border-radius: 6px; }
   .nav-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .nav-logo span { color: var(--red); }
-  .nav-tabs { margin-left: 24px; }
   .nav-links { display: flex; gap: 32px; }
   .nav-links a {
     font-size: 12px;
@@ -727,43 +726,11 @@
     nav .nav-logo { font-size: 15px; letter-spacing: 0.04em; flex: 0 1 auto; min-width: 0; }
     nav .nav-logo img { height: 22px; max-width: 100%; object-fit: contain; object-position: left; }
     .nav-links { display: none; }
-    /* This block was written when the nav had three tabs. With four, the logo
-       plus icons plus 0.12em tracking put Run and Calendar off-screen entirely
-       — measured 651px of nav in a 390px viewport. The icons are abstract
-       glyphs the labels already carry, so they go first, then the tracking and
-       padding tighten. overflow-x is a safety net so a future label can never
-       make a tab unreachable again; it does not engage at these widths. */
-    nav .nav-tabs {
-      margin-left: 10px; min-width: 0; flex: 1 1 auto;
-      overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
-    }
-    nav .nav-tabs::-webkit-scrollbar { display: none; }
-    nav .nav-tab {
-      padding: 0 13px; font-size: 13px; letter-spacing: 0.08em;
-      gap: 5px; height: 48px; flex: 0 0 auto;
-    }
-  }
-  /* Below this the four labels and the wordmark cannot share one bar. The
-     wordmark goes rather than the tabs: it is decorative here and the hero
-     shows it full size immediately underneath, whereas a tab that is not on
-     screen is a feature the user cannot reach. */
-  @media (max-width: 520px) {
-    nav .nav-logo { display: flex; flex: 0 0 auto; }
-    nav .nav-logo img.nav-logo-word { display: none; }
-    nav .nav-logo img.nav-logo-mark { display: block; height: 26px; }
-    nav .nav-tabs { margin-left: 8px; }
-    nav .nav-tab-icon { display: none; }
-    nav .nav-tab { padding: 0 9px; font-size: 12px; letter-spacing: 0.06em; gap: 0; }
-  }
-  @media (max-width: 430px) {
-    /* Sized against the fallback font, not Antonio: the webfont loads over the
-       network with display=swap, so the wider fallback is what a real user
-       sees first and is the case that has to fit. */
-    nav .nav-tab { padding: 0 7px; font-size: 11px; letter-spacing: 0.04em; }
-  }
-  /* Resumes the 768px block — the rules below were always tablet-and-down and
-     must not be narrowed to 430 by the nav tiers inserted above. */
-  @media (max-width: 768px) {
+    /* Three tiers of nav rules used to sit here — tab overflow at 768, the
+       wordmark giving way to the square mark at 520, tighter tab padding at
+       430. All of it existed to fit four tab labels next to the logo. The tab
+       row is gone, so the bar holds one element at every width and none of it
+       is needed; the wordmark now stays down to the narrowest phone. */
     #train-lock-icon { display: none; }
     section { padding: 80px 24px; }
     .hero {
@@ -1256,43 +1223,6 @@
   }
 
 
-  /* ── TAB SYSTEM ─────────────────────────────────────────────────────────── */
-  .nav-tabs {
-    display: flex;
-    gap: 0;
-    height: 100%;
-    align-items: stretch;
-    position: relative;   /* offsetParent for the sliding indicator */
-  }
-  .nav-tab {
-    background: transparent;
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: var(--muted);
-    padding: 0 28px;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 15px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    height: 60px;
-    position: relative;
-  }
-  .nav-tab:hover { color: var(--text); }
-  .nav-tab.active {
-    color: #F1EFE1;
-    border-bottom-color: var(--red);
-  }
-  .nav-tab-icon {
-    font-size: 13px;
-    opacity: 0.7;
-  }
-
   /* ── NAV LETTER ROLL ─────────────────────────────────────────────────── */
   /* Two stacked copies of the label; the top rolls up and out while the
      bottom rolls up into place, each letter delayed outward from the centre. */
@@ -1309,32 +1239,7 @@
   .nav-roll span.sp { width: 0.32em; }
   .nav-roll-row.over span  { transform: translateY(0); }
   .nav-roll-row.under span { transform: translateY(100%); }
-  .nav-tab.rolling .nav-roll-row.over span  { transform: translateY(-100%); }
-  .nav-tab.rolling .nav-roll-row.under span { transform: translateY(0); }
 
-  /* ── SLIDING TAB INDICATOR ───────────────────────────────────────────── */
-  /* One persistent bar that moves and resizes to the active tab, rather than
-     each tab drawing its own border. Position comes from offsetLeft/Width, so
-     it works for any number of tabs. */
-  .nav-indicator {
-    position: absolute; bottom: 0; left: 0; height: 3px; width: 0;
-    background: var(--accent); border-radius: 2px 2px 0 0;
-    transform: translateX(0); pointer-events: none; opacity: 0;
-    transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-                width 0.38s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.2s ease;
-  }
-  .nav-indicator.on { opacity: 1; }
-  /* The indicator replaces the per-tab bottom border it used to draw */
-  .nav-tab.active { border-bottom-color: transparent; }
-  .nav-tab.active .nav-tab-icon { opacity: 1; color: var(--red); }
-  /* Tab pages — only one visible at a time */
-  .tab-page { display: none; }
-  .tab-page.active { display: block; animation: tabFadeIn 0.25s ease; }
-  @keyframes tabFadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
 
   .subnav-btn {
     background: transparent;
@@ -1655,8 +1560,6 @@ body.training-mode { background: var(--bg); }
 body.training-mode nav { background: rgba(12,13,31,0.95); border-bottom-color: var(--border); }
 body.training-mode .nav-logo { color: #F1EFE1; }
 body.training-mode .nav-logo span { color: var(--accent); }
-body.training-mode .nav-tab { color: var(--muted); }
-body.training-mode .nav-tab.active { color: #F1EFE1; border-bottom-color: var(--accent); }
 body.training-mode #plan { background: var(--bg); border-top: none; padding-top: 0; padding-bottom: 60px; }
 body.training-mode .settings-bar { background: rgba(241,239,225,0.03); border-bottom: 1px solid rgba(241,239,225,0.15); padding: 20px 0 20px; margin-bottom: 24px; }
 body.training-mode .settings-max-chip { background: var(--surface); border-color: rgba(241,239,225,0.2); gap: 10px; padding: 10px 18px; }
@@ -1930,7 +1833,8 @@ body.training-mode footer { display: none; }
 /* The letter-roll from the main tabs, reused here so a destination behaves the
    same whichever surface it is on — including being driven by a .rolling class
    rather than :hover, because a touchscreen never dispatches hover and would
-   otherwise never see this at all. .nav-tab does it exactly this way. */
+   otherwise never see this at all. This is the pattern the old nav tabs used,
+   kept when they were removed because the dropdown items need it too. */
 .navmenu-item .nav-roll { vertical-align: baseline; }
 .navmenu-item.rolling .nav-roll-row.over span  { transform: translateY(-100%); }
 .navmenu-item.rolling .nav-roll-row.under span { transform: translateY(0); }
@@ -2301,21 +2205,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <img class="nav-logo-word" src="assets/brand/rtw-wordmark.png" alt="Run the Weights">
     <img class="nav-logo-mark" src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
   </button>
-  <div class="nav-tabs">
-    <button class="nav-tab active" id="tab-btn-info" onclick="goTab('info')">
-      <span class="nav-tab-icon">&#9675;</span> Overview
-    </button>
-    <button class="nav-tab" id="tab-btn-training" onclick="goTab('training')">
-      <span class="nav-tab-icon">&#9650;</span> Train
-    </button>
-    <button class="nav-tab" id="tab-btn-running" onclick="goTab('running')">
-      <span class="nav-tab-icon">&#9655;</span> Run
-    </button>
-    <button class="nav-tab" id="tab-btn-calendar" onclick="goTab('calendar')">
-      <span class="nav-tab-icon">&#9635;</span> Calendar
-    </button>
-    <div class="nav-indicator" id="navIndicator"></div>
-  </div>
+  <!-- The logo dropdown is the whole nav now. The horizontal tab row and its
+       sliding indicator were removed in build 7.32; goTab() is untouched and
+       every destination lives in #navMenu, built in buildNavMenu(). -->
 </nav>
 
 <div id="tab-info" class="tab-main on">
@@ -2494,7 +2386,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.31</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.32</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2556,7 +2448,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.31</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.32</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2777,7 +2669,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.31</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.32</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2863,7 +2755,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.31</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.32</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -4755,25 +4647,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
   }
   function switchInfoSection(sectionId, btn) { showSection(sectionId); }
 
-  //     MAIN TAB SWITCHER                                                        
-  function switchTab(tabName) {
-    var pages = document.querySelectorAll('.tab-page');
-    pages.forEach(function(p) { p.classList.remove('active'); });
-    var navBtns = document.querySelectorAll('.nav-tab');
-    navBtns.forEach(function(b) { b.classList.remove('active'); });
-    var targetPage = document.getElementById('tab-' + tabName);
-    var targetBtn  = document.getElementById('tab-btn-' + tabName);
-    if (targetPage) targetPage.classList.add('active');
-    if (targetBtn)  targetBtn.classList.add('active');
-    // Show/hide subnav based on tab
-    var subnav = document.querySelector('.info-subnav');
-    if (subnav) subnav.style.display = tabName === 'info' ? 'flex' : 'none';
-    // Adjust body padding
-    document.body.style.paddingTop = tabName === 'info' ? '105px' : '60px';
-    window.scrollTo(0, 0);
-  }
+  //     There was a switchTab() here that predated goTab() and was already dead:
+  //     nothing called it, window.switchTab is aliased to goTab further down, and
+  //     the .tab-page elements it queried do not exist. Removed with the tab row
+  //     rather than left holding .nav-tab references to elements that are gone.
 
-  //     DAY SWITCHER                                                            
+  //     DAY SWITCHER
   function switchDay(dayId) {
     document.querySelectorAll('.plan-content').forEach(function(el){ el.classList.remove('active'); });
     document.querySelectorAll('.plan-nav-btn').forEach(function(el){ el.classList.remove('active'); });
@@ -6353,26 +6232,9 @@ function wrapTextRoll(btn) {
   btn.replaceChild(wrap, node);
 }
 
-function initNavRolls() {
-  //  With motion off the labels simply stay put — no wrapping, no listeners.
-  if (prefersReducedMotion()) return;
-  document.querySelectorAll('.nav-tab').forEach(function(b) {
-    wrapTextRoll(b);
-    function roll(on) { b.classList.toggle('rolling', on); }
-    b.addEventListener('mouseenter', function() { roll(true); });
-    b.addEventListener('mouseleave', function() { roll(false); });
-    b.addEventListener('blur', function() { roll(false); });
-    //  Touch has no hover-exit event, so a hover-driven roll would stick
-    //  half-transitioned. Roll once on tap and always clear it.
-    b.addEventListener('touchstart', function() {
-      roll(true);
-      setTimeout(function() { roll(false); }, 700);
-    }, { passive: true });
-    b.addEventListener('click', function() {
-      setTimeout(function() { roll(false); }, 320);
-    });
-  });
-}
+//  initNavRolls() attached the letter-roll to the .nav-tab elements. Those are
+//  gone; wrapTextRoll() itself stays, because buildNavMenu() applies the same
+//  effect — with the same touch handling — to the dropdown's own items.
 
 //     EDGE CAROUSEL — the three Real ROI cards, one centred and two rotated
 //     away to the sides. Wraps in both directions, so prev from the first lands
@@ -6704,38 +6566,11 @@ document.addEventListener('keydown', function(e) {
 //  or the mobile URL bar collapsing, and closing on that feels like a glitch.
 window.addEventListener('resize', function() { if (navMenuOpen()) positionNavMenu(); });
 
-//  SLIDING TAB INDICATOR — one bar that moves and resizes to the active tab.
-//  Position is measured, never hardcoded, so any number of tabs works.
-function moveNavIndicator() {
-  var ind = document.getElementById('navIndicator');
-  if (!ind) return;
-  var active = document.querySelector('.nav-tab.active');
-  if (!active || !active.offsetWidth) { ind.classList.remove('on'); return; }
-  var reduce = prefersReducedMotion();
-  if (reduce) ind.style.transition = 'none';
-  ind.style.width = active.offsetWidth + 'px';
-  ind.style.transform = 'translateX(' + active.offsetLeft + 'px)';
-  ind.classList.add('on');
-  if (reduce) { void ind.offsetWidth; ind.style.transition = ''; }
-  //  Font metrics decide whether four labels fit, and the webfont arrives after
-  //  first paint — so rather than trust that they always fit, make sure the tab
-  //  you are on is scrolled into view. The nav scrolls horizontally on narrow
-  //  screens; without this the active tab could sit off the edge.
-  try {
-    var strip = active.parentElement;
-    if (strip && strip.scrollWidth > strip.clientWidth + 1) {
-      var want = active.offsetLeft - (strip.clientWidth - active.offsetWidth) / 2;
-      var max = strip.scrollWidth - strip.clientWidth;
-      strip.scrollLeft = Math.max(0, Math.min(max, want));
-    }
-  } catch (e) {}
-}
-
-var _navResizeT = null;
-window.addEventListener('resize', function() {
-  clearTimeout(_navResizeT);
-  _navResizeT = setTimeout(moveNavIndicator, 120);
-});
+//  The sliding tab indicator lived here. It measured the active .nav-tab and
+//  moved a bar under it, and scrolled that tab into view on narrow screens.
+//  Both jobs belong to the tab row, which is gone — the dropdown marks the
+//  current destination with a tick instead. Its debounced resize listener went
+//  with it.
 
 function goTab(t) {
   if (MAIN_TABS.indexOf(t) === -1) t = 'info';
@@ -6745,11 +6580,8 @@ function goTab(t) {
     if (el) el.style.display = name === t ? 'block' : 'none';
   });
   document.getElementById('info-subnav').style.display = t === 'info' ? 'flex' : 'none';
-  var tabs = document.querySelectorAll('.nav-tab');
-  tabs.forEach(function(b) { b.classList.remove('active'); });
-  var btn = document.getElementById('tab-btn-' + t);
-  if (btn) btn.classList.add('active');
-  moveNavIndicator();
+  //  Nothing to mark active here any more. The dropdown reads the stored tab
+  //  when it opens and ticks the current destination itself.
   if (t === 'info') {
     document.body.classList.remove('training-mode');
   } else {
@@ -6792,7 +6624,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var saved = localStorage.getItem(LAST_TAB_KEY);
     if (MAIN_TABS.indexOf(saved) !== -1) lastTab = saved;
   } catch(e) {}
-  initNavRolls();
   var _logo = document.getElementById('navLogo');
   if (_logo) {
     _logo.addEventListener('click', toggleNavMenu);
@@ -6804,8 +6635,6 @@ document.addEventListener('DOMContentLoaded', function() {
   initScrollAssembly();
   initEdgeCarousel();
   goTab(lastTab);
-  // Fonts can land after first paint and change the label widths
-  setTimeout(moveNavIndicator, 260);
   // Inputs are rebuilt by several renders; the per-element guard makes
   // re-running this cheap, so it is called again whenever a tab opens.
   enhanceAllInputs();
