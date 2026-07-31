@@ -47,7 +47,15 @@
 >
 > Two of my own probe assertions were wrong along the way and are worth recording as harness faults, not code faults: I asserted resize should *close* the menu (re-anchoring is better), and I read panel visibility from a `.on` class when `goTab()` actually sets `style.display`.
 >
-> **Push confirmation** is recorded below the commit.
+> **Push confirmation** (`git log --oneline origin/master -3`):
+>
+> ```
+> 5ac0309 Turn the logo into a dropdown and place the brand mark in two more spots
+> 25a1e90 Record the mobile audit summary
+> 890f574 Fix the mobile layout, checked by rendering rather than reading CSS
+> ```
+>
+> Local HEAD matches `origin/master` at `5ac0309`.
 >
 > ---
 >
