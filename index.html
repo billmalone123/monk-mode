@@ -1928,10 +1928,12 @@ body.training-mode footer { display: none; }
 .navmenu-tick { font-size: 10px; color: var(--accent); opacity: 0; }
 .navmenu-item.current .navmenu-tick { opacity: 1; }
 /* The letter-roll from the main tabs, reused here so a destination behaves the
-   same whichever surface it is on. */
+   same whichever surface it is on — including being driven by a .rolling class
+   rather than :hover, because a touchscreen never dispatches hover and would
+   otherwise never see this at all. .nav-tab does it exactly this way. */
 .navmenu-item .nav-roll { vertical-align: baseline; }
-.navmenu-item:hover .nav-roll-row.over span { transform: translateY(-100%); }
-.navmenu-item:hover .nav-roll-row.under span { transform: translateY(0); }
+.navmenu-item.rolling .nav-roll-row.over span  { transform: translateY(-100%); }
+.navmenu-item.rolling .nav-roll-row.under span { transform: translateY(0); }
 
 /* ── TOOLTIPS ────────────────────────────────────────────────────────────── */
 .vtip {
@@ -2492,7 +2494,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.29</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.30</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2554,7 +2556,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.29</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.30</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2775,7 +2777,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.29</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.30</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2861,7 +2863,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.29</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.30</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -6495,11 +6497,30 @@ function buildNavMenu() {
       closeNavMenu();
       goTab(b.dataset.tab);
     });
-    //  Same letter-roll as the primary tabs, and skipped under reduced motion
-    //  for the same reason it is skipped there.
-    if (!prefersReducedMotion()) wrapTextRoll(b);
+    //  Same letter-roll as the primary tabs, driven the same way: a .rolling
+    //  class, hover in and out on a mouse, and a single timed roll on tap that
+    //  always clears itself. Touch has no hover-exit event, so anything driven
+    //  by :hover alone either never fires or sticks half-transitioned.
+    if (!prefersReducedMotion()) {
+      wrapTextRoll(b);
+      var roll = function(on) { b.classList.toggle('rolling', on); };
+      b.addEventListener('mouseenter', function() { roll(true); });
+      b.addEventListener('mouseleave', function() { roll(false); });
+      b.addEventListener('blur', function() { roll(false); });
+      b.addEventListener('touchstart', function() {
+        roll(true);
+        setTimeout(function() { roll(false); }, 700);
+      }, { passive: true });
+      b.addEventListener('click', function() {
+        setTimeout(function() { roll(false); }, 320);
+      });
+    }
   });
   el.addEventListener('click', function(e) { e.stopPropagation(); });
+  //  Without this, a finger landing on the panel bubbles to the document
+  //  dismiss handler below, which closes the menu before the tap resolves — so
+  //  the click lands on whatever was underneath and the item never fires.
+  el.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: true });
   _navMenu = el;
   return el;
 }
@@ -6516,6 +6537,10 @@ function openNavMenu() {
   if (MAIN_TABS.indexOf(current) === -1) current = 'info';
   el.querySelectorAll('.navmenu-item').forEach(function(b) {
     b.classList.toggle('current', b.dataset.tab === current);
+    //  The panel is built once and reused, so clear any roll left over from the
+    //  last time it was open. Belt and braces alongside the timers that clear
+    //  it — reopening must never show letters parked mid-transition.
+    b.classList.remove('rolling');
   });
 
   positionNavMenu();
@@ -6673,7 +6698,13 @@ document.addEventListener('DOMContentLoaded', function() {
   } catch(e) {}
   initNavRolls();
   var _logo = document.getElementById('navLogo');
-  if (_logo) _logo.addEventListener('click', toggleNavMenu);
+  if (_logo) {
+    _logo.addEventListener('click', toggleNavMenu);
+    //  Same reason as the panel: the document dismiss handler would close the
+    //  menu on touchstart and the click would immediately reopen it, so a
+    //  second tap on the logo could never close what the first tap opened.
+    _logo.addEventListener('touchstart', function(e) { e.stopPropagation(); }, { passive: true });
+  }
   initScrollAssembly();
   initEdgeCarousel();
   goTab(lastTab);
