@@ -714,10 +714,44 @@
     nav { padding: 0 12px; height: 48px; border-bottom: none; background: rgba(0,0,0,0.92); }
     body { padding-top: 48px; }
     .nav-sub { top: 48px; background: rgba(0,0,0,0.95); border-top: none; }
-    .nav-logo { font-size: 15px; letter-spacing: 0.04em; }
-    .nav-logo img { height: 22px; }
+    nav .nav-logo { font-size: 15px; letter-spacing: 0.04em; flex: 0 1 auto; min-width: 0; }
+    nav .nav-logo img { height: 22px; max-width: 100%; object-fit: contain; object-position: left; }
     .nav-links { display: none; }
-    .nav-tab { padding: 0 10px; font-size: 12px; gap: 4px; height: 48px; }
+    /* This block was written when the nav had three tabs. With four, the logo
+       plus icons plus 0.12em tracking put Run and Calendar off-screen entirely
+       — measured 651px of nav in a 390px viewport. The icons are abstract
+       glyphs the labels already carry, so they go first, then the tracking and
+       padding tighten. overflow-x is a safety net so a future label can never
+       make a tab unreachable again; it does not engage at these widths. */
+    nav .nav-tabs {
+      margin-left: 10px; min-width: 0; flex: 1 1 auto;
+      overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none;
+    }
+    nav .nav-tabs::-webkit-scrollbar { display: none; }
+    nav .nav-tab {
+      padding: 0 13px; font-size: 13px; letter-spacing: 0.08em;
+      gap: 5px; height: 48px; flex: 0 0 auto;
+    }
+  }
+  /* Below this the four labels and the wordmark cannot share one bar. The
+     wordmark goes rather than the tabs: it is decorative here and the hero
+     shows it full size immediately underneath, whereas a tab that is not on
+     screen is a feature the user cannot reach. */
+  @media (max-width: 520px) {
+    nav .nav-logo { display: none; }
+    nav .nav-tabs { margin-left: 0; }
+    nav .nav-tab-icon { display: none; }
+    nav .nav-tab { padding: 0 9px; font-size: 12px; letter-spacing: 0.06em; gap: 0; }
+  }
+  @media (max-width: 430px) {
+    /* Sized against the fallback font, not Antonio: the webfont loads over the
+       network with display=swap, so the wider fallback is what a real user
+       sees first and is the case that has to fit. */
+    nav .nav-tab { padding: 0 7px; font-size: 11px; letter-spacing: 0.04em; }
+  }
+  /* Resumes the 768px block — the rules below were always tablet-and-down and
+     must not be narrowed to 430 by the nav tiers inserted above. */
+  @media (max-width: 768px) {
     #train-lock-icon { display: none; }
     section { padding: 80px 24px; }
     .hero {
@@ -1727,7 +1761,26 @@ body.training-mode footer { display: none; }
 .asm span { display: inline-block; transition: transform 0.08s linear; will-change: transform; }
 .asm span.sp { width: 0.3em; }
 /* ── VARIANT EQUIPMENT TAGS ──────────────────────────────────────────────── */
-.variant-chip { display: inline-flex; align-items: center; gap: 6px; }
+/* Chips are flex items, so they were shrinking below their content width and
+   wrapping the exercise name mid-phrase into three-line blobs. Don't shrink —
+   wrap to the next line instead, which is what flex-wrap is already there for. */
+.variant-chip { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; max-width: 100%; }
+@media (max-width: 520px) {
+  /* The row is a 4-column grid, so at phone width the name column was down to
+     ~136px and everything inside it — variants, warm-ups, targets, log inputs —
+     was being squeezed into that. Stack the row instead: one column, the
+     chevron pulled out of flow, and the column headers dropped since they no
+     longer label anything once the columns are gone. */
+  .lift-table-header { display: none; }
+  .lift-row { grid-template-columns: 1fr; gap: 8px; padding: 18px 14px; }
+  .lift-rest { font-size: 11px; color: var(--muted); }
+  .lift-chevron { position: absolute; top: 16px; right: 12px; margin: 0; }
+  /* Below this a name plus its equipment tag cannot share a line at chip width,
+     so each becomes a full-width row: name left, tag right, one line each. */
+  .lift-variants { flex-direction: column; align-items: stretch; }
+  .variant-chip { width: 100%; justify-content: space-between; border-radius: 10px; padding: 7px 12px; }
+  .variant-chip.variant-custom { justify-content: center; }
+}
 .variant-eq {
   font-family: var(--font-display); font-size: 8px; font-weight: 700;
   letter-spacing: 0.12em; text-transform: uppercase;
@@ -2378,7 +2431,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.27</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.28</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2440,7 +2493,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.27</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.28</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2661,7 +2714,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.27</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.28</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2747,7 +2800,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.27</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.28</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -6352,6 +6405,18 @@ function moveNavIndicator() {
   ind.style.transform = 'translateX(' + active.offsetLeft + 'px)';
   ind.classList.add('on');
   if (reduce) { void ind.offsetWidth; ind.style.transition = ''; }
+  //  Font metrics decide whether four labels fit, and the webfont arrives after
+  //  first paint — so rather than trust that they always fit, make sure the tab
+  //  you are on is scrolled into view. The nav scrolls horizontally on narrow
+  //  screens; without this the active tab could sit off the edge.
+  try {
+    var strip = active.parentElement;
+    if (strip && strip.scrollWidth > strip.clientWidth + 1) {
+      var want = active.offsetLeft - (strip.clientWidth - active.offsetWidth) / 2;
+      var max = strip.scrollWidth - strip.clientWidth;
+      strip.scrollLeft = Math.max(0, Math.min(max, want));
+    }
+  } catch (e) {}
 }
 
 var _navResizeT = null;
