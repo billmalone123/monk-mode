@@ -1483,6 +1483,18 @@
     opacity: 0.85;
   }
 
+  /* Onboarding — the two first-run steps share the settings modal shell */
+  .onb-step {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .onb-run-form { display: grid; gap: 22px; margin-bottom: 30px; }
+
   /* Weight badge on lift rows */
   .lift-weight-badge {
     display: inline-block;
@@ -2386,7 +2398,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.32</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.33</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2448,7 +2460,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.32</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.33</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2669,7 +2681,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.32</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.33</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2755,7 +2767,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.32</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.33</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -2776,27 +2788,123 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
 <!-- MAXES MODAL -->
 <div class="settings-modal-overlay" id="maxesModal" style="display:none;">
-  <div class="settings-modal-card">
+  <div class="settings-modal-card" id="maxesModalCard">
+    <div class="onb-step" id="maxesStepLabel" style="display:none;">Step 1 of 2</div>
     <div class="settings-modal-brand">
       <img src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
       <div class="settings-modal-title">Enter Run the Weights</div>
     </div>
     <div class="settings-modal-sub">Enter your max weights — your 1-rep max or best heavy single. They set the suggested starting weight on every lift. You can edit them anytime, and every lift's aim stays adjustable as you go. Stored locally on your device.</div>
+
+    <!-- Don't know your max? Enter a set you actually hit and the app estimates
+         the 1RM off it. Both modes write the same number to the same place. -->
+    <div class="maxes-mode-toggle" role="group" aria-label="How to enter your maxes">
+      <button class="mode-toggle-btn active" id="mode-btn-1rm" onclick="setMaxesMode('1rm')">I Know My 1RM</button>
+      <button class="mode-toggle-btn" id="mode-btn-reps" onclick="setMaxesMode('reps')">Estimate It</button>
+    </div>
+
     <div class="settings-input-group">
       <div class="settings-input-label">Back Squat <span>lbs</span></div>
-      <input class="settings-input-field" id="max-squat" type="number" oninput="onMaxInput()" onchange="onMaxCommit()" onblur="onMaxCommit()" placeholder="315" inputmode="decimal">
+      <input class="settings-input-field maxes-1rm-input" id="max-squat" type="number" oninput="onMaxInput()" onchange="onMaxCommit()" onblur="onMaxCommit()" placeholder="315" inputmode="decimal">
+      <div class="maxes-reps-row">
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Weight (lbs)</div>
+          <input class="settings-input-field" id="reps-weight-squat" type="number" placeholder="275" inputmode="decimal" oninput="onRepsInput()" onchange="onRepsCommit()" onblur="onRepsCommit()">
+        </div>
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Reps</div>
+          <input class="settings-input-field" id="reps-count-squat" type="number" placeholder="5" inputmode="numeric" min="1" max="30" oninput="onRepsInput()" onchange="onRepsCommit()" onblur="onRepsCommit()">
+        </div>
+      </div>
+      <div class="maxes-est-1rm" id="est-1rm-squat"></div>
     </div>
     <div class="settings-input-group">
       <div class="settings-input-label">Bench Press <span>lbs</span></div>
-      <input class="settings-input-field" id="max-bench" type="number" oninput="onMaxInput()" onchange="onMaxCommit()" onblur="onMaxCommit()" placeholder="225" inputmode="decimal">
+      <input class="settings-input-field maxes-1rm-input" id="max-bench" type="number" oninput="onMaxInput()" onchange="onMaxCommit()" onblur="onMaxCommit()" placeholder="225" inputmode="decimal">
+      <div class="maxes-reps-row">
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Weight (lbs)</div>
+          <input class="settings-input-field" id="reps-weight-bench" type="number" placeholder="185" inputmode="decimal" oninput="onRepsInput()" onchange="onRepsCommit()" onblur="onRepsCommit()">
+        </div>
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Reps</div>
+          <input class="settings-input-field" id="reps-count-bench" type="number" placeholder="5" inputmode="numeric" min="1" max="30" oninput="onRepsInput()" onchange="onRepsCommit()" onblur="onRepsCommit()">
+        </div>
+      </div>
+      <div class="maxes-est-1rm" id="est-1rm-bench"></div>
       <div class="settings-input-hint">Alt: Incline Barbell Bench or Smith Machine Bench — enter the max for whichever you press</div>
     </div>
     <div class="settings-input-group">
       <div class="settings-input-label">Dumbbell Shoulder Press <span>lbs</span></div>
-      <input class="settings-input-field" id="max-ohp" type="number" oninput="onMaxInput()" onchange="onMaxCommit()" onblur="onMaxCommit()" placeholder="70" inputmode="decimal">
+      <input class="settings-input-field maxes-1rm-input" id="max-ohp" type="number" oninput="onMaxInput()" onchange="onMaxCommit()" onblur="onMaxCommit()" placeholder="70" inputmode="decimal">
+      <div class="maxes-reps-row">
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Weight (lbs)</div>
+          <input class="settings-input-field" id="reps-weight-ohp" type="number" placeholder="55" inputmode="decimal" oninput="onRepsInput()" onchange="onRepsCommit()" onblur="onRepsCommit()">
+        </div>
+        <div class="maxes-reps-input-wrap">
+          <div class="maxes-reps-label">Reps</div>
+          <input class="settings-input-field" id="reps-count-ohp" type="number" placeholder="8" inputmode="numeric" min="1" max="30" oninput="onRepsInput()" onchange="onRepsCommit()" onblur="onRepsCommit()">
+        </div>
+      </div>
+      <div class="maxes-est-1rm" id="est-1rm-ohp"></div>
     </div>
-    <button class="settings-save-btn" onclick="saveMaxes()">Save & Enter</button>
-    <button class="settings-cancel-btn" onclick="closeMaxesModal(); goTab('training')">Skip for now</button>
+    <div class="settings-input-hint" id="maxes-epley-note" style="display:none;margin-bottom:22px;">Estimated with the Epley formula — 1RM = weight × (1 + reps ÷ 30). Accurate up to about 10 reps; past that it flatters you.</div>
+    <button class="settings-save-btn" onclick="saveMaxes()">Save &amp; Enter</button>
+    <button class="settings-cancel-btn" onclick="skipMaxes()">Skip for now</button>
+  </div>
+</div>
+<!-- RUN SETUP MODAL — onboarding step 2. Its fields are a front end for the Run
+     tab's own inputs: every edit writes through them and calls onRunInput(), so
+     what lands in runPlan is what the Run tab would have stored itself. -->
+<div class="settings-modal-overlay" id="runSetupModal" style="display:none;">
+  <div class="settings-modal-card" id="runSetupModalCard">
+    <div class="onb-step">Step 2 of 2</div>
+    <div class="settings-modal-brand">
+      <img src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
+      <div class="settings-modal-title">Your Race</div>
+    </div>
+    <div class="settings-modal-sub">Running is the other half. Give it a race and a starting point and the plan builds itself around your lifting week. Weekly mileage starts at the suggested numbers for your level — adjust them anytime on the Run tab.</div>
+
+    <div class="onb-run-form">
+      <div>
+        <div class="run-field-label">Race Date</div>
+        <input class="run-input" type="date" id="onb-run-race-date" onchange="onbRunSync()">
+        <div class="run-hint" id="onb-run-weeks-hint">Pick a date — total weeks come from it.</div>
+      </div>
+      <div>
+        <div class="run-field-label">Race Distance</div>
+        <select class="run-input" id="onb-run-distance" onchange="onbRunSync()">
+          <option value="5k">5K</option>
+          <option value="10k">10K</option>
+          <option value="half">Half Marathon</option>
+          <option value="marathon">Marathon</option>
+        </select>
+      </div>
+      <div>
+        <div class="run-field-label">Experience</div>
+        <div class="run-toggle" id="onb-run-level-toggle">
+          <button class="run-toggle-btn" id="onb-run-lvl-new" onclick="onbSetRunLevel('new')">New</button>
+          <button class="run-toggle-btn" id="onb-run-lvl-casual" onclick="onbSetRunLevel('casual')">Casual /<br>Returning</button>
+          <button class="run-toggle-btn" id="onb-run-lvl-competitive" onclick="onbSetRunLevel('competitive')">Competitive /<br>Experienced</button>
+        </div>
+        <div class="run-hint" id="onb-run-level-hint"></div>
+      </div>
+      <div>
+        <div class="run-field-label">Days Per Week <span class="run-field-val" id="onb-run-dpw-val">5</span></div>
+        <input class="run-range" type="range" id="onb-run-dpw" min="3" max="6" step="1" oninput="onbRunSync()">
+        <div class="run-hint">One long run anchors the weekend. Everything else builds around it.</div>
+      </div>
+      <div>
+        <div class="run-field-label">Current PR / Recent Race <span style="color:var(--muted);font-size:10px">Optional</span></div>
+        <input class="run-input" type="text" id="onb-run-pr" placeholder="22:30 5k" oninput="onbRunSync()" style="font-size:15px">
+        <div class="run-hint">Leave blank for effort-based zones and a time trial prompt.</div>
+      </div>
+      <div class="run-hint" id="onb-run-mileage-hint"></div>
+    </div>
+
+    <button class="settings-save-btn" onclick="saveRunSetup()">Save &amp; Enter</button>
+    <button class="settings-cancel-btn" onclick="skipRunSetup()">Skip for now</button>
   </div>
 </div>
 <!-- REST TIMER MODAL -->
@@ -4303,6 +4411,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     lifts with no history. Progression itself runs on logged sessions.
   const MAXES_KEY = 'monk_mode_maxes_v1';
   var MAX_LABELS = { squat: 'squat', bench: 'bench', ohp: 'dumbbell press' };
+  var MAX_KEYS = ['squat', 'bench', 'ohp'];
   var userMaxes = {};
   function loadMaxes() {
     try { userMaxes = JSON.parse(localStorage.getItem(MAXES_KEY)) || {}; } catch(e) { userMaxes = {}; }
@@ -4311,12 +4420,75 @@ body.training-mode select.run-input { color: #F1EFE1; }
     try { localStorage.setItem(MAXES_KEY, JSON.stringify(userMaxes)); } catch(e) {}
     idbSet('maxes', userMaxes);   // durable mirror
   }
+  //     ESTIMATE MODE — for people who have never tested a true single. Enter a
+  //     set you actually hit and the 1RM is estimated with Epley,
+  //     1RM = weight x (1 + reps / 30). Named and standard on purpose, the same
+  //     way the running side uses Riegel rather than an invented curve, and the
+  //     estimate is always shown rather than applied invisibly.
+  //
+  //     The toggle is card-level, not per-field: that is what the CSS this
+  //     restores was written against (.settings-modal-card.maxes-mode-reps
+  //     swaps every field at once) and what the original implementation did.
+  var _maxesMode = '1rm';
+  function setMaxesMode(mode) {
+    _maxesMode = (mode === 'reps') ? 'reps' : '1rm';
+    var card = document.getElementById('maxesModalCard');
+    if (card) card.classList.toggle('maxes-mode-reps', _maxesMode === 'reps');
+    var b1 = document.getElementById('mode-btn-1rm');
+    var b2 = document.getElementById('mode-btn-reps');
+    if (b1) b1.classList.toggle('active', _maxesMode === '1rm');
+    if (b2) b2.classList.toggle('active', _maxesMode === 'reps');
+    var note = document.getElementById('maxes-epley-note');
+    if (note) note.style.display = _maxesMode === 'reps' ? '' : 'none';
+    if (_maxesMode === 'reps') syncEstimates();
+    else MAX_KEYS.forEach(function(k) {
+      var el = document.getElementById('est-1rm-' + k);
+      if (el) el.textContent = '';
+    });
+  }
+  //  Epley on one lift's reps fields. Null whenever the pair is not a usable
+  //  set, so a blank or half-filled field never resolves to a number.
+  function epleyEstimate(weight, reps) {
+    var w = parseFloat(weight), r = parseFloat(reps);
+    if (isNaN(w) || w <= 0 || isNaN(r) || r < 1 || r > 30) return null;
+    //  Epley returns weight x 1.033 at one rep, which would quietly claim a
+    //  235 max off a 225 single. A single is its own 1RM — no estimate needed.
+    if (r === 1) return w;
+    return roundToNearestFive(w * (1 + r / 30));
+  }
+  function epleyForLift(k) {
+    function v(id) { var el = document.getElementById(id); return el ? el.value : ''; }
+    return epleyEstimate(v('reps-weight-' + k), v('reps-count-' + k));
+  }
+  //  Estimates are pushed into the same 1RM field direct entry uses, so there is
+  //  exactly one thing commitMaxes() reads and one number the user can see.
+  //  A blank pair leaves the existing max alone rather than clearing it.
+  function syncEstimates() {
+    MAX_KEYS.forEach(function(k) {
+      var est = epleyForLift(k);
+      var out = document.getElementById('est-1rm-' + k);
+      if (out) out.textContent = est == null ? '' : '≈ ' + est + ' lbs estimated 1RM';
+      if (est == null) return;
+      var el = document.getElementById('max-' + k);
+      if (el) el.value = est;
+    });
+  }
+  function onRepsInput() { syncEstimates(); onMaxInput(); }
+  function onRepsCommit() { syncEstimates(); onMaxCommit(); }
+
   function openMaxesModal() {
     loadMaxes();
-    ['squat','bench','ohp'].forEach(function(k) {
+    MAX_KEYS.forEach(function(k) {
       var el = document.getElementById('max-' + k);
       if (el) el.value = userMaxes[k] || '';
+      //  Reps fields are entry scratch, not stored state — the estimate they
+      //  produced is already in the max field above. Clear them each open.
+      ['reps-weight-', 'reps-count-'].forEach(function(p) {
+        var r = document.getElementById(p + k);
+        if (r) r.value = '';
+      });
     });
+    setMaxesMode('1rm');
     var m = document.getElementById('maxesModal');
     if (m) m.style.display = 'flex';
     setTimeout(function() { var f = document.getElementById('max-squat'); if (f) f.focus(); }, 80);
@@ -4332,7 +4504,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
   var _maxesT = null;
   function commitMaxes() {
     clearTimeout(_maxesT);
-    ['squat','bench','ohp'].forEach(function(k) {
+    //  Estimate mode writes its result into the same 1RM field below, so there
+    //  is one read and one save path regardless of which mode produced the number.
+    if (_maxesMode === 'reps') syncEstimates();
+    MAX_KEYS.forEach(function(k) {
       var el = document.getElementById('max-' + k);
       if (!el) return;
       var v = parseFloat(el.value);
@@ -4353,6 +4528,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
     //  debounce has fired is a no-op rather than a second, divergent save path.
     commitMaxes();
     closeMaxesModal();
+    if (_onboarding) { openRunSetupModal(); return; }
+    goTab('training');
+  }
+  //  Skipping is a first-class path, not an escape hatch: lifting maxes have
+  //  always been optional and step 2 still gets its turn.
+  function skipMaxes() {
+    closeMaxesModal();
+    if (_onboarding) { openRunSetupModal(); return; }
     goTab('training');
   }
   function updateMaxChips() {
@@ -4367,11 +4550,134 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var btn = document.getElementById('settingsOpenBtn');
     if (btn) btn.textContent = hasAny ? '⚙ Edit Maxes' : '⚙ Set Your Maxes';
   }
-  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeMaxesModal(); });
+  document.addEventListener('keydown', function(e) {
+    //  Escape is "get me out of here", not "next step" — it ends the whole
+    //  onboarding chain. Advancing to step 2 is what Skip for now is for.
+    if (e.key !== 'Escape') return;
+    _onboarding = false;
+    closeMaxesModal();
+    closeRunSetupModal();
+  });
   document.addEventListener('click', function(e) {
     var m = document.getElementById('maxesModal');
-    if (m && e.target === m) closeMaxesModal();
+    var r = document.getElementById('runSetupModal');
+    if ((m && e.target === m) || (r && e.target === r)) {
+      _onboarding = false;
+      closeMaxesModal();
+      closeRunSetupModal();
+    }
   });
+
+  //     ONBOARDING — two steps on first run: maxes, then the race. Both are
+  //     skippable and neither is a separate store. Step 1 writes userMaxes
+  //     through commitMaxes(); step 2 writes runPlan through the Run tab's own
+  //     inputs and onRunInput(), so filling either in here and filling it in
+  //     later from the Train/Run tabs land in exactly the same place.
+  var _onboarding = false;
+  function openOnboarding() {
+    _onboarding = true;
+    var s = document.getElementById('maxesStepLabel');
+    if (s) s.style.display = '';
+    openMaxesModal();
+  }
+  function endOnboarding() {
+    _onboarding = false;
+    var s = document.getElementById('maxesStepLabel');
+    if (s) s.style.display = 'none';
+  }
+
+  //  Step 2. Seeded from runPlan, which initRunPlan() has already defaulted, so
+  //  a skipped step leaves the Run tab exactly as it would have been.
+  function openRunSetupModal() {
+    var m = document.getElementById('runSetupModal');
+    if (!m) { endOnboarding(); goTab('training'); return; }
+    //  Already answered — never re-ask.
+    if (runPlan && runPlan.raceDate) { closeRunSetupModal(); endOnboarding(); goTab('training'); return; }
+    function set(id, v) { var el = document.getElementById(id); if (el && v != null) el.value = v; }
+    set('onb-run-race-date', runPlan.raceDate || '');
+    set('onb-run-distance', runPlan.distance || 'half');
+    set('onb-run-dpw', runPlan.daysPerWeek == null ? 5 : runPlan.daysPerWeek);
+    set('onb-run-pr', runPlan.pr || '');
+    onbPaintLevel(runPlan.level || 'casual');
+    onbPaintHints();
+    m.style.display = 'flex';
+  }
+  function closeRunSetupModal() {
+    var m = document.getElementById('runSetupModal');
+    if (m) m.style.display = 'none';
+  }
+
+  //  Highlight only — the canonical level write goes through setRunLevel().
+  function onbPaintLevel(key) {
+    ['new','casual','competitive'].forEach(function(k) {
+      var b = document.getElementById('onb-run-lvl-' + k);
+      if (b) b.classList.toggle('on', k === key);
+    });
+    var hint = document.getElementById('onb-run-level-hint');
+    var src = document.getElementById('run-level-hint');
+    if (hint && src) hint.textContent = src.textContent;
+  }
+  function onbSetRunLevel(key) {
+    onbPaintLevel(key);
+    setRunLevel(key);   // writes runPlan.level, syncs the Run tab toggle, re-renders
+    onbRunSync();       // suggested peak follows the level that was just chosen
+  }
+
+  //  Every step-2 edit runs through here: copy into the Run tab's real fields,
+  //  then hand off to onRunInput(), which is the only thing that parses and
+  //  persists. That is what keeps this from being a parallel copy of runPlan.
+  function onbRunSync() {
+    function copy(from, to) {
+      var a = document.getElementById(from), b = document.getElementById(to);
+      if (a && b) b.value = a.value;
+    }
+    copy('onb-run-race-date', 'run-race-date');
+    copy('onb-run-distance', 'run-distance');
+    copy('onb-run-dpw', 'run-dpw');
+    copy('onb-run-pr', 'run-pr');
+    //  Peak and current mileage are not asked for here — they are the suggested
+    //  defaults for the level and distance just picked, and stay adjustable on
+    //  the Run tab. Only pre-filled during onboarding, never overridden after.
+    var lvl = (runPlan && runPlan.level) || 'casual';
+    var distEl = document.getElementById('onb-run-distance');
+    var dist = (distEl && distEl.value) || 'half';
+    var peakEl = document.getElementById('run-peak');
+    if (peakEl && typeof suggestedPeak === 'function') peakEl.value = suggestedPeak(lvl, dist);
+    onRunInput();       // parse + persistRunPlan() + re-render, the Run tab's own path
+    onbPaintHints();
+  }
+  //  Read the hints the Run tab just recomputed rather than recomputing them here.
+  function onbPaintHints() {
+    function mirror(to, from) {
+      var a = document.getElementById(to), b = document.getElementById(from);
+      if (a && b) a.textContent = b.textContent;
+    }
+    mirror('onb-run-weeks-hint', 'run-weeks-hint');
+    mirror('onb-run-level-hint', 'run-level-hint');
+    var dpw = document.getElementById('onb-run-dpw-val');
+    var src = document.getElementById('onb-run-dpw');
+    if (dpw && src) dpw.textContent = src.value;
+    var mh = document.getElementById('onb-run-mileage-hint');
+    if (mh) {
+      var pk = document.getElementById('run-peak');
+      var cur = document.getElementById('run-current');
+      mh.textContent = 'Starting from ' + ((cur && cur.value) || '15') + ' mi a week and peaking at '
+        + ((pk && pk.value) || '30') + ' mi. Both adjustable on the Run tab.';
+    }
+  }
+  function saveRunSetup() {
+    onbRunSync();   // same write the field handlers already performed
+    closeRunSetupModal();
+    endOnboarding();
+    goTab('training');
+  }
+  //  Skipping writes nothing: runPlan keeps the defaults initRunPlan() set, so
+  //  the Run tab opens ready for input rather than half-configured.
+  function skipRunSetup() {
+    closeRunSetupModal();
+    endOnboarding();
+    goTab('training');
+  }
 
   //     BACKUP / RESTORE — full history as a JSON file, restorable anywhere
   function exportData() {
@@ -4627,10 +4933,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
     }
   }
 
-  //     MONK MODE ENTRY FLOW — first entry asks for your maxes
+  //     MONK MODE ENTRY FLOW — first entry asks for your maxes, then your race
   function enterMonkMode() {
     loadMaxes();
-    if (!userMaxes.squat && !userMaxes.bench && !userMaxes.ohp) { openMaxesModal(); return; }
+    if (!userMaxes.squat && !userMaxes.bench && !userMaxes.ohp) { openOnboarding(); return; }
     goTab('training');
   }
 
@@ -5943,10 +6249,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
     syncWeekDisplays(currentTrainWeek);
     // Recover history/maxes from the IndexedDB mirror if localStorage was wiped
     restoreFromIDB();
-    // First visit: walk straight into the maxes setup
+    // First visit: walk straight into setup — maxes, then the race
     var hasMaxes = userMaxes.squat || userMaxes.bench || userMaxes.ohp;
     if (!hasMaxes && !Object.keys(sessions).length) {
-      setTimeout(openMaxesModal, 600);
+      setTimeout(openOnboarding, 600);
     }
   });
 </script>
