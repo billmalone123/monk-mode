@@ -2398,7 +2398,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.33</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.34</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2460,7 +2460,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.33</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.34</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2681,7 +2681,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.33</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.34</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2767,7 +2767,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.33</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.34</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -2949,6 +2949,40 @@ body.training-mode select.run-input { color: #F1EFE1; }
   </div>
 </div>
 <script>
+  //  ══════════════════════════════════════════════════════════════════════════
+  //     STANDING RULE — READING STORED DATA
+  //
+  //     This app's data lives in the user's own browser, not on a server. A
+  //     deploy never migrates it and never touches it. So the only way an
+  //     update breaks someone is new code reading old-shaped data: a field
+  //     added this month, read against storage written last month that simply
+  //     does not have it. That is the failure mode to design against, and it is
+  //     the only one — nothing else about shipping is dangerous here.
+  //
+  //     Two rules, both non-negotiable for anything persisted:
+  //
+  //     1. EVERY NEW PERSISTED FIELD NEEDS A SAFE DEFAULT AT THE READ SITE.
+  //        Write it as if the key is absent and the object is `{}`, because for
+  //        every existing user it will be, exactly once. `x == null` defaults,
+  //        `isNaN` guards, `|| {}` on the parse, `|| fallback` on lookups.
+  //        Never assume a stored object already has the shape you just invented.
+  //        "It's new, so it's fine" is backwards — new is precisely the problem.
+  //
+  //     2. A VALUE USED TO INDEX A CONFIG TABLE MUST BE VALIDATED, NOT TRUSTED.
+  //        Missing is not the only bad case; stale is just as bad. A level or
+  //        distance or day id that this build no longer defines will return
+  //        undefined and throw on the next property access. Coerce it back to a
+  //        known key first — see safeRunLevel() / safeRunDistance().
+  //
+  //     If a field's SHAPE genuinely changes rather than just growing, that is
+  //     the signal to bump the key from _v1 to _v2 and write a migration —
+  //     migrateOldLogs() is the precedent. Never reuse a versioned key for an
+  //     incompatible shape. Growing a shape is free; changing one is not.
+  //
+  //     normSet() and entryVariant() are the reference examples of doing this
+  //     right on data that already shipped.
+  //  ══════════════════════════════════════════════════════════════════════════
+
   //     STORAGE — sessions keyed by exercise id
   const SESSIONS_KEY = 'monk_sessions_v1';
   const ARCHIVE_KEY = 'monk_archive_v1';
@@ -4959,9 +4993,21 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     rather than left holding .nav-tab references to elements that are gone.
 
   //     DAY SWITCHER
+  //     Two plan surfaces live inside #plan: the original 6-day markup, and
+  //     #altPlan, which renderDaySections() generates for the 3/4/5-day splits.
+  //     This function predates the second one and cleared .active from every
+  //     .plan-content on the page — including the alt day the render had just
+  //     activated — so opening Train on a shorter split showed the nav and no
+  //     day at all. Each surface now clears only its own, and the shorter
+  //     splits route to switchAltDay() and persist the same way.
   function switchDay(dayId) {
-    document.querySelectorAll('.plan-content').forEach(function(el){ el.classList.remove('active'); });
-    document.querySelectorAll('.plan-nav-btn').forEach(function(el){ el.classList.remove('active'); });
+    if (liftDaysPerWeek !== 6) {
+      switchAltDay(dayId);
+      try { localStorage.setItem(LAST_DAY_KEY, dayId); } catch(e) {}
+      return;
+    }
+    document.querySelectorAll('#plan > .plan-content').forEach(function(el){ el.classList.remove('active'); });
+    document.querySelectorAll('#planNav .plan-nav-btn').forEach(function(el){ el.classList.remove('active'); });
     var day = document.getElementById('day-' + dayId);
     var btn = document.getElementById('btn-' + dayId);
     if (day) day.classList.add('active');
@@ -5919,8 +5965,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     function num(id, d) { var v = parseInt(val(id), 10); return isNaN(v) ? d : v; }
     return {
       raceDate: val('run-race-date'),
-      distance: val('run-distance') || 'half',
-      level: runPlan.level || 'casual',
+      distance: safeRunDistance(val('run-distance')),
+      level: safeRunLevel(runPlan.level),
       daysPerWeek: num('run-dpw', 5),
       current: num('run-current', 15),
       peak: num('run-peak', 30),
@@ -5932,15 +5978,23 @@ body.training-mode select.run-input { color: #F1EFE1; }
     };
   }
 
+  //     A stored level or distance is only trustworthy if this build still knows
+  //     it. Anything else — a key from an older build, a hand-edited value — is
+  //     coerced to the default rather than used to index a config table.
+  function safeRunLevel(k) { return RUN_LEVELS[k] ? k : 'casual'; }
+  function safeRunDistance(k) { return RACE_DISTANCES[k] ? k : 'half'; }
+
   //     Suggested peak comes from the caps table, not a blank slider
   function suggestedPeak(levelKey, distKey) {
-    var caps = RUN_PEAK_CAPS[levelKey];
-    var band = caps ? caps[RACE_DISTANCES[distKey].capKey] : null;
+    var caps = RUN_PEAK_CAPS[safeRunLevel(levelKey)];
+    var dist = RACE_DISTANCES[safeRunDistance(distKey)];
+    var band = (caps && dist) ? caps[dist.capKey] : null;
     if (!band) band = [20, 30];
     return Math.round((band[0] + band[1]) / 2);
   }
 
   function setRunLevel(key) {
+    key = safeRunLevel(key);
     runPlan.level = key;
     ['new','casual','competitive'].forEach(function(k) {
       var b = document.getElementById('run-lvl-' + k);
@@ -5973,12 +6027,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (cur) cur.textContent = inp.current === 0 ? 'Run/walk' : inp.current + ' mi';
     var pk = document.getElementById('run-peak-val');
     if (pk) pk.textContent = inp.peak + ' mi';
-    var caps = RUN_PEAK_CAPS[inp.level];
-    var band = caps ? caps[RACE_DISTANCES[inp.distance].capKey] : null;
+    var lvlKey = safeRunLevel(inp.level), distKey = safeRunDistance(inp.distance);
+    var caps = RUN_PEAK_CAPS[lvlKey];
+    var distCfg = RACE_DISTANCES[distKey];
+    var band = (caps && distCfg) ? caps[distCfg.capKey] : null;
     var ph = document.getElementById('run-peak-hint');
     if (ph) {
       ph.textContent = band
-        ? 'Suggested for ' + RUN_LEVELS[inp.level].label.toLowerCase() + ' at this distance: ' + band[0] + ' to ' + band[1] + ' mi.'
+        ? 'Suggested for ' + RUN_LEVELS[lvlKey].label.toLowerCase() + ' at this distance: ' + band[0] + ' to ' + band[1] + ' mi.'
         : 'Not recommended as a first race without a longer base first.';
     }
     var wh = document.getElementById('run-weeks-hint');
@@ -5999,14 +6055,19 @@ body.training-mode select.run-input { color: #F1EFE1; }
     return !!(userMaxes.squat || userMaxes.bench || userMaxes.ohp || Object.keys(sessions).length);
   }
 
+  //     Every field is defaulted here, so a stored plan missing any of them —
+  //     one written before that field existed — is filled rather than read as
+  //     undefined. level and distance are additionally coerced through the
+  //     safe* helpers: a *stale* value is as dangerous as a missing one, since
+  //     both of them index config tables.
   function initRunPlan() {
     loadRunPlan();
     loadRunLogs();
-    if (!runPlan.level) runPlan.level = 'casual';
+    runPlan.level = safeRunLevel(runPlan.level);
+    runPlan.distance = safeRunDistance(runPlan.distance);
     // A lifting plan already in the app fills the lifting fields instead of asking again
     if (runPlan.liftDays == null) runPlan.liftDays = runLiftingActive() ? 6 : 0;
     if (runPlan.liftRestDow == null) runPlan.liftRestDow = 6;
-    if (runPlan.distance == null) runPlan.distance = 'half';
     if (runPlan.daysPerWeek == null) runPlan.daysPerWeek = 5;
     if (runPlan.current == null) runPlan.current = 15;
     if (runPlan.longDow == null) runPlan.longDow = 5;
@@ -6260,13 +6321,19 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <script>
 var INFO_SECS = ['home','about','edge','overview','progression'];
 
+//     The valid days are the ACTIVE split's own, not the six this list was
+//     hardcoded to before the split templates existed. A user on a 4-day split
+//     who last opened 'upper-a' had it rejected here and was handed 'chest',
+//     which that split does not contain. Falls back to the split's first day.
 function getMostRecentDay() {
-  var valid = ['chest','arms','legs','rest','chest-b','arms-b','legs-b'];
+  var valid = [];
+  try { if (typeof splitDayIds === 'function') valid = splitDayIds(); } catch(e) {}
+  if (!valid.length) valid = ['chest','arms','legs','chest-b','arms-b','legs-b'];
   try {
     var saved = localStorage.getItem(LAST_DAY_KEY);
     if (saved && valid.indexOf(saved) !== -1) return saved;
   } catch(e) {}
-  return 'chest';
+  return valid[0];
 }
 
 var MAIN_TABS = ['info','training','running','calendar'];
