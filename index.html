@@ -991,6 +991,50 @@
     min-width: 72px;
     align-self: center;
   }
+  /* Working set count — 2 or 3, per exercise. The third set slot is always in
+     the DOM and hidden by default, so switching is a class flip on the row
+     rather than a re-render that would drop anything half-typed beside it. */
+  .setcount-row { align-items: center; gap: 8px; }
+  .setcount-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    min-width: 44px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 800; font-size: 13px;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .setcount-btn:hover { border-color: var(--dim); color: var(--text); }
+  .setcount-btn.on { border-color: var(--accent); color: var(--accent); background: rgba(241,239,225,0.10); }
+  .set-row[data-setrow^="3-"] { display: none; }
+  .lift-row.sets-3 .set-row[data-setrow^="3-"] { display: flex; }
+  /* Warm-up logging. Visually subordinate to the working sets on purpose —
+     it is deliberately not working volume and must never read as though it is. */
+  .warmup-log {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-top: 4px; padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+  .warmup-log-title {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted);
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  }
+  .warmup-log-note {
+    font-size: 9px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: none; color: var(--dim); opacity: 0.9;
+  }
+  .warmup-log .log-inline-input.warmup-input {
+    font-size: 15px;
+    padding: 8px 10px;
+    width: 84px;
+    background: rgba(241,239,225,0.05);
+  }
   .inline-save-btn {
     background: linear-gradient(135deg, #F1EFE1 0%, #D9D6C6 100%);
     color: #1A1A18; border: none;
@@ -2408,7 +2452,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.35</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.36</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2470,7 +2514,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.35</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.36</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2691,7 +2735,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.35</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.36</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2777,7 +2821,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.35</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.36</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3084,6 +3128,23 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (typeof renderAllRowStates === 'function') renderAllRowStates();
       } else {
         idbSet('aims', aimChoice);
+      }
+    });
+    idbGet('setCounts').then(function(idbCounts) {
+      if (idbCounts && Object.keys(idbCounts).length && !Object.keys(setCounts).length) {
+        setCounts = idbCounts; persistSetCounts();
+        if (typeof renderDaySections === 'function') renderDaySections();
+        if (typeof renderAllRowStates === 'function') renderAllRowStates();
+      } else {
+        idbSet('setCounts', setCounts);
+      }
+    });
+    idbGet('warmupLogs').then(function(idbWu) {
+      if (idbWu && Object.keys(idbWu).length && !Object.keys(warmupLogs).length) {
+        warmupLogs = idbWu; persistWarmupLogs();
+        if (typeof renderAllRowStates === 'function') renderAllRowStates();
+      } else {
+        idbSet('warmupLogs', warmupLogs);
       }
     });
     idbGet('runPlan').then(function(idbRunPlan) {
@@ -3468,6 +3529,69 @@ body.training-mode select.run-input { color: #F1EFE1; }
     return ex.id + '|' + currentTrainWeek + '|' + activeVariant(ex);
   }
   function storedAim(ex) { return aimChoice[aimKey(ex)] || null; }
+
+  //     WORKING SET COUNT — 2 or 3, per exercise.
+  //
+  //  Keyed by exercise id alone, deliberately. An exercise belongs to exactly
+  //  one day, so per-exercise already gives "three sets on that day, two on
+  //  certain lifts" without a second dimension to keep in sync. Not keyed by
+  //  week either: how many sets a lift takes is a property of the lift, not of
+  //  this particular week, and a choice that silently reset every Monday would
+  //  be worse than no choice at all.
+  //
+  //  Absent means 2, which is what every existing user has and what the app did
+  //  before this existed — the standing rule's safe default. The value is also
+  //  validated rather than trusted, so a stale or hand-edited 4 reads as 2
+  //  instead of rendering a set slot that no other code knows about.
+  const SETCOUNT_KEY = 'monk_setcounts_v1';
+  var setCounts = {};
+  function loadSetCounts() {
+    try { setCounts = JSON.parse(localStorage.getItem(SETCOUNT_KEY)) || {}; } catch(e) { setCounts = {}; }
+  }
+  function persistSetCounts() {
+    try { localStorage.setItem(SETCOUNT_KEY, JSON.stringify(setCounts)); } catch(e) {}
+    idbSet('setCounts', setCounts);   // durable mirror
+  }
+  function setsFor(exId) {
+    var n = parseInt(setCounts[exId], 10);
+    return n === 3 ? 3 : 2;
+  }
+  //  Slot ids for the sets that are live right now. Everything that reads or
+  //  writes set slots goes through this, so there is one definition of "how
+  //  many sets does this exercise have" rather than a 3 hardcoded in five places.
+  function setSlots(exId) { return setsFor(exId) === 3 ? ['s1', 's2', 's3'] : ['s1', 's2']; }
+
+  //     WARM-UP LOGS — what you actually lifted on the ramp.
+  //
+  //  Its own store, for exactly the reason the aims store is separate: a
+  //  warm-up is not working volume. If it rode inside a session entry it would
+  //  register as logged work in the ring, the progress view and the calendar,
+  //  all three of which read session entries and none of which read this key.
+  //  Keyed like aims — exercise + week + variant — so a ramp never leaks across
+  //  weeks or across a variant switch.
+  const WARMUPLOG_KEY = 'monk_warmup_logs_v1';
+  var warmupLogs = {};
+  function loadWarmupLogs() {
+    try { warmupLogs = JSON.parse(localStorage.getItem(WARMUPLOG_KEY)) || {}; } catch(e) { warmupLogs = {}; }
+  }
+  function persistWarmupLogs() {
+    try { localStorage.setItem(WARMUPLOG_KEY, JSON.stringify(warmupLogs)); } catch(e) {}
+    idbSet('warmupLogs', warmupLogs);   // durable mirror
+  }
+  //  Same shape as aimKey by design — see the note above.
+  function warmupKey(ex) { return ex.id + '|' + currentTrainWeek + '|' + activeVariant(ex); }
+  //  Always an array of WARMUP_SLOTS entries, each {w, r} or null, whatever the
+  //  stored value turned out to be. Old data has no key here at all.
+  var WARMUP_SLOTS = 3;
+  function storedWarmups(ex) {
+    var raw = warmupLogs[warmupKey(ex)];
+    var out = [];
+    for (var i = 0; i < WARMUP_SLOTS; i++) {
+      var s = (raw && raw[i]) || null;
+      out.push(s && s.r ? { w: s.w == null ? null : s.w, r: s.r } : null);
+    }
+    return out;
+  }
   function exCurated(ex) { return [ex.name].concat(EX_ALTS[ex.id] || []); }
   //  A stored custom name is a legitimate variant, not a separate code path.
   //  Including it here is the whole fix: activeVariant() validates against this
@@ -3730,13 +3854,51 @@ body.training-mode select.run-input { color: #F1EFE1; }
     return { hard: hard, total: recent.length, low: hard / recent.length < 0.5 };
   }
 
+  //  One set slot. Sets 1 and 2 always render; set 3 renders too but its row is
+  //  hidden until the exercise is switched to 3, so switching is a class flip
+  //  rather than a re-render that would drop whatever is half-typed elsewhere
+  //  in the row. Identical wiring to the other slots on purpose: the reps box
+  //  gets onSetInput/onSetCommit, the weight box the dirty flag plus the
+  //  blur-commit onLogEdit/onLogCommit the autosave audit added.
+  function setRowHTML(ex, n) {
+    var slot = 's' + n;
+    return '<div class="log-row set-row" data-setrow="' + n + '-' + ex.id + '">'
+      + '<div class="log-inline-group"><span class="log-inline-label">Set ' + n + ' · Weight</span>'
+      + '<input class="log-inline-input" type="number" inputmode="decimal" id="' + slot + 'w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)" onchange="onLogCommit(this)"></div>'
+      + '<div class="log-inline-group"><span class="log-inline-label">Set ' + n + ' · Reps</span>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" id="' + slot + 'r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onSetInput(this)" onchange="onSetCommit(this)"></div>'
+      + '</div>';
+  }
+
+  //  Warm-up logging lives in its own block rather than inside .warmup-lines,
+  //  which renderWarmupsAndTargets() rewrites wholesale every time the aim
+  //  weight changes — inputs there would lose whatever was being typed. The
+  //  suggested ramp stays where it was; this is what you actually lifted.
+  function warmupLogHTML(ex) {
+    var rows = '';
+    for (var i = 0; i < WARMUP_SLOTS; i++) {
+      rows += '<div class="log-row warmup-log-row">'
+        + '<div class="log-inline-group"><span class="log-inline-label">Warm-up ' + (i + 1) + ' · Weight</span>'
+        + '<input class="log-inline-input warmup-input" type="number" inputmode="decimal" id="wu' + i + 'w-' + ex.id + '" data-ex="' + ex.id + '" data-wu="' + i + '" oninput="onWarmupInput(this)" onchange="onWarmupCommit(this)"></div>'
+        + '<div class="log-inline-group"><span class="log-inline-label">Warm-up ' + (i + 1) + ' · Reps</span>'
+        + '<input class="log-inline-input warmup-input" type="number" inputmode="numeric" id="wu' + i + 'r-' + ex.id + '" data-ex="' + ex.id + '" data-wu="' + i + '" oninput="onWarmupInput(this)" onchange="onWarmupCommit(this)"></div>'
+        + '</div>';
+    }
+    return '<div class="warmup-log" id="wulog-' + ex.id + '">'
+      + '<div class="warmup-log-title">Log Warm-Up Sets <span class="warmup-log-note">Not counted as working volume</span></div>'
+      + rows
+      + '<span class="autosave-flash" id="wusave-' + ex.id + '"></span>'
+      + '</div>';
+  }
+
   //     RENDER LIFT ROWS FROM CONFIG
   function liftRowHTML(ex) {
     var range = repRangeText(ex) + ' reps' + (ex.repsSuffix || '');
-    return '<div class="lift-row" id="row-' + ex.id + '" onclick="toggleNote(this)">'
+    var n = setsFor(ex.id);
+    return '<div class="lift-row' + (n === 3 ? ' sets-3' : '') + '" id="row-' + ex.id + '" onclick="toggleNote(this)">'
       + '<div>'
       + '<div class="lift-name" id="name-' + ex.id + '">' + activeVariant(ex) + '</div>'
-      + '<div class="lift-sets-reps">2 sets × ' + range + '</div>'
+      + '<div class="lift-sets-reps" data-setslabel="' + ex.id + '">' + n + ' sets × ' + range + '</div>'
       + variantChipsHTML(ex)
       + '<div class="warmup-lines" data-warmups="' + ex.id + '"></div>'
       + '<div class="target-block" data-targets="' + ex.id + '"></div>'
@@ -3752,22 +3914,19 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '<div class="log-inline-group"><span class="log-inline-label">Top Set Aim Reps</span>'
       + '<input class="log-inline-input" type="number" inputmode="numeric" id="r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)" onchange="onAimCommit(this.dataset.ex)"></div>'
       + '</div>'
-      + '<div class="log-row">'
-      + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Weight</span>'
-      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s1w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)" onchange="onLogCommit(this)"></div>'
-      + '<div class="log-inline-group"><span class="log-inline-label">Set 1 · Reps</span>'
-      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s1r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onSetInput(this)" onchange="onSetCommit(this)"></div>'
+      + '<div class="log-row setcount-row">'
+      + '<span class="log-inline-label">Working Sets</span>'
+      + '<button class="setcount-btn' + (n === 2 ? ' on' : '') + '" id="sc2-' + ex.id + '" data-ex="' + ex.id + '" data-n="2" onclick="setExerciseSets(this.dataset.ex, 2)">2</button>'
+      + '<button class="setcount-btn' + (n === 3 ? ' on' : '') + '" id="sc3-' + ex.id + '" data-ex="' + ex.id + '" data-n="3" onclick="setExerciseSets(this.dataset.ex, 3)">3</button>'
       + '</div>'
-      + '<div class="log-row">'
-      + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Weight</span>'
-      + '<input class="log-inline-input" type="number" inputmode="decimal" id="s2w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)" onchange="onLogCommit(this)"></div>'
-      + '<div class="log-inline-group"><span class="log-inline-label">Set 2 · Reps</span>'
-      + '<input class="log-inline-input" type="number" inputmode="numeric" id="s2r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onSetInput(this)" onchange="onSetCommit(this)"></div>'
-      + '</div>'
+      + setRowHTML(ex, 1)
+      + setRowHTML(ex, 2)
+      + setRowHTML(ex, 3)
       + '<div class="log-row">'
       + '<button class="failure-toggle" id="f-' + ex.id + '" data-ex="' + ex.id + '" onclick="toggleFailure(this)">Failure · No</button>'
       + '<span class="autosave-flash" id="save-' + ex.id + '"></span>'
       + '</div>'
+      + warmupLogHTML(ex)
       + '</div>'
       + '<div class="lift-status" data-status="' + ex.id + '" onclick="event.stopPropagation()"></div>'
       + '</div>';
@@ -3870,11 +4029,21 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var rInp = document.getElementById('r-' + ex.id);
     var rv = rInp ? parseInt(rInp.value, 10) : NaN;
     var wuEl = document.querySelector('[data-warmups="' + ex.id + '"]');
+    var lines = computeWarmups(ex.tag, w);
     if (wuEl) {
-      var lines = computeWarmups(ex.tag, w);
       wuEl.innerHTML = '<div class="warmup-title">Warm-up</div>' + (lines
         ? lines.map(function(l) { return '<div class="ramp-hint">' + l + '</div>'; }).join('')
         : '<div class="ramp-hint">Enter an aim weight to calculate</div>');
+    }
+    //  The suggested ramp becomes the placeholder on the log inputs, so the
+    //  numbers you are being told to lift sit in the boxes you record them in.
+    //  Placeholders only — never values, so nothing is ever auto-logged.
+    for (var wi = 0; wi < WARMUP_SLOTS; wi++) {
+      var parts = (lines && lines[wi]) ? lines[wi].split('×') : null;
+      var pw = document.getElementById('wu' + wi + 'w-' + ex.id);
+      var pr = document.getElementById('wu' + wi + 'r-' + ex.id);
+      if (pw) pw.placeholder = parts ? parts[0].trim() : 'lbs';
+      if (pr) pr.placeholder = parts ? parts[1].trim() : 'reps';
     }
     var tEl = document.querySelector('[data-targets="' + ex.id + '"]');
     if (tEl) {
@@ -3883,9 +4052,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
       if (!isNaN(rv) && rv > 0) repsTxt = rv + ' goal';
       else if (target.mode === 'baseline') repsTxt = repRangeText(ex);
       else repsTxt = target.reps + ' goal';
-      tEl.innerHTML = '<div class="target-msg">' + target.msg + '</div>'
-        + '<div class="target-line">Set 1 · ' + wTxt + ' × ' + repsTxt + '</div>'
-        + '<div class="target-line">Set 2 · ' + wTxt + ' × ' + repsTxt + '</div>';
+      var lines = '';
+      for (var i = 1; i <= setsFor(ex.id); i++) {
+        lines += '<div class="target-line">Set ' + i + ' · ' + wTxt + ' × ' + repsTxt + '</div>';
+      }
+      tEl.innerHTML = '<div class="target-msg">' + target.msg + '</div>' + lines;
     }
   }
 
@@ -3919,7 +4090,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (rInp) rInp.value = loggedThisWeek ? wkEntry.reps
       : (aim && aim.r != null ? aim.r : target.reps);
     var aimW = wInp ? wInp.value : '';
-    ['s1', 's2'].forEach(function(slot) {
+    //  All three slots are restored, not just the live ones. Slot 3's inputs
+    //  exist whatever the count is, and filling them from a logged s3 is what
+    //  makes turning 3 sets back on show the third set again rather than an
+    //  empty box beside data that is still in storage.
+    ['s1', 's2', 's3'].forEach(function(slot) {
       var wEl = document.getElementById(slot + 'w-' + ex.id);
       var rEl = document.getElementById(slot + 'r-' + ex.id);
       var loggedSet = loggedThisWeek ? normSet(wkEntry, wkEntry[slot]) : null;
@@ -3937,6 +4112,16 @@ body.training-mode select.run-input { color: #F1EFE1; }
       }
     });
     if (fBtn) setFailureBtn(fBtn, loggedThisWeek && wkEntry.failure === true);
+    //  Warm-up log is its own store and its own render — it is never read from
+    //  or written to the session entry.
+    var wu = storedWarmups(ex);
+    for (var i = 0; i < WARMUP_SLOTS; i++) {
+      var wuW = document.getElementById('wu' + i + 'w-' + ex.id);
+      var wuR = document.getElementById('wu' + i + 'r-' + ex.id);
+      if (wuW) wuW.value = wu[i] && wu[i].w != null ? wu[i].w : '';
+      if (wuR) wuR.value = wu[i] ? wu[i].r : '';
+    }
+    applySetCountUI(ex);
     renderWarmupsAndTargets(ex);
     renderRowStatus(ex);
   }
@@ -3955,7 +4140,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var out = '';
     if (shown) {
       var fTxt = shown.failure === true ? ' · to failure' : (shown.failure === false ? ' · soft' : '');
-      var loggedSets = [normSet(shown, shown.s1), normSet(shown, shown.s2)].filter(Boolean);
+      //  shown.s3 is undefined on every entry logged before three sets existed;
+      //  normSet() maps that to null and filter(Boolean) drops it, so an old
+      //  entry renders exactly the two sets it has.
+      var loggedSets = [normSet(shown, shown.s1), normSet(shown, shown.s2), normSet(shown, shown.s3)].filter(Boolean);
       var setsTxt = loggedSets.length
         ? loggedSets.map(function(s) { return s.w + ' × ' + s.r; }).join(' · ')
         : shown.weight + ' × ' + shown.reps;
@@ -4006,8 +4194,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (last && last.d === todayKey()) return;
     // Set-weight boxes follow the aim weight until the user edits them directly
     var wInp = document.getElementById('w-' + exId);
-    ['s1w-', 's2w-'].forEach(function(p) {
-      var el = document.getElementById(p + exId);
+    setSlots(exId).forEach(function(slot) {
+      var el = document.getElementById(slot + 'w-' + exId);
       if (el && !el.dataset.dirty) el.value = wInp ? wInp.value : '';
     });
   }
@@ -4043,19 +4231,102 @@ body.training-mode select.run-input { color: #F1EFE1; }
     autoSaveExercise(inp.dataset.ex, false);
   }
 
+  //     WORKING SET COUNT — switch one exercise between 2 and 3 sets.
+  //
+  //  Turning the third set off re-saves immediately when this week is already
+  //  logged. Without that the stored entry would keep its s3 while the UI shows
+  //  two sets, and the status chip — which renders whatever slots the entry
+  //  has — would still show three. Re-saving drops the key, so what is stored
+  //  and what is on screen never disagree.
+  function setExerciseSets(exId, n) {
+    var ex = EX_BY_ID[exId];
+    if (!ex) return;
+    n = (parseInt(n, 10) === 3) ? 3 : 2;
+    if (n === 2) delete setCounts[exId]; else setCounts[exId] = 3;
+    persistSetCounts();
+    applySetCountUI(ex);
+    renderWarmupsAndTargets(ex);
+    var logged = entryForWeek(getHistory(exId), currentTrainWeek, ex);
+    if (logged) {
+      clearTimeout(_autoSaveT[exId]);
+      autoSaveExercise(exId, false);
+    }
+    renderRowStatus(ex);
+  }
+
+  //  Paint only — the value itself already went to storage.
+  function applySetCountUI(ex) {
+    var n = setsFor(ex.id);
+    var row = document.getElementById('row-' + ex.id);
+    if (row) row.classList.toggle('sets-3', n === 3);
+    var b2 = document.getElementById('sc2-' + ex.id);
+    var b3 = document.getElementById('sc3-' + ex.id);
+    if (b2) b2.classList.toggle('on', n === 2);
+    if (b3) b3.classList.toggle('on', n === 3);
+    var lbl = document.querySelector('[data-setslabel="' + ex.id + '"]');
+    if (lbl) lbl.textContent = n + ' sets × ' + repRangeText(ex) + ' reps' + (ex.repsSuffix || '');
+  }
+
+  //     WARM-UP SET LOGGING — same debounce-plus-blur-commit as everything else.
+  //
+  //  Writes to warmupLogs, never to sessions, so nothing here can reach the
+  //  ring, the progress view or the calendar. Deliberately does not touch the
+  //  rest timer either: a warm-up is not a working set.
+  var _wuT = {};
+  function commitWarmups(exId) {
+    var ex = EX_BY_ID[exId];
+    if (!ex) return;
+    clearTimeout(_wuT[exId]);
+    var list = [], any = false;
+    for (var i = 0; i < WARMUP_SLOTS; i++) {
+      var wEl = document.getElementById('wu' + i + 'w-' + exId);
+      var rEl = document.getElementById('wu' + i + 'r-' + exId);
+      var w = wEl ? parseFloat(wEl.value) : NaN;
+      var r = rEl ? parseInt(rEl.value, 10) : NaN;
+      if (isNaN(r) || r <= 0) { list.push(null); continue; }
+      if (isNaN(w) || w <= 0) w = null;
+      list.push({ w: w, r: r });
+      any = true;
+    }
+    var k = warmupKey(ex);
+    //  Cleared back to empty drops the key rather than storing a row of nulls.
+    if (!any) delete warmupLogs[k];
+    else warmupLogs[k] = list;
+    persistWarmupLogs();
+    var note = document.getElementById('wusave-' + exId);
+    if (note) {
+      note.textContent = '✓ Saved';
+      clearTimeout(note._t);
+      note._t = setTimeout(function() { note.textContent = ''; }, 1600);
+    }
+  }
+  function onWarmupInput(inp) {
+    var exId = inp.dataset.ex;
+    clearTimeout(_wuT[exId]);
+    _wuT[exId] = setTimeout(function() { commitWarmups(exId); }, 1200);
+  }
+  function onWarmupCommit(inp) { commitWarmups(inp.dataset.ex); }
+
   function autoSaveExercise(exId, fireTimer) {
     var ex = EX_BY_ID[exId];
     if (!ex) return;
     var aimW = parseFloat(document.getElementById('w-' + exId).value);
     if (isNaN(aimW) || aimW <= 0) aimW = null;
     function readSet(slot) {
-      var sw = parseFloat(document.getElementById(slot + 'w-' + exId).value);
-      var sr = parseInt(document.getElementById(slot + 'r-' + exId).value, 10);
+      var wEl = document.getElementById(slot + 'w-' + exId);
+      var rEl = document.getElementById(slot + 'r-' + exId);
+      if (!wEl || !rEl) return null;
+      var sw = parseFloat(wEl.value);
+      var sr = parseInt(rEl.value, 10);
       if (isNaN(sr) || sr <= 0) return null;
       if (isNaN(sw) || sw <= 0) sw = aimW;
       return sw ? { w: sw, r: sr } : null;
     }
     var set1 = readSet('s1'), set2 = readSet('s2');
+    //  Slot 3 is only read when the exercise is actually set to 3. Its inputs
+    //  stay in the DOM when switched back down, and reading them regardless
+    //  would resurrect a third set the user just turned off.
+    var set3 = setsFor(exId) === 3 ? readSet('s3') : null;
     syncFromDisk();
     var hist = sessions[exId] = sessions[exId] || [];
     var t = todayKey();
@@ -4066,7 +4337,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       if (hist[i].week === currentTrainWeek) { idx = i; break; }
     }
     var prev = idx >= 0 ? hist[idx] : null;
-    if (!set1 && !set2) {
+    if (!set1 && !set2 && !set3) {
       // Everything erased: remove today's entry if it exists
       if (prev) {
         hist.splice(idx, 1);
@@ -4078,10 +4349,19 @@ body.training-mode select.run-input { color: #F1EFE1; }
       }
       return;
     }
-    var best = set1;
-    if (set2 && (!best || set2.w > best.w || (set2.w === best.w && set2.r > best.r))) best = set2;
+    //  Top set across every slot that was logged, not just the first two.
+    var best = null;
+    [set1, set2, set3].forEach(function(s) {
+      if (!s) return;
+      if (!best || s.w > best.w || (s.w === best.w && s.r > best.r)) best = s;
+    });
     var fail = document.getElementById('f-' + exId).classList.contains('on');
     var entry = { d: t, week: currentTrainWeek, weight: best.w, reps: best.r, s1: set1, s2: set2, failure: fail, variant: activeVariant(ex) };
+    //  s3 is added only when there is one. An entry logged with two sets keeps
+    //  exactly the shape it has always had, so this never rewrites the stored
+    //  shape for the people already carrying it — and switching back down to 2
+    //  drops the key again rather than leaving an orphan third set behind.
+    if (set3) entry.s3 = set3;
     var changed = !prev || JSON.stringify(prev) !== JSON.stringify(entry);
     if (idx >= 0) hist[idx] = entry; else hist.push(entry);
     if (!changed) return;
@@ -4096,8 +4376,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
       note._t = setTimeout(function() { note.textContent = ''; }, 1600);
     }
     if (fireTimer) {
-      var prevSets = prev ? JSON.stringify([normSet(prev, prev.s1), normSet(prev, prev.s2)]) : null;
-      if (prevSets !== JSON.stringify([set1, set2])) {
+      //  s3 is included here so finishing a third set starts the rest timer the
+      //  same way the first two do. normSet() returns null for an absent slot,
+      //  so an old two-set entry compares as [set1, set2, null] and is unchanged.
+      var prevSets = prev ? JSON.stringify([normSet(prev, prev.s1), normSet(prev, prev.s2), normSet(prev, prev.s3)]) : null;
+      if (prevSets !== JSON.stringify([set1, set2, set3 || null])) {
         startTimer(parseRestToSeconds(ex.rest), ex.name, true);
       }
     }
@@ -4730,7 +5013,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var data = {
       app: 'monk-mode', exportedAt: todayKey(),
       sessions: sessions, maxes: userMaxes, week: currentTrainWeek, archive: archive,
-      variants: variantChoice, aims: aimChoice, runPlan: runPlan, runLogs: runLogs, liftDays: liftDaysPerWeek
+      variants: variantChoice, aims: aimChoice, runPlan: runPlan, runLogs: runLogs, liftDays: liftDaysPerWeek,
+      setCounts: setCounts, warmupLogs: warmupLogs
     };
     var blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
     var a = document.createElement('a');
@@ -4776,6 +5060,16 @@ body.training-mode select.run-input { color: #F1EFE1; }
           runLogs = data.runLogs;
           persistRunLogs();
           if (typeof renderRunPlan === 'function') renderRunPlan();
+        }
+        //  Both of these are newer than the oldest backups in circulation, so
+        //  absent is the normal case, not an error — a file without them simply
+        //  leaves every exercise at the 2-set default with no warm-ups logged.
+        if (data.setCounts && typeof data.setCounts === 'object') {
+          setCounts = data.setCounts; persistSetCounts();
+          if (typeof renderDaySections === 'function') renderDaySections();
+        }
+        if (data.warmupLogs && typeof data.warmupLogs === 'object') {
+          warmupLogs = data.warmupLogs; persistWarmupLogs();
         }
         updateMaxChips();
         renderAllRowStates();
@@ -6307,6 +6601,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     loadMaxes();
     loadVariants();
     loadAims();
+    loadSetCounts();
+    loadWarmupLogs();
     updateMaxChips();
     updateLiftDaysUI();
     renderWeekSelectors();
