@@ -1873,7 +1873,17 @@ body.training-mode footer { display: none; }
 button.has-vtip, input.has-vtip { cursor: pointer; }
 
 /* ── SMOOTH CARET ────────────────────────────────────────────────────────── */
-.smooth-wrap { position: relative; display: inline-block; }
+/* enhanceSmoothInput() inserts this wrapper around an input that already sits
+   in the layout. It must not change that input's width, and inline-block did:
+   shrink-to-fit sized the wrapper to the input's intrinsic width, which the
+   input's own `width: 100%` then resolved against, collapsing every full-width
+   text field to the browser default ~169px. The PR fields on the Run tab and
+   in onboarding step 2 both rendered at half their column because of this —
+   caught on screen at 390px, never by an assertion, since the classes and
+   values were all correct and only the rendered box was wrong. Block fills the
+   containing block, so the wrapper is layout-neutral, which is the whole
+   contract of a caret wrapper. Positioning stays for .smooth-caret. */
+.smooth-wrap { position: relative; display: block; }
 .smooth-wrap > input { position: relative; z-index: 1; background-clip: padding-box; }
 /* Only inputs that actually got the enhancement lose the native caret — if
    measurement is unavailable the class is never applied and the browser's own
@@ -2398,7 +2408,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.34</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.35</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2460,7 +2470,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.34</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.35</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2681,7 +2691,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.34</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.35</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2767,7 +2777,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.34</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.35</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
