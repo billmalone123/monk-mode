@@ -1062,6 +1062,36 @@
     box-shadow: 0 4px 16px rgba(241,239,225,0.25);
   }
   .inline-save-btn:hover { background: linear-gradient(135deg, #C9C5B6 0%, #D9D6C6 100%); box-shadow: 0 6px 20px rgba(241,239,225,0.35); }
+  /* Add your own exercise — one quiet line under a day's programmed rows. */
+  .add-ex { grid-column: 1 / -1; padding: 4px 0 2px; }
+  .add-ex-toggle {
+    background: transparent; border: 1px dashed var(--border); color: var(--muted);
+    padding: 9px 16px; font-family: var(--font-display); font-weight: 700;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; border-radius: 999px; transition: all 0.15s;
+  }
+  .add-ex-toggle:hover, .add-ex-toggle.open { border-color: var(--field); color: var(--text); }
+  .add-ex-form { display: none; margin-top: 12px; }
+  .add-ex-form.open { display: block; }
+  .add-ex-row { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+  .add-ex-name { width: 100%; font-size: 15px; }
+  .add-ex-go {
+    background: var(--accent); color: #1A1A18; border: none;
+    padding: 11px 22px; font-family: var(--font-display); font-weight: 800;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer; border-radius: 999px; transition: all 0.15s;
+  }
+  .add-ex-go:hover { opacity: 0.88; }
+  .add-ex-hint { font-size: 11px; color: var(--muted); align-self: center; }
+  /* Remove, on custom rows only. Quiet by default so it is never the obvious
+     thing to press, and only turns red once you are actually on it. */
+  .remove-ex {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 10px 16px; font-family: var(--font-display); font-weight: 700;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; border-radius: 999px; margin-left: auto; transition: all 0.15s;
+  }
+  .remove-ex:hover { border-color: var(--red); color: var(--red); }
   .lift-status { grid-column: 1 / -1; margin-top: 10px; cursor: default; }
   .soft-set-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; }
   .stall-warning { font-size: 12px; color: var(--accent); font-weight: 700; margin-top: 6px; letter-spacing: 0.02em; }
@@ -2481,7 +2511,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.39</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.40</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2543,7 +2573,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.39</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.40</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2764,7 +2794,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.39</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.40</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2866,7 +2896,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.39</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.40</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3184,6 +3214,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
         idbSet('setCounts', setCounts);
       }
     });
+    idbGet('customEx').then(function(idbCx) {
+      if (idbCx && Object.keys(idbCx).length && !Object.keys(customEx).length) {
+        customEx = idbCx; persistCustomExercises(); registerCustomExercises();
+        if (typeof renderDaySections === 'function') { renderDaySections(); renderAllRowStates(); }
+      } else {
+        idbSet('customEx', customEx);
+      }
+    });
     idbGet('warmupLogs').then(function(idbWu) {
       if (idbWu && Object.keys(idbWu).length && !Object.keys(warmupLogs).length) {
         warmupLogs = idbWu; persistWarmupLogs();
@@ -3326,11 +3364,17 @@ body.training-mode select.run-input { color: #F1EFE1; }
   }
   //  Exercises for a split day, in order. Pool-backed days keep the original
   //  array order exactly, which is what makes the 6-day path unchanged.
+  //  Custom exercises are appended at the end of whichever day they were added
+  //  to. This is the single assembly point for both render paths — the 6-day
+  //  branch of renderDaySections() used to filter EXERCISES inline, which would
+  //  have meant appending customs in two places.
   function splitDayExercises(dayId) {
     var d = SPLIT_DAYS[dayId];
     if (!d) return [];
-    if (d.pool) return EXERCISES.filter(function(ex) { return ex.day === d.pool; });
-    return (d.ex || []).map(function(id) { return EX_BY_ID[id]; }).filter(Boolean);
+    var base = d.pool
+      ? EXERCISES.filter(function(ex) { return ex.day === d.pool; })
+      : (d.ex || []).map(function(id) { return EX_BY_ID[id]; }).filter(Boolean);
+    return base.concat(customExercisesFor(dayId));
   }
 
   //     WEEK ARC — the ten-week narrative, previously ten hardcoded markup
@@ -3606,6 +3650,69 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //  many sets does this exercise have" rather than a 3 hardcoded in five places.
   function setSlots(exId) { return setsFor(exId) === 3 ? ['s1', 's2', 's3'] : ['s1', 's2']; }
 
+  //     CUSTOM EXERCISES — your own movement appended to one day's list.
+  //
+  //  Keyed by the same dayId splitDayExercises() takes, so a custom lift belongs
+  //  to exactly one day and cannot leak onto another day or another split.
+  //  Absent means none, which is what every existing user has.
+  //
+  //  The load-bearing detail: EX_BY_ID is built once from the static EXERCISES
+  //  array and every logging function gates on it — autoSaveExercise() opens
+  //  with `var ex = EX_BY_ID[exId]; if (!ex) return;`. A custom exercise that is
+  //  not registered there renders fine and then silently refuses to save. So
+  //  registerCustomExercises() runs at load as well as at creation; registering
+  //  only at creation would work for one session and lose every edit after a
+  //  refresh.
+  const CUSTOM_EX_KEY = 'monk_custom_ex_v1';
+  var customEx = {};
+  function loadCustomExercises() {
+    try { customEx = JSON.parse(localStorage.getItem(CUSTOM_EX_KEY)) || {}; } catch(e) { customEx = {}; }
+    registerCustomExercises();
+  }
+  function persistCustomExercises() {
+    try { localStorage.setItem(CUSTOM_EX_KEY, JSON.stringify(customEx)); } catch(e) {}
+    idbSet('customEx', customEx);   // durable mirror
+  }
+  //  A stored record is data, not a trusted exercise object. This builds the
+  //  full shape liftRowHTML() and the logging path expect, with defaults for
+  //  everything a programmed exercise carries. No maxKey and no seedFrom is
+  //  deliberate and already handled: getSessionTarget() falls through to
+  //  "First session — establish a baseline", the same path Ab Wheel Rollout
+  //  takes today. No repWhy is fine too — liftRowHTML guards that field.
+  function makeCustomEx(dayId, rec) {
+    var lo = parseInt(rec.repRange && rec.repRange[0], 10);
+    var hi = parseInt(rec.repRange && rec.repRange[1], 10);
+    if (isNaN(lo) || lo < 1) lo = 8;
+    if (isNaN(hi) || hi < lo) hi = Math.max(lo, 12);
+    return {
+      id: rec.id, day: dayId, name: rec.name, custom: true,
+      tag: 'secondary',            // never 'primary' — that drives the long warm-up ramp
+      repRange: [lo, hi],
+      increment: 5,
+      rest: '90 sec', time: '~8 min',
+      note: 'Your own movement, added to this day. It logs, progresses and shows up in your history exactly like everything else here. Rename it with the Swap control; remove it with the button on this row.'
+    };
+  }
+  function registerCustomExercises() {
+    Object.keys(customEx).forEach(function(dayId) {
+      (customEx[dayId] || []).forEach(function(rec) {
+        if (rec && rec.id && rec.name) EX_BY_ID[rec.id] = makeCustomEx(dayId, rec);
+      });
+    });
+  }
+  function customExercisesFor(dayId) {
+    return (customEx[dayId] || []).map(function(rec) {
+      return (rec && rec.id) ? EX_BY_ID[rec.id] : null;
+    }).filter(Boolean);
+  }
+  //  Slug plus a timestamp, so two exercises with the same name on the same day
+  //  never collide and a custom id can never shadow a programmed one.
+  function customExId(name) {
+    var slug = String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 24);
+    if (!slug) slug = 'lift';
+    return 'cx-' + slug + '-' + Date.now().toString(36);
+  }
+
   //     WARM-UP LOGS — what you actually lifted on the ramp.
   //
   //  Its own store, for exactly the reason the aims store is separate: a
@@ -3656,7 +3763,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
   }
   function variantChipsHTML(ex) {
     var variants = exVariants(ex);
-    if (variants.length <= 1) return '';
+    //  A custom exercise has no curated alternatives, so this would bail before
+    //  emitting the "+ Custom" chip — and that chip is how a custom exercise
+    //  gets renamed. Renaming then rides the existing variantChoice path and
+    //  autosaves like any other pick, rather than needing its own name field.
+    if (variants.length <= 1 && !ex.custom) return '';
     var active = activeVariant(ex);
     var chips = variants.map(function(name) {
       var eq = equipmentOf(name);
@@ -3936,6 +4047,89 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '</div>';
   }
 
+  //     ADD EXERCISE — one quiet line at the bottom of a day's list. Collapsed
+  //     until asked for, so it never competes with the programmed rows above it.
+  function addExerciseHTML(dayId) {
+    return '<div class="add-ex" id="addex-' + dayId + '" onclick="event.stopPropagation()">'
+      + '<button class="add-ex-toggle" id="addex-btn-' + dayId + '" data-day="' + dayId + '" onclick="toggleAddExercise(this.dataset.day)">+ Add Exercise</button>'
+      + '<div class="add-ex-form" id="addex-form-' + dayId + '">'
+      + '<div class="add-ex-row">'
+      + '<div class="log-inline-group" style="flex:1;min-width:180px"><span class="log-inline-label">Exercise Name</span>'
+      + '<input class="log-inline-input add-ex-name" type="text" id="addex-name-' + dayId + '" placeholder="Farmer\'s Carry"></div>'
+      + '<div class="log-inline-group"><span class="log-inline-label">Reps From</span>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" min="1" id="addex-lo-' + dayId + '" placeholder="8"></div>'
+      + '<div class="log-inline-group"><span class="log-inline-label">To</span>'
+      + '<input class="log-inline-input" type="number" inputmode="numeric" min="1" id="addex-hi-' + dayId + '" placeholder="12"></div>'
+      + '</div>'
+      + '<div class="add-ex-row">'
+      + '<button class="add-ex-go" data-day="' + dayId + '" onclick="addCustomExercise(this.dataset.day)">Add</button>'
+      + '<span class="add-ex-hint" id="addex-hint-' + dayId + '">Name is all you need. Rep range is optional.</span>'
+      + '</div></div></div>';
+  }
+
+  function toggleAddExercise(dayId) {
+    var form = document.getElementById('addex-form-' + dayId);
+    var btn = document.getElementById('addex-btn-' + dayId);
+    if (!form || !btn) return;
+    var open = form.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    btn.textContent = open ? '− Add Exercise' : '+ Add Exercise';
+    if (open) { var n = document.getElementById('addex-name-' + dayId); if (n) n.focus(); }
+  }
+
+  function addCustomExercise(dayId) {
+    var nEl = document.getElementById('addex-name-' + dayId);
+    var hint = document.getElementById('addex-hint-' + dayId);
+    var name = nEl ? String(nEl.value || '').trim().slice(0, 60) : '';
+    if (!name) {
+      if (hint) hint.textContent = 'Give it a name first.';
+      if (nEl) nEl.focus();
+      return;
+    }
+    function num(id) { var el = document.getElementById(id); var v = el ? parseInt(el.value, 10) : NaN; return isNaN(v) ? null : v; }
+    var rec = { id: customExId(name), name: name, repRange: [num('addex-lo-' + dayId), num('addex-hi-' + dayId)] };
+    customEx[dayId] = (customEx[dayId] || []).concat([rec]);
+    persistCustomExercises();
+    //  Register before rendering — the row's inputs are useless until EX_BY_ID
+    //  knows about it, because every logging function gates on that lookup.
+    registerCustomExercises();
+    renderDaySections();
+    renderAllRowStates();
+    //  renderDaySections rebuilt the markup, so re-open this day's form fresh.
+    var nn = document.getElementById('addex-name-' + dayId);
+    if (nn) nn.value = '';
+    var row = document.getElementById('row-' + rec.id);
+    if (row) row.scrollIntoView({ block: 'center' });
+  }
+
+  //  Removal takes the log with it, and says so before doing it. The other
+  //  option — keep the sets and just hide the row — would leave history under an
+  //  id that no longer exists in EX_BY_ID, invisible and unreachable but still
+  //  in storage and still counted by anything scanning sessions. Better to make
+  //  it an explicit, understood loss than a silent orphan.
+  function removeCustomExercise(exId, dayId) {
+    var ex = EX_BY_ID[exId];
+    if (!ex || !ex.custom) return;         // never a programmed exercise
+    var hist = getHistory(exId);
+    var msg = 'Remove "' + ex.name + '" from this day?';
+    if (hist.length) msg += '\n\nThe ' + hist.length + ' logged session' + (hist.length === 1 ? '' : 's')
+      + ' recorded against it will be deleted too. This cannot be undone.';
+    if (!confirm(msg)) return;
+    customEx[dayId] = (customEx[dayId] || []).filter(function(r) { return r.id !== exId; });
+    if (!customEx[dayId].length) delete customEx[dayId];
+    persistCustomExercises();
+    syncFromDisk();
+    delete sessions[exId];
+    saveSessions();
+    delete EX_BY_ID[exId];
+    delete variantChoice[exId];  persistVariants();
+    delete setCounts[exId];      persistSetCounts();
+    renderDaySections();
+    renderAllRowStates();
+    renderProgressView();
+    if (typeof renderRing === 'function') renderRing();
+  }
+
   //     RENDER LIFT ROWS FROM CONFIG
   function liftRowHTML(ex) {
     var range = repRangeText(ex) + ' reps' + (ex.repsSuffix || '');
@@ -3973,6 +4167,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '<div class="log-row">'
       + '<button class="failure-toggle" id="f-' + ex.id + '" data-ex="' + ex.id + '" onclick="toggleFailure(this)">Failure · No</button>'
       + '<span class="autosave-flash" id="save-' + ex.id + '"></span>'
+      //  Only ever on a custom row. A programmed exercise has no remove button
+      //  at all, so there is nothing to mis-click on the ones that ship.
+      + (ex.custom ? '<button class="remove-ex" data-ex="' + ex.id + '" data-day="' + ex.day
+          + '" onclick="removeCustomExercise(this.dataset.ex, this.dataset.day)">Remove</button>' : '')
       + '</div>'
       + warmupLogHTML(ex)
       + '</div>'
@@ -3996,8 +4194,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
     DAY_ORDER.forEach(function(dayId) {
       var host = document.querySelector('[data-rows="' + dayId + '"]');
       if (!host) return;
+      //  Goes through splitDayExercises() rather than filtering EXERCISES here,
+      //  so custom exercises are appended in exactly one place for both paths.
+      //  SPLIT_DAYS['chest'].pool === 'chest', so for the six pool days this
+      //  returns the identical array the inline filter did.
       host.innerHTML = sixDay
-        ? EXERCISES.filter(function(ex) { return ex.day === dayId; }).map(liftRowHTML).join('')
+        ? splitDayExercises(dayId).map(liftRowHTML).join('') + addExerciseHTML(dayId)
         : '';
     });
     if (!alt) return;
@@ -4018,7 +4220,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
         + '<div class="plan-badges"><span class="badge" style="background:rgba(241,239,225,0.12);color:var(--accent);border:1px solid rgba(241,239,225,0.28)">'
         + d.tag + '</span></div></div>'
         + '<div class="lift-table-header"><span>Exercise</span><span>Rest</span><span>Time</span><span></span></div>'
-        + '<div class="lift-rows">' + rows + '</div></div>';
+        + '<div class="lift-rows">' + rows + addExerciseHTML(id) + '</div></div>';
     }).join('');
     alt.innerHTML = nav + body;
   }
@@ -5062,7 +5264,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       app: 'monk-mode', exportedAt: todayKey(),
       sessions: sessions, maxes: userMaxes, week: currentTrainWeek, archive: archive,
       variants: variantChoice, aims: aimChoice, runPlan: runPlan, runLogs: runLogs, liftDays: liftDaysPerWeek,
-      setCounts: setCounts, warmupLogs: warmupLogs
+      setCounts: setCounts, warmupLogs: warmupLogs, customEx: customEx
     };
     var blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
     var a = document.createElement('a');
@@ -5118,6 +5320,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
         }
         if (data.warmupLogs && typeof data.warmupLogs === 'object') {
           warmupLogs = data.warmupLogs; persistWarmupLogs();
+        }
+        if (data.customEx && typeof data.customEx === 'object') {
+          customEx = data.customEx; persistCustomExercises(); registerCustomExercises();
+          if (typeof renderDaySections === 'function') renderDaySections();
         }
         updateMaxChips();
         renderAllRowStates();
@@ -6710,6 +6916,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     loadAims();
     loadSetCounts();
     loadWarmupLogs();
+    //  Must run before renderDaySections() — it registers stored custom
+    //  exercises into EX_BY_ID, without which their rows render but cannot log.
+    loadCustomExercises();
     updateMaxChips();
     updateLiftDaysUI();
     renderWeekSelectors();

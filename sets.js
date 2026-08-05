@@ -169,7 +169,7 @@ function sane(name, v) {
 function boot() {
   ctx.sessions = ctx.loadSessions();
   ctx.loadLiftDays(); ctx.loadMaxes(); ctx.loadVariants(); ctx.loadAims();
-  ctx.loadSetCounts(); ctx.loadWarmupLogs();
+  ctx.loadSetCounts(); ctx.loadWarmupLogs(); ctx.loadCustomExercises();
   ctx.updateMaxChips(); ctx.updateLiftDaysUI();
   ctx.renderWeekSelectors(); ctx.renderDaySections(); ctx.renderAllRowStates();
   ctx.renderProgressView(); ctx.initRunPlan(); ctx.renderWeekCalendar();
@@ -477,6 +477,111 @@ delete els['rl-mi-' + todayKeyStr];
 eq('generateRunPlan still takes today as its start, unmodified',
    /function generateRunPlan\(inp, today\)/.test(html), true);
 eq('buildRunWeeks still called with today', /buildRunWeeks\(\s*today\s*,/.test(html) || /buildRunWeeks\(today,/.test(html), true);
+
+section('13. Custom exercises — added to one day, logged, reloaded, removed');
+storage.clear();
+storage.setItem('monk_lift_days_v1', '4');
+boot();
+var DAY = ev('splitDayIds()[0]');
+var OTHER = ev('splitDayIds()[1]');
+var beforeCount = ctx.splitDayExercises(DAY).length;
+var otherBefore = ctx.splitDayExercises(OTHER).length;
+els['addex-name-' + DAY].value = "Farmer's Carry";
+ctx.addCustomExercise(DAY);
+var custom = ctx.customEx[DAY][0];
+ok('a record was stored', !!(custom && custom.id));
+ok('id is collision-safe (slug + timestamp)', /^cx-farmer-s-carry-[a-z0-9]+$/.test(custom.id), custom.id);
+eq('appended to that day', ctx.splitDayExercises(DAY).length, beforeCount + 1);
+eq('appended at the BOTTOM, not inserted',
+   ctx.splitDayExercises(DAY)[beforeCount].id, custom.id);
+eq('registered into EX_BY_ID', ev('EX_BY_ID["' + custom.id + '"] ? EX_BY_ID["' + custom.id + '"].name : null'), "Farmer's Carry");
+eq('marked custom', ev('!!EX_BY_ID["' + custom.id + '"].custom'), true);
+eq('did NOT appear on another day', ctx.splitDayExercises(OTHER).length, otherBefore);
+eq('persisted to its own key', JSON.parse(storage.getItem('monk_custom_ex_v1'))[DAY][0].id, custom.id);
+
+// Renders through the same generator, with no maxKey / seedFrom / repWhy.
+var cHTML = ev('liftRowHTML(EX_BY_ID["' + custom.id + '"])');
+ok('renders through liftRowHTML', cHTML.indexOf('id="row-' + custom.id + '"') > -1);
+ok('no repWhy caption for a custom exercise', cHTML.indexOf('lift-rep-why') === -1);
+ok('gets a remove button', cHTML.indexOf('removeCustomExercise') > -1);
+sane('row markup has no undefined/NaN', cHTML.indexOf('undefined') === -1 && cHTML.indexOf('NaN') === -1 ? 'clean' : cHTML);
+ok('no maxKey', ev('EX_BY_ID["' + custom.id + '"].maxKey === undefined'));
+ok('no seedFrom', ev('EX_BY_ID["' + custom.id + '"].seedFrom === undefined'));
+var tgt = noThrow('getSessionTarget degrades like Ab Wheel does', function () {
+  return ev('getSessionTarget(EX_BY_ID["' + custom.id + '"], getHistory("' + custom.id + '"))');
+});
+ok('falls through to the baseline message', tgt && /baseline/i.test(tgt.msg), tgt && tgt.msg);
+noThrow('renderLiftRowState on a custom exercise', function () { ctx.renderLiftRowState(ev('EX_BY_ID["' + custom.id + '"]')); });
+noThrow('renderWarmupsAndTargets on a custom exercise', function () { ctx.renderWarmupsAndTargets(ev('EX_BY_ID["' + custom.id + '"]')); });
+
+// Log against it. This only works if EX_BY_ID knows it — autoSaveExercise
+// opens with `var ex = EX_BY_ID[exId]; if (!ex) return;`.
+typeSet(custom.id, 's1', 95, 10);
+typeSet(custom.id, 's2', 95, 9);
+ctx.autoSaveExercise(custom.id, false);
+eq('a set logged against it saved', ctx.sessions[custom.id] ? ctx.sessions[custom.id][0].weight : null, 95);
+
+// THE test: a completely fresh load, as a page refresh does it. Registration
+// at creation alone would pass everything above and fail from here down.
+boot();
+eq('survives a fresh reload — still on the day', ctx.splitDayExercises(DAY).length, beforeCount + 1);
+eq('survives a fresh reload — still in EX_BY_ID',
+   ev('EX_BY_ID["' + custom.id + '"] ? EX_BY_ID["' + custom.id + '"].name : null'), "Farmer's Carry");
+eq('survives a fresh reload — log still there', ctx.sessions[custom.id][0].weight, 95);
+// And still SAVES after that reload, which is the part registration-on-load buys.
+typeSet(custom.id, 's1', 115, 8);
+typeSet(custom.id, 's2', 115, 8);
+ctx.autoSaveExercise(custom.id, false);
+eq('still saves further edits after a reload', ctx.sessions[custom.id][0].weight, 115);
+eq('and that reached storage', JSON.parse(storage.getItem('monk_sessions_v1'))[custom.id][0].weight, 115);
+
+// A programmed exercise is untouched by any of this.
+var prog = ev('splitDayExercises("' + DAY + '")[0].id');
+ok('a programmed exercise is not marked custom', ev('!EX_BY_ID["' + prog + '"].custom'));
+ok('a programmed exercise has no remove button',
+   ev('liftRowHTML(EX_BY_ID["' + prog + '"])').indexOf('removeCustomExercise') === -1);
+eq('a programmed exercise keeps its id', prog, ev('splitDayExercises("' + DAY + '")[0].id'));
+
+// Removal takes the log with it, deliberately.
+ctx.removeCustomExercise(custom.id, DAY);   // stub confirm() returns true
+eq('gone from the day', ctx.splitDayExercises(DAY).length, beforeCount);
+eq('gone from EX_BY_ID', ev('EX_BY_ID["' + custom.id + '"] === undefined'), true);
+eq('its logged sessions were deleted too', ctx.sessions[custom.id], undefined);
+eq('and that deletion reached storage',
+   JSON.parse(storage.getItem('monk_sessions_v1'))[custom.id], undefined);
+eq('empty day key cleaned up rather than left as []', ctx.customEx[DAY], undefined);
+noThrow('renders fine after removal', function () { ctx.renderAllRowStates(); ctx.renderProgressView(); });
+// Removal must refuse to touch a programmed exercise.
+var progHistBefore = JSON.stringify(ctx.sessions[prog] || null);
+ctx.removeCustomExercise(prog, DAY);
+eq('removeCustomExercise refuses a programmed exercise',
+   ev('EX_BY_ID["' + prog + '"] !== undefined'), true);
+eq('and left its history alone', JSON.stringify(ctx.sessions[prog] || null), progHistBefore);
+
+// Both render paths reach the add control through one assembly point.
+eq('6-day branch now goes through splitDayExercises',
+   /sixDay\s*\?\s*splitDayExercises\(dayId\)/.test(html), true);
+ok('add control rendered on the 6-day path', /splitDayExercises\(dayId\)[\s\S]{0,80}addExerciseHTML\(dayId\)/.test(html));
+ok('add control rendered on the shorter-split path', /rows \+ addExerciseHTML\(id\)/.test(html));
+
+// The refactor's own regression risk: with no customs, routing the 6-day path
+// through splitDayExercises() must return exactly what the inline
+// EXERCISES.filter(ex.day === dayId) returned, for all six pool days.
+storage.clear(); boot();
+var sameForAll = ev('DAY_ORDER.every(function(d){'
+  + ' var a = splitDayExercises(d).map(function(e){return e.id;}).join(",");'
+  + ' var b = EXERCISES.filter(function(e){return e.day===d;}).map(function(e){return e.id;}).join(",");'
+  + ' return a === b && a.length > 0; })');
+eq('6-day pool days are byte-identical to the old inline filter', sameForAll, true);
+
+// Backup carries them; an older backup without the key is fine.
+storage.clear(); boot();
+els['addex-name-' + DAY].value = 'Sled Push';
+ctx.addCustomExercise(DAY);
+var exported2 = null;
+ctx.Blob = function (parts) { exported2 = parts[0]; };
+noThrow('exportData runs with a custom exercise', function () { ctx.exportData(); });
+ok('backup carries custom exercises', !!JSON.parse(exported2).customEx[DAY]);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
