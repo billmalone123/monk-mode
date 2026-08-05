@@ -2301,6 +2301,25 @@ body.training-mode #calendarfull { background: var(--bg); border-top: none; padd
   cursor: pointer; border-radius: 2px; transition: all 0.15s;
 }
 .run-clear-btn:hover { border-color: var(--field); color: var(--text); }
+/* Race setup collapse. Same visual language as the missed-run toggle below it,
+   on purpose — two collapsibles on one tab should not look like two ideas. */
+.run-setup-bar {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.run-setup-toggle {
+  background: transparent; border: 1px dashed var(--border); color: var(--muted);
+  padding: 9px 16px; font-family: var(--font-display); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; border-radius: 999px; transition: all 0.15s; flex: 0 0 auto;
+}
+.run-setup-toggle:hover, .run-setup-toggle.open { border-color: var(--field); color: var(--text); }
+.run-setup-summary {
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+  color: var(--text); letter-spacing: 0.02em; min-width: 0;
+}
+.run-form.collapsed { display: none; }
+
 /* Log a missed run — collapsed to a single quiet line until asked for. This is
    the rare late-log case, not something to trip over while reading the plan. */
 .run-missed { margin-top: 22px; }
@@ -2511,7 +2530,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.40</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.41</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2573,7 +2592,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.40</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.41</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2794,10 +2813,18 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.40</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.41</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
-  <div class="run-form">
+  <!-- Race setup collapses once there is a raceDate, so a returning user lands
+       on the schedule and the logging tools rather than the setup screen. The
+       toggle matches the "+ / −" language of the missed-run control below. -->
+  <div class="run-setup-bar" id="runSetupBar">
+    <button class="run-setup-toggle" id="runSetupToggle" onclick="toggleRunSetup()">− Race setup</button>
+    <div class="run-setup-summary" id="runSetupSummary"></div>
+  </div>
+
+  <div class="run-form" id="runForm">
     <div>
       <div class="run-field-label">Race Date</div>
       <input class="run-input" type="date" id="run-race-date" onchange="onRunInput()">
@@ -2896,7 +2923,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.40</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.41</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -6638,6 +6665,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
     runPlan.liftDays = inp.liftDays;
     runPlan.liftRestDow = inp.liftRestDow;
     persistRunPlan();
+    //  Keep the summary honest while the form is open. Deliberately does NOT
+    //  collapse here: the moment someone picks a race date they are usually
+    //  still filling the rest in, and snapping the form shut under them would
+    //  fight the edit. Collapsing is decided at load, or by the toggle.
+    renderRunSetupSummary();
     var dpw = document.getElementById('run-dpw-val');
     if (dpw) dpw.textContent = inp.daysPerWeek;
     var cur = document.getElementById('run-current-val');
@@ -6677,6 +6709,63 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     undefined. level and distance are additionally coerced through the
   //     safe* helpers: a *stale* value is as dangerous as a missing one, since
   //     both of them index config tables.
+  //     RACE SETUP COLLAPSE — display state only.
+  //
+  //     "Has this been filled in before" is not a new question and does not get
+  //     a new answer: openRunSetupModal() already decides whether to re-ask the
+  //     onboarding race step with `runPlan && runPlan.raceDate` — "already
+  //     answered, never re-ask". Same condition here, so the two can never
+  //     disagree about whether setup is done. Nothing is persisted for this:
+  //     the collapse is derived from runPlan on every load, which is exactly
+  //     what makes it survive a reload without a second stored flag to keep in
+  //     sync. readRunInputs(), generateRunPlan() and persistRunPlan() are
+  //     untouched — the fields underneath are the same inputs, still wired
+  //     through onRunInput().
+  function runSetupIsAnswered() { return !!(runPlan && runPlan.raceDate); }
+
+  function runSetupSummaryText() {
+    if (!runSetupIsAnswered()) return '';
+    var dist = RACE_DISTANCES[safeRunDistance(runPlan.distance)];
+    var d = parseDateKey(runPlan.raceDate);
+    var parts = [];
+    //  RACE_DISTANCES labels are lowercase on purpose — they read mid-sentence
+    //  elsewhere ("suggested for casual / returning at this distance"). Here the
+    //  label opens a standalone line, so it is title-cased at the display site
+    //  rather than changing shared data that other copy depends on. "5K" has no
+    //  leading lowercase letter and is left exactly as it is.
+    if (dist) parts.push(String(dist.label).replace(/\b[a-z]/g, function(c) { return c.toUpperCase(); }));
+    if (d) parts.push(fmtRunDate(d));
+    var dpw = parseInt(runPlan.daysPerWeek, 10);
+    if (!isNaN(dpw)) parts.push(dpw + ' days/week');
+    return parts.join(' · ');
+  }
+
+  //  Paint only. Called on load and whenever a field changes, so the summary
+  //  never describes a setup that is no longer current.
+  function renderRunSetupSummary() {
+    var el = document.getElementById('runSetupSummary');
+    if (el) el.textContent = runSetupSummaryText();
+    var bar = document.getElementById('runSetupBar');
+    //  With no race date there is nothing to summarise and nothing to collapse
+    //  to, so the bar itself stays out of the way on the first-time path.
+    if (bar) bar.style.display = runSetupIsAnswered() ? '' : 'none';
+  }
+
+  function setRunSetupCollapsed(collapsed) {
+    var form = document.getElementById('runForm');
+    var btn = document.getElementById('runSetupToggle');
+    if (form) form.classList.toggle('collapsed', !!collapsed);
+    if (btn) {
+      btn.textContent = collapsed ? '+ Race setup' : '− Race setup';
+      btn.classList.toggle('open', !collapsed);
+    }
+  }
+  function toggleRunSetup() {
+    var form = document.getElementById('runForm');
+    if (!form) return;
+    setRunSetupCollapsed(!form.classList.contains('collapsed'));
+  }
+
   function initRunPlan() {
     loadRunPlan();
     loadRunLogs();
@@ -6699,6 +6788,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
     set('run-pr', runPlan.pr || '');
     set('run-lift-rest', runPlan.liftRestDow);
     setRunLevel(runPlan.level);
+    //  Derived on every load from runPlan, which is what makes this survive a
+    //  refresh with no stored display flag. No raceDate means the true
+    //  first-time path, which renders expanded exactly as it always has.
+    renderRunSetupSummary();
+    setRunSetupCollapsed(runSetupIsAnswered());
   }
 
   //     COMBINED WEEK CALENDAR — one week, both plans, on the overview tab.

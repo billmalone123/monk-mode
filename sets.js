@@ -583,5 +583,71 @@ ctx.Blob = function (parts) { exported2 = parts[0]; };
 noThrow('exportData runs with a custom exercise', function () { ctx.exportData(); });
 ok('backup carries custom exercises', !!JSON.parse(exported2).customEx[DAY]);
 
+section('14. Race setup collapses once answered — and stays collapsed on reload');
+storage.clear(); boot();
+// First-time path: no raceDate. Must render exactly as it always has.
+eq('no raceDate to start', ctx.runPlan.raceDate || '', '');
+eq('form expanded on the first-time path', els['runForm']._cls.indexOf('collapsed'), -1);
+eq('summary bar hidden when there is nothing to summarise', els['runSetupBar'].style.display, 'none');
+eq('summary line empty', els['runSetupSummary'].textContent, '');
+eq('it reuses the onboarding "already answered" condition, not a new one',
+   /function runSetupIsAnswered\(\)\s*\{\s*return !!\(runPlan && runPlan\.raceDate\);/.test(html), true);
+eq('no new storage key was introduced for the collapse',
+   /monk_run_setup_collapsed|SETUP_COLLAPSE_KEY/.test(html), false);
+
+// Fill the form in the way the real inputs do.
+els['run-race-date'].value = '2026-11-14';
+els['run-distance'].value = 'half';
+els['run-dpw'].value = '5';
+ctx.onRunInput();
+eq('race date persisted through the existing path', ctx.runPlan.raceDate, '2026-11-14');
+ok('summary reflects the setup immediately',
+   (els['runSetupSummary'].textContent || '').indexOf('Half Marathon') > -1, els['runSetupSummary'].textContent);
+ok('summary carries the date', /Nov/.test(els['runSetupSummary'].textContent), els['runSetupSummary'].textContent);
+ok('summary carries days per week', /5 days\/week/.test(els['runSetupSummary'].textContent), els['runSetupSummary'].textContent);
+// Deliberately NOT collapsed mid-edit — snapping shut while someone is still
+// filling the form in would fight the edit.
+eq('does not snap shut while the form is being filled in', els['runForm']._cls.indexOf('collapsed'), -1);
+
+// THE test: a fresh load off storage, the way a refresh does it.
+boot();
+eq('raceDate survived the reload', ctx.runPlan.raceDate, '2026-11-14');
+ok('collapsed by default on reload', els['runForm']._cls.indexOf('collapsed') > -1, els['runForm'].className);
+eq('toggle reads as expandable', els['runSetupToggle'].textContent, '+ Race setup');
+eq('summary bar visible now there is something to show', els['runSetupBar'].style.display, '');
+ok('summary line rebuilt from storage, not from the session',
+   (els['runSetupSummary'].textContent || '').indexOf('Half Marathon') > -1, els['runSetupSummary'].textContent);
+
+// Expanding must not lose or reset anything underneath.
+ctx.toggleRunSetup();
+eq('expands', els['runForm']._cls.indexOf('collapsed'), -1);
+eq('toggle flips label', els['runSetupToggle'].textContent, '− Race setup');
+eq('field values intact after expanding', els['run-race-date'].value, '2026-11-14');
+eq('distance intact', els['run-distance'].value, 'half');
+// Change a field while expanded; it must still autosave the existing way.
+els['run-dpw'].value = '4';
+ctx.onRunInput();
+eq('edit saved through the existing onRunInput path', ctx.runPlan.daysPerWeek, 4);
+eq('and reached storage', JSON.parse(storage.getItem('monk_run_plan_v1')).daysPerWeek, 4);
+ok('summary updated to match', /4 days\/week/.test(els['runSetupSummary'].textContent), els['runSetupSummary'].textContent);
+ctx.toggleRunSetup();
+eq('collapses again from the toggle', els['runForm']._cls.indexOf('collapsed') > -1, true);
+
+// Clearing the race date returns to the untouched first-time path.
+els['run-race-date'].value = '';
+ctx.onRunInput();
+ctx.initRunPlan();
+eq('back to expanded with no raceDate', els['runForm']._cls.indexOf('collapsed'), -1);
+eq('and the bar hides again', els['runSetupBar'].style.display, 'none');
+
+// The DOM order that makes the schedule and missed-run control rise.
+var iForm = html.indexOf('id="runForm"');
+var iSched = html.indexOf('id="runSchedule"');
+var iMissed = html.indexOf('id="runMissed"');
+ok('form still precedes the schedule in the DOM', iForm > -1 && iForm < iSched);
+ok('schedule still precedes the missed-run control', iSched < iMissed);
+eq('collapsing removes the form from layout entirely (display:none, not just hidden)',
+   /\.run-form\.collapsed\s*\{\s*display:\s*none;\s*\}/.test(html), true);
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
