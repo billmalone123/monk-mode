@@ -416,5 +416,67 @@ ok('caption sits under the rep count, above the variant chips',
 ok('caption is not inside .lift-note',
    altWhy.indexOf('lift-rep-why') < altWhy.indexOf('class="lift-note"'));
 
+section('12. Logging a run for a date outside the plan\'s rolling window');
+storage.clear(); boot();
+// A date from a week that has fully elapsed. generateRunPlan() rebuilds from
+// today, so this date is in no plan.weeks cell anywhere — that is the point.
+var past = new Date(); past.setDate(past.getDate() - 26); past.setHours(0, 0, 0, 0);
+var pk = ctx.dateKeyOfRun(past);
+eq('the date really is outside the rolling plan', (function () {
+  try {
+    var plan = ctx.generateRunPlan(ctx.readRunInputs(), ctx.startOfToday());
+    if (!plan || !plan.weeks) return true;      // no plan at all is still "outside"
+    var hit = false;
+    plan.weeks.forEach(function (w) {
+      w.cells.forEach(function (c) { if (ctx.dateKeyOfRun(c.date) === pk && !c.before && !c.after) hit = true; });
+    });
+    return !hit;
+  } catch (e) { return true; }
+})(), true);
+// Render the same markup the in-plan cells use, then drive the same handlers.
+var fieldsHost = els['runMissedFields'];
+fieldsHost.innerHTML = ctx.runLogInputsHTML({ date: past });
+ok('missed-run block renders the shared run-log markup', fieldsHost.innerHTML.indexOf('rl-mi-' + pk) > -1);
+ok('it wires the shared commit handler, not a new one',
+   fieldsHost.innerHTML.indexOf('onRunLogCommit(this.dataset.k)') > -1);
+els['rl-mi-' + pk].value = '6.2';
+els['rl-tm-' + pk].value = '52:00';
+els['rl-fl-' + pk].value = '7';
+ctx.onRunLogCommit(pk);
+eq('saved into runLogs under the plain date key', ctx.runLogs[pk] ? ctx.runLogs[pk].miles : null, 6.2);
+eq('time parsed through the shared clock parser', ctx.runLogs[pk].secs, 3120);
+eq('feel saved', ctx.runLogs[pk].feel, 7);
+ok('persisted to storage', (storage.getItem('monk_run_logs_v1') || '').indexOf(pk) > -1);
+// Reload from storage the way a refresh would.
+ctx.loadRunLogs();
+eq('survives a reload', ctx.runLogs[pk] ? ctx.runLogs[pk].miles : null, 6.2);
+// Summary/mileage code reads runLogs by date range, not from plan.weeks.
+var logged = 0;
+Object.keys(ctx.runLogs).forEach(function (k) {
+  var d = ctx.parseDateKey(k);
+  if (d && d >= ctx.addDays(ctx.startOfToday(), -35) && d <= ctx.startOfToday()) logged += (ctx.runLogs[k].miles || 0);
+});
+eq('a past-week log is picked up by date-range mileage totals', logged, 6.2);
+// The future must still be refused.
+var future = new Date(); future.setDate(future.getDate() + 3); future.setHours(0, 0, 0, 0);
+els['run-missed-date'].value = ctx.dateKeyOfRun(future);
+ctx.onMissedDatePick();
+eq('a future date renders no inputs', els['runMissedFields'].innerHTML, '');
+ok('and says so', (els['runMissedHint'].textContent || '').indexOf('future') > -1, els['runMissedHint'].textContent);
+// A date still on the plan must not get a duplicate set of ids.
+els['rl-mi-dupe-probe'] = mkEl('rl-mi-dupe-probe', 'input', '');
+var todayKeyStr = ctx.dateKeyOfRun(ctx.startOfToday());
+els['rl-mi-' + todayKeyStr] = mkEl('rl-mi-' + todayKeyStr, 'input', '');
+els['run-missed-date'].value = todayKeyStr;
+ctx.onMissedDatePick();
+eq('a date already on the schedule is not duplicated', els['runMissedFields'].innerHTML, '');
+ok('and points at the existing row',
+   (els['runMissedHint'].textContent || '').indexOf('log it there') > -1, els['runMissedHint'].textContent);
+delete els['rl-mi-' + todayKeyStr];
+// The generator itself must be untouched by all of this.
+eq('generateRunPlan still takes today as its start, unmodified',
+   /function generateRunPlan\(inp, today\)/.test(html), true);
+eq('buildRunWeeks still called with today', /buildRunWeeks\(\s*today\s*,/.test(html) || /buildRunWeeks\(today,/.test(html), true);
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

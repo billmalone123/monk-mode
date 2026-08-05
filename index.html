@@ -2271,6 +2271,20 @@ body.training-mode #calendarfull { background: var(--bg); border-top: none; padd
   cursor: pointer; border-radius: 2px; transition: all 0.15s;
 }
 .run-clear-btn:hover { border-color: var(--field); color: var(--text); }
+/* Log a missed run — collapsed to a single quiet line until asked for. This is
+   the rare late-log case, not something to trip over while reading the plan. */
+.run-missed { margin-top: 22px; }
+.run-missed-toggle {
+  background: transparent; border: 1px dashed var(--border); color: var(--muted);
+  padding: 9px 16px; font-family: var(--font-display); font-weight: 700;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; border-radius: 999px; transition: all 0.15s;
+}
+.run-missed-toggle:hover, .run-missed-toggle.open { border-color: var(--field); color: var(--text); }
+.run-missed-body { display: none; margin-top: 14px; max-width: 420px; }
+.run-missed-body.open { display: block; }
+.run-missed-lead { font-size: 12px; color: var(--muted); line-height: 1.55; margin-bottom: 12px; }
+.run-missed-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
 body.training-mode #runplan { background: var(--bg); border-top: none; padding-top: 0; padding-bottom: 60px; }
 body.training-mode .run-field-label { color: var(--muted); }
 body.training-mode select.run-input { color: #F1EFE1; }
@@ -2467,7 +2481,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.38</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.39</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2529,7 +2543,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.38</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.39</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2750,7 +2764,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.38</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.39</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <div class="run-form">
@@ -2829,6 +2843,22 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="runPaces"></div>
   <div id="runChart"></div>
   <div class="run-table-wrap" id="runSchedule"></div>
+
+  <!-- Log a missed run. Deliberately outside every container renderRunPlan()
+       rewrites (#runFlags, #runPaces, #runChart, #runSchedule), because saving
+       a log calls renderRunPlan() and would otherwise wipe this mid-entry. -->
+  <div class="run-missed" id="runMissed">
+    <button class="run-missed-toggle" id="runMissedToggle" onclick="toggleMissedRun()">+ Log a missed run</button>
+    <div class="run-missed-body" id="runMissedBody">
+      <div class="run-missed-lead">For a run from a week that has already scrolled off the plan above. Same four fields, same log.</div>
+      <div class="run-log-group">
+        <span class="run-log-label">Date</span>
+        <input class="run-log-input" type="date" id="run-missed-date" onchange="onMissedDatePick()">
+      </div>
+      <div class="run-missed-hint" id="runMissedHint">Pick any date up to today.</div>
+      <div id="runMissedFields"></div>
+    </div>
+  </div>
 </section>
 
 </div>
@@ -2836,7 +2866,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.38</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.39</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -6110,6 +6140,65 @@ body.training-mode select.run-input { color: #F1EFE1; }
     // A feel score can change next week's target, so the plan is rebuilt
     renderRunPlan();
     if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
+  }
+
+  //     LOG A MISSED RUN — a date outside the plan's rolling window.
+  //
+  //     generateRunPlan() rebuilds from today every time, so once a week fully
+  //     ends it is not in plan.weeks at all and there is no cell to hang a log
+  //     input on. That is a rendering gap, not a storage one: runLogs is keyed
+  //     by plain date string and saveRunLog() will happily write any key. So
+  //     this adds no storage and no second save path — it renders the SAME
+  //     runLogInputsHTML() markup, whose inputs already carry the same
+  //     onRunLogEdit/onRunLogCommit handlers and the same rl-<field>-<key> ids
+  //     saveRunLog() reads. Nothing about the plan generator is touched.
+  //
+  //     The Calendar tab was checked first, as the more natural home. It does
+  //     render past weeks by real date, but calRunCells() builds its run detail
+  //     from generateRunPlan(...startOfToday()) and then filters to the week
+  //     being drawn — so for a past week it finds nothing and returns null.
+  //     Past weeks there show lift days and no runs, which means there is no
+  //     "was a scheduled run day" to gate on and nowhere natural to attach an
+  //     input. Putting inputs on all seven days of every past week instead
+  //     would be clutter, not a low-key affordance. Hence the Run tab.
+  function toggleMissedRun() {
+    var body = document.getElementById('runMissedBody');
+    var btn = document.getElementById('runMissedToggle');
+    if (!body || !btn) return;
+    var open = body.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    btn.textContent = open ? '− Log a missed run' : '+ Log a missed run';
+    //  Cap the picker at today. You cannot log a run you have not done, which
+    //  is the same rule the in-plan inputs enforce by only rendering backward.
+    var d = document.getElementById('run-missed-date');
+    if (d && !d.max) d.max = dateKeyOfRun(startOfToday());
+  }
+
+  function onMissedDatePick() {
+    var el = document.getElementById('run-missed-date');
+    var host = document.getElementById('runMissedFields');
+    var hint = document.getElementById('runMissedHint');
+    if (!el || !host) return;
+    function say(t) { if (hint) hint.textContent = t; }
+    var v = el.value;
+    if (!v) { host.innerHTML = ''; say('Pick any date up to today.'); return; }
+    var d = parseDateKey(v);
+    if (!d) { host.innerHTML = ''; say('That date could not be read.'); return; }
+    if (d > startOfToday()) { host.innerHTML = ''; say('You cannot log a run in the future.'); return; }
+    //  If this date is already on the schedule above, its inputs exist there
+    //  under exactly these ids. Rendering a second copy would duplicate the ids
+    //  and saveRunLog() — which reads by getElementById — would silently read
+    //  whichever came first. Point at the real row instead of shadowing it.
+    var k = dateKeyOfRun(d);
+    var existing = document.getElementById('rl-mi-' + k);
+    if (existing) {
+      host.innerHTML = '';
+      say('That day is still on the plan above — log it there.');
+      existing.scrollIntoView({ block: 'center' });
+      return;
+    }
+    host.innerHTML = runLogInputsHTML({ date: d });
+    say(runLogs[k] ? 'Editing the run already logged for this date.' : 'Logging a run for this date.');
   }
 
   function clearRunLogs() {
