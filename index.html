@@ -2301,20 +2301,9 @@ body.training-mode #calendarfull { background: var(--bg); border-top: none; padd
   cursor: pointer; border-radius: 2px; transition: all 0.15s;
 }
 .run-clear-btn:hover { border-color: var(--field); color: var(--text); }
-/* The way out of a cell that has no log inputs. Deliberately understated — it
-   sits inside a schedule cell and must not compete with the day's actual plan
-   text, but a dead-looking day needed something to say "you can still log
-   this". Turns readable on hover/focus rather than shouting by default. */
-.run-backfill {
-  display: inline-block; margin-top: 8px;
-  background: transparent; border: 1px dashed var(--border); color: var(--muted);
-  padding: 5px 10px; font-family: var(--font-display); font-weight: 700;
-  font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
-  cursor: pointer; border-radius: 999px; transition: all 0.15s;
-  max-width: 100%; white-space: normal; line-height: 1.3;
-}
-.run-backfill:hover, .run-backfill:focus { border-color: var(--accent); color: var(--accent); outline: none; }
-.run-backfill.logged { border-style: solid; border-color: var(--field); color: var(--text); }
+/* A future date is refused at save time, not at render time — the fields are
+   always there. This is what that refusal looks like in the cell's pace slot. */
+.run-log-pace.refused { color: var(--red); opacity: 1; }
 
 /* Race setup collapse. Same visual language as the missed-run toggle below it,
    on purpose — two collapsibles on one tab should not look like two ideas. */
@@ -2545,7 +2534,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.43</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.44</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2607,7 +2596,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.43</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.44</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2828,7 +2817,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.43</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.44</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -2938,7 +2927,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.43</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.44</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -6236,29 +6225,44 @@ body.training-mode select.run-input { color: #F1EFE1; }
     return body || '—';
   }
 
-  //     LOG INPUTS — only on run days that have already happened. You cannot
-  //     log a run you have not done, and hiding them forward keeps the grid
-  //     readable. Same markup shape as the lift side's inline log rows.
-  function runLogInputsHTML(c) {
+  //     LOG INPUTS — the same four fields on every day cell, unconditionally.
+  //
+  //     There is deliberately no branch here and no caller-side branch either.
+  //     Past, today, future, scheduled, unscheduled, a week that has elapsed
+  //     entirely — every cell gets this identical block, so no two cells differ
+  //     in shape and nothing ever goes blank or turns into a link to somewhere
+  //     else. The "you cannot log a run you have not done" rule still exists,
+  //     but it lives in saveRunLog() as a save-time refusal, not as a missing
+  //     field. Rendering states and validation states are different things.
+  //
+  //     `scope` namespaces the element ids because the same date is now on more
+  //     than one surface at once — the Run tab's schedule and the Calendar tab
+  //     can both show 12 August. Without it the ids collide and a lookup by id
+  //     returns whichever rendered first, which would mean typing on one
+  //     surface and silently saving the other one's empty fields over your
+  //     entry. Nothing reads these by id any more (see saveRunLog), but they
+  //     stay unique so that focus, labels and dev tooling behave.
+  function runLogInputsHTML(c, scope) {
     var k = dateKeyOfRun(c.date);
+    var sc = scope || 'run';
     var e = runLogs[k] || {};
     var mi = (e.miles != null && e.miles !== '') ? e.miles : '';
     var tm = e.secs ? secsToClock(e.secs) : '';
     var hr = (e.hr != null && e.hr !== '') ? e.hr : '';
     var fl = (e.feel != null && e.feel !== '') ? e.feel : '';
     var on = (mi !== '' || tm !== '' || hr !== '' || fl !== '');
-    function inp(id, label, val, extra) {
+    function inp(f, label, val, extra) {
       //  The time field formats itself as you type so the colon appears without
       //  a colon key — see formatClockInput(). Everything else commits directly.
-      var handlers = (id === 'tm')
+      var handlers = (f === 'tm')
         ? ' oninput="onRunTimeInput(this)" onchange="onRunTimeCommit(this)"'
-        : ' oninput="onRunLogEdit(this.dataset.k)" onchange="onRunLogCommit(this.dataset.k)"';
+        : ' oninput="onRunLogEdit(this)" onchange="onRunLogCommit(this)"';
       return '<div class="run-log-group"><span class="run-log-label">' + label + '</span>'
-        + '<input class="run-log-input' + (val !== '' ? ' logged' : '') + '" id="rl-' + id + '-' + k
-        + '" data-k="' + k + '" value="' + val + '" ' + extra
+        + '<input class="run-log-input' + (val !== '' ? ' logged' : '') + '" id="rl-' + sc + '-' + f + '-' + k
+        + '" data-k="' + k + '" data-f="' + f + '" value="' + val + '" ' + extra
         + handlers + '></div>';
     }
-    return '<div class="run-log" onclick="event.stopPropagation()">'
+    return '<div class="run-log" data-k="' + k + '" onclick="event.stopPropagation()">'
       + '<div class="run-log-row">'
       + inp('mi', 'Miles', mi, 'type="number" step="0.1" min="0" inputmode="decimal"')
       + inp('tm', 'Time', tm, 'type="text" inputmode="numeric" placeholder="32:10"')
@@ -6267,42 +6271,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + inp('hr', 'Avg HR', hr, 'type="number" min="0" inputmode="numeric"')
       + inp('fl', 'Feel 1–10', fl, 'type="number" min="1" max="10" inputmode="numeric"')
       + '</div>'
-      + '<div class="run-log-pace' + (on ? ' on' : '') + '" id="rlp-' + k + '">'
+      + '<div class="run-log-pace' + (on ? ' on' : '') + '" data-pace="' + k + '">'
       + runLogPaceText(e) + '</div></div>';
-  }
-
-  //     One quiet link out of a dead cell. Not a second form and not a second
-  //     logging mechanism — it opens the missed-run control that already exists,
-  //     with this cell's date already filled in, so nobody has to scroll down,
-  //     expand it and retype the date they were already looking at.
-  function runBackfillLinkHTML(c) {
-    var k = dateKeyOfRun(c.date);
-    var logged = !!runLogs[k];
-    return '<button class="run-backfill' + (logged ? ' logged' : '') + '" data-k="' + k + '"'
-      + ' onclick="event.stopPropagation();logRunAnyway(this.dataset.k)">'
-      + (logged ? 'edit logged run' : '+ log a run anyway') + '</button>';
-  }
-
-  //  Drives the existing control rather than duplicating it: force it open, set
-  //  its date, and hand off to onMissedDatePick(), which renders the same
-  //  runLogInputsHTML() and saves through the same runLogs/persistRunLogs path.
-  function logRunAnyway(k) {
-    var body = document.getElementById('runMissedBody');
-    var btn = document.getElementById('runMissedToggle');
-    if (body && !body.classList.contains('open')) {
-      body.classList.add('open');
-      if (btn) { btn.classList.add('open'); btn.textContent = '− Log a missed run'; }
-    }
-    var d = document.getElementById('run-missed-date');
-    if (d) {
-      if (!d.max) d.max = dateKeyOfRun(startOfToday());
-      d.value = k;
-    }
-    onMissedDatePick();
-    var host = document.getElementById('runMissed');
-    if (host && host.scrollIntoView) host.scrollIntoView({ block: 'center' });
-    var mi = document.getElementById('rl-mi-' + k);
-    if (mi && mi.focus) setTimeout(function() { try { mi.focus(); } catch(e) {} }, 60);
   }
 
   function runLogPaceText(e) {
@@ -6335,28 +6305,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (c.miles > 0) cls += ' has-run';
         if (c.lift) cls += ' has-lift';
       }
-      var loggable = !c.before && !c.after && c.miles > 0 && weekStarted;
-      //  A cell with no inputs is dead for three different reasons, and all
-      //  three look identical on screen — like the day simply refuses to work:
-      //
-      //    c.before      an earlier day of the CURRENT week. The plan is built
-      //                  from today, so week 0's block.start IS today and every
-      //                  earlier weekday fails `date < block.start`. This is
-      //                  the one actually reported: on a Wednesday, Monday and
-      //                  Tuesday of this week are dead.
-      //    c.miles === 0 a genuinely unscheduled day. Design intent — there is
-      //                  no planned run to log against.
-      //    c.after       a future day. Correctly dead: you cannot log a run you
-      //                  have not done, and that stays true here.
-      //
-      //  The flags themselves are right for PLANNING and are left alone, per
-      //  the standing rule not to touch the generator. What was missing is any
-      //  route from a dead cell to the logging that already works for it. So
-      //  every dead cell up to and including today gets one small link into the
-      //  existing missed-run path, prefilled with that cell's own date.
-      var canBackfill = !loggable && !c.after && c.date <= startOfToday();
+      //  No condition. Every cell gets the same log block, whatever the day is.
+      //  There used to be a `loggable` gate here (!c.before && !c.after &&
+      //  c.miles > 0 && weekStarted) and then, briefly, a second branch that
+      //  put a link on the cells the gate rejected. Both are gone: one cell
+      //  shape, always, is the point. c.before / c.after / c.miles still drive
+      //  the cell's PLAN TEXT above, which is what they are for.
       out += '<div class="' + cls + '">' + runCellText(c, plan)
-        + (loggable ? runLogInputsHTML(c) : (canBackfill ? runBackfillLinkHTML(c) : '')) + '</div>';
+        + runLogInputsHTML(c, 'run') + '</div>';
     });
     out += '<div class="run-cell-miles">' + fmtMiles(w.miles) + '<span>miles</span></div>';
     return out + '</div>';
@@ -6422,11 +6378,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
       //  so putting it back at the end is where the user already was.
       try { inp.setSelectionRange(f.length, f.length); } catch (e) {}
     }
-    onRunLogEdit(inp.dataset.k);
+    onRunLogEdit(inp);
   }
   function onRunTimeCommit(inp) {
     inp.value = formatClockInput(inp.value);
-    onRunLogCommit(inp.dataset.k);
+    onRunLogCommit(inp);
   }
   function secsToClock(secs) {
     var s = Math.round(secs);
@@ -6444,19 +6400,92 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     button. Re-renders the plan afterwards because a logged feel can move
   //     next week's target.
   var _runLogT = {};
-  function onRunLogEdit(k) {
+  //  Handlers take the element, not just the date key, so the save reads the
+  //  block the user actually typed in. The same date can be on screen more than
+  //  once now (Run tab and Calendar tab), and a by-id lookup would pick
+  //  whichever rendered first — which could be the other surface's empty copy.
+  function runLogRootOf(x) {
+    if (!x) return null;
+    if (typeof x === 'string') return document.querySelector('.run-log[data-k="' + x + '"]');
+    return x.closest ? x.closest('.run-log') : null;
+  }
+  function runLogKeyOf(x) {
+    if (!x) return null;
+    return (typeof x === 'string') ? x : (x.dataset ? x.dataset.k : null);
+  }
+  function onRunLogEdit(x) {
+    var k = runLogKeyOf(x), root = runLogRootOf(x);
+    if (!k) return;
     clearTimeout(_runLogT[k]);
-    _runLogT[k] = setTimeout(function() { saveRunLog(k); }, 1200);
+    _runLogT[k] = setTimeout(function() { saveRunLog(k, root); }, 1200);
   }
   //  Same gap the set-weight boxes had: debounce with nothing to flush it when
   //  the field is left early.
-  function onRunLogCommit(k) {
+  function onRunLogCommit(x) {
+    var k = runLogKeyOf(x);
+    if (!k) return;
     clearTimeout(_runLogT[k]);
-    saveRunLog(k);
+    saveRunLog(k, runLogRootOf(x));
   }
 
-  function saveRunLog(k) {
-    function val(p) { var el = document.getElementById('rl-' + p + '-' + k); return el ? el.value : ''; }
+  //  Is a run-log field being typed in right now? Re-rendering a surface throws
+  //  away and rebuilds its inputs, which would yank the field out from under the
+  //  user mid-entry — the debounce fires 1200ms after they stop typing, which is
+  //  well inside a single entry. Any full re-render waits for them to leave.
+  function runLogHasFocus() {
+    var a = document.activeElement;
+    return !!(a && a.closest && a.closest('.run-log'));
+  }
+  //  Push a saved entry into every copy of that date on screen. The same day is
+  //  now rendered on more than one surface, and they must not disagree.
+  function syncRunLogCells(k, entry) {
+    var e = entry || {};
+    var vals = {
+      mi: (e.miles != null && e.miles !== '') ? e.miles : '',
+      tm: e.secs ? secsToClock(e.secs) : '',
+      hr: (e.hr != null && e.hr !== '') ? e.hr : '',
+      fl: (e.feel != null && e.feel !== '') ? e.feel : ''
+    };
+    document.querySelectorAll('.run-log[data-k="' + k + '"]').forEach(function(root) {
+      Object.keys(vals).forEach(function(f) {
+        var el = root.querySelector('[data-f="' + f + '"]');
+        //  Never overwrite the box the user is currently in.
+        if (!el || el === document.activeElement) return;
+        el.value = vals[f];
+        el.classList.toggle('logged', vals[f] !== '');
+      });
+      var pace = root.querySelector('[data-pace="' + k + '"]');
+      if (pace) {
+        pace.textContent = runLogPaceText(e);
+        pace.className = 'run-log-pace' + (entry ? ' on' : '');
+      }
+    });
+  }
+  //  The only place the "no logging a run you have not done" rule lives. It is a
+  //  save-time refusal, deliberately not a rendering difference: a future day's
+  //  cell looks and is structured exactly like every other day's.
+  function runDateIsFuture(k) {
+    var d = parseDateKey(k);
+    return !!(d && d > startOfToday());
+  }
+  function saveRunLog(k, root) {
+    var scope = root || runLogRootOf(k);
+    function val(f) {
+      var el = scope ? scope.querySelector('[data-f="' + f + '"]') : null;
+      return el ? el.value : '';
+    }
+    if (runDateIsFuture(k)) {
+      //  Refuse, and say why in the cell's own pace slot rather than silently
+      //  dropping it or hiding the fields that were typed into.
+      if (scope) {
+        var fEl = scope.querySelector('[data-pace="' + k + '"]');
+        if (fEl) {
+          fEl.textContent = 'Not yet — you have not run this one';
+          fEl.className = 'run-log-pace refused';
+        }
+      }
+      return;
+    }
     var miles = parseFloat(val('mi'));
     var secs = clockToSecs(val('tm'));
     var hr = parseInt(val('hr'), 10);
@@ -6473,15 +6502,27 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (entry) runLogs[k] = entry; else delete runLogs[k];
     if ((entry ? JSON.stringify(entry) : null) === prev) return;
     persistRunLogs();
-    var paceEl = document.getElementById('rlp-' + k);
-    if (paceEl) {
-      paceEl.textContent = runLogPaceText(entry || {});
-      paceEl.className = 'run-log-pace' + (entry ? ' on' : '');
-    }
-    // A feel score can change next week's target, so the plan is rebuilt
+    syncRunLogCells(k, entry);
+    // A feel score can change next week's target, so the plan is rebuilt — but
+    // not while someone is still typing into one of its fields.
+    if (runLogHasFocus()) { _runLogDirty = true; return; }
+    rerenderRunSurfaces();
+  }
+  //  Set when a save had to skip its re-render because a field still had focus.
+  var _runLogDirty = false;
+  function rerenderRunSurfaces() {
+    _runLogDirty = false;
     renderRunPlan();
     if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
+    if (typeof renderCalendarTab === 'function') renderCalendarTab();
   }
+  //  Once focus leaves the log block, catch up on any re-render that was held.
+  document.addEventListener('focusout', function() {
+    if (!_runLogDirty) return;
+    setTimeout(function() {
+      if (_runLogDirty && !runLogHasFocus()) rerenderRunSurfaces();
+    }, 60);
+  });
 
   //     LOG A MISSED RUN — a date outside the plan's rolling window.
   //
@@ -6526,19 +6567,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var d = parseDateKey(v);
     if (!d) { host.innerHTML = ''; say('That date could not be read.'); return; }
     if (d > startOfToday()) { host.innerHTML = ''; say('You cannot log a run in the future.'); return; }
-    //  If this date is already on the schedule above, its inputs exist there
-    //  under exactly these ids. Rendering a second copy would duplicate the ids
-    //  and saveRunLog() — which reads by getElementById — would silently read
-    //  whichever came first. Point at the real row instead of shadowing it.
+    //  This used to refuse when the date was already on the schedule above,
+    //  because both copies shared one set of element ids and a by-id save would
+    //  read whichever rendered first. Neither half of that is true now: ids are
+    //  namespaced per surface and saveRunLog() reads the block that was typed
+    //  in, with syncRunLogCells() pushing the result into every other copy. So
+    //  a duplicate is safe, and refusing would be wrong anyway — every visible
+    //  date now has inputs, so the old guard would always fire.
     var k = dateKeyOfRun(d);
-    var existing = document.getElementById('rl-mi-' + k);
-    if (existing) {
-      host.innerHTML = '';
-      say('That day is still on the plan above — log it there.');
-      existing.scrollIntoView({ block: 'center' });
-      return;
-    }
-    host.innerHTML = runLogInputsHTML({ date: d });
+    host.innerHTML = runLogInputsHTML({ date: d }, 'missed');
     say(runLogs[k] ? 'Editing the run already logged for this date.' : 'Logging a run for this date.');
   }
 
@@ -6980,7 +7017,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   //  The seven day cells for the week starting `monday`. One implementation,
   //  two callers: the Overview widget and the Calendar tab.
-  function calWeekGrid(monday) {
+  //
+  //  `opts.logs` adds the run log block to every cell. calRunCells() is still
+  //  used for the run DESCRIPTION, and only for that — it is built from a plan
+  //  regenerated from today and so knows nothing about elapsed weeks, which is
+  //  exactly why it must not decide whether a cell can be logged. The log block
+  //  is keyed off the cell's own real date instead, so a fully elapsed week on
+  //  the Calendar tab logs the same as any other week.
+  function calWeekGrid(monday, opts) {
+    var o = opts || {};
     var today = startOfToday();
     var runs = calRunCells(monday);
     //  Seven weekday slots from whichever split is active, not a fixed array
@@ -6999,6 +7044,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
         parts.push('<div class="cal-run' + (run.race ? ' race' : '') + '">'
           + '<div class="cal-run-tag">Run</div>' + run.text + '</div>');
       }
+      //  Unconditional, exactly as on the Run tab: same block, every date.
+      if (o.logs) parts.push(runLogInputsHTML({ date: date }, o.scope || 'cal'));
       return '<div class="cal-day' + (!slot.rest || run ? ' has-work' : '') + (isToday ? ' is-today' : '') + '">'
         + '<div class="cal-dow"><span>' + RUN_DOWS[i] + ' ' + RUN_MONTHS[date.getMonth()] + ' ' + date.getDate() + '</span>'
         + (isToday ? '<span class="cal-today-chip">Today</span>' : '') + '</div>'
@@ -7026,7 +7073,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     try {
       var n = currentTrainWeek;
       var monday = trainWeekMonday(n);
-      var g = calWeekGrid(monday);
+      //  The Calendar tab logs; the Overview widget below stays a summary.
+      var g = calWeekGrid(monday, { logs: true, scope: 'cal' });
       host.innerHTML = g.html;
       var wk = document.getElementById('calfullWeek');
       if (wk) wk.textContent = 'Training Week ' + (n + 1) + ' of 10'

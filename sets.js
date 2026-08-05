@@ -88,13 +88,49 @@ while ((sm = selRe.exec(html))) {
 function bySelector(sel) {
   var m = String(sel).match(/^\[([\w-]+)="([^"]*)"\]$/);
   if (m) return attrEls[m[1] + '=' + m[2]] || null;
+  var rl = String(sel).match(/^\.run-log\[data-k="([^"]+)"\]$/);
+  if (rl) return runLogRoot(rl[1]);
   return null;
+}
+// A stand-in for the .run-log container the real save path scopes its reads to.
+// runLogInputsHTML now namespaces ids by surface (rl-<scope>-<field>-<date>),
+// because the same date renders on the Run tab and the Calendar tab at once, so
+// this resolves a field through whichever surface registered it.
+function runLogRoot(k) {
+  var known = ['run', 'cal', 'missed'];
+  function field(f) {
+    for (var i = 0; i < known.length; i++) {
+      var e = els['rl-' + known[i] + '-' + f + '-' + k];
+      if (e) return e;
+    }
+    return null;
+  }
+  return {
+    dataset: { k: k },
+    querySelector: function (sel) {
+      var mf = String(sel).match(/\[data-f="([^"]+)"\]/);
+      if (mf) return field(mf[1]);
+      var mp = String(sel).match(/\[data-pace="([^"]+)"\]/);
+      if (mp) {
+        var id = 'pace-' + mp[1];
+        if (!els[id]) els[id] = mkEl(id, 'div', 'run-log-pace');
+        return els[id];
+      }
+      return null;
+    },
+    querySelectorAll: function () { return []; }
+  };
 }
 
 var doc = {
   getElementById: function (id) { return els[id] || null; },
   querySelector: function (sel) { return bySelector(sel); },
-  querySelectorAll: function () { return []; },
+  querySelectorAll: function (sel) {
+    var rl = String(sel).match(/^\.run-log\[data-k="([^"]+)"\]$/);
+    if (rl) return [runLogRoot(rl[1])];
+    return [];
+  },
+  activeElement: null,
   createElement: function (t) { return mkEl('', t, ''); },
   createElementNS: function (ns, t) { return mkEl('', t, ''); },
   createTextNode: function () { return mkEl('', '#text', ''); },
@@ -436,12 +472,12 @@ eq('the date really is outside the rolling plan', (function () {
 // Render the same markup the in-plan cells use, then drive the same handlers.
 var fieldsHost = els['runMissedFields'];
 fieldsHost.innerHTML = ctx.runLogInputsHTML({ date: past });
-ok('missed-run block renders the shared run-log markup', fieldsHost.innerHTML.indexOf('rl-mi-' + pk) > -1);
+ok('missed-run block renders the shared run-log markup', fieldsHost.innerHTML.indexOf('rl-run-mi-' + pk) > -1);
 ok('it wires the shared commit handler, not a new one',
-   fieldsHost.innerHTML.indexOf('onRunLogCommit(this.dataset.k)') > -1);
-els['rl-mi-' + pk].value = '6.2';
-els['rl-tm-' + pk].value = '52:00';
-els['rl-fl-' + pk].value = '7';
+   fieldsHost.innerHTML.indexOf('onRunLogCommit(this)') > -1);
+els['rl-run-mi-' + pk].value = '6.2';
+els['rl-run-tm-' + pk].value = '52:00';
+els['rl-run-fl-' + pk].value = '7';
 ctx.onRunLogCommit(pk);
 eq('saved into runLogs under the plain date key', ctx.runLogs[pk] ? ctx.runLogs[pk].miles : null, 6.2);
 eq('time parsed through the shared clock parser', ctx.runLogs[pk].secs, 3120);
@@ -463,16 +499,15 @@ els['run-missed-date'].value = ctx.dateKeyOfRun(future);
 ctx.onMissedDatePick();
 eq('a future date renders no inputs', els['runMissedFields'].innerHTML, '');
 ok('and says so', (els['runMissedHint'].textContent || '').indexOf('future') > -1, els['runMissedHint'].textContent);
-// A date still on the plan must not get a duplicate set of ids.
-els['rl-mi-dupe-probe'] = mkEl('rl-mi-dupe-probe', 'input', '');
+// A date already on the schedule is no longer refused — ids are namespaced per
+// surface, so a second copy is safe and gets its own scope.
 var todayKeyStr = ctx.dateKeyOfRun(ctx.startOfToday());
-els['rl-mi-' + todayKeyStr] = mkEl('rl-mi-' + todayKeyStr, 'input', '');
 els['run-missed-date'].value = todayKeyStr;
 ctx.onMissedDatePick();
-eq('a date already on the schedule is not duplicated', els['runMissedFields'].innerHTML, '');
-ok('and points at the existing row',
-   (els['runMissedHint'].textContent || '').indexOf('log it there') > -1, els['runMissedHint'].textContent);
-delete els['rl-mi-' + todayKeyStr];
+ok('a date already on the schedule still renders its own fields',
+   els['runMissedFields'].innerHTML.indexOf('rl-missed-mi-' + todayKeyStr) > -1);
+ok('under its own scope, not the schedule\'s',
+   els['runMissedFields'].innerHTML.indexOf('rl-run-mi-' + todayKeyStr) === -1);
 // The generator itself must be untouched by all of this.
 eq('generateRunPlan still takes today as its start, unmodified',
    /function generateRunPlan\(inp, today\)/.test(html), true);
@@ -684,95 +719,129 @@ els['runMissedFields'].innerHTML = ctx.runLogInputsHTML({ date: ctx.startOfToday
 var markup = els['runMissedFields'].innerHTML;
 ok('time field uses the formatting handlers', markup.indexOf('onRunTimeInput(this)') > -1);
 ok('time field commits through the formatting handler', markup.indexOf('onRunTimeCommit(this)') > -1);
-ok('other fields keep the plain handlers', markup.indexOf('onRunLogEdit(this.dataset.k)') > -1);
-var tEl = els['rl-tm-' + k15];
+ok('other fields keep the plain handlers', markup.indexOf('onRunLogEdit(this)') > -1);
+var tEl = els['rl-run-tm-' + k15];
 tEl.dataset.k = k15;
 tEl.value = '3210';
 ctx.onRunTimeInput(tEl);
 eq('typing digits leaves a formatted value in the field', tEl.value, '32:10');
-els['rl-mi-' + k15].value = '4';
+els['rl-run-mi-' + k15].value = '4';
 ctx.onRunTimeCommit(tEl);
 eq('and it saves as 32 min 10 sec, not 53 hours', ctx.runLogs[k15].secs, 1930);
 eq('pace text reads off the corrected time',
    ctx.runLogPaceText(ctx.runLogs[k15]).indexOf('/mi') > -1, true);
 
-section('16. Dead schedule cells get a route into logging');
+
+section('16. Every day cell renders the same log block — no exceptions');
 storage.clear(); boot();
-// Build the plan the way the Run tab does and classify every cell of week 0.
-var rInp = Object.assign({}, ctx.readRunInputs(), {
+var uInp = Object.assign({}, ctx.readRunInputs(), {
   raceDate: '2026-11-14', distance: 'half', level: 'casual',
   daysPerWeek: 5, current: 15, peak: 30, longDow: 5, liftDays: 4, liftRestDow: 6
 });
-var rPlan = ctx.generateRunPlan(rInp, ctx.startOfToday());
-ok('a plan was generated', !!(rPlan && rPlan.weeks && rPlan.weeks.length), rPlan && rPlan.error);
-var wk0 = rPlan.weeks[0];
-function classify(c) {
-  var loggable = !c.before && !c.after && c.miles > 0;      // weekStarted is true for week 0
-  var canBackfill = !loggable && !c.after && c.date <= ctx.startOfToday();
-  return { loggable: loggable, canBackfill: canBackfill };
+var uPlan = ctx.generateRunPlan(uInp, ctx.startOfToday());
+ok('a plan was generated', !!(uPlan && uPlan.weeks && uPlan.weeks.length));
+var uw0 = uPlan.weeks[0];
+
+// The five representative cells the task asks for.
+// Picks must be five DISTINCT dates — several of these categories overlap
+// (the next future day is often also an unscheduled one), and comparing a cell
+// against itself would prove nothing.
+var taken = {};
+function pick(fn) {
+  var c = uw0.cells.filter(function (x) { return fn(x) && !taken[ctx.dateKeyOfRun(x.date)]; })[0] || null;
+  if (c) taken[ctx.dateKeyOfRun(c.date)] = 1;
+  return c;
 }
-// The reported failure: an earlier weekday of the CURRENT week is dead because
-// the plan starts today, not because the day was unscheduled.
-var beforeCells = wk0.cells.filter(function (c) { return c.before; });
-ok('the current week really does contain before-today cells', beforeCells.length > 0,
-   'today is ' + ctx.dateKeyOfRun(ctx.startOfToday()));
-ok('every before-today cell had NO log inputs (the reported bug)',
-   beforeCells.every(function (c) { return !classify(c).loggable; }));
-ok('and every one of them can now be backfilled',
-   beforeCells.every(function (c) { return classify(c).canBackfill; }));
-// The design-intent case: scheduled miles of 0 on a day that is not before today.
-var unscheduled = wk0.cells.filter(function (c) { return !c.before && !c.after && !(c.miles > 0) && c.date <= ctx.startOfToday(); });
-ok('an unscheduled past/today cell is also backfillable',
-   unscheduled.every(function (c) { return classify(c).canBackfill && !classify(c).loggable; }));
-// Future days stay closed — you cannot log a run you have not done.
-var future = wk0.cells.filter(function (c) { return c.date > ctx.startOfToday(); });
-ok('future cells offer no backfill',
-   future.every(function (c) { return !classify(c).canBackfill; }), future.length + ' future cells');
-// A genuinely scheduled, already-happened day keeps its normal inline inputs.
-var normal = wk0.cells.filter(function (c) { return classify(c).loggable; });
-ok('scheduled run days are still loggable inline', normal.length > 0);
-ok('and are NOT given a backfill link instead',
-   normal.every(function (c) { return !classify(c).canBackfill; }));
+var cEarlier    = pick(function (c) { return c.before; });                                  // earlier this week
+var cToday      = pick(function (c) { return c.date.getTime() === ctx.startOfToday().getTime(); });
+var cUnsched    = pick(function (c) { return !(c.miles > 0); });                            // never a scheduled run
+var cFuture     = pick(function (c) { return c.date > ctx.startOfToday(); });
+var elapsed     = new Date(); elapsed.setDate(elapsed.getDate() - 21); elapsed.setHours(0, 0, 0, 0);
+var cElapsed    = { date: elapsed };                                                        // a fully elapsed week
 
-// The link markup, and that it drives the existing control rather than a new one.
-var deadCell = beforeCells[0] || unscheduled[0];
-var linkHTML = ctx.runBackfillLinkHTML(deadCell);
-ok('renders a backfill link', linkHTML.indexOf('run-backfill') > -1);
-ok('carries that cell\'s own date', linkHTML.indexOf(ctx.dateKeyOfRun(deadCell.date)) > -1);
-ok('calls the shared entry point', linkHTML.indexOf('logRunAnyway(this.dataset.k)') > -1);
-ok('stops propagation so it does not toggle the cell', linkHTML.indexOf('event.stopPropagation()') > -1);
+var five = [
+  ['earlier this week (the c.before case)', cEarlier],
+  ['today', cToday],
+  ['a future day', cFuture],
+  ['a fully elapsed week', cElapsed],
+  ['a never-scheduled day', cUnsched]
+];
+five.forEach(function (p) { ok('found a cell for ' + p[0], !!p[1]); });
 
-// Logging through it must reach the same storage and survive a reload.
-var deadKey = ctx.dateKeyOfRun(deadCell.date);
-ctx.logRunAnyway(deadKey);
-eq('it opened the missed-run control', els['runMissedBody']._cls.indexOf('open') > -1, true);
-eq('prefilled with the cell\'s date', els['run-missed-date'].value, deadKey);
-ok('and rendered the shared log inputs for it',
-   els['runMissedFields'].innerHTML.indexOf('rl-mi-' + deadKey) > -1);
-els['rl-mi-' + deadKey].value = '5.5';
-els['rl-fl-' + deadKey].value = '8';
-ctx.onRunLogCommit(deadKey);
-eq('saved into runLogs', ctx.runLogs[deadKey].miles, 5.5);
-ok('persisted', (storage.getItem('monk_run_logs_v1') || '').indexOf(deadKey) > -1);
+// Identical SHAPE: strip the date key and the prefilled values, and every cell's
+// markup must be byte-identical — proving one generator, not three that resemble
+// each other.
+function shapeOf(cell) {
+  return ctx.runLogInputsHTML(cell, 'run')
+    .replace(new RegExp(ctx.dateKeyOfRun(cell.date), 'g'), '<DATE>')
+    .replace(/value="[^"]*"/g, 'value="<V>')
+    .replace(/run-log-pace[^"]*"/g, 'run-log-pace"')
+    .replace(/>[^<]*<\/div>/g, '><\/div>');
+}
+var baseShape = shapeOf(five[0][1]);
+five.forEach(function (p) {
+  eq(p[0] + ' has identical markup shape', shapeOf(p[1]), baseShape);
+});
+// And each really does carry its own date, so they are not literally the same node.
+var keys = five.map(function (p) { return ctx.dateKeyOfRun(p[1].date); });
+eq('each cell carries its own date', new Set(keys).size, 5);
+five.forEach(function (p) {
+  var k = ctx.dateKeyOfRun(p[1].date);
+  ok(p[0] + ' renders all four fields', ['mi', 'tm', 'hr', 'fl'].every(function (f) {
+    return ctx.runLogInputsHTML(p[1], 'run').indexOf('data-f="' + f + '"') > -1;
+  }));
+});
+
+// The old conditional shapes are gone from the source, not merely unreferenced.
+eq('the loggable gate is gone', /var loggable\s*=/.test(html), false);
+eq('logRunAnyway is gone', /logRunAnyway/.test(html), false);
+eq('runBackfillLinkHTML is gone', /runBackfillLinkHTML/.test(html), false);
+eq('the run-backfill class is gone', /run-backfill/.test(html), false);
+eq('runWeekHTML renders the log block unconditionally',
+   /runCellText\(c, plan\)\s*\+\s*runLogInputsHTML\(c, 'run'\)/.test(html), true);
+
+// Past and present save and survive a reload.
+[['earlier this week', cEarlier], ['a fully elapsed week', cElapsed]].forEach(function (p) {
+  var k = ctx.dateKeyOfRun(p[1].date);
+  els['runMissedFields'].innerHTML = ctx.runLogInputsHTML(p[1], 'run');
+  els['rl-run-mi-' + k].value = '4.4';
+  els['rl-run-fl-' + k].value = '6';
+  ctx.onRunLogCommit(k);
+  eq(p[0] + ' saves', ctx.runLogs[k] ? ctx.runLogs[k].miles : null, 4.4);
+});
 ctx.loadRunLogs();
-eq('survives a reload', ctx.runLogs[deadKey].miles, 5.5);
-eq('feel survived too', ctx.runLogs[deadKey].feel, 8);
-// Once logged, the link says so rather than still offering a blank log.
-ok('link now offers to edit rather than create',
-   ctx.runBackfillLinkHTML(deadCell).indexOf('edit logged run') > -1);
+eq('and survives a reload', ctx.runLogs[ctx.dateKeyOfRun(cElapsed.date)].miles, 4.4);
 
-// The earlier missed-run behaviour (a date fully outside the window) is intact.
-var wayBack = new Date(); wayBack.setDate(wayBack.getDate() - 30); wayBack.setHours(0, 0, 0, 0);
-var wbKey = ctx.dateKeyOfRun(wayBack);
-els['run-missed-date'].value = wbKey;
-ctx.onMissedDatePick();
-ok('an out-of-window date still renders its own inputs',
-   els['runMissedFields'].innerHTML.indexOf('rl-mi-' + wbKey) > -1);
-// And the generator was not touched by any of this.
-eq('buildRunWeeks still sets before from block.start',
-   /before:\s*date < block\.start/.test(html), true);
-eq('the loggable gate itself is unchanged',
-   /var loggable = !c\.before && !c\.after && c\.miles > 0 && weekStarted;/.test(html), true);
+// The future rule is save-time only — the markup is unchanged, the write is refused.
+var fk = ctx.dateKeyOfRun(cFuture.date);
+eq('a future date is recognised as future', ctx.runDateIsFuture(fk), true);
+eq('a past date is not', ctx.runDateIsFuture(ctx.dateKeyOfRun(cElapsed.date)), false);
+els['runMissedFields'].innerHTML = ctx.runLogInputsHTML(cFuture, 'run');
+els['rl-run-mi-' + fk].value = '9';
+ctx.onRunLogCommit(fk);
+eq('a future run is refused at save time', ctx.runLogs[fk], undefined);
+ok('and the fields were still rendered for it',
+   ctx.runLogInputsHTML(cFuture, 'run').indexOf('data-f="mi"') > -1);
+
+// The Calendar tab keys its inputs off the cell's own date, not the regenerated plan.
+eq('calWeekGrid takes an opts argument', /function calWeekGrid\(monday, opts\)/.test(html), true);
+eq('the Calendar tab asks for logs', /calWeekGrid\(monday, \{ logs: true, scope: 'cal' \}\)/.test(html), true);
+eq('and the log block is keyed off the cell date',
+   /if \(o\.logs\) parts\.push\(runLogInputsHTML\(\{ date: date \}, o\.scope \|\| 'cal'\)\)/.test(html), true);
+
+// Scoped ids: the same date on two surfaces must not collide.
+var dk = ctx.dateKeyOfRun(cElapsed.date);
+var runCopy = ctx.runLogInputsHTML(cElapsed, 'run');
+var calCopy = ctx.runLogInputsHTML(cElapsed, 'cal');
+ok('run surface ids are namespaced', runCopy.indexOf('id="rl-run-mi-' + dk + '"') > -1);
+ok('calendar surface ids are namespaced', calCopy.indexOf('id="rl-cal-mi-' + dk + '"') > -1);
+eq('so the two copies never share an id', runCopy === calCopy, false);
+ok('but both carry the same data-k', calCopy.indexOf('data-k="' + dk + '"') > -1);
+eq('saves are scoped to the block typed in, not looked up by id',
+   /function saveRunLog\(k, root\)/.test(html), true);
+ok('and a save pushes the result into every other copy on screen',
+   /syncRunLogCells\(k, entry\)/.test(html));
+ok('a re-render is held while a field still has focus', /if \(runLogHasFocus\(\)\)/.test(html));
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
