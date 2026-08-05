@@ -649,5 +649,52 @@ ok('schedule still precedes the missed-run control', iSched < iMissed);
 eq('collapsing removes the form from layout entirely (display:none, not just hidden)',
    /\.run-form\.collapsed\s*\{\s*display:\s*none;\s*\}/.test(html), true);
 
+section('15. Run time entry — the colon types itself on a numeric keypad');
+storage.clear(); boot();
+function fc(s) { return ctx.formatClockInput(s); }
+// 1-2 digits stay bare minutes, which is the behaviour that already existed.
+eq('"" stays empty', fc(''), '');
+eq('"5" stays 5 (minutes)', fc('5'), '5');
+eq('"45" stays 45 (minutes)', fc('45'), '45');
+// 3+ digits gain the colon from the right.
+eq('"500" becomes 5:00', fc('500'), '5:00');
+eq('"321" becomes 3:21', fc('321'), '3:21');
+eq('"3210" becomes 32:10', fc('3210'), '32:10');
+eq('"10530" becomes 1:05:30', fc('10530'), '1:05:30');
+eq('"123456" becomes 12:34:56', fc('123456'), '12:34:56');
+// Non-digits are stripped, so a typed or pasted colon does not double up.
+eq('an already-colonned value is stable', fc('32:10'), '32:10');
+eq('h:mm:ss is stable', fc('1:05:30'), '1:05:30');
+eq('junk is stripped', fc('32m10s'), '32:10');
+eq('overlong input is capped at 6 digits', fc('1234567890'), '12:34:56');
+// Everything secsToClock emits must round-trip unchanged — it never prints
+// more than 59 minutes without also printing hours, so there is no ambiguity.
+[59, 600, 1930, 3599, 3600, 6000, 35999].forEach(function (s) {
+  var printed = ctx.secsToClock(s);
+  eq('round-trips ' + printed, fc(printed), printed);
+  eq('and re-parses to ' + s, ctx.clockToSecs(fc(printed)), s);
+});
+// The bug this fixes: a colon-less 3210 used to mean 3210 MINUTES.
+eq('unformatted "3210" really did parse as 3210 minutes', ctx.clockToSecs('3210'), 3210 * 60);
+eq('formatted, it is 32 min 10 sec', ctx.clockToSecs(fc('3210')), 32 * 60 + 10);
+ok('which is not 53 hours', ctx.clockToSecs(fc('3210')) < 3600, ctx.clockToSecs(fc('3210')));
+// Wired into the field, and saving still goes through the shared path.
+var k15 = ctx.dateKeyOfRun(ctx.startOfToday());
+els['runMissedFields'].innerHTML = ctx.runLogInputsHTML({ date: ctx.startOfToday() });
+var markup = els['runMissedFields'].innerHTML;
+ok('time field uses the formatting handlers', markup.indexOf('onRunTimeInput(this)') > -1);
+ok('time field commits through the formatting handler', markup.indexOf('onRunTimeCommit(this)') > -1);
+ok('other fields keep the plain handlers', markup.indexOf('onRunLogEdit(this.dataset.k)') > -1);
+var tEl = els['rl-tm-' + k15];
+tEl.dataset.k = k15;
+tEl.value = '3210';
+ctx.onRunTimeInput(tEl);
+eq('typing digits leaves a formatted value in the field', tEl.value, '32:10');
+els['rl-mi-' + k15].value = '4';
+ctx.onRunTimeCommit(tEl);
+eq('and it saves as 32 min 10 sec, not 53 hours', ctx.runLogs[k15].secs, 1930);
+eq('pace text reads off the corrected time',
+   ctx.runLogPaceText(ctx.runLogs[k15]).indexOf('/mi') > -1, true);
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

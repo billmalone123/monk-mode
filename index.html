@@ -2530,7 +2530,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.41</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.42</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2592,7 +2592,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.41</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.42</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2813,7 +2813,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.41</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.42</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -2923,7 +2923,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.41</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.42</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -6233,10 +6233,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var fl = (e.feel != null && e.feel !== '') ? e.feel : '';
     var on = (mi !== '' || tm !== '' || hr !== '' || fl !== '');
     function inp(id, label, val, extra) {
+      //  The time field formats itself as you type so the colon appears without
+      //  a colon key — see formatClockInput(). Everything else commits directly.
+      var handlers = (id === 'tm')
+        ? ' oninput="onRunTimeInput(this)" onchange="onRunTimeCommit(this)"'
+        : ' oninput="onRunLogEdit(this.dataset.k)" onchange="onRunLogCommit(this.dataset.k)"';
       return '<div class="run-log-group"><span class="run-log-label">' + label + '</span>'
         + '<input class="run-log-input' + (val !== '' ? ' logged' : '') + '" id="rl-' + id + '-' + k
         + '" data-k="' + k + '" value="' + val + '" ' + extra
-        + ' oninput="onRunLogEdit(this.dataset.k)" onchange="onRunLogCommit(this.dataset.k)"></div>';
+        + handlers + '></div>';
     }
     return '<div class="run-log" onclick="event.stopPropagation()">'
       + '<div class="run-log-row">'
@@ -6319,6 +6324,41 @@ body.training-mode select.run-input { color: #F1EFE1; }
     else if (p.length === 3) secs = p[0] * 3600 + p[1] * 60 + p[2];
     if (secs == null || !isFinite(secs) || secs <= 0) return null;
     return Math.round(secs);
+  }
+  //     TIME ENTRY — the colon types itself.
+  //
+  //     The field is inputmode="numeric" so phones raise a number pad, and that
+  //     pad has no colon key: on a phone the separator simply could not be
+  //     typed. Worse, it failed silently rather than loudly — clockToSecs()
+  //     reads a colon-less number as MINUTES, so "3210" meant for 32:10 stored
+  //     3210 minutes, or 53 hours, with no error anywhere.
+  //
+  //     So the digits are formatted as they are entered and the colon is
+  //     inserted from the right. One and two digits stay bare minutes, which is
+  //     the behaviour that already existed and still works ("45" is 45 minutes).
+  //     Three or more digits mean m:ss, which is what someone typing a run time
+  //     means. Everything secsToClock() emits round-trips through this
+  //     unchanged, because it never prints more than 59 minutes without also
+  //     printing hours.
+  function formatClockInput(raw) {
+    var d = String(raw == null ? '' : raw).replace(/\D/g, '').slice(0, 6);
+    if (d.length <= 2) return d;
+    if (d.length <= 4) return d.slice(0, d.length - 2) + ':' + d.slice(-2);
+    return d.slice(0, d.length - 4) + ':' + d.slice(-4, -2) + ':' + d.slice(-2);
+  }
+  function onRunTimeInput(inp) {
+    var f = formatClockInput(inp.value);
+    if (f !== inp.value) {
+      inp.value = f;
+      //  Typing runs left to right and the colon is inserted behind the caret,
+      //  so putting it back at the end is where the user already was.
+      try { inp.setSelectionRange(f.length, f.length); } catch (e) {}
+    }
+    onRunLogEdit(inp.dataset.k);
+  }
+  function onRunTimeCommit(inp) {
+    inp.value = formatClockInput(inp.value);
+    onRunLogCommit(inp.dataset.k);
   }
   function secsToClock(secs) {
     var s = Math.round(secs);
