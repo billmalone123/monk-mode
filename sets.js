@@ -696,5 +696,83 @@ eq('and it saves as 32 min 10 sec, not 53 hours', ctx.runLogs[k15].secs, 1930);
 eq('pace text reads off the corrected time',
    ctx.runLogPaceText(ctx.runLogs[k15]).indexOf('/mi') > -1, true);
 
+section('16. Dead schedule cells get a route into logging');
+storage.clear(); boot();
+// Build the plan the way the Run tab does and classify every cell of week 0.
+var rInp = Object.assign({}, ctx.readRunInputs(), {
+  raceDate: '2026-11-14', distance: 'half', level: 'casual',
+  daysPerWeek: 5, current: 15, peak: 30, longDow: 5, liftDays: 4, liftRestDow: 6
+});
+var rPlan = ctx.generateRunPlan(rInp, ctx.startOfToday());
+ok('a plan was generated', !!(rPlan && rPlan.weeks && rPlan.weeks.length), rPlan && rPlan.error);
+var wk0 = rPlan.weeks[0];
+function classify(c) {
+  var loggable = !c.before && !c.after && c.miles > 0;      // weekStarted is true for week 0
+  var canBackfill = !loggable && !c.after && c.date <= ctx.startOfToday();
+  return { loggable: loggable, canBackfill: canBackfill };
+}
+// The reported failure: an earlier weekday of the CURRENT week is dead because
+// the plan starts today, not because the day was unscheduled.
+var beforeCells = wk0.cells.filter(function (c) { return c.before; });
+ok('the current week really does contain before-today cells', beforeCells.length > 0,
+   'today is ' + ctx.dateKeyOfRun(ctx.startOfToday()));
+ok('every before-today cell had NO log inputs (the reported bug)',
+   beforeCells.every(function (c) { return !classify(c).loggable; }));
+ok('and every one of them can now be backfilled',
+   beforeCells.every(function (c) { return classify(c).canBackfill; }));
+// The design-intent case: scheduled miles of 0 on a day that is not before today.
+var unscheduled = wk0.cells.filter(function (c) { return !c.before && !c.after && !(c.miles > 0) && c.date <= ctx.startOfToday(); });
+ok('an unscheduled past/today cell is also backfillable',
+   unscheduled.every(function (c) { return classify(c).canBackfill && !classify(c).loggable; }));
+// Future days stay closed — you cannot log a run you have not done.
+var future = wk0.cells.filter(function (c) { return c.date > ctx.startOfToday(); });
+ok('future cells offer no backfill',
+   future.every(function (c) { return !classify(c).canBackfill; }), future.length + ' future cells');
+// A genuinely scheduled, already-happened day keeps its normal inline inputs.
+var normal = wk0.cells.filter(function (c) { return classify(c).loggable; });
+ok('scheduled run days are still loggable inline', normal.length > 0);
+ok('and are NOT given a backfill link instead',
+   normal.every(function (c) { return !classify(c).canBackfill; }));
+
+// The link markup, and that it drives the existing control rather than a new one.
+var deadCell = beforeCells[0] || unscheduled[0];
+var linkHTML = ctx.runBackfillLinkHTML(deadCell);
+ok('renders a backfill link', linkHTML.indexOf('run-backfill') > -1);
+ok('carries that cell\'s own date', linkHTML.indexOf(ctx.dateKeyOfRun(deadCell.date)) > -1);
+ok('calls the shared entry point', linkHTML.indexOf('logRunAnyway(this.dataset.k)') > -1);
+ok('stops propagation so it does not toggle the cell', linkHTML.indexOf('event.stopPropagation()') > -1);
+
+// Logging through it must reach the same storage and survive a reload.
+var deadKey = ctx.dateKeyOfRun(deadCell.date);
+ctx.logRunAnyway(deadKey);
+eq('it opened the missed-run control', els['runMissedBody']._cls.indexOf('open') > -1, true);
+eq('prefilled with the cell\'s date', els['run-missed-date'].value, deadKey);
+ok('and rendered the shared log inputs for it',
+   els['runMissedFields'].innerHTML.indexOf('rl-mi-' + deadKey) > -1);
+els['rl-mi-' + deadKey].value = '5.5';
+els['rl-fl-' + deadKey].value = '8';
+ctx.onRunLogCommit(deadKey);
+eq('saved into runLogs', ctx.runLogs[deadKey].miles, 5.5);
+ok('persisted', (storage.getItem('monk_run_logs_v1') || '').indexOf(deadKey) > -1);
+ctx.loadRunLogs();
+eq('survives a reload', ctx.runLogs[deadKey].miles, 5.5);
+eq('feel survived too', ctx.runLogs[deadKey].feel, 8);
+// Once logged, the link says so rather than still offering a blank log.
+ok('link now offers to edit rather than create',
+   ctx.runBackfillLinkHTML(deadCell).indexOf('edit logged run') > -1);
+
+// The earlier missed-run behaviour (a date fully outside the window) is intact.
+var wayBack = new Date(); wayBack.setDate(wayBack.getDate() - 30); wayBack.setHours(0, 0, 0, 0);
+var wbKey = ctx.dateKeyOfRun(wayBack);
+els['run-missed-date'].value = wbKey;
+ctx.onMissedDatePick();
+ok('an out-of-window date still renders its own inputs',
+   els['runMissedFields'].innerHTML.indexOf('rl-mi-' + wbKey) > -1);
+// And the generator was not touched by any of this.
+eq('buildRunWeeks still sets before from block.start',
+   /before:\s*date < block\.start/.test(html), true);
+eq('the loggable gate itself is unchanged',
+   /var loggable = !c\.before && !c\.after && c\.miles > 0 && weekStarted;/.test(html), true);
+
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

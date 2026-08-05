@@ -2301,6 +2301,21 @@ body.training-mode #calendarfull { background: var(--bg); border-top: none; padd
   cursor: pointer; border-radius: 2px; transition: all 0.15s;
 }
 .run-clear-btn:hover { border-color: var(--field); color: var(--text); }
+/* The way out of a cell that has no log inputs. Deliberately understated — it
+   sits inside a schedule cell and must not compete with the day's actual plan
+   text, but a dead-looking day needed something to say "you can still log
+   this". Turns readable on hover/focus rather than shouting by default. */
+.run-backfill {
+  display: inline-block; margin-top: 8px;
+  background: transparent; border: 1px dashed var(--border); color: var(--muted);
+  padding: 5px 10px; font-family: var(--font-display); font-weight: 700;
+  font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: pointer; border-radius: 999px; transition: all 0.15s;
+  max-width: 100%; white-space: normal; line-height: 1.3;
+}
+.run-backfill:hover, .run-backfill:focus { border-color: var(--accent); color: var(--accent); outline: none; }
+.run-backfill.logged { border-style: solid; border-color: var(--field); color: var(--text); }
+
 /* Race setup collapse. Same visual language as the missed-run toggle below it,
    on purpose — two collapsibles on one tab should not look like two ideas. */
 .run-setup-bar {
@@ -2530,7 +2545,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.42</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.43</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2592,7 +2607,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.42</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.43</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2813,7 +2828,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.42</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.43</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -2923,7 +2938,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.42</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.43</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -6256,6 +6271,40 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + runLogPaceText(e) + '</div></div>';
   }
 
+  //     One quiet link out of a dead cell. Not a second form and not a second
+  //     logging mechanism — it opens the missed-run control that already exists,
+  //     with this cell's date already filled in, so nobody has to scroll down,
+  //     expand it and retype the date they were already looking at.
+  function runBackfillLinkHTML(c) {
+    var k = dateKeyOfRun(c.date);
+    var logged = !!runLogs[k];
+    return '<button class="run-backfill' + (logged ? ' logged' : '') + '" data-k="' + k + '"'
+      + ' onclick="event.stopPropagation();logRunAnyway(this.dataset.k)">'
+      + (logged ? 'edit logged run' : '+ log a run anyway') + '</button>';
+  }
+
+  //  Drives the existing control rather than duplicating it: force it open, set
+  //  its date, and hand off to onMissedDatePick(), which renders the same
+  //  runLogInputsHTML() and saves through the same runLogs/persistRunLogs path.
+  function logRunAnyway(k) {
+    var body = document.getElementById('runMissedBody');
+    var btn = document.getElementById('runMissedToggle');
+    if (body && !body.classList.contains('open')) {
+      body.classList.add('open');
+      if (btn) { btn.classList.add('open'); btn.textContent = '− Log a missed run'; }
+    }
+    var d = document.getElementById('run-missed-date');
+    if (d) {
+      if (!d.max) d.max = dateKeyOfRun(startOfToday());
+      d.value = k;
+    }
+    onMissedDatePick();
+    var host = document.getElementById('runMissed');
+    if (host && host.scrollIntoView) host.scrollIntoView({ block: 'center' });
+    var mi = document.getElementById('rl-mi-' + k);
+    if (mi && mi.focus) setTimeout(function() { try { mi.focus(); } catch(e) {} }, 60);
+  }
+
   function runLogPaceText(e) {
     var m = parseFloat(e && e.miles), s = parseFloat(e && e.secs);
     if (!isNaN(m) && m > 0 && !isNaN(s) && s > 0) return fmtPace(s / m) + ' /mi';
@@ -6287,8 +6336,27 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (c.lift) cls += ' has-lift';
       }
       var loggable = !c.before && !c.after && c.miles > 0 && weekStarted;
+      //  A cell with no inputs is dead for three different reasons, and all
+      //  three look identical on screen — like the day simply refuses to work:
+      //
+      //    c.before      an earlier day of the CURRENT week. The plan is built
+      //                  from today, so week 0's block.start IS today and every
+      //                  earlier weekday fails `date < block.start`. This is
+      //                  the one actually reported: on a Wednesday, Monday and
+      //                  Tuesday of this week are dead.
+      //    c.miles === 0 a genuinely unscheduled day. Design intent — there is
+      //                  no planned run to log against.
+      //    c.after       a future day. Correctly dead: you cannot log a run you
+      //                  have not done, and that stays true here.
+      //
+      //  The flags themselves are right for PLANNING and are left alone, per
+      //  the standing rule not to touch the generator. What was missing is any
+      //  route from a dead cell to the logging that already works for it. So
+      //  every dead cell up to and including today gets one small link into the
+      //  existing missed-run path, prefilled with that cell's own date.
+      var canBackfill = !loggable && !c.after && c.date <= startOfToday();
       out += '<div class="' + cls + '">' + runCellText(c, plan)
-        + (loggable ? runLogInputsHTML(c) : '') + '</div>';
+        + (loggable ? runLogInputsHTML(c) : (canBackfill ? runBackfillLinkHTML(c) : '')) + '</div>';
     });
     out += '<div class="run-cell-miles">' + fmtMiles(w.miles) + '<span>miles</span></div>';
     return out + '</div>';
