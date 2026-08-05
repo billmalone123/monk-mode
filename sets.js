@@ -1,0 +1,420 @@
+// Scratch harness for per-exercise working set counts (2 or 3) and warm-up set
+// logging. Boots index.html's real script blocks in a DOM stub.
+//
+// Shares the stub approach with onb.js/compat.js, with one addition: this one
+// resolves [data-*="..."] selectors, because the row-level renders
+// (renderWarmupsAndTargets, renderRowStatus, applySetCountUI) reach their
+// targets by attribute rather than by id, and stubbing those to null would mean
+// asserting against code that never ran.
+//
+// The load-bearing test here is section 2: an entry holding ONLY s1/s2, exactly
+// as every existing user's storage already holds it, must render everywhere with
+// no undefined/NaN and no throw. That is the explicit regression check.
+var fs = require('fs'), vm = require('vm');
+var html = fs.readFileSync('index.html', 'utf8');
+
+function mkClassList(el) {
+  return {
+    add: function (c) { if (!el._cls.includes(c)) el._cls.push(c); },
+    remove: function (c) { el._cls = el._cls.filter(function (x) { return x !== c; }); },
+    contains: function (c) { return el._cls.includes(c); },
+    toggle: function (c, on) {
+      var has = el._cls.includes(c), want = (on === undefined) ? !has : !!on;
+      if (want && !has) el._cls.push(c);
+      if (!want && has) this.remove(c);
+      return want;
+    }
+  };
+}
+function mkEl(id, tag, cls, attrs) {
+  var el = { id: id, tagName: (tag || 'div').toUpperCase(), textContent: '', placeholder: '',
+             style: {}, dataset: {}, _cls: (cls || '').split(/\s+/).filter(Boolean),
+             _attrs: attrs || {}, children: [], _val: '', _html: '' };
+  Object.defineProperty(el, 'value', {
+    get: function () { return el._val; },
+    set: function (v) { el._val = (v == null) ? '' : String(v); }
+  });
+  Object.defineProperty(el, 'innerHTML', {
+    get: function () { return el._html; },
+    set: function (v) { el._html = String(v == null ? '' : v); registerIds(el._html); }
+  });
+  el.classList = mkClassList(el);
+  Object.defineProperty(el, 'className', {
+    get: function () { return el._cls.join(' '); },
+    set: function (v) { el._cls = String(v).split(/\s+/).filter(Boolean); }
+  });
+  el.appendChild = function (c) { el.children.push(c); return c; };
+  el.setAttribute = function () {}; el.removeAttribute = function () {};
+  el.getAttribute = function (k) { return el._attrs[k] == null ? null : el._attrs[k]; };
+  el.addEventListener = function () {}; el.removeEventListener = function () {};
+  el.focus = function () {}; el.blur = function () {}; el.click = function () {};
+  el.getBoundingClientRect = function () { return { top: 0, left: 0, width: 0, height: 0, bottom: 0, right: 0 }; };
+  el.querySelector = function () { return null; }; el.querySelectorAll = function () { return []; };
+  el.closest = function () { return null; }; el.scrollIntoView = function () {};
+  el.remove = function () {};
+  return el;
+}
+
+var els = {};
+// Elements addressed by attribute rather than id, keyed 'attr=value'.
+var attrEls = {};
+var ATTR_HOOKS = ['data-rows', 'data-warmups', 'data-targets', 'data-status', 'data-setslabel', 'data-setrow'];
+function registerIds(markup) {
+  var r = /<(\w+)([^>]*)>/g, mm;
+  while ((mm = r.exec(markup))) {
+    var tag = mm[1], attrs = mm[2];
+    var c = attrs.match(/\bclass="([^"]*)"/);
+    var cls = c ? c[1] : '';
+    var idm = attrs.match(/\bid="([^"]+)"/);
+    var el = null;
+    if (idm && !els[idm[1]]) { el = mkEl(idm[1], tag, cls, {}); els[idm[1]] = el; }
+    else if (idm) el = els[idm[1]];
+    ATTR_HOOKS.forEach(function (a) {
+      var am = attrs.match(new RegExp('\\b' + a + '="([^"]*)"'));
+      if (!am) return;
+      var key = a + '=' + am[1];
+      if (attrEls[key]) return;
+      attrEls[key] = el || mkEl('', tag, cls, {});
+    });
+  }
+}
+registerIds(html);
+var selRe = /<select[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/select>/g, sm;
+while ((sm = selRe.exec(html))) {
+  var om = sm[2].match(/value="([^"]*)"/);
+  if (els[sm[1]] && om) els[sm[1]].value = om[1];
+}
+
+function bySelector(sel) {
+  var m = String(sel).match(/^\[([\w-]+)="([^"]*)"\]$/);
+  if (m) return attrEls[m[1] + '=' + m[2]] || null;
+  return null;
+}
+
+var doc = {
+  getElementById: function (id) { return els[id] || null; },
+  querySelector: function (sel) { return bySelector(sel); },
+  querySelectorAll: function () { return []; },
+  createElement: function (t) { return mkEl('', t, ''); },
+  createElementNS: function (ns, t) { return mkEl('', t, ''); },
+  createTextNode: function () { return mkEl('', '#text', ''); },
+  addEventListener: function () {}, removeEventListener: function () {},
+  body: mkEl('body', 'body', ''), documentElement: mkEl('html', 'html', ''),
+  readyState: 'complete', hidden: false
+};
+
+function mkStorage() {
+  var s = {};
+  return {
+    _raw: s,
+    getItem: function (k) { return Object.prototype.hasOwnProperty.call(s, k) ? s[k] : null; },
+    setItem: function (k, v) { s[k] = String(v); },
+    removeItem: function (k) { delete s[k]; },
+    clear: function () { Object.keys(s).forEach(function (k) { delete s[k]; }); }
+  };
+}
+var storage = mkStorage();
+
+function NoopObserver() {}
+NoopObserver.prototype.observe = function () {};
+NoopObserver.prototype.unobserve = function () {};
+NoopObserver.prototype.disconnect = function () {};
+
+var ctx = {
+  document: doc, localStorage: storage,
+  navigator: { storage: {}, userAgent: 'node' },
+  location: { href: 'http://localhost/', reload: function () {} },
+  console: console,
+  setTimeout: function () { return 0; }, clearTimeout: function () {},
+  setInterval: function () { return 0; }, clearInterval: function () {},
+  requestAnimationFrame: function () { return 0; }, cancelAnimationFrame: function () {},
+  IntersectionObserver: NoopObserver, MutationObserver: NoopObserver, ResizeObserver: NoopObserver,
+  matchMedia: function () { return { matches: false, addListener: function () {}, addEventListener: function () {} }; },
+  scrollTo: function () {}, alert: function () {}, confirm: function () { return true; },
+  URL: { createObjectURL: function () { return 'blob:'; }, revokeObjectURL: function () {} },
+  Blob: function () {}, FileReader: function () {},
+  addEventListener: function () {}, removeEventListener: function () {},
+  Date: Date, Math: Math, JSON: JSON, parseInt: parseInt, parseFloat: parseFloat,
+  isNaN: isNaN, Object: Object, Array: Array, String: String, Number: Number,
+  Promise: Promise, Error: Error, RegExp: RegExp, Map: Map, Set: Set
+};
+ctx.window = ctx; ctx.self = ctx; ctx.globalThis = ctx;
+vm.createContext(ctx);
+
+var blocks = [];
+var re = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g, m;
+while ((m = re.exec(html))) blocks.push(m[1]);
+try { vm.runInContext(blocks[0], ctx, { filename: 'block1' }); vm.runInContext(blocks[1], ctx, { filename: 'block2' }); }
+catch (e) { console.log('load failed: ' + e.stack); process.exit(1); }
+
+function ev(src) { return vm.runInContext(src, ctx); }
+
+var pass = 0, fail = 0;
+function ok(name, cond, detail) {
+  if (cond) { pass++; console.log('  PASS  ' + name); }
+  else { fail++; console.log('  FAIL  ' + name + (detail ? '  [' + detail + ']' : '')); }
+}
+function eq(name, got, want) { ok(name, got === want, 'got ' + JSON.stringify(got) + ', want ' + JSON.stringify(want)); }
+function section(t) { console.log('\n' + t); }
+function noThrow(name, fn) {
+  try { var v = fn(); ok(name, true); return v; }
+  catch (e) { fail++; console.log('  FAIL  ' + name + '  [threw: ' + e.message + ']'); return undefined; }
+}
+function sane(name, v) {
+  ok(name, v !== undefined && v !== null && !(typeof v === 'number' && isNaN(v))
+       && String(v).indexOf('undefined') === -1 && String(v).indexOf('NaN') === -1,
+     JSON.stringify(v));
+}
+
+function boot() {
+  ctx.sessions = ctx.loadSessions();
+  ctx.loadLiftDays(); ctx.loadMaxes(); ctx.loadVariants(); ctx.loadAims();
+  ctx.loadSetCounts(); ctx.loadWarmupLogs();
+  ctx.updateMaxChips(); ctx.updateLiftDaysUI();
+  ctx.renderWeekSelectors(); ctx.renderDaySections(); ctx.renderAllRowStates();
+  ctx.renderProgressView(); ctx.initRunPlan(); ctx.renderWeekCalendar();
+}
+function reset() { storage.clear(); }
+// Type into a row's inputs the way the real handlers see them.
+function typeSet(exId, slot, w, r) {
+  var wEl = ctx.document.getElementById(slot + 'w-' + exId);
+  var rEl = ctx.document.getElementById(slot + 'r-' + exId);
+  if (wEl) { wEl.value = w == null ? '' : w; wEl.dataset.dirty = 1; }
+  if (rEl) rEl.value = r == null ? '' : r;
+}
+function typeWarmup(exId, i, w, r) {
+  var wEl = ctx.document.getElementById('wu' + i + 'w-' + exId);
+  var rEl = ctx.document.getElementById('wu' + i + 'r-' + exId);
+  if (wEl) wEl.value = w == null ? '' : w;
+  if (rEl) rEl.value = r == null ? '' : r;
+}
+// An exercise on the generated (shorter-split) path, whose row ids the stub
+// registers because renderDaySections builds #altPlan via innerHTML.
+function anExercise() { return ev('splitDayExercises(splitDayIds()[0])[0].id'); }
+
+// ─────────────────────────────────────────────────────────────────────────────
+section('1. Default is two sets — nothing changes for anyone who does not opt in');
+reset();
+storage.setItem('monk_lift_days_v1', '4');
+boot();
+var EX = anExercise();
+eq('no stored count reads as 2', ctx.setsFor(EX), 2);
+eq('slots are s1/s2 only', ctx.setSlots(EX).join(','), 's1,s2');
+eq('no set-count key written just by loading', storage.getItem('monk_setcounts_v1'), null);
+eq('row label says 2 sets', ev('liftRowHTML(EX_BY_ID["' + EX + '"])').indexOf('>2 sets ×') > -1, true);
+ok('row still renders a third slot in the DOM (hidden, not absent)',
+   ev('liftRowHTML(EX_BY_ID["' + EX + '"])').indexOf('id="s3w-' + EX + '"') > -1);
+ok('third slot is not marked active',
+   ev('liftRowHTML(EX_BY_ID["' + EX + '"])').indexOf('class="lift-row sets-3"') === -1);
+
+section('2. OLD DATA ONLY — an entry with s1/s2 and no s3, as already stored');
+reset();
+storage.setItem('monk_lift_days_v1', '4');
+boot();
+EX = anExercise();
+// Exactly the shape this app has been writing: no s3 key at all, no warmup store.
+var oldEntry = { d: '2026-01-05', week: 0, weight: 185, reps: 5,
+                 s1: { w: 185, r: 5 }, s2: { w: 185, r: 4 }, failure: true,
+                 variant: ev('activeVariant(EX_BY_ID["' + EX + '"])') };
+var oldSessions = {}; oldSessions[EX] = [oldEntry];
+storage.setItem('monk_sessions_v1', JSON.stringify(oldSessions));
+boot();
+ok('old entry has no s3 key at all', !('s3' in ctx.sessions[EX][0]));
+noThrow('renderLiftRowState on old data', function () { ctx.renderLiftRowState(ev('EX_BY_ID["' + EX + '"]')); });
+noThrow('renderRowStatus on old data', function () { ctx.renderRowStatus(ev('EX_BY_ID["' + EX + '"]')); });
+noThrow('renderProgressView on old data', function () { ctx.renderProgressView(); });
+noThrow('renderWeekCalendar on old data', function () { ctx.renderWeekCalendar(); });
+noThrow('renderRing on old data', function () { if (ctx.renderRing) ctx.renderRing(); });
+var statusEl = attrEls['data-status=' + EX];
+sane('status chip has no undefined/NaN', statusEl ? statusEl.innerHTML : '');
+ok('status chip shows exactly the two sets it has',
+   statusEl && statusEl.innerHTML.indexOf('185 × 5 · 185 × 4') > -1, statusEl && statusEl.innerHTML);
+eq('normSet on an absent s3 is null', ctx.normSet(oldEntry, oldEntry.s3), null);
+eq('setsFor on old data still defaults to 2', ctx.setsFor(EX), 2);
+sane('set 1 weight box restored from old entry', ctx.document.getElementById('s1w-' + EX).value);
+sane('set 2 weight box restored from old entry', ctx.document.getElementById('s2w-' + EX).value);
+eq('third set box left empty by old data', ctx.document.getElementById('s3r-' + EX).value, '');
+eq('no warm-up store invented for old data', storage.getItem('monk_warmup_logs_v1'), null);
+
+section('3. setsFor validates rather than trusts');
+reset(); boot(); EX = anExercise();
+ctx.setCounts[EX] = 4;   // stale / hand-edited
+eq('a 4 coerces down to 2', ctx.setsFor(EX), 2);
+ctx.setCounts[EX] = '3'; // string from JSON
+eq('a string "3" reads as 3', ctx.setsFor(EX), 3);
+ctx.setCounts[EX] = null;
+eq('null reads as 2', ctx.setsFor(EX), 2);
+delete ctx.setCounts[EX];
+
+section('4. Three sets — logging all three, and the top set across all three');
+reset();
+storage.setItem('monk_lift_days_v1', '4');
+boot();
+EX = anExercise();
+ctx.setExerciseSets(EX, 3);
+eq('switched to 3', ctx.setsFor(EX), 3);
+eq('slots now include s3', ctx.setSlots(EX).join(','), 's1,s2,s3');
+eq('choice persisted', JSON.parse(storage.getItem('monk_setcounts_v1'))[EX], 3);
+// Third set is the heaviest, so it must win the best-set comparison.
+typeSet(EX, 's1', 135, 8);
+typeSet(EX, 's2', 155, 6);
+typeSet(EX, 's3', 175, 3);
+ctx.autoSaveExercise(EX, false);
+var e3 = ctx.sessions[EX][0];
+eq('s3 stored', JSON.stringify(e3.s3), JSON.stringify({ w: 175, r: 3 }));
+eq('best-set weight came from set 3', e3.weight, 175);
+eq('best-set reps came from set 3', e3.reps, 3);
+// And when the top set is set 1, three-set logging must not change that.
+typeSet(EX, 's1', 200, 5); typeSet(EX, 's2', 150, 5); typeSet(EX, 's3', 150, 5);
+ctx.autoSaveExercise(EX, false);
+eq('best set still picks set 1 when it is heaviest', ctx.sessions[EX][0].weight, 200);
+// Equal weight, more reps later, is a better set.
+typeSet(EX, 's1', 180, 5); typeSet(EX, 's2', 180, 6); typeSet(EX, 's3', 180, 9);
+ctx.autoSaveExercise(EX, false);
+eq('ties on weight break to the higher reps', ctx.sessions[EX][0].reps, 9);
+
+section('5. Three sets survive a reload');
+var persisted = storage.getItem('monk_sessions_v1');
+ok('sessions written to storage', !!persisted);
+ok('s3 present in what was written', persisted.indexOf('"s3"') > -1);
+boot();   // fresh load off storage, as a page refresh would
+eq('set count survived reload', ctx.setsFor(EX), 3);
+eq('s3 survived reload', JSON.stringify(ctx.sessions[EX][0].s3), JSON.stringify({ w: 180, r: 9 }));
+eq('third set box repopulated', ctx.document.getElementById('s3r-' + EX).value, '9');
+var st5 = attrEls['data-status=' + EX];
+ok('status chip shows all three sets', st5 && (st5.innerHTML.match(/180 ×/g) || []).length === 3,
+   st5 && st5.innerHTML);
+
+section('6. Switching back down to 2 leaves no orphaned third set');
+ctx.setExerciseSets(EX, 2);
+eq('back to 2', ctx.setsFor(EX), 2);
+var e6 = ctx.sessions[EX][0];
+ok('s3 dropped from the stored entry', !('s3' in e6), JSON.stringify(e6));
+eq('best set recomputed across the remaining two', e6.reps, 6);
+var st6 = attrEls['data-status=' + EX];
+ok('status chip shows two sets, not three',
+   st6 && (st6.innerHTML.match(/180 ×/g) || []).length === 2, st6 && st6.innerHTML);
+eq('set-count key cleaned up rather than storing a default',
+   JSON.parse(storage.getItem('monk_setcounts_v1'))[EX], undefined);
+noThrow('render after switching down', function () { ctx.renderAllRowStates(); ctx.renderProgressView(); });
+
+section('7. Warm-up logging is stored, and is not working volume');
+reset();
+storage.setItem('monk_lift_days_v1', '4');
+boot();
+EX = anExercise();
+typeWarmup(EX, 0, 95, 5);
+typeWarmup(EX, 1, 135, 3);
+ctx.commitWarmups(EX);
+var wuRaw = storage.getItem('monk_warmup_logs_v1');
+ok('warm-up store written', !!wuRaw);
+var wuKey = ev('warmupKey(EX_BY_ID["' + EX + '"])');
+eq('first warm-up set stored', JSON.stringify(JSON.parse(wuRaw)[wuKey][0]), JSON.stringify({ w: 95, r: 5 }));
+eq('second warm-up set stored', JSON.stringify(JSON.parse(wuRaw)[wuKey][1]), JSON.stringify({ w: 135, r: 3 }));
+eq('unused third slot is null', JSON.parse(wuRaw)[wuKey][2], null);
+// The whole point: none of this may register as logged work.
+eq('no session entry created by warm-ups', storage.getItem('monk_sessions_v1'), null);
+eq('sessions object still empty', Object.keys(ctx.sessions).length, 0);
+eq('warm-ups did not touch the aims store', storage.getItem('monk_aims_v1'), null);
+var progHTML = (els['progressView'] || { innerHTML: '' }).innerHTML;
+ok('progress view shows no logged work from warm-ups alone', progHTML.indexOf('95') === -1, progHTML.slice(0, 160));
+noThrow('ring renders with warm-ups but no working sets', function () { if (ctx.renderRing) ctx.renderRing(); });
+
+section('8. Warm-up log survives a reload, and clears cleanly');
+boot();
+eq('warm-up weight repopulated', ctx.document.getElementById('wu0w-' + EX).value, '95');
+eq('warm-up reps repopulated', ctx.document.getElementById('wu0r-' + EX).value, '5');
+eq('storedWarmups returns the stored pair',
+   JSON.stringify(ctx.storedWarmups(ev('EX_BY_ID["' + EX + '"]'))[1]), JSON.stringify({ w: 135, r: 3 }));
+typeWarmup(EX, 0, '', ''); typeWarmup(EX, 1, '', '');
+ctx.commitWarmups(EX);
+eq('cleared back to empty drops the key rather than storing nulls',
+   JSON.parse(storage.getItem('monk_warmup_logs_v1'))[wuKey], undefined);
+// A warm-up with reps but no weight is still a warm-up.
+typeWarmup(EX, 0, '', 10);
+ctx.commitWarmups(EX);
+eq('reps-only warm-up is kept, weight null',
+   JSON.stringify(JSON.parse(storage.getItem('monk_warmup_logs_v1'))[wuKey][0]),
+   JSON.stringify({ w: null, r: 10 }));
+
+section('9. Both render paths get three sets — same generator, not a copy');
+reset(); boot();
+// The 6-day path fills its hand-written .lift-rows hosts from liftRowHTML, and
+// the shorter splits build #altPlan from the same function. One generator, so
+// three-set capability cannot land on one path and miss the other.
+var sixDayEx = ev('EXERCISES.filter(function(e){return e.day==="chest";})[0].id');
+var sixHTML = ev('liftRowHTML(EX_BY_ID["' + sixDayEx + '"])');
+ok('6-day path row has a third set slot', sixHTML.indexOf('id="s3w-' + sixDayEx + '"') > -1);
+ok('6-day path row has the set-count control', sixHTML.indexOf('id="sc3-' + sixDayEx + '"') > -1);
+ok('6-day path row has warm-up logging', sixHTML.indexOf('id="wu0w-' + sixDayEx + '"') > -1);
+storage.setItem('monk_lift_days_v1', '4'); boot();
+var altEx = anExercise();
+var altHTML = ev('liftRowHTML(EX_BY_ID["' + altEx + '"])');
+ok('shorter-split row has a third set slot', altHTML.indexOf('id="s3w-' + altEx + '"') > -1);
+ok('shorter-split row has the set-count control', altHTML.indexOf('id="sc3-' + altEx + '"') > -1);
+ok('shorter-split row has warm-up logging', altHTML.indexOf('id="wu0w-' + altEx + '"') > -1);
+eq('the 6-day host is filled by the same generator',
+   /host\.innerHTML[\s\S]{0,160}liftRowHTML/.test(html), true);
+
+section('10. Backup carries the new stores, and restore tolerates their absence');
+reset();
+storage.setItem('monk_lift_days_v1', '4');
+boot(); EX = anExercise();
+ctx.setExerciseSets(EX, 3);
+typeWarmup(EX, 0, 95, 5); ctx.commitWarmups(EX);
+var exported = null;
+ctx.Blob = function (parts) { exported = parts[0]; };
+noThrow('exportData runs', function () { ctx.exportData(); });
+var backup = JSON.parse(exported);
+eq('backup carries set counts', backup.setCounts[EX], 3);
+ok('backup carries warm-up logs', !!backup.warmupLogs[ev('warmupKey(EX_BY_ID["' + EX + '"])')]);
+// An older backup file predates both keys entirely.
+reset(); boot();
+var oldBackup = { app: 'monk-mode', sessions: {}, maxes: { squat: 300 }, week: 0 };
+noThrow('restoring a backup with neither new key', function () {
+  ctx.sessions = oldBackup.sessions || {};
+  if (oldBackup.setCounts && typeof oldBackup.setCounts === 'object') ctx.setCounts = oldBackup.setCounts;
+  if (oldBackup.warmupLogs && typeof oldBackup.warmupLogs === 'object') ctx.warmupLogs = oldBackup.warmupLogs;
+  ctx.renderAllRowStates(); ctx.renderProgressView();
+});
+eq('older backup leaves everything at the 2-set default', ctx.setsFor(anExercise()), 2);
+
+section('11. Rep-range explanations — one per exercise, rendered on both paths');
+var allEx = ev('EXERCISES.map(function(e){return {id:e.id,tag:e.tag,range:e.repRange.join("-"),why:e.repWhy};})');
+eq('42 exercises', allEx.length, 42);
+eq('every exercise has a repWhy', allEx.filter(function (e) { return !e.why || !String(e.why).trim(); }).length, 0);
+var whys = allEx.map(function (e) { return e.why; });
+eq('no two exercises share the same sentence', new Set(whys).size, 42);
+var wc = whys.map(function (w) { return w.trim().split(/\s+/).length; });
+ok('all sentences are one short line (8-16 words)',
+   Math.min.apply(null, wc) >= 8 && Math.max.apply(null, wc) <= 16,
+   'min ' + Math.min.apply(null, wc) + ', max ' + Math.max.apply(null, wc));
+// The isolation tag spans 6-10 through 15-20, so a tag-level template would show
+// up as one sentence reused across wildly different ranges. Check the widest case.
+var iso = allEx.filter(function (e) { return e.tag === 'isolation'; });
+eq('isolation really does span the widest spread', new Set(iso.map(function (e) { return e.range; })).size > 4, true);
+eq('isolation sentences are all distinct', new Set(iso.map(function (e) { return e.why; })).size, iso.length);
+// Spot checks: the reasoning has to match the movement, not the category.
+function whyOf(id) { return (allEx.filter(function (e) { return e.id === id; })[0] || {}).why || ''; }
+ok('ab wheel explains low reps at bodyweight', /bodyweight|form breaks/i.test(whyOf('ab-wheel')), whyOf('ab-wheel'));
+ok('seated calf names the soleus', /soleus/i.test(whyOf('seated-calf')), whyOf('seated-calf'));
+ok('face pulls name the cuff', /cuff|rotator/i.test(whyOf('face-pulls')), whyOf('face-pulls'));
+ok('bench explains heavy low reps', /strength|CNS/i.test(whyOf('flat-bb-bench')), whyOf('flat-bb-bench'));
+ok('nordic curl explains its eccentric', /eccentric/i.test(whyOf('nordic-curl')), whyOf('nordic-curl'));
+// Rendered, not just present in the config — and on both paths, one generator.
+storage.clear(); boot();
+var sixWhy = ev('liftRowHTML(EX_BY_ID["flat-bb-bench"])');
+ok('6-day path renders the caption', sixWhy.indexOf('class="lift-rep-why"') > -1);
+ok('6-day path renders that exercise\'s own sentence', sixWhy.indexOf(whyOf('flat-bb-bench')) > -1);
+storage.setItem('monk_lift_days_v1', '4'); boot();
+var altId = anExercise();
+var altWhy = ev('liftRowHTML(EX_BY_ID["' + altId + '"])');
+ok('shorter-split path renders the caption', altWhy.indexOf('class="lift-rep-why"') > -1);
+ok('shorter-split path renders that exercise\'s own sentence', altWhy.indexOf(whyOf(altId)) > -1);
+ok('caption sits under the rep count, above the variant chips',
+   altWhy.indexOf('lift-sets-reps') < altWhy.indexOf('lift-rep-why'));
+ok('caption is not inside .lift-note',
+   altWhy.indexOf('lift-rep-why') < altWhy.indexOf('class="lift-note"'));
+
+console.log('\n' + pass + ' passed, ' + fail + ' failed');
+process.exit(fail ? 1 : 0);
