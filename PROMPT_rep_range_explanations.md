@@ -51,14 +51,28 @@ missing field renders nothing rather than an empty box.
 Suites: `check.js` both blocks parse, `onb.js` 71/0, `compat.js` 86/0, `sets.js` 86/0
 (69 previous + 17 new), both CSS style blocks brace-balanced.
 
-**Not verified in a browser.** Chrome's renderer has been wedged for this origin since the
-date-picker incident in `PROMPT_browser_verification.md` and did not recover. So verify
-step 3's visual half — that the caption "doesn't visually compete with the row's actual
-inputs" — is a design intent backed by the type scale above, **not something seen on
-screen**. Worth a real look, along with the still-outstanding items in
-`PROMPT_browser_verification.md` (480px modal, dropdown regression) and
-`PROMPT_flexible_sets.md` (the 2/3 control and the warm-up block). Three builds of visual
-claims are now stacked up unverified.
+**Seen on screen after all — and it was wrong (fixed in build 7.38).** The caption rendered
+in the right place (under "2 sets × 5–8 reps", above the SWAP chips, reading "Five to eight
+keeps the load heavy enough for real strength without burying your CNS"), but measured
+**2.05:1 contrast** against the row against 5.41:1 for the rep count above it. Well under
+the 4.5:1 AA threshold — `--dim` at 11px is unreadable body copy on a phone in a gym, which
+defeats the point of writing 42 real explanations. "Keep it minor" had been taken too
+literally in colour when the hierarchy should come from size and position. Changed to
+`--muted` (5.41:1 measured), keeping 11px and the position. The type scale still makes it a
+caption; it is just legible now.
+
+Getting a browser at all required finding why one had been unavailable for three builds:
+`sw.js:14` posts a RELOAD message to every client on activate and `index.html:7345` calls
+`window.location.reload()` in response, so on a fresh profile the page reloads itself right
+after `load` and the extension's `document_idle` wait never resolves. Proven rather than
+assumed — `manifest.json` on the same origin answers instantly while `index.html` times out
+at 45s. The workaround is to serve a copy with no `sw.js` beside it, so registration 404s
+into its own `.catch`. Unrelated but noticed while there: `sw.js:10` deletes every cache key
+on activate including its own, so the cache-first path never has anything to hit. Neither
+was touched — the reload is presumably deliberate — but both are worth a decision.
+
+Still outstanding elsewhere: `PROMPT_browser_verification.md` (480px modal, dropdown
+regression) and `PROMPT_flexible_sets.md` (the 2/3 control and the warm-up block on screen).
 
 ---
 
