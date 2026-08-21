@@ -2534,7 +2534,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.44</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.45</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2596,7 +2596,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.44</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.45</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2817,7 +2817,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.44</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.45</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -2826,6 +2826,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div class="run-setup-bar" id="runSetupBar">
     <button class="run-setup-toggle" id="runSetupToggle" onclick="toggleRunSetup()">− Race setup</button>
     <div class="run-setup-summary" id="runSetupSummary"></div>
+  </div>
+
+  <!-- Strava sync: connect once, then this silently pulls recent runs on
+       every app open (see initStravaSync). The button doubles as a manual
+       "sync now" once connected. -->
+  <div class="run-setup-bar" id="stravaBar">
+    <button class="run-setup-toggle" id="stravaConnectBtn" onclick="onStravaButtonClick()">⚡ Connect Strava</button>
+    <div class="run-setup-summary" id="stravaStatus"></div>
   </div>
 
   <div class="run-form" id="runForm">
@@ -2927,7 +2935,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.44</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.45</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -5705,6 +5713,193 @@ body.training-mode select.run-input { color: #F1EFE1; }
     idbSet('runLogs', runLogs);
   }
 
+  //     STRAVA SYNC — Garmin pushes to Strava automatically once you finish a
+  //     run, so this app never talks to Garmin directly, it talks to Strava.
+  //     Token exchange/refresh/activity fetch all go through /api/strava.js
+  //     (a Vercel serverless function) so the client secret never sits in this
+  //     public repo. Filling in an empty runLogs date from Strava never
+  //     overwrites a manually-typed entry — miles you typed yourself always
+  //     wins. This only works on the Vercel deploy (GitHub Pages has no
+  //     serverless functions to hit); paste your Strava API app's Client ID
+  //     below once you've created one at strava.com/settings/api.
+  const STRAVA_CLIENT_ID = '';   // <-- paste your Strava app's Client ID here
+  const STRAVA_TOKEN_KEY = 'monk_strava_token_v1';
+  const STRAVA_SYNC_KEY = 'monk_strava_last_sync_v1';
+  var stravaToken = null;   // { access_token, refresh_token, expires_at, athlete_id }
+
+  function loadStravaToken() {
+    try { stravaToken = JSON.parse(localStorage.getItem(STRAVA_TOKEN_KEY)) || null; } catch(e) { stravaToken = null; }
+  }
+  function persistStravaToken(t) {
+    stravaToken = t;
+    try { localStorage.setItem(STRAVA_TOKEN_KEY, JSON.stringify(t)); } catch(e) {}
+  }
+  function clearStravaToken() {
+    stravaToken = null;
+    try { localStorage.removeItem(STRAVA_TOKEN_KEY); } catch(e) {}
+    try { localStorage.removeItem(STRAVA_SYNC_KEY); } catch(e) {}
+  }
+
+  function updateStravaUI(msg) {
+    var btn = document.getElementById('stravaConnectBtn');
+    var status = document.getElementById('stravaStatus');
+    if (!btn) return;
+    var connected = !!(stravaToken && stravaToken.refresh_token);
+    btn.textContent = connected ? '⚡ Sync Strava' : '⚡ Connect Strava';
+    if (status) {
+      status.textContent = msg || (connected
+        ? 'Connected — auto-pulls new runs on open'
+        : (STRAVA_CLIENT_ID ? 'Not connected' : 'Setup incomplete — see PROMPT_strava_sync.md'));
+    }
+  }
+
+  function stravaRedirectUri() {
+    return location.origin + location.pathname;
+  }
+
+  function connectStrava() {
+    if (!STRAVA_CLIENT_ID) {
+      updateStravaUI('Strava app not configured yet');
+      return;
+    }
+    var state = Math.random().toString(36).slice(2);
+    try { sessionStorage.setItem('strava_oauth_state', state); } catch(e) {}
+    var url = 'https://www.strava.com/oauth/authorize'
+      + '?client_id=' + encodeURIComponent(STRAVA_CLIENT_ID)
+      + '&redirect_uri=' + encodeURIComponent(stravaRedirectUri())
+      + '&response_type=code&approval_prompt=auto&scope=activity:read_all'
+      + '&state=' + state;
+    location.href = url;
+  }
+
+  function disconnectStrava() {
+    clearStravaToken();
+    updateStravaUI();
+  }
+
+  function onStravaButtonClick() {
+    if (stravaToken && stravaToken.refresh_token) { syncStravaRuns(); }
+    else { connectStrava(); }
+  }
+
+  //  Runs once at load. Picks the OAuth redirect (?code=...&state=...) off the
+  //  URL if present, exchanges it, and always strips those params afterward so
+  //  a page refresh never re-submits a used code.
+  function handleStravaRedirect() {
+    var params = new URLSearchParams(location.search);
+    var code = params.get('code');
+    var state = params.get('state');
+    var err = params.get('error');
+    if (!code && !err) return;
+    var expected = null;
+    try { expected = sessionStorage.getItem('strava_oauth_state'); } catch(e) {}
+    try { sessionStorage.removeItem('strava_oauth_state'); } catch(e) {}
+    var cleanUrl = location.origin + location.pathname + location.hash;
+    try { history.replaceState({}, '', cleanUrl); } catch(e) {}
+    if (err) { updateStravaUI('Strava connection declined'); return; }
+    if (!expected || state !== expected) { updateStravaUI('Connect failed — try again'); return; }
+    exchangeStravaCode(code);
+  }
+
+  function exchangeStravaCode(code) {
+    updateStravaUI('Connecting…');
+    fetch('/api/strava', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'exchange', code: code })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (data && data.access_token) {
+        persistStravaToken({
+          access_token: data.access_token, refresh_token: data.refresh_token,
+          expires_at: data.expires_at, athlete_id: data.athlete_id
+        });
+        updateStravaUI('Connected');
+        syncStravaRuns();
+      } else {
+        updateStravaUI('Connect failed — try again');
+      }
+    }).catch(function() { updateStravaUI('Connect failed — network error'); });
+  }
+
+  //  Refreshes the access token first if it's expired (or about to be), then
+  //  hands the caller a usable access token, or null if reconnecting is needed.
+  function ensureStravaAccessToken(cb) {
+    var t = stravaToken;
+    if (!t || !t.refresh_token) { cb(null); return; }
+    var now = Math.floor(Date.now() / 1000);
+    if (t.expires_at && t.expires_at > now + 60) { cb(t.access_token); return; }
+    fetch('/api/strava', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'refresh', refresh_token: t.refresh_token })
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (data && data.access_token) {
+        persistStravaToken({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token || t.refresh_token,
+          expires_at: data.expires_at, athlete_id: t.athlete_id
+        });
+        cb(data.access_token);
+      } else {
+        cb(null);
+      }
+    }).catch(function() { cb(null); });
+  }
+
+  //  Pulls the last 35 days of Strava activities (matches the window the
+  //  mileage/summary code already uses elsewhere) and fills in any runLogs
+  //  date that's still empty. Never touches a date that already has miles
+  //  logged — manual entries always win over Strava's.
+  function syncStravaRuns() {
+    if (!stravaToken || !stravaToken.refresh_token) return;
+    ensureStravaAccessToken(function(accessToken) {
+      if (!accessToken) { updateStravaUI('Reconnect needed'); return; }
+      var afterTs = Math.floor(addDays(startOfToday(), -35).getTime() / 1000);
+      fetch('/api/strava', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'activities', access_token: accessToken, after: afterTs })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        var activities = (data && data.activities) || [];
+        var added = 0;
+        activities.forEach(function(a) {
+          if (!a || (a.type !== 'Run' && a.sport_type !== 'Run')) return;
+          var d = a.start_date_local ? a.start_date_local.slice(0, 10) : null;
+          if (!d) return;
+          var existing = runLogs[d];
+          if (existing && existing.miles) return;   // a real logged run is never overwritten
+          runLogs[d] = {
+            miles: Math.round((a.distance / 1609.34) * 100) / 100,
+            secs: Math.round(a.moving_time || a.elapsed_time || 0),
+            hr: a.average_heartrate ? Math.round(a.average_heartrate) : (existing ? existing.hr : null),
+            feel: existing ? existing.feel : null,
+            source: 'strava'
+          };
+          added++;
+        });
+        if (added) {
+          persistRunLogs();
+          if (typeof renderRunPlan === 'function') renderRunPlan();
+        }
+        try { localStorage.setItem(STRAVA_SYNC_KEY, String(Date.now())); } catch(e) {}
+        updateStravaUI(added ? (added + ' run' + (added > 1 ? 's' : '') + ' synced') : 'Up to date');
+      }).catch(function() { updateStravaUI('Sync failed — will retry next time you open the app'); });
+    });
+  }
+
+  //  Called once from INIT. Loads any saved token, finishes an in-flight OAuth
+  //  redirect if there is one, then auto-syncs at most once every 20 minutes
+  //  so opening the app doesn't hammer the Strava API on every tab focus.
+  function initStravaSync() {
+    loadStravaToken();
+    handleStravaRedirect();
+    updateStravaUI();
+    if (stravaToken && stravaToken.refresh_token) {
+      var last = parseInt(localStorage.getItem(STRAVA_SYNC_KEY)) || 0;
+      if (Date.now() - last > 20 * 60 * 1000) syncStravaRuns();
+    }
+  }
+
   //     DATE HELPERS — everything local-midnight so a date input never slips a
   //     day across a timezone boundary
   function parseDateKey(s) {
@@ -7176,6 +7371,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     renderAllRowStates();
     renderProgressView();
     initRunPlan();
+    initStravaSync();
     renderWeekCalendar();
     // Bring the ring, the Overview tabs and the calendar header onto the
     // restored week — the markup hardcodes week 1 as active otherwise.
