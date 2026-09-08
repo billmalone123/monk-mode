@@ -2551,7 +2551,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.46</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.47</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2613,7 +2613,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.46</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.47</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2834,7 +2834,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.46</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.47</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -2952,7 +2952,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.46</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.47</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3038,6 +3038,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="settings-save-btn" onclick="saveMaxes()">Save &amp; Enter</button>
     <button class="settings-cancel-btn" onclick="skipMaxes()">Skip for now</button>
     <button class="settings-danger-btn" id="resetMaxesBtn" onclick="resetMaxes()">Reset 1RMs</button>
+    <button class="settings-danger-btn" id="startCycleBtn" onclick="startNewCycle()">Start New Cycle</button>
   </div>
 </div>
 <!-- RUN SETUP MODAL — onboarding step 2. Its fields are a front end for the Run
@@ -5048,6 +5049,18 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //  gone just because the live max field was cleared. Append-only; nothing
   //  reads this yet, but a value this destructive is worth keeping.
   const PR_HISTORY_KEY = 'monk_pr_history_v1';
+  //  One record per completed/abandoned cycle: split, dates, starting and
+  //  ending maxes, and the FULL sessions object for that cycle moved wholesale
+  //  (not copied) — sessions are keyed one-entry-per-week per exercise, so a
+  //  new cycle reusing week 0..9 would silently overwrite the old entries if
+  //  they weren't moved out first. Append-only, oldest first.
+  const SPLIT_HISTORY_KEY = 'monk_split_history_v1';
+  //  The maxes as first entered for the CURRENT live cycle — captured once,
+  //  right after Start New Cycle, by commitMaxes() below. Not the same as
+  //  userMaxes (which drifts as PRs improve) or PR_HISTORY_KEY (which logs
+  //  the values being cleared, not the ones replacing them). Read back out
+  //  when this cycle is itself archived, to become that record's startingMaxes.
+  const CYCLE_START_MAXES_KEY = 'monk_cycle_start_maxes_v1';
   var MAX_LABELS = { squat: 'squat', bench: 'bench', ohp: 'dumbbell press' };
   var MAX_KEYS = ['squat', 'bench', 'ohp'];
   var userMaxes = {};
@@ -5127,10 +5140,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
       });
     });
     setMaxesMode('1rm');
-    //  Onboarding has nothing to reset yet — only show the button once this
-    //  screen is reopened later to edit already-entered maxes.
+    //  Onboarding has nothing to reset or archive yet — only show these once
+    //  this screen is reopened later to edit already-entered maxes.
     var resetBtn = document.getElementById('resetMaxesBtn');
     if (resetBtn) resetBtn.style.display = _onboarding ? 'none' : '';
+    var cycleBtn = document.getElementById('startCycleBtn');
+    if (cycleBtn) cycleBtn.style.display = _onboarding ? 'none' : '';
     var m = document.getElementById('maxesModal');
     if (m) m.style.display = 'flex';
     setTimeout(function() { var f = document.getElementById('max-squat'); if (f) f.focus(); }, 80);
@@ -5144,6 +5159,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     the same rule as set logging: debounced while typing, immediate on blur.
   //     Save & Enter is now purely the forward action.
   var _maxesT = null;
+  //  Set by startNewCycle() right after it clears userMaxes; cleared the first
+  //  time this fires with at least one value committed. That first commit IS
+  //  the new cycle's starting maxes — everyday edits later in the same cycle
+  //  must not re-snapshot and overwrite it.
+  var _newCycleReentry = false;
   function commitMaxes() {
     clearTimeout(_maxesT);
     //  Estimate mode writes its result into the same 1RM field below, so there
@@ -5158,6 +5178,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
     persistMaxes();
     updateMaxChips();
     renderAllRowStates();
+    if (_newCycleReentry && Object.keys(userMaxes).length) {
+      _newCycleReentry = false;
+      try {
+        localStorage.setItem(CYCLE_START_MAXES_KEY, JSON.stringify({
+          maxes: JSON.parse(JSON.stringify(userMaxes)), date: todayKey()
+        }));
+      } catch(e) {}
+    }
   }
   function onMaxInput() {
     clearTimeout(_maxesT);
@@ -5197,6 +5225,56 @@ body.training-mode select.run-input { color: #F1EFE1; }
     persistMaxes();
     updateMaxChips();
     renderAllRowStates();
+    openMaxesModal();
+  }
+  //  Archives the current cycle (sessions + maxes) so a new one can start clean
+  //  without losing anything. The escape hatch Reset 1RMs is not: that only
+  //  clears maxes, sessions stay live and week-collide with whatever comes
+  //  next. This moves sessions out wholesale, snapshots both ends of the
+  //  maxes for the record, then resets exactly like a fresh cycle would.
+  function startNewCycle() {
+    var total = totalTrainWeeks();
+    var isFinalWeek = currentTrainWeek >= total - 1;
+    var msg = isFinalWeek
+      ? 'Start a new cycle? This archives your current sessions and 1RMs so you can start fresh, and resets the week back to 1. Nothing is deleted.'
+      : 'You\'re on Week ' + (currentTrainWeek + 1) + ' of ' + total + '. Starting a new cycle now will archive an incomplete cycle. Continue? Nothing is deleted.';
+    if (!confirm(msg)) return;
+    syncFromDisk();
+    var splitHist = [];
+    try { splitHist = JSON.parse(localStorage.getItem(SPLIT_HISTORY_KEY)) || []; } catch(e) { splitHist = []; }
+    var startSnap = null;
+    try { startSnap = JSON.parse(localStorage.getItem(CYCLE_START_MAXES_KEY)); } catch(e) { startSnap = null; }
+    //  No real record for a cycle that predates this feature — estimate week
+    //  0's Monday from today's position in the split, local date (not UTC,
+    //  which todayKey()'s own format avoids for the same reason).
+    function localDateKey(d) {
+      function pad(n) { return n < 10 ? '0' + n : '' + n; }
+      return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    }
+    splitHist.push({
+      splitLabel: activeSplit().label,
+      liftDays: liftDaysPerWeek,
+      startDate: (startSnap && startSnap.date) || localDateKey(trainWeekMonday(0)),
+      endDate: todayKey(),
+      startingMaxes: (startSnap && startSnap.maxes) || null,
+      endingMaxes: JSON.parse(JSON.stringify(userMaxes)),
+      sessions: JSON.parse(JSON.stringify(sessions))
+    });
+    try { localStorage.setItem(SPLIT_HISTORY_KEY, JSON.stringify(splitHist)); } catch(e) {}
+    //  Same PR snapshot Reset 1RMs takes, tagged with the split it closes out.
+    if (Object.keys(userMaxes).length) {
+      var prHist = [];
+      try { prHist = JSON.parse(localStorage.getItem(PR_HISTORY_KEY)) || []; } catch(e) { prHist = []; }
+      prHist.push({ date: new Date().toISOString(), maxes: JSON.parse(JSON.stringify(userMaxes)), splitLabel: activeSplit().label });
+      try { localStorage.setItem(PR_HISTORY_KEY, JSON.stringify(prHist)); } catch(e) {}
+    }
+    sessions = {};
+    saveSessions();
+    userMaxes = {};
+    persistMaxes();
+    _newCycleReentry = true;
+    setTrainWeek(0);
+    updateMaxChips();
     openMaxesModal();
   }
   function updateMaxChips() {
@@ -5344,11 +5422,16 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function exportData() {
     var archive = null;
     try { archive = JSON.parse(localStorage.getItem(ARCHIVE_KEY)); } catch(e) {}
+    var splitHistory = null;
+    try { splitHistory = JSON.parse(localStorage.getItem(SPLIT_HISTORY_KEY)); } catch(e) {}
+    var cycleStartMaxes = null;
+    try { cycleStartMaxes = JSON.parse(localStorage.getItem(CYCLE_START_MAXES_KEY)); } catch(e) {}
     var data = {
       app: 'monk-mode', exportedAt: todayKey(),
       sessions: sessions, maxes: userMaxes, week: currentTrainWeek, archive: archive,
       variants: variantChoice, aims: aimChoice, runPlan: runPlan, runLogs: runLogs, liftDays: liftDaysPerWeek,
-      setCounts: setCounts, warmupLogs: warmupLogs, customEx: customEx
+      setCounts: setCounts, warmupLogs: warmupLogs, customEx: customEx,
+      splitHistory: splitHistory, cycleStartMaxes: cycleStartMaxes
     };
     var blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
     var a = document.createElement('a');
@@ -5370,6 +5453,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
         saveSessions();
         if (data.maxes) { userMaxes = data.maxes; persistMaxes(); }
         if (data.archive) { try { localStorage.setItem(ARCHIVE_KEY, JSON.stringify(data.archive)); } catch(e) {} }
+        if (Array.isArray(data.splitHistory)) { try { localStorage.setItem(SPLIT_HISTORY_KEY, JSON.stringify(data.splitHistory)); } catch(e) {} }
+        if (data.cycleStartMaxes && typeof data.cycleStartMaxes === 'object') { try { localStorage.setItem(CYCLE_START_MAXES_KEY, JSON.stringify(data.cycleStartMaxes)); } catch(e) {} }
         if (typeof data.week === 'number' && data.week >= 0) {
           currentTrainWeek = data.week;
           try { localStorage.setItem(TRAIN_WEEK_KEY, data.week); } catch(e) {}
@@ -5431,7 +5516,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '<div class="prog-note">' + noteHTML + '</div></div>';
   }
 
-  function progressCardHTML(ex, hist) {
+  function progressCardHTML(ex, hist, earliestByExId) {
     var latest = hist[hist.length - 1];
     var prev = hist.length > 1 ? hist[hist.length - 2] : null;
     var rows = '';
@@ -5455,7 +5540,18 @@ body.training-mode select.run-input { color: #F1EFE1; }
       '<span style="font-family:var(--font-mono);font-size:12px">' + trend + '</span> — working weight, last ' + Math.min(hist.length, 4) + ' sessions', false);
     var start = hist[0].weight;
     var total = latest.weight - start;
-    rows += progRow('All-Time', (total > 0 ? '+' : '') + total + ' lbs', 'Started at ' + start + ' · now ' + latest.weight, false);
+    //  earliestByExId comes from archived cycles only, always older than the
+    //  live one — so its presence is exactly the signal that there IS an
+    //  all-time figure distinct from this cycle's own. Nothing to split for a
+    //  user on their first cycle: same single row as before this feature.
+    var allTimeStart = (earliestByExId && earliestByExId[ex.id] !== undefined) ? earliestByExId[ex.id] : start;
+    if (allTimeStart === start) {
+      rows += progRow('All-Time', (total > 0 ? '+' : '') + total + ' lbs', 'Started at ' + start + ' · now ' + latest.weight, false);
+    } else {
+      var allTimeTotal = latest.weight - allTimeStart;
+      rows += progRow('This Cycle', (total > 0 ? '+' : '') + total + ' lbs', 'Started at ' + start + ' · now ' + latest.weight, false);
+      rows += progRow('All-Time', (allTimeTotal > 0 ? '+' : '') + allTimeTotal + ' lbs', 'Started at ' + allTimeStart + ' · now ' + latest.weight, false);
+    }
     var fs = getFailureStats(hist);
     if (fs) {
       var fnote = 'top sets to failure over the last ' + fs.total + ' sessions.'
@@ -5472,15 +5568,35 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + rows + '</div>';
   }
 
+  //  Earliest logged weight per exercise across every ARCHIVED cycle (oldest
+  //  cycle wins per id, since archived cycles are always older than the live
+  //  one). Read fresh each render rather than cached — cheap, and it only
+  //  changes on Start New Cycle.
+  function earliestArchivedWeights() {
+    var out = {};
+    var splitHist = [];
+    try { splitHist = JSON.parse(localStorage.getItem(SPLIT_HISTORY_KEY)) || []; } catch(e) { splitHist = []; }
+    splitHist.forEach(function(cycle) {
+      var s = cycle && cycle.sessions;
+      if (!s) return;
+      Object.keys(s).forEach(function(exId) {
+        if (out[exId] !== undefined) return;
+        var h = s[exId];
+        if (h && h.length && h[0].weight != null) out[exId] = h[0].weight;
+      });
+    });
+    return out;
+  }
   function renderProgressView() {
     var host = document.getElementById('progressCards');
     if (!host) return;
+    var earliestByExId = earliestArchivedWeights();
     var cards = [];
     DAY_ORDER.forEach(function(dayId) {
       EXERCISES.forEach(function(ex) {
         if (ex.day !== dayId) return;
         var hist = getHistory(ex.id);
-        if (hist.length) cards.push(progressCardHTML(ex, hist));
+        if (hist.length) cards.push(progressCardHTML(ex, hist, earliestByExId));
       });
     });
     host.innerHTML = cards.length ? cards.join('')
