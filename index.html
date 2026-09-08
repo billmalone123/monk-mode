@@ -1516,6 +1516,23 @@
     transition: all 0.15s;
   }
   .settings-cancel-btn:hover { color: #C9C5B6; border-color: #46443E; }
+  .settings-danger-btn {
+    background: transparent;
+    color: var(--red);
+    border: none;
+    padding: 12px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 6px;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+  }
+  .settings-danger-btn:hover { opacity: 1; }
 
   /* Maxes mode toggle */
   .maxes-mode-toggle {
@@ -2534,7 +2551,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.45</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.46</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2596,7 +2613,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.45</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.46</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2817,7 +2834,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.45</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.46</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -2935,7 +2952,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.45</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.46</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3020,6 +3037,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <div class="settings-input-hint" id="maxes-epley-note" style="display:none;margin-bottom:22px;">Estimated with the Epley formula — 1RM = weight × (1 + reps ÷ 30). Accurate up to about 10 reps; past that it flatters you.</div>
     <button class="settings-save-btn" onclick="saveMaxes()">Save &amp; Enter</button>
     <button class="settings-cancel-btn" onclick="skipMaxes()">Skip for now</button>
+    <button class="settings-danger-btn" id="resetMaxesBtn" onclick="resetMaxes()">Reset 1RMs</button>
   </div>
 </div>
 <!-- RUN SETUP MODAL — onboarding step 2. Its fields are a front end for the Run
@@ -5026,6 +5044,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     MAXES — set on entry, editable anytime; they seed the starting aim on
   //     lifts with no history. Progression itself runs on logged sessions.
   const MAXES_KEY = 'monk_mode_maxes_v1';
+  //  Snapshots of userMaxes taken right before a reset, so an old PR is not
+  //  gone just because the live max field was cleared. Append-only; nothing
+  //  reads this yet, but a value this destructive is worth keeping.
+  const PR_HISTORY_KEY = 'monk_pr_history_v1';
   var MAX_LABELS = { squat: 'squat', bench: 'bench', ohp: 'dumbbell press' };
   var MAX_KEYS = ['squat', 'bench', 'ohp'];
   var userMaxes = {};
@@ -5105,6 +5127,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
       });
     });
     setMaxesMode('1rm');
+    //  Onboarding has nothing to reset yet — only show the button once this
+    //  screen is reopened later to edit already-entered maxes.
+    var resetBtn = document.getElementById('resetMaxesBtn');
+    if (resetBtn) resetBtn.style.display = _onboarding ? 'none' : '';
     var m = document.getElementById('maxesModal');
     if (m) m.style.display = 'flex';
     setTimeout(function() { var f = document.getElementById('max-squat'); if (f) f.focus(); }, 80);
@@ -5153,6 +5179,25 @@ body.training-mode select.run-input { color: #F1EFE1; }
     closeMaxesModal();
     if (_onboarding) { openRunSetupModal(); return; }
     goTab('training');
+  }
+  //  Destructive settings action, not a training-data edit: clears only the
+  //  three max fields. Sessions/logs live under SESSIONS_KEY and are never
+  //  touched here. Whatever was set is snapshotted to PR_HISTORY_KEY first,
+  //  same as any other value this codebase throws away — see the versioned-key
+  //  rule above commitMaxes(). Leaves the screen open, blank, ready to re-enter.
+  function resetMaxes() {
+    if (!confirm('This will clear all 1RM values. Continue?')) return;
+    if (Object.keys(userMaxes).length) {
+      var hist = [];
+      try { hist = JSON.parse(localStorage.getItem(PR_HISTORY_KEY)) || []; } catch(e) { hist = []; }
+      hist.push({ date: new Date().toISOString(), maxes: JSON.parse(JSON.stringify(userMaxes)) });
+      try { localStorage.setItem(PR_HISTORY_KEY, JSON.stringify(hist)); } catch(e) {}
+    }
+    userMaxes = {};
+    persistMaxes();
+    updateMaxChips();
+    renderAllRowStates();
+    openMaxesModal();
   }
   function updateMaxChips() {
     var chips = { squat: 'chip-squat', bench: 'chip-bench', ohp: 'chip-ohp' };
