@@ -2607,12 +2607,13 @@ body.training-mode select.run-input { color: #F1EFE1; }
       ⚙ Set Your Maxes
     </button>
     <div class="liftdays-wrap">
-      <span class="liftdays-label">Lift Days</span>
+      <span class="liftdays-label">Split</span>
       <div class="liftdays-group">
-        <button class="liftdays-btn" data-v="3" onclick="setLiftDays(3)">3</button>
-        <button class="liftdays-btn" data-v="4" onclick="setLiftDays(4)">4</button>
-        <button class="liftdays-btn" data-v="5" onclick="setLiftDays(5)">5</button>
-        <button class="liftdays-btn" data-v="6" onclick="setLiftDays(6)">6</button>
+        <button class="liftdays-btn" data-split="arnold" onclick="setSplit('arnold')">Arnold</button>
+        <button class="liftdays-btn" data-split="ppl" onclick="setSplit('ppl')">PPL</button>
+        <button class="liftdays-btn" data-split="pplul" onclick="setSplit('pplul')">PPLUL</button>
+        <button class="liftdays-btn" data-split="upper-lower" onclick="setSplit('upper-lower')">Upper/Lower</button>
+        <button class="liftdays-btn" data-split="full-body" onclick="setSplit('full-body')">Full Body</button>
       </div>
       <span class="liftdays-desc" id="liftDaysLabel"></span>
     </div>
@@ -3324,6 +3325,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
         idbSet('liftDays', liftDaysPerWeek);
       }
     });
+    idbGet('splitId').then(function(v) {
+      if (typeof v === 'string' && SPLIT_TEMPLATES[v]) {
+        var stored = null;
+        try { stored = localStorage.getItem(SPLIT_ID_KEY); } catch(e) {}
+        if (!stored && v !== activeSplitId) setSplit(v);
+      } else {
+        idbSet('splitId', activeSplitId);
+      }
+    });
     idbGet('trainWeek').then(function(idbWeek) {
       if (typeof idbWeek === 'number' && idbWeek >= 0) {
         var stored = parseInt(localStorage.getItem(TRAIN_WEEK_KEY), 10);
@@ -3376,20 +3386,50 @@ body.training-mode select.run-input { color: #F1EFE1; }
     idbSet('liftDays', liftDaysPerWeek);
   }
 
+  //  SPLIT PRESET — layered on top of the legacy day-count key. A save made
+  //  before presets existed carries only LIFT_DAYS_KEY; loadSplitId() maps
+  //  that onto the primary preset for the same day count so nobody's split
+  //  silently changes on first load after this update.
+  const SPLIT_ID_KEY = 'monk_split_id_v1';
+  var activeSplitId = 'arnold';
+  function loadSplitId() {
+    try {
+      var v = localStorage.getItem(SPLIT_ID_KEY);
+      if (v && SPLIT_TEMPLATES[v]) { activeSplitId = v; liftDaysPerWeek = SPLIT_TEMPLATES[v].days; return; }
+    } catch(e) {}
+    var presets = SPLIT_PRESETS_BY_DAYS[liftDaysPerWeek] || SPLIT_PRESETS_BY_DAYS[6];
+    activeSplitId = presets[0];
+  }
+  function persistSplitId() {
+    try { localStorage.setItem(SPLIT_ID_KEY, activeSplitId); } catch(e) {}
+    idbSet('splitId', activeSplitId);
+  }
+
   //  Day-of-week placement. Rest days are spread rather than clustered, and the
   //  weekend is kept clear of heavy lower-body work on the shorter templates so
   //  it never collides with the long run the merge rules already protect.
   //  Mon..Sun, seven slots, 'rest' wherever the template does not lift.
+  //  Keyed by splitId rather than day count, so two templates can share a day
+  //  count (arnold and ppl are both 6-day) and coexist as separate presets.
+  //  `days` is the day count every other part of the app still reads off
+  //  liftDaysPerWeek for (run-plan merge, etc.) — setSplit() keeps that
+  //  variable in sync with whichever template is active.
   const SPLIT_TEMPLATES = {
-    6: { label: 'Arnold Split', note: '3 on · 1 off · every group twice',
+    arnold: { days: 6, label: 'Arnold Split', note: '3 on · 1 off · every group twice',
          week: ['chest','arms','legs','rest','chest-b','arms-b','legs-b'] },
-    5: { label: 'Push / Pull / Legs + Upper / Lower', note: 'PPLUL · every group twice',
+    ppl: { days: 6, label: 'PPL (Push / Pull / Legs)', note: '6 on · rest Thu · every group twice',
+         week: ['push','pull','legs','rest','push-b','pull-b','legs-b'] },
+    pplul: { days: 5, label: 'Push / Pull / Legs + Upper / Lower', note: 'PPLUL · every group twice',
          week: ['push','pull','legs','upper','lower','rest','rest'] },
-    4: { label: 'Upper / Lower', note: 'Upper and lower each twice',
+    'upper-lower': { days: 4, label: 'Upper / Lower', note: 'Upper and lower each twice',
          week: ['upper-a','lower-a','rest','upper-b','lower-b','rest','rest'] },
-    3: { label: 'Full Body', note: 'Every group three times',
+    'full-body': { days: 3, label: 'Full Body', note: 'Every group three times',
          week: ['fb-a','rest','fb-b','rest','fb-c','rest','rest'] }
   };
+  //  Which presets are offered at each day count, primary (legacy-default)
+  //  preset first — that first entry is what an old liftDays-only save
+  //  (no splitId yet) migrates onto.
+  const SPLIT_PRESETS_BY_DAYS = { 6: ['arnold','ppl'], 5: ['pplul'], 4: ['upper-lower'], 3: ['full-body'] };
 
   //  Day definitions. The 6-day template routes straight through the original
   //  pools by id so its output is unchanged; the shorter templates name their
@@ -3412,8 +3452,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
     'push':    { tag:'P',  title:'Push', focus:'Chest, shoulders, triceps. One exercise per pressing pattern.',
       ex:['flat-bb-bench','incline-mach-press','seated-ohp','lateral-raise-mach','tricep-pushdown','oh-tricep-ext'] },
+    'push-b':  { tag:'P2', title:'Push B', focus:'Second push session — incline and Arnold-press angles, different stimulus than Push A.',
+      ex:['incline-bb-bench','machine-chest-press','arnold-press','cable-lat-raise','machine-dip','skull-crusher'] },
     'pull':    { tag:'PL', title:'Pull', focus:'Back and biceps, with the rear-delt work every pressing week needs.',
       ex:['lat-pulldown','seated-cable-row','chest-supp-row','ez-bar-curl','cable-curl','face-pulls'] },
+    'pull-b':  { tag:'PL2',title:'Pull B', focus:'Second pull session — row and pulldown angles from Pull A, plus rear delts and arms.',
+      ex:['machine-row','sa-cable-row','straight-arm-pd','rear-delt-fly','incline-db-curl','hammer-curl'] },
     'upper':   { tag:'U',  title:'Upper', focus:'Second upper session — incline and Arnold variants, different angles from Push and Pull.',
       ex:['incline-bb-bench','machine-row','arnold-press','sa-cable-row','cable-face-pull','incline-db-curl','machine-dip'] },
     'lower':   { tag:'L',  title:'Lower', pool:'legs-b' },
@@ -3426,7 +3470,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       ex:['leg-press','machine-chest-press','machine-row','arnold-press','incline-db-curl','cable-face-pull'] }
   };
 
-  function activeSplit() { return SPLIT_TEMPLATES[liftDaysPerWeek] || SPLIT_TEMPLATES[6]; }
+  function activeSplit() { return SPLIT_TEMPLATES[activeSplitId] || SPLIT_TEMPLATES.arnold; }
   //  The single phrasing for the active split. The hero eyebrow, the Train tab
   //  control and the Run tab readout all render this, so none of them can drift
   //  into describing a split the app is not actually running.
@@ -4262,7 +4306,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function renderDaySections() {
     var alt = document.getElementById('altPlan');
     var orig = document.getElementById('planNav');
-    var sixDay = (liftDaysPerWeek === 6);
+    //  Only Arnold uses the original static markup (#planNav / #plan with its
+    //  hardcoded chest/arms/legs ids). Every other preset — including PPL,
+    //  despite also being 6 days — renders through the generated #altPlan
+    //  path below, same as the 3/4/5-day splits always have.
+    var sixDay = (activeSplitId === 'arnold');
     if (orig) orig.style.display = sixDay ? '' : 'none';
     document.querySelectorAll('#plan > .plan-content').forEach(function(el) {
       el.style.display = sixDay ? '' : 'none';
@@ -4310,17 +4358,21 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (b) b.classList.add('active');
   }
 
-  function setLiftDays(v) {
-    v = parseInt(v, 10);
-    if (isNaN(v)) v = 6;
-    liftDaysPerWeek = Math.max(3, Math.min(6, v));
+  //  The real entry point now: picks a named preset directly, so Arnold and
+  //  PPL (both 6-day) are distinct choices rather than collapsing onto one
+  //  "6 days" slot the way day-count alone could.
+  function setSplit(id) {
+    if (!SPLIT_TEMPLATES[id]) id = 'arnold';
+    activeSplitId = id;
+    liftDaysPerWeek = SPLIT_TEMPLATES[id].days;
+    persistSplitId();
     persistLiftDays();
-    updateLiftDaysUI();
     updateLiftDaysUI();
     renderWeekSelectors();
     renderDaySections();
     renderAllRowStates();
     renderProgressView();
+    if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
     if (typeof renderWeekCalendar === 'function') renderWeekCalendar();
     if (typeof renderCalendarTab === 'function') renderCalendarTab();
     if (typeof renderRunPlan === 'function') renderRunPlan();
@@ -4328,9 +4380,27 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (typeof enhanceAllInputs === 'function') enhanceAllInputs();
   }
 
+  //  Kept for backward compat: old backups/imports and any stray caller still
+  //  pass a bare day count. Maps onto a preset for that count, preferring
+  //  whichever preset is already active if it still fits (so nudging within
+  //  a day count you're already on doesn't reset Arnold<->PPL, etc.).
+  //  Always resolves to the primary (legacy-default) preset for that count —
+  //  a bare day count with no splitId only ever comes from data that predates
+  //  presets, and back then day-count 6 always meant Arnold. It must not be
+  //  influenced by whatever preset happens to be live already, or restoring
+  //  an old "6 days" backup while on PPL would silently keep PPL instead of
+  //  restoring the Arnold the backup actually represents.
+  function setLiftDays(v) {
+    v = parseInt(v, 10);
+    if (isNaN(v)) v = 6;
+    v = Math.max(3, Math.min(6, v));
+    var presets = SPLIT_PRESETS_BY_DAYS[v] || SPLIT_PRESETS_BY_DAYS[6];
+    setSplit(presets[0]);
+  }
+
   function updateLiftDaysUI() {
     document.querySelectorAll('.liftdays-btn').forEach(function(b) {
-      b.classList.toggle('on', parseInt(b.dataset.v, 10) === liftDaysPerWeek);
+      b.classList.toggle('on', b.dataset.split === activeSplitId);
     });
     var lbl = document.getElementById('liftDaysLabel');
     if (lbl) lbl.textContent = activeSplit().label + ' · ' + activeSplit().note;
@@ -5452,6 +5522,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       app: 'monk-mode', exportedAt: todayKey(),
       sessions: sessions, maxes: userMaxes, week: currentTrainWeek, archive: archive,
       variants: variantChoice, aims: aimChoice, runPlan: runPlan, runLogs: runLogs, liftDays: liftDaysPerWeek,
+      splitId: activeSplitId,
       setCounts: setCounts, warmupLogs: warmupLogs, customEx: customEx,
       splitHistory: splitHistory, cycleStartMaxes: cycleStartMaxes
     };
@@ -5494,7 +5565,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
           persistRunPlan();
           if (typeof initRunPlan === 'function') initRunPlan();
         }
-        if (typeof data.liftDays === 'number' && data.liftDays >= 3 && data.liftDays <= 6) {
+        if (typeof data.splitId === 'string' && SPLIT_TEMPLATES[data.splitId]) {
+          setSplit(data.splitId);
+        } else if (typeof data.liftDays === 'number' && data.liftDays >= 3 && data.liftDays <= 6) {
           setLiftDays(data.liftDays);
         }
         if (data.runLogs && typeof data.runLogs === 'object') {
@@ -5782,7 +5855,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     day at all. Each surface now clears only its own, and the shorter
   //     splits route to switchAltDay() and persist the same way.
   function switchDay(dayId) {
-    if (liftDaysPerWeek !== 6) {
+    if (activeSplitId !== 'arnold') {
       switchAltDay(dayId);
       try { localStorage.setItem(LAST_DAY_KEY, dayId); } catch(e) {}
       if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
@@ -7542,6 +7615,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       navigator.storage.persist().catch(function(){});
     }
     loadLiftDays();
+    loadSplitId();
     loadMaxes();
     loadVariants();
     loadAims();
@@ -8331,8 +8405,17 @@ if ('serviceWorker' in navigator) {
 
 // ── HERO RING ──────────────────────────────────────────────────────────────
 function hasLogsForDay(dayId, week) {
-  return EXERCISES.some(function(ex) {
-    return ex.day === dayId && (sessions[ex.id] || []).some(function(e) { return e.week === week; });
+  //  Goes through splitDayExercises() rather than filtering EXERCISES by
+  //  ex.day === dayId directly: split-day ids like 'push' or 'upper-a' never
+  //  appear as an exercise's own .day (that's always one of the six base
+  //  pools — chest/arms/legs/chest-b/arms-b/legs-b), so a raw filter here
+  //  always came back empty for every split shorter than Arnold's 6 days.
+  //  splitDayExercises() already knows how to resolve both pool-backed and
+  //  explicit ex-list days into real exercises.
+  var exs = (typeof splitDayExercises === 'function') ? splitDayExercises(dayId)
+    : EXERCISES.filter(function(ex) { return ex.day === dayId; });
+  return exs.some(function(ex) {
+    return (sessions[ex.id] || []).some(function(e) { return e.week === week; });
   });
 }
 
