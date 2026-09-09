@@ -1866,6 +1866,49 @@ body.training-mode footer { display: none; }
   font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
   cursor: pointer; white-space: nowrap;
 }
+/* ── QUICK LOG ───────────────────────────────────────────────────────────── */
+.quicklog-picker {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px; max-width: 560px;
+}
+.quicklog-lift-btn {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 30px 16px; font-family: var(--font-display);
+  font-weight: 800; font-size: 22px; letter-spacing: 0.02em; cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.09s ease;
+}
+.quicklog-lift-btn:hover { border-color: var(--accent); background: var(--surface-2); }
+.quicklog-lift-btn:active { transform: scale(0.97); }
+.quicklog-form { max-width: 400px; }
+.quicklog-back {
+  background: transparent; border: none; color: var(--muted); cursor: pointer;
+  font-family: var(--font-body); font-size: 13px; padding: 0; margin-bottom: 18px;
+}
+.quicklog-back:hover { color: var(--text); }
+.quicklog-form-title {
+  font-family: var(--font-display); font-weight: 800; font-size: 26px;
+  color: var(--accent); margin-bottom: 18px;
+}
+.quicklog-field { margin-bottom: 16px; }
+.quicklog-field label {
+  display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+}
+.quicklog-field input {
+  width: 100%; box-sizing: border-box; background: var(--bg); border: 1px solid var(--field);
+  color: var(--text); font-family: var(--font-body); font-size: 17px;
+  padding: 12px 14px; border-radius: 5px; outline: none;
+}
+.quicklog-field input:focus { border-color: var(--accent); }
+.quicklog-save-btn {
+  width: 100%; background: var(--accent); color: #1A1A18; border: none; border-radius: 5px;
+  padding: 14px; font-family: var(--font-display); font-weight: 700; font-size: 15px;
+  letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; margin-top: 4px;
+}
+.quicklog-save-btn:active { transform: scale(0.98); }
+.quicklog-confirm {
+  margin-top: 14px; min-height: 18px; font-size: 14px; font-weight: 700; color: var(--accent);
+}
 .run-readonly {
   background: var(--surface); border: 1px solid var(--border); color: var(--text);
   padding: 12px 14px; font-family: var(--font-display); font-size: 16px; font-weight: 800;
@@ -2991,6 +3034,43 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
 </div>
 
+<div id="tab-quicklog" class="tab-main">
+
+<section id="quicklogSection">
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.47</span></div>
+  <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
+  <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
+    For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
+  </p>
+
+  <div id="quicklogPicker" class="quicklog-picker">
+    <button class="quicklog-lift-btn" onclick="selectQuickLogLift('flat-bb-bench')">Bench</button>
+    <button class="quicklog-lift-btn" onclick="selectQuickLogLift('bb-squat')">Squat</button>
+    <button class="quicklog-lift-btn" onclick="selectQuickLogLift('seated-ohp')">OHP</button>
+  </div>
+
+  <div id="quicklogForm" class="quicklog-form" style="display:none">
+    <button class="quicklog-back" onclick="resetQuickLog()">&#8249; Choose a different lift</button>
+    <div class="quicklog-form-title" id="quicklogFormTitle"></div>
+    <div class="quicklog-field">
+      <label for="qlWeight">Weight (lbs)</label>
+      <input type="number" inputmode="decimal" id="qlWeight" placeholder="e.g. 225">
+    </div>
+    <div class="quicklog-field">
+      <label for="qlReps">Reps</label>
+      <input type="number" inputmode="numeric" id="qlReps" placeholder="e.g. 5">
+    </div>
+    <div class="quicklog-field">
+      <label for="qlRpe">RPE <span style="opacity:0.6;font-weight:400;text-transform:none;letter-spacing:0">(optional, 1–10)</span></label>
+      <input type="number" inputmode="numeric" id="qlRpe" placeholder="e.g. 8" min="1" max="10">
+    </div>
+    <button class="quicklog-save-btn" onclick="saveQuickLog()">Save Set</button>
+    <div class="quicklog-confirm" id="quicklogConfirm"></div>
+  </div>
+</section>
+
+</div>
+
 <!-- MAXES MODAL -->
 <div class="settings-modal-overlay" id="maxesModal" style="display:none;">
   <div class="settings-modal-card" id="maxesModalCard">
@@ -4069,7 +4149,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var best = null;
     for (var i = 0; i < hist.length; i++) {
       var e = hist[i];
-      if (e.week == null || e.week >= wk || !e.weight || isDeloadWeek(e.week)) continue;
+      if (e.week == null || e.week >= wk || !e.weight || isDeloadWeek(e.week) || e.quickLog) continue;
       if (want && entryVariant(e, ex) !== want) continue;
       if (!best || e.week > best.week) best = e;
     }
@@ -4093,7 +4173,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     }
     // 2) Already logged THIS week — keep that as the working weight
     for (var j = hist.length - 1; j >= 0; j--) {
-      if (hist[j].week === wk && hist[j].weight)
+      if (hist[j].week === wk && hist[j].weight && !hist[j].quickLog)
         return { mode: 'baseline', weight: hist[j].weight, reps: ex.repRange[0], msg: 'Logged this week at ' + hist[j].weight + ' lbs.' };
     }
     // 3) No prior weeks logged — seed the starting weight from your max
@@ -4464,7 +4544,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var want = ex ? activeVariant(ex) : null;
     for (var i = hist.length - 1; i >= 0; i--) {
       var e = hist[i];
-      if (e.week === wk && e.weight != null && (!want || entryVariant(e, ex) === want)) return e;
+      if (e.week === wk && e.weight != null && !e.quickLog && (!want || entryVariant(e, ex) === want)) return e;
     }
     return null;
   }
@@ -4729,9 +4809,13 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var t = todayKey();
     // Key the entry by TRAINING WEEK, not by date — so logging one week never
     // overwrites another (even when you back-fill several weeks on the same day).
+    // Quick Log entries (quickLog: true) are skipped here — they're appended,
+    // one-off single sets, never the structured week slot this search is
+    // replacing, so a quick log can never be silently overwritten by (or
+    // silently swallow) a real logged session for the same week.
     var idx = -1;
     for (var i = 0; i < hist.length; i++) {
-      if (hist[i].week === currentTrainWeek) { idx = i; break; }
+      if (hist[i].week === currentTrainWeek && !hist[i].quickLog) { idx = i; break; }
     }
     var prev = idx >= 0 ? hist[idx] : null;
     if (!set1 && !set2 && !set3) {
@@ -4798,6 +4882,93 @@ body.training-mode select.run-input { color: #F1EFE1; }
     renderProgressView();
     if (typeof renderRing === 'function') renderRing();
     if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
+  }
+
+  //     QUICK LOG — a fast one-set surface for the anchor lifts, separate from
+  //     the structured Train tab flow. Entries are appended (never found-and-
+  //     replaced by week the way autoSaveExercise's do) directly into the same
+  //     sessions[exId] array a structured session writes to, tagged
+  //     quickLog: true. That single flag is what keeps this additive: every
+  //     week-matching lookup the structured flow depends on (prevWeekEntry,
+  //     getSessionTarget, entryForWeek, autoSaveExercise's own week search,
+  //     hasLogsForDay) explicitly skips quickLog entries, so a quick set can
+  //     never be silently overwritten by, or masquerade as, a real logged
+  //     session. Nothing else needs to change for these to show up in
+  //     workout history / progress cards / all-time PRs — getHistory() and
+  //     progressCardHTML() just read the array as-is.
+  var QUICK_LOG_LIFTS = { 'flat-bb-bench': 'Bench', 'bb-squat': 'Squat', 'seated-ohp': 'OHP' };
+  var _quickLogExId = null;
+
+  function resetQuickLog() {
+    _quickLogExId = null;
+    var picker = document.getElementById('quicklogPicker');
+    var form = document.getElementById('quicklogForm');
+    if (picker) picker.style.display = '';
+    if (form) form.style.display = 'none';
+    var confirmEl = document.getElementById('quicklogConfirm');
+    if (confirmEl) confirmEl.textContent = '';
+  }
+
+  function selectQuickLogLift(exId) {
+    var ex = EX_BY_ID[exId];
+    if (!ex) return;
+    _quickLogExId = exId;
+    var picker = document.getElementById('quicklogPicker');
+    var form = document.getElementById('quicklogForm');
+    if (picker) picker.style.display = 'none';
+    if (form) form.style.display = '';
+    var title = document.getElementById('quicklogFormTitle');
+    if (title) title.textContent = QUICK_LOG_LIFTS[exId] || ex.name;
+    ['qlWeight', 'qlReps', 'qlRpe'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    var confirmEl = document.getElementById('quicklogConfirm');
+    if (confirmEl) confirmEl.textContent = '';
+    var wEl = document.getElementById('qlWeight');
+    if (wEl) wEl.focus();
+  }
+
+  function quickLogSet(exId, weight, reps, rpe) {
+    var ex = EX_BY_ID[exId];
+    if (!ex) return null;
+    syncFromDisk();
+    var hist = sessions[exId] = sessions[exId] || [];
+    var entry = { d: todayKey(), week: currentTrainWeek, weight: weight, reps: reps, quickLog: true };
+    if (rpe != null) entry.rpe = rpe;
+    hist.push(entry);
+    saveSessions();
+    renderProgressView();
+    if (typeof renderRing === 'function') renderRing();
+    return entry;
+  }
+
+  function saveQuickLog() {
+    var exId = _quickLogExId;
+    var ex = EX_BY_ID[exId];
+    var confirmEl = document.getElementById('quicklogConfirm');
+    if (!ex) return;
+    var wEl = document.getElementById('qlWeight');
+    var rEl = document.getElementById('qlReps');
+    var rpeEl = document.getElementById('qlRpe');
+    var w = parseFloat(wEl.value);
+    var r = parseInt(rEl.value, 10);
+    var rpeRaw = rpeEl.value;
+    var rpe = rpeRaw === '' ? null : parseFloat(rpeRaw);
+    if (isNaN(w) || w <= 0 || isNaN(r) || r <= 0) {
+      if (confirmEl) confirmEl.textContent = 'Enter a weight and reps to save.';
+      return;
+    }
+    if (rpe != null && (isNaN(rpe) || rpe < 1 || rpe > 10)) {
+      if (confirmEl) confirmEl.textContent = 'RPE must be between 1 and 10.';
+      return;
+    }
+    quickLogSet(exId, w, r, rpe);
+    var label = QUICK_LOG_LIFTS[exId] || ex.name;
+    var msg = 'Logged: ' + label + ' ' + w + 'x' + r + (rpe != null ? ' @ RPE ' + rpe : '');
+    if (confirmEl) confirmEl.textContent = '✓ ' + msg;
+    wEl.value = ''; rEl.value = ''; rpeEl.value = '';
+    wEl.focus();
   }
 
     //     REST TIMER
@@ -7714,7 +7885,7 @@ function advanceToNextWeek() {
   updateWeekCompleteBanner();
 }
 
-var MAIN_TABS = ['info','training','running','calendar'];
+var MAIN_TABS = ['info','training','running','calendar','quicklog'];
 
 //     TOOLTIPS — one bubble element reused for every trigger, appended to
 //     document.body rather than nested beside the trigger, so a scrolling or
@@ -8193,7 +8364,8 @@ function buildNavMenu() {
     { id: 'info', label: 'Overview', primary: true },
     { id: 'training', label: 'Train' },
     { id: 'running', label: 'Run' },
-    { id: 'calendar', label: 'Calendar' }
+    { id: 'calendar', label: 'Calendar' },
+    { id: 'quicklog', label: 'Quick Log' }
   ];
   el.innerHTML = head + items.map(function(it) {
     return '<button class="navmenu-item' + (it.primary ? ' primary' : '') + '" role="menuitem"'
@@ -8343,6 +8515,9 @@ function goTab(t) {
       // Opens on whatever week is selected app-wide, never resets to week 1
       if (typeof renderCalendarTab === 'function') renderCalendarTab();
     }
+    else if (t === 'quicklog') {
+      if (typeof resetQuickLog === 'function') resetQuickLog();
+    }
     else if (typeof renderRunPlan === 'function') renderRunPlan();
   }
   // Renders above may have rebuilt inputs and indicators
@@ -8415,7 +8590,10 @@ function hasLogsForDay(dayId, week) {
   var exs = (typeof splitDayExercises === 'function') ? splitDayExercises(dayId)
     : EXERCISES.filter(function(ex) { return ex.day === dayId; });
   return exs.some(function(ex) {
-    return (sessions[ex.id] || []).some(function(e) { return e.week === week; });
+    //  Quick Log entries don't count as "did the planned day" — they're a
+    //  one-off anchor-lift set, not the structured session this (and the
+    //  next-unlogged-day picker) is tracking.
+    return (sessions[ex.id] || []).some(function(e) { return e.week === week && !e.quickLog; });
   });
 }
 
