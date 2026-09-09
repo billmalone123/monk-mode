@@ -1920,6 +1920,40 @@ body.training-mode footer { display: none; }
 .quicklog-recent-row:last-child { border-bottom: 1px solid var(--border); }
 .quicklog-recent-notes { font-size: 12px; color: var(--muted); margin-top: 3px; }
 .quicklog-recent-empty { color: var(--muted); font-size: 13px; padding: 10px 0; }
+/* ── MAINTENANCE MODE ────────────────────────────────────────────────────── */
+/* Calm slate blue on purpose — this is a deliberate, healthy choice (taper,
+   deload, recovery), not a warning. Never red/orange. */
+.maintenance-banner {
+  display: flex; align-items: center; gap: 9px; background: rgba(110,136,168,0.14);
+  border: 1px solid rgba(110,136,168,0.4); color: #A9BEDA; border-radius: 6px;
+  padding: 11px 14px; margin-bottom: 16px; font-size: 13px; line-height: 1.5;
+}
+.maintenance-banner-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #7C93B3; flex: 0 0 auto;
+}
+.maintenance-badge {
+  display: inline-block; background: rgba(110,136,168,0.16); border: 1px solid rgba(110,136,168,0.4);
+  color: #A9BEDA; font-family: var(--font-display); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px;
+  align-self: center;
+}
+.maintenance-mode-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 14px 16px; margin: 4px 0 18px;
+}
+.maintenance-mode-title { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--text); }
+.maintenance-mode-sub { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; max-width: 300px; }
+.maintenance-toggle {
+  flex: 0 0 auto; width: 46px; height: 26px; border-radius: 13px; border: 1px solid var(--field);
+  background: var(--surface); position: relative; cursor: pointer; padding: 0; transition: background 0.15s, border-color 0.15s;
+}
+.maintenance-toggle-knob {
+  position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--muted); transition: transform 0.15s, background 0.15s;
+}
+.maintenance-toggle.on { background: rgba(110,136,168,0.35); border-color: #7C93B3; }
+.maintenance-toggle.on .maintenance-toggle-knob { background: #A9BEDA; transform: translateX(20px); }
 .run-readonly {
   background: var(--surface); border: 1px solid var(--border); color: var(--text);
   padding: 12px 14px; font-family: var(--font-display); font-size: 16px; font-weight: 800;
@@ -2620,7 +2654,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.49</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.50</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2660,6 +2694,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="settings-open-btn" id="settingsOpenBtn" onclick="openMaxesModal()">
       ⚙ Set Your Maxes
     </button>
+    <span class="maintenance-badge" id="maintenanceBadge" style="display:none">Maintenance Mode</span>
     <div class="liftdays-wrap">
       <span class="liftdays-label">Split</span>
       <div class="liftdays-group">
@@ -2683,13 +2718,16 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.49</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.50</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
     <span style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Training Week</span>
     <div style="display:flex;gap:4px;flex-wrap:wrap;" id="trainWeekSelector"></div>
+  </div>
+  <div id="maintenanceBanner" class="maintenance-banner" style="display:none">
+    <span class="maintenance-banner-dot"></span> Maintenance Mode — reduced volume &amp; weight this week. Logging is never restricted.
   </div>
   <div id="weekCompleteBanner" class="week-complete-banner" style="display:none">
     <div class="week-complete-text">Week <span id="weekCompleteNum"></span> complete — every lifting day logged.</div>
@@ -2908,7 +2946,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.49</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.50</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3026,7 +3064,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.49</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.50</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3048,7 +3086,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.49</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.50</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3158,6 +3196,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <div class="settings-input-hint" id="maxes-epley-note" style="display:none;margin-bottom:22px;">Estimated with the Epley formula — 1RM = weight × (1 + reps ÷ 30). Accurate up to about 10 reps; past that it flatters you.</div>
     <button class="settings-save-btn" onclick="saveMaxes()">Save &amp; Enter</button>
     <button class="settings-cancel-btn" onclick="skipMaxes()">Skip for now</button>
+    <div class="maintenance-mode-row" id="maintenanceModeRow">
+      <div class="maintenance-mode-label">
+        <div class="maintenance-mode-title">Maintenance Mode</div>
+        <div class="maintenance-mode-sub">Reduced volume &amp; weight for taper, deload, or a recovery week — never restricts logging.</div>
+      </div>
+      <button class="maintenance-toggle" id="maintenanceToggleBtn" role="switch" aria-checked="false" onclick="toggleMaintenanceMode()">
+        <span class="maintenance-toggle-knob"></span>
+      </button>
+    </div>
     <button class="settings-danger-btn" id="resetMaxesBtn" onclick="resetMaxes()">Reset 1RMs</button>
     <button class="settings-danger-btn" id="startCycleBtn" onclick="startNewCycle()">Start New Cycle</button>
   </div>
@@ -3435,6 +3482,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
         idbSet('splitId', activeSplitId);
       }
     });
+    idbGet('maintenanceMode').then(function(v) {
+      if (typeof v === 'boolean') {
+        var stored = null;
+        try { stored = localStorage.getItem(MAINTENANCE_MODE_KEY); } catch(e) {}
+        if (stored === null && v !== maintenanceMode) { maintenanceMode = v; persistMaintenanceMode(); updateMaintenanceModeUI(); renderDaySections(); renderAllRowStates(); }
+      } else {
+        idbSet('maintenanceMode', maintenanceMode);
+      }
+    });
     idbGet('trainWeek').then(function(idbWeek) {
       if (typeof idbWeek === 'number' && idbWeek >= 0) {
         var stored = parseInt(localStorage.getItem(TRAIN_WEEK_KEY), 10);
@@ -3504,6 +3560,24 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function persistSplitId() {
     try { localStorage.setItem(SPLIT_ID_KEY, activeSplitId); } catch(e) {}
     idbSet('splitId', activeSplitId);
+  }
+
+  //  MAINTENANCE MODE — a display-time overlay, not a data mutation. Nothing
+  //  here ever writes to setCounts, EXERCISES, or userMaxes; every render
+  //  site that shows a prescription reads through effectiveTarget()/
+  //  effectiveSets()/effectiveRepRangeText() below instead of the raw
+  //  getSessionTarget()/setsFor()/repRangeText(), so turning it off makes
+  //  prescriptions revert automatically — there's nothing to undo. Logging
+  //  itself (the actual set-count buttons, the input rows, autoSaveExercise)
+  //  never reads these wrappers and is never restricted by this flag.
+  const MAINTENANCE_MODE_KEY = 'monk_maintenance_mode_v1';
+  var maintenanceMode = false;
+  function loadMaintenanceMode() {
+    try { maintenanceMode = localStorage.getItem(MAINTENANCE_MODE_KEY) === '1'; } catch(e) {}
+  }
+  function persistMaintenanceMode() {
+    try { localStorage.setItem(MAINTENANCE_MODE_KEY, maintenanceMode ? '1' : '0'); } catch(e) {}
+    idbSet('maintenanceMode', maintenanceMode);
   }
 
   //  Day-of-week placement. Rest days are spread rather than clustered, and the
@@ -4219,6 +4293,62 @@ body.training-mode select.run-input { color: #F1EFE1; }
       msg: 'First session — establish a baseline in the ' + repRangeText(ex) + ' rep range.' };
   }
 
+  //     MAINTENANCE MODE — display wrappers. Each one falls straight through
+  //     to the normal function when the mode is off, or the exercise isn't
+  //     one of the three anchor lifts, so nothing about a normal session
+  //     changes.
+  //
+  //     Anchor lift = identified by id, NOT by ex.maxKey — maxKey is set on
+  //     37 of the 40 exercises in the catalog (it's the general "seed this
+  //     accessory's starting weight off a fraction of squat/bench/ohp"
+  //     mechanism, e.g. lat-pulldown seeds off 55% of the BENCH max). Only
+  //     flat-bb-bench, bb-squat and seated-ohp are prescribed AT their own
+  //     1RM (maxPct 0.8, maxKey === the lift itself) — those three are what
+  //     "main lift" means here, same three Quick Log tracks.
+  var MAINTENANCE_ANCHOR_IDS = ['flat-bb-bench', 'bb-squat', 'seated-ohp'];
+  function isAnchorLift(ex) { return !!ex && MAINTENANCE_ANCHOR_IDS.indexOf(ex.id) !== -1; }
+  var MAINTENANCE_MAIN_LIFT_PCT = 0.725; // midpoint of the requested 70-75% of 1RM
+  //  Anchor lifts never drop below 2 sets — the point is staying grooved on
+  //  the pattern, and 1 set of bench doesn't do that. Accessories can drop
+  //  to 1.
+  function effectiveSets(exId) {
+    var n = setsFor(exId);
+    if (!maintenanceMode) return n;
+    var floor = isAnchorLift(EX_BY_ID[exId]) ? 2 : 1;
+    return Math.max(floor, Math.round(n * 0.65));
+  }
+  //  Only ever changes anchor lifts: nothing in the catalog's accessory rep
+  //  ranges dips below 6 today, so this is a no-op for them regardless.
+  function effectiveRepRange(ex) {
+    if (!maintenanceMode || !isAnchorLift(ex)) return ex.repRange;
+    var lo = ex.repRange[0], hi = ex.repRange[1];
+    if (lo < 6) { lo = 6; hi = Math.max(hi, 8); }
+    hi = Math.min(hi, 10);
+    if (hi < lo) hi = lo;
+    return [lo, hi];
+  }
+  function effectiveRepRangeText(ex) {
+    var r = effectiveRepRange(ex);
+    return r[0] === r[1] ? '' + r[0] : r[0] + '–' + r[1];
+  }
+  //  Weight/reps override for anchor lifts — replaces whatever the normal
+  //  progression branch decided ("regardless of what the original
+  //  programming called for"), not just the no-history fallback. Accessories
+  //  pass the normal target through untouched, same as effectiveRepRange.
+  function effectiveTarget(ex, hist) {
+    var target = getSessionTarget(ex, hist);
+    if (!maintenanceMode || !isAnchorLift(ex)) return target;
+    var range = effectiveRepRange(ex);
+    var reps = target.reps == null || target.reps < range[0] ? range[0] : target.reps;
+    var mw = userMaxes[ex.maxKey] > 0 ? roundToNearestFive(userMaxes[ex.maxKey] * MAINTENANCE_MAIN_LIFT_PCT) : null;
+    if (mw == null) {
+      return { mode: target.mode, weight: target.weight, reps: reps,
+        msg: 'Maintenance Mode — set your ' + MAX_LABELS[ex.maxKey] + ' max for an accurate target. ' + target.msg };
+    }
+    return { mode: 'maintenance', weight: mw, reps: reps,
+      msg: 'Maintenance Mode — ' + mw + ' lbs (~' + Math.round(MAINTENANCE_MAIN_LIFT_PCT * 100) + '% of your ' + MAX_LABELS[ex.maxKey] + ' max), ' + range[0] + '–' + range[1] + ' reps.' };
+  }
+
   //     Stall = 3 straight failure-marked sessions, same weight, no rep gain
   function getStallState(hist) {
     var hard = hist.filter(function(e) { return e.failure === true; });
@@ -4360,12 +4490,17 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   //     RENDER LIFT ROWS FROM CONFIG
   function liftRowHTML(ex) {
-    var range = repRangeText(ex) + ' reps' + (ex.repsSuffix || '');
+    //  n is the REAL set count — it drives the sets-3 class, which is what
+    //  makes the third log-input row exist at all. Maintenance mode must
+    //  never touch that (logging is never restricted); only the displayed
+    //  caption (dispN/range) reflects the maintenance-adjusted prescription.
     var n = setsFor(ex.id);
+    var dispN = effectiveSets(ex.id);
+    var range = effectiveRepRangeText(ex) + ' reps' + (ex.repsSuffix || '');
     return '<div class="lift-row' + (n === 3 ? ' sets-3' : '') + '" id="row-' + ex.id + '" onclick="toggleNote(this)">'
       + '<div>'
       + '<div class="lift-name" id="name-' + ex.id + '">' + activeVariant(ex) + '</div>'
-      + '<div class="lift-sets-reps" data-setslabel="' + ex.id + '">' + n + ' sets × ' + range + '</div>'
+      + '<div class="lift-sets-reps" data-setslabel="' + ex.id + '">' + dispN + ' sets × ' + range + '</div>'
       //  Caption under the rep count, not a control and not part of .lift-note.
       //  Static content off EXERCISES, so it never needs restoring or persisting.
       + (ex.repWhy ? '<div class="lift-rep-why">' + ex.repWhy + '</div>' : '')
@@ -4517,6 +4652,33 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (eyebrow) eyebrow.textContent = splitSummary();
   }
 
+  function toggleMaintenanceMode() {
+    maintenanceMode = !maintenanceMode;
+    persistMaintenanceMode();
+    updateMaintenanceModeUI();
+    //  Every prescription on screen routes through effectiveTarget()/
+    //  effectiveSets()/effectiveRepRangeText() now, so a full re-render is
+    //  what makes the toggle take effect immediately rather than on next
+    //  navigation. Nothing here touches setCounts, sessions, or userMaxes.
+    renderDaySections();
+    renderAllRowStates();
+  }
+
+  //  Syncs the banner (Train tab), the badge (next to Set Your Maxes), and
+  //  the switch itself (inside the maxes modal) to the current flag. Called
+  //  on init and every toggle — never assume any one of the three is current.
+  function updateMaintenanceModeUI() {
+    var banner = document.getElementById('maintenanceBanner');
+    if (banner) banner.style.display = maintenanceMode ? '' : 'none';
+    var badge = document.getElementById('maintenanceBadge');
+    if (badge) badge.style.display = maintenanceMode ? '' : 'none';
+    var toggleBtn = document.getElementById('maintenanceToggleBtn');
+    if (toggleBtn) {
+      toggleBtn.classList.toggle('on', maintenanceMode);
+      toggleBtn.setAttribute('aria-checked', maintenanceMode ? 'true' : 'false');
+    }
+  }
+
   function currentInputWeight(ex, target) {
     var inp = document.getElementById('w-' + ex.id);
     var v = inp ? parseFloat(inp.value) : NaN;
@@ -4528,7 +4690,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     four lines: two warm-up sets and both working sets, recalculated live
   function renderWarmupsAndTargets(ex) {
     var hist = getHistory(ex.id);
-    var target = getSessionTarget(ex, hist);
+    var target = effectiveTarget(ex, hist);
     var w = currentInputWeight(ex, target);
     var rInp = document.getElementById('r-' + ex.id);
     var rv = rInp ? parseInt(rInp.value, 10) : NaN;
@@ -4554,10 +4716,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
       var wTxt = w ? w + ' lbs' : '—';
       var repsTxt;
       if (!isNaN(rv) && rv > 0) repsTxt = rv + ' goal';
-      else if (target.mode === 'baseline') repsTxt = repRangeText(ex);
+      else if (target.mode === 'baseline') repsTxt = effectiveRepRangeText(ex);
       else repsTxt = target.reps + ' goal';
       var lines = '';
-      for (var i = 1; i <= setsFor(ex.id); i++) {
+      for (var i = 1; i <= effectiveSets(ex.id); i++) {
         lines += '<div class="target-line">Set ' + i + ' · ' + wTxt + ' × ' + repsTxt + '</div>';
       }
       tEl.innerHTML = '<div class="target-msg">' + target.msg + '</div>' + lines;
@@ -4578,7 +4740,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   function renderLiftRowState(ex) {
     var hist = getHistory(ex.id);
-    var target = getSessionTarget(ex, hist);
+    var target = effectiveTarget(ex, hist);
     var wkEntry = entryForWeek(hist, currentTrainWeek, ex);   // this week + this variant
     var loggedThisWeek = !!wkEntry;
     var prevRef = prevWeekEntry(hist, currentTrainWeek, ex);   // last working week, same variant
@@ -4760,6 +4922,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   //  Paint only — the value itself already went to storage.
   function applySetCountUI(ex) {
+    //  n (real) drives the sets-3 class and the 2/3 button state — the actual
+    //  logging surface, which maintenance mode never touches. The label text
+    //  is the only thing that shows the maintenance-adjusted count.
     var n = setsFor(ex.id);
     var row = document.getElementById('row-' + ex.id);
     if (row) row.classList.toggle('sets-3', n === 3);
@@ -4768,7 +4933,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (b2) b2.classList.toggle('on', n === 2);
     if (b3) b3.classList.toggle('on', n === 3);
     var lbl = document.querySelector('[data-setslabel="' + ex.id + '"]');
-    if (lbl) lbl.textContent = n + ' sets × ' + repRangeText(ex) + ' reps' + (ex.repsSuffix || '');
+    if (lbl) lbl.textContent = effectiveSets(ex.id) + ' sets × ' + effectiveRepRangeText(ex) + ' reps' + (ex.repsSuffix || '');
   }
 
   //     WARM-UP SET LOGGING — same debounce-plus-blur-commit as everything else.
@@ -5493,6 +5658,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (resetBtn) resetBtn.style.display = _onboarding ? 'none' : '';
     var cycleBtn = document.getElementById('startCycleBtn');
     if (cycleBtn) cycleBtn.style.display = _onboarding ? 'none' : '';
+    var maintRow = document.getElementById('maintenanceModeRow');
+    if (maintRow) maintRow.style.display = _onboarding ? 'none' : '';
+    updateMaintenanceModeUI();
     var m = document.getElementById('maxesModal');
     if (m) m.style.display = 'flex';
     setTimeout(function() { var f = document.getElementById('max-squat'); if (f) f.focus(); }, 80);
@@ -5777,7 +5945,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       app: 'monk-mode', exportedAt: todayKey(),
       sessions: sessions, maxes: userMaxes, week: currentTrainWeek, archive: archive,
       variants: variantChoice, aims: aimChoice, runPlan: runPlan, runLogs: runLogs, liftDays: liftDaysPerWeek,
-      splitId: activeSplitId,
+      splitId: activeSplitId, maintenanceMode: maintenanceMode,
       setCounts: setCounts, warmupLogs: warmupLogs, customEx: customEx,
       splitHistory: splitHistory, cycleStartMaxes: cycleStartMaxes
     };
@@ -5824,6 +5992,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
           setSplit(data.splitId);
         } else if (typeof data.liftDays === 'number' && data.liftDays >= 3 && data.liftDays <= 6) {
           setLiftDays(data.liftDays);
+        }
+        //  Absent on any backup older than this feature — leaves maintenanceMode
+        //  at whatever it already was rather than forcing it off.
+        if (typeof data.maintenanceMode === 'boolean') {
+          maintenanceMode = data.maintenanceMode;
+          persistMaintenanceMode();
+          updateMaintenanceModeUI();
+          renderDaySections();
         }
         if (data.runLogs && typeof data.runLogs === 'object') {
           runLogs = data.runLogs;
@@ -7879,6 +8055,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     }
     loadLiftDays();
     loadSplitId();
+    loadMaintenanceMode();
     loadMaxes();
     loadVariants();
     loadAims();
@@ -7889,6 +8066,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     loadCustomExercises();
     updateMaxChips();
     updateLiftDaysUI();
+    updateMaintenanceModeUI();
     renderWeekSelectors();
     renderDaySections();
     renderAllRowStates();
