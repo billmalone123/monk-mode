@@ -1851,6 +1851,21 @@ body.training-mode footer { display: none; }
 .liftdays-btn:hover { color: var(--text); }
 .liftdays-btn.on { background: var(--accent); color: #1A1A18; }
 .liftdays-desc { font-size: 11px; color: var(--muted); }
+.week-complete-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap; background: var(--surface); border: 1px solid var(--accent);
+  border-radius: 6px; padding: 14px 16px; margin-bottom: 16px;
+}
+.week-complete-text {
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+  letter-spacing: 0.02em; color: var(--text);
+}
+.week-complete-btn {
+  background: var(--accent); color: #1A1A18; border: none; border-radius: 4px;
+  padding: 9px 16px; font-family: var(--font-display); font-weight: 700;
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; white-space: nowrap;
+}
 .run-readonly {
   background: var(--surface); border: 1px solid var(--border); color: var(--text);
   padding: 12px 14px; font-family: var(--font-display); font-size: 16px; font-weight: 800;
@@ -2620,6 +2635,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
     <span style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Training Week</span>
     <div style="display:flex;gap:4px;flex-wrap:wrap;" id="trainWeekSelector"></div>
+  </div>
+  <div id="weekCompleteBanner" class="week-complete-banner" style="display:none">
+    <div class="week-complete-text">Week <span id="weekCompleteNum"></span> complete — every lifting day logged.</div>
+    <button class="week-complete-btn" onclick="advanceToNextWeek()">Start Week <span id="weekCompleteNext"></span> →</button>
   </div>
   <div id="altPlan"></div>
   <div class="plan-nav" id="planNav">
@@ -4654,6 +4673,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
         renderRowStatus(ex);
         renderProgressView();
         if (typeof renderRing === 'function') renderRing();
+        if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
       }
       return;
     }
@@ -4677,6 +4697,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     renderRowStatus(ex);
     renderProgressView();
     if (typeof renderRing === 'function') renderRing();
+    if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
     var note = document.getElementById('save-' + exId);
     if (note) {
       note.textContent = '✓ Saved';
@@ -4706,6 +4727,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     renderAllRowStates();
     renderProgressView();
     if (typeof renderRing === 'function') renderRing();
+    if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
   }
 
     //     REST TIMER
@@ -5709,6 +5731,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     // not whatever was on screen before.
     if (typeof renderAllRowStates === 'function') renderAllRowStates();
     if (typeof renderProgressView === 'function') renderProgressView();
+    if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
     syncWeekDisplays(idx);
   }
 
@@ -5762,6 +5785,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (liftDaysPerWeek !== 6) {
       switchAltDay(dayId);
       try { localStorage.setItem(LAST_DAY_KEY, dayId); } catch(e) {}
+      if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
       return;
     }
     document.querySelectorAll('#plan > .plan-content').forEach(function(el){ el.classList.remove('active'); });
@@ -5771,6 +5795,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (day) day.classList.add('active');
     if (btn) btn.classList.add('active');
     try { localStorage.setItem(LAST_DAY_KEY, dayId); } catch(e) {}
+    if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
   }
 
   //     LIFT NOTE TOGGLE                                                        
@@ -7565,6 +7590,56 @@ function getMostRecentDay() {
   return valid[0];
 }
 
+//  Earliest non-rest day in the active split's Mon-Sun order that has no
+//  logged sets for the current training week. Null when every lifting day
+//  this week is already logged. Rest days are skipped — a rest day with
+//  nothing logged is not "unlogged", it's just rest.
+function findNextUnloggedDay() {
+  var slots = [];
+  try { slots = activeSplit().week; } catch(e) {}
+  for (var i = 0; i < slots.length; i++) {
+    var id = slots[i];
+    if (id === 'rest') continue;
+    if (!hasLogsForDay(id, currentTrainWeek)) return id;
+  }
+  return null;
+}
+
+//  Picks which day Training opens on. Only auto-picks the next unlogged day
+//  once per page load (the first time Training renders); every render after
+//  that — including switching tabs away and back — respects whatever day the
+//  user last actually navigated to, exactly like getMostRecentDay() always
+//  has. This is what keeps manual navigation from being overridden.
+var _autoPickedTrainingDay = false;
+function pickTrainingDay() {
+  if (_autoPickedTrainingDay) return getMostRecentDay();
+  _autoPickedTrainingDay = true;
+  return findNextUnloggedDay() || getMostRecentDay();
+}
+
+//  Shows the "week complete" banner when every lifting day this training
+//  week is logged. Doesn't touch currentTrainWeek — advancing is a manual
+//  action (advanceToNextWeek), never automatic.
+function updateWeekCompleteBanner() {
+  var banner = document.getElementById('weekCompleteBanner');
+  if (!banner) return;
+  var done = !findNextUnloggedDay();
+  banner.style.display = done ? '' : 'none';
+  if (done) {
+    var numEl = document.getElementById('weekCompleteNum');
+    var nextEl = document.getElementById('weekCompleteNext');
+    if (numEl) numEl.textContent = currentTrainWeek + 1;
+    if (nextEl) nextEl.textContent = Math.min(totalTrainWeeks(), currentTrainWeek + 2);
+  }
+}
+
+function advanceToNextWeek() {
+  var next = Math.min(totalTrainWeeks() - 1, currentTrainWeek + 1);
+  if (typeof setTrainWeek === 'function') setTrainWeek(next);
+  switchDay(findNextUnloggedDay() || getMostRecentDay());
+  updateWeekCompleteBanner();
+}
+
 var MAIN_TABS = ['info','training','running','calendar'];
 
 //     TOOLTIPS — one bubble element reused for every trigger, appended to
@@ -8189,7 +8264,7 @@ function goTab(t) {
   } else {
     // Train, Run and Calendar all use the dark training chrome
     document.body.classList.add('training-mode');
-    if (t === 'training') switchDay(getMostRecentDay());
+    if (t === 'training') switchDay(pickTrainingDay());
     else if (t === 'calendar') {
       // Opens on whatever week is selected app-wide, never resets to week 1
       if (typeof renderCalendarTab === 'function') renderCalendarTab();
