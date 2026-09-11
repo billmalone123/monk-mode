@@ -983,6 +983,19 @@
     transition: border-color 0.15s;
   }
   .log-inline-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(241,239,225,0.12); }
+  /* ── TAP STEPPERS — flank every weight/reps field so a phone at the rack
+     never needs the (missing, on iOS Safari) native number-input spinner. */
+  .stepper-row { display: flex; align-items: center; gap: 4px; }
+  .stepper-btn {
+    width: 44px; height: 44px; flex: 0 0 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(241,239,225,0.06); border: 1px solid var(--field); color: var(--text);
+    font-family: var(--font-display); font-size: 20px; font-weight: 700; line-height: 1;
+    border-radius: 8px; cursor: pointer; touch-action: manipulation;
+    -webkit-user-select: none; user-select: none;
+  }
+  .stepper-btn:hover { border-color: var(--accent); }
+  .stepper-btn:active { background: var(--accent); color: #1A1A18; border-color: var(--accent); }
   .failure-toggle {
     background: transparent;
     border: 1px solid var(--border);
@@ -2654,7 +2667,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.50</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.51</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2718,7 +2731,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.50</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.51</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2946,7 +2959,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.50</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.51</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3064,7 +3077,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.50</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.51</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3086,7 +3099,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.50</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.51</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -4368,6 +4381,72 @@ body.training-mode select.run-input { color: #F1EFE1; }
     return { hard: hard, total: recent.length, low: hard / recent.length < 0.5 };
   }
 
+  //  TAP STEPPERS — one shared pair of buttons wrapping every weight/reps
+  //  field app-wide (aim, working sets, warm-ups). iOS Safari renders no
+  //  spinner on <input type="number">, so without these a phone at the rack
+  //  has nothing but the keyboard. The buttons never touch the input's own
+  //  oninput/onchange wiring — they just mutate .value and dispatch real
+  //  input/change events, so every field's existing autosave/debounce logic
+  //  (onLogEdit, onSetInput, onWarmupInput, onAimInput, ...) fires exactly as
+  //  if the number had been typed. That's what keeps this additive: one place
+  //  to add "tap to adjust" instead of teaching five different save paths
+  //  about steppers.
+  var _stepperTimer = null;
+  function applyStep(targetId, delta) {
+    var inp = document.getElementById(targetId);
+    if (!inp) return;
+    var cur = parseFloat(inp.value);
+    if (isNaN(cur)) cur = 0;
+    var next = cur + delta;
+    if (next < 0) next = 0;
+    inp.value = next;
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+    inp.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  //  Long-press (weight only — reps has no long-press per spec) fires once
+  //  after ~500ms and marks the button so the eventual pointerup doesn't
+  //  ALSO apply the small tap step on top of it.
+  function stepperPress(targetId, tapStep, longStep, btn) {
+    clearTimeout(_stepperTimer);
+    btn._longFired = false;
+    if (longStep) {
+      _stepperTimer = setTimeout(function() {
+        btn._longFired = true;
+        applyStep(targetId, longStep);
+        if (navigator.vibrate) navigator.vibrate(12);
+      }, 500);
+    }
+  }
+  function stepperRelease(targetId, tapStep, btn) {
+    clearTimeout(_stepperTimer);
+    if (btn._longFired) { btn._longFired = false; return; }
+    applyStep(targetId, tapStep);
+  }
+  function stepperCancel(btn) {
+    clearTimeout(_stepperTimer);
+    btn._longFired = false;
+  }
+  function stepperBtnHTML(targetId, delta, longDelta, ariaLabel) {
+    var sym = delta < 0 ? '−' : '+';
+    return '<button type="button" class="stepper-btn" aria-label="' + ariaLabel + '"'
+      + ' onpointerdown="event.preventDefault();stepperPress(\'' + targetId + '\',' + delta + ',' + (longDelta || 0) + ',this)"'
+      + ' onpointerup="stepperRelease(\'' + targetId + '\',' + delta + ',this)"'
+      + ' onpointerleave="stepperCancel(this)" onpointercancel="stepperCancel(this)"'
+      + '>' + sym + '</button>';
+  }
+  //  kind: 'weight' (±5, long-press ±25) or 'reps' (±1, no long-press).
+  //  inputHTML is the field's own <input> markup, untouched.
+  function withSteppers(targetId, kind, inputHTML) {
+    var step = kind === 'weight' ? 5 : 1;
+    var longStep = kind === 'weight' ? 25 : 0;
+    var label = kind === 'weight' ? 'weight' : 'reps';
+    return '<div class="stepper-row">'
+      + stepperBtnHTML(targetId, -step, -longStep, 'Decrease ' + label)
+      + inputHTML
+      + stepperBtnHTML(targetId, step, longStep, 'Increase ' + label)
+      + '</div>';
+  }
+
   //  One set slot. Sets 1 and 2 always render; set 3 renders too but its row is
   //  hidden until the exercise is switched to 3, so switching is a class flip
   //  rather than a re-render that would drop whatever is half-typed elsewhere
@@ -4376,11 +4455,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //  blur-commit onLogEdit/onLogCommit the autosave audit added.
   function setRowHTML(ex, n) {
     var slot = 's' + n;
+    var wId = slot + 'w-' + ex.id, rId = slot + 'r-' + ex.id;
+    var wInput = '<input class="log-inline-input" type="number" inputmode="decimal" id="' + wId + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)" onchange="onLogCommit(this)">';
+    var rInput = '<input class="log-inline-input" type="number" inputmode="numeric" id="' + rId + '" data-ex="' + ex.id + '" oninput="onSetInput(this)" onchange="onSetCommit(this)">';
     return '<div class="log-row set-row" data-setrow="' + n + '-' + ex.id + '">'
       + '<div class="log-inline-group"><span class="log-inline-label">Set ' + n + ' · Weight</span>'
-      + '<input class="log-inline-input" type="number" inputmode="decimal" id="' + slot + 'w-' + ex.id + '" data-ex="' + ex.id + '" oninput="this.dataset.dirty=1;onLogEdit(this.dataset.ex)" onchange="onLogCommit(this)"></div>'
+      + withSteppers(wId, 'weight', wInput) + '</div>'
       + '<div class="log-inline-group"><span class="log-inline-label">Set ' + n + ' · Reps</span>'
-      + '<input class="log-inline-input" type="number" inputmode="numeric" id="' + slot + 'r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onSetInput(this)" onchange="onSetCommit(this)"></div>'
+      + withSteppers(rId, 'reps', rInput) + '</div>'
       + '</div>';
   }
 
@@ -4391,11 +4473,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function warmupLogHTML(ex) {
     var rows = '';
     for (var i = 0; i < WARMUP_SLOTS; i++) {
+      var wuwId = 'wu' + i + 'w-' + ex.id, wurId = 'wu' + i + 'r-' + ex.id;
+      var wuwInput = '<input class="log-inline-input warmup-input" type="number" inputmode="decimal" id="' + wuwId + '" data-ex="' + ex.id + '" data-wu="' + i + '" oninput="onWarmupInput(this)" onchange="onWarmupCommit(this)">';
+      var wurInput = '<input class="log-inline-input warmup-input" type="number" inputmode="numeric" id="' + wurId + '" data-ex="' + ex.id + '" data-wu="' + i + '" oninput="onWarmupInput(this)" onchange="onWarmupCommit(this)">';
       rows += '<div class="log-row warmup-log-row">'
         + '<div class="log-inline-group"><span class="log-inline-label">Warm-up ' + (i + 1) + ' · Weight</span>'
-        + '<input class="log-inline-input warmup-input" type="number" inputmode="decimal" id="wu' + i + 'w-' + ex.id + '" data-ex="' + ex.id + '" data-wu="' + i + '" oninput="onWarmupInput(this)" onchange="onWarmupCommit(this)"></div>'
+        + withSteppers(wuwId, 'weight', wuwInput) + '</div>'
         + '<div class="log-inline-group"><span class="log-inline-label">Warm-up ' + (i + 1) + ' · Reps</span>'
-        + '<input class="log-inline-input warmup-input" type="number" inputmode="numeric" id="wu' + i + 'r-' + ex.id + '" data-ex="' + ex.id + '" data-wu="' + i + '" oninput="onWarmupInput(this)" onchange="onWarmupCommit(this)"></div>'
+        + withSteppers(wurId, 'reps', wurInput) + '</div>'
         + '</div>';
     }
     return '<div class="warmup-log" id="wulog-' + ex.id + '">'
@@ -4515,9 +4600,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '<div class="lift-log-inline" onclick="event.stopPropagation()">'
       + '<div class="log-row">'
       + '<div class="log-inline-group"><span class="log-inline-label">Top Set Aim Weight</span>'
-      + '<input class="log-inline-input" type="number" inputmode="decimal" id="w-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)" onchange="onAimCommit(this.dataset.ex)"></div>'
+      + withSteppers('w-' + ex.id, 'weight', '<input class="log-inline-input" type="number" inputmode="decimal" id="w-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)" onchange="onAimCommit(this.dataset.ex)">') + '</div>'
       + '<div class="log-inline-group"><span class="log-inline-label">Top Set Aim Reps</span>'
-      + '<input class="log-inline-input" type="number" inputmode="numeric" id="r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)" onchange="onAimCommit(this.dataset.ex)"></div>'
+      + withSteppers('r-' + ex.id, 'reps', '<input class="log-inline-input" type="number" inputmode="numeric" id="r-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)" onchange="onAimCommit(this.dataset.ex)">') + '</div>'
       + '</div>'
       + '<div class="log-row setcount-row">'
       + '<span class="log-inline-label">Working Sets</span>'
