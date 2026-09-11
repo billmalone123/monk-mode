@@ -1864,6 +1864,8 @@ body.training-mode footer { display: none; }
 .liftdays-btn:hover { color: var(--text); }
 .liftdays-btn.on { background: var(--accent); color: #1A1A18; }
 .liftdays-desc { font-size: 11px; color: var(--muted); }
+.storage-status { font-size: 11px; color: var(--muted); flex-basis: 100%; }
+.storage-status.warn { color: #D9A05B; }
 .week-complete-banner {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   flex-wrap: wrap; background: var(--surface); border: 1px solid var(--accent);
@@ -2667,7 +2669,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.51</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.52</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2721,6 +2723,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     </div>
     <button class="settings-open-btn" onclick="exportData()">⇩ Backup</button>
     <label class="settings-open-btn" style="cursor:pointer">⇧ Restore<input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)"></label>
+    <div class="storage-status" id="storageStatus" style="display:none"></div>
   </div>
   <!-- REST TIMER QUICK-START -->
   <div class="rest-timer-strip">
@@ -2731,7 +2734,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.51</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.52</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2959,7 +2962,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.51</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.52</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3077,7 +3080,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.51</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.52</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3099,7 +3102,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.51</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.52</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3404,6 +3407,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
       });
     }).catch(function() { return undefined; });
   }
+  //  For the handful of keys that are read/written straight against
+  //  localStorage rather than kept in a live module variable (archive, PR
+  //  history, split history, cycle-start maxes) — keeps the localStorage
+  //  write and its IndexedDB mirror in the same place, same as every other
+  //  persisted value already does via idbSet() next to its own setItem.
+  function setLSMirrored(lsKey, idbName, value) {
+    try { localStorage.setItem(lsKey, JSON.stringify(value)); } catch(e) {}
+    idbSet(idbName, value);
+  }
   function entryCount(o) {
     return Object.keys(o || {}).reduce(function(n, k) { return n + ((o[k] || []).length); }, 0); }
   // Restore from IndexedDB if localStorage came back with less than the mirror.
@@ -3522,6 +3534,59 @@ body.training-mode select.run-input { color: #F1EFE1; }
         idbSet('runLogs', runLogs);
       }
     });
+    //  The nine keys that were read/written straight against localStorage
+    //  with no live variable, or are low-stakes navigation/session state —
+    //  archive, PR history, split history, cycle-start maxes, last tab, last
+    //  day, background timer, Strava token, Strava sync time. Same
+    //  recover-or-seed shape as every block above (recover into localStorage
+    //  if IDB has it and localStorage doesn't; otherwise seed IDB from
+    //  whatever localStorage already has, so an existing user's data — e.g.
+    //  archived cycles already sitting in SPLIT_HISTORY_KEY from before this
+    //  fix shipped — gets backed up on first load rather than waiting for
+    //  the next Start New Cycle, which could be months away). None of these
+    //  force a live UI update the way sessions/liftDays/splitId do — landing
+    //  mid-session and yanking the user to a different tab or day than the
+    //  one they're already on would be worse than just being ready correctly
+    //  on the next load.
+    function mirrorPlainKey(idbName, lsKey, isValid) {
+      idbGet(idbName).then(function(v) {
+        var lsRaw = null;
+        try { lsRaw = localStorage.getItem(lsKey); } catch(e) {}
+        if (isValid(v) && !lsRaw) {
+          try { localStorage.setItem(lsKey, typeof v === 'string' ? v : JSON.stringify(v)); } catch(e) {}
+        } else if (!isValid(v) && lsRaw) {
+          var parsed = lsRaw;
+          try { parsed = JSON.parse(lsRaw); } catch(e) {}
+          idbSet(idbName, parsed);
+        }
+      });
+    }
+    mirrorPlainKey('archive', ARCHIVE_KEY, function(v) { return !!v; });
+    mirrorPlainKey('prHistory', PR_HISTORY_KEY, function(v) { return Array.isArray(v) && v.length > 0; });
+    mirrorPlainKey('splitHistory', SPLIT_HISTORY_KEY, function(v) { return Array.isArray(v) && v.length > 0; });
+    mirrorPlainKey('cycleStartMaxes', CYCLE_START_MAXES_KEY, function(v) { return !!v && typeof v === 'object'; });
+    mirrorPlainKey('lastTab', LAST_TAB_KEY, function(v) { return typeof v === 'string' && !!v; });
+    mirrorPlainKey('lastDay', LAST_DAY_KEY, function(v) { return typeof v === 'string' && !!v; });
+    mirrorPlainKey('timerBg', TIMER_BG_KEY, function(v) { return !!v && !!v.endTime; });
+    mirrorPlainKey('stravaToken', STRAVA_TOKEN_KEY, function(v) { return !!v; });
+    mirrorPlainKey('stravaSync', STRAVA_SYNC_KEY, function(v) { return !!v; });
+  }
+  //  Surfaces whether the browser actually granted persistent storage —
+  //  granted=false is the origin still being exposed to eviction, which used
+  //  to be requested-and-forgotten with no way to tell after the fact. Logs
+  //  to console always; also paints the settings-screen status line below the
+  //  Backup/Restore buttons if it's on screen when this resolves.
+  function reportStoragePersistence(granted) {
+    var msg = granted === true ? 'Storage: persistent (protected from eviction)'
+      : granted === false ? 'Storage: NOT persistent — this device may clear app data'
+      : 'Storage: persistence API unavailable on this browser';
+    console.log('[' + msg.split(':')[0] + ']', msg);
+    var el = document.getElementById('storageStatus');
+    if (el) {
+      el.textContent = msg;
+      el.className = 'storage-status' + (granted === false ? ' warn' : '');
+      el.style.display = '';
+    }
   }
   // Cross-tab safety: another tab saving must never be clobbered by this one
   function syncFromDisk() {
@@ -4202,10 +4267,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
       }
       try {
         localStorage.setItem(SESSIONS_KEY, JSON.stringify(migrated));
-        localStorage.setItem(ARCHIVE_KEY, JSON.stringify({ oldLogs: old, hackSquat: hackArch }));
         localStorage.removeItem('ppl_workout_logs_v3');
         localStorage.removeItem('monk_mode_acc_v1');
       } catch(e) {}
+      setLSMirrored(ARCHIVE_KEY, 'archive', { oldLogs: old, hackSquat: hackArch });
     }
     try { localStorage.setItem(MIGRATED_KEY, '1'); } catch(e) {}
   }
@@ -5414,9 +5479,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function _saveTimerState() {
     try {
       if (timerRunning && timerEndTime > 0) {
-        localStorage.setItem(TIMER_BG_KEY, JSON.stringify({ endTime: timerEndTime, total: timerTotal, liftName: timerLiftName }));
+        var snap = { endTime: timerEndTime, total: timerTotal, liftName: timerLiftName };
+        localStorage.setItem(TIMER_BG_KEY, JSON.stringify(snap));
+        idbSet('timerBg', snap);
       } else {
         localStorage.removeItem(TIMER_BG_KEY);
+        idbSet('timerBg', null);
       }
     } catch(e) {}
   }
@@ -5780,11 +5848,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     renderAllRowStates();
     if (_newCycleReentry && Object.keys(userMaxes).length) {
       _newCycleReentry = false;
-      try {
-        localStorage.setItem(CYCLE_START_MAXES_KEY, JSON.stringify({
-          maxes: JSON.parse(JSON.stringify(userMaxes)), date: todayKey()
-        }));
-      } catch(e) {}
+      setLSMirrored(CYCLE_START_MAXES_KEY, 'cycleStartMaxes', {
+        maxes: JSON.parse(JSON.stringify(userMaxes)), date: todayKey()
+      });
     }
   }
   function onMaxInput() {
@@ -5819,7 +5885,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       var hist = [];
       try { hist = JSON.parse(localStorage.getItem(PR_HISTORY_KEY)) || []; } catch(e) { hist = []; }
       hist.push({ date: new Date().toISOString(), maxes: JSON.parse(JSON.stringify(userMaxes)) });
-      try { localStorage.setItem(PR_HISTORY_KEY, JSON.stringify(hist)); } catch(e) {}
+      setLSMirrored(PR_HISTORY_KEY, 'prHistory', hist);
     }
     userMaxes = {};
     persistMaxes();
@@ -5860,13 +5926,13 @@ body.training-mode select.run-input { color: #F1EFE1; }
       endingMaxes: JSON.parse(JSON.stringify(userMaxes)),
       sessions: JSON.parse(JSON.stringify(sessions))
     });
-    try { localStorage.setItem(SPLIT_HISTORY_KEY, JSON.stringify(splitHist)); } catch(e) {}
+    setLSMirrored(SPLIT_HISTORY_KEY, 'splitHistory', splitHist);
     //  Same PR snapshot Reset 1RMs takes, tagged with the split it closes out.
     if (Object.keys(userMaxes).length) {
       var prHist = [];
       try { prHist = JSON.parse(localStorage.getItem(PR_HISTORY_KEY)) || []; } catch(e) { prHist = []; }
       prHist.push({ date: new Date().toISOString(), maxes: JSON.parse(JSON.stringify(userMaxes)), splitLabel: activeSplit().label });
-      try { localStorage.setItem(PR_HISTORY_KEY, JSON.stringify(prHist)); } catch(e) {}
+      setLSMirrored(PR_HISTORY_KEY, 'prHistory', prHist);
     }
     sessions = {};
     saveSessions();
@@ -6053,9 +6119,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
         sessions = data.sessions || {};
         saveSessions();
         if (data.maxes) { userMaxes = data.maxes; persistMaxes(); }
-        if (data.archive) { try { localStorage.setItem(ARCHIVE_KEY, JSON.stringify(data.archive)); } catch(e) {} }
-        if (Array.isArray(data.splitHistory)) { try { localStorage.setItem(SPLIT_HISTORY_KEY, JSON.stringify(data.splitHistory)); } catch(e) {} }
-        if (data.cycleStartMaxes && typeof data.cycleStartMaxes === 'object') { try { localStorage.setItem(CYCLE_START_MAXES_KEY, JSON.stringify(data.cycleStartMaxes)); } catch(e) {} }
+        if (data.archive) { setLSMirrored(ARCHIVE_KEY, 'archive', data.archive); }
+        if (Array.isArray(data.splitHistory)) { setLSMirrored(SPLIT_HISTORY_KEY, 'splitHistory', data.splitHistory); }
+        if (data.cycleStartMaxes && typeof data.cycleStartMaxes === 'object') { setLSMirrored(CYCLE_START_MAXES_KEY, 'cycleStartMaxes', data.cycleStartMaxes); }
         if (typeof data.week === 'number' && data.week >= 0) {
           currentTrainWeek = data.week;
           try { localStorage.setItem(TRAIN_WEEK_KEY, data.week); } catch(e) {}
@@ -6382,6 +6448,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (activeSplitId !== 'arnold') {
       switchAltDay(dayId);
       try { localStorage.setItem(LAST_DAY_KEY, dayId); } catch(e) {}
+    idbSet('lastDay', dayId);
       if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
       return;
     }
@@ -6392,6 +6459,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (day) day.classList.add('active');
     if (btn) btn.classList.add('active');
     try { localStorage.setItem(LAST_DAY_KEY, dayId); } catch(e) {}
+    idbSet('lastDay', dayId);
     if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
   }
 
@@ -6516,11 +6584,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function persistStravaToken(t) {
     stravaToken = t;
     try { localStorage.setItem(STRAVA_TOKEN_KEY, JSON.stringify(t)); } catch(e) {}
+    idbSet('stravaToken', t);
   }
   function clearStravaToken() {
     stravaToken = null;
     try { localStorage.removeItem(STRAVA_TOKEN_KEY); } catch(e) {}
     try { localStorage.removeItem(STRAVA_SYNC_KEY); } catch(e) {}
+    idbSet('stravaToken', null);
+    idbSet('stravaSync', null);
   }
 
   function updateStravaUI(msg) {
@@ -6665,6 +6736,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
           if (typeof renderRunPlan === 'function') renderRunPlan();
         }
         try { localStorage.setItem(STRAVA_SYNC_KEY, String(Date.now())); } catch(e) {}
+        idbSet('stravaSync', String(Date.now()));
         updateStravaUI(added ? (added + ' run' + (added > 1 ? 's' : '') + ' synced') : 'Up to date');
       }).catch(function() { updateStravaUI('Sync failed — will retry next time you open the app'); });
     });
@@ -8134,9 +8206,17 @@ body.training-mode select.run-input { color: #F1EFE1; }
       var saved = parseInt(localStorage.getItem(TRAIN_WEEK_KEY));
       if (!isNaN(saved) && saved >= 0) currentTrainWeek = saved;
     } catch(e) {}
-    // Ask the browser to protect this origin's storage from eviction
+    // Ask the browser to protect this origin's storage from eviction. Request
+    // alone was requested-and-forgotten before — a resolved-false grant (not
+    // just a rejected promise) was never checked, so there was no way to know
+    // whether this origin was actually protected or silently exposed to
+    // eviction. Now logged and surfaced in settings so that's answerable.
     if (navigator.storage && navigator.storage.persist) {
-      navigator.storage.persist().catch(function(){});
+      navigator.storage.persist().then(function(granted) {
+        reportStoragePersistence(granted);
+      }).catch(function() { reportStoragePersistence(null); });
+    } else {
+      reportStoragePersistence(null);
     }
     loadLiftDays();
     loadSplitId();
@@ -8853,6 +8933,7 @@ window.addEventListener('resize', function() { if (navMenuOpen()) positionNavMen
 function goTab(t) {
   if (MAIN_TABS.indexOf(t) === -1) t = 'info';
   try { localStorage.setItem(LAST_TAB_KEY, t); } catch(e) {}
+  idbSet('lastTab', t);
   MAIN_TABS.forEach(function(name) {
     var el = document.getElementById('tab-' + name);
     if (el) el.style.display = name === t ? 'block' : 'none';
