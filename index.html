@@ -1969,6 +1969,26 @@ body.training-mode footer { display: none; }
 }
 .maintenance-toggle.on { background: rgba(110,136,168,0.35); border-color: #7C93B3; }
 .maintenance-toggle.on .maintenance-toggle-knob { background: #A9BEDA; transform: translateX(20px); }
+/* ── BACKUP NUDGE ────────────────────────────────────────────────────────── */
+.backup-nudge-banner {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  flex-wrap: wrap; background: var(--surface); border: 1px solid var(--accent);
+  border-radius: 6px; padding: 14px 16px; margin-bottom: 16px;
+}
+.backup-nudge-text { font-size: 13px; line-height: 1.5; color: var(--text); flex: 1 1 260px; }
+.backup-nudge-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.backup-nudge-btn {
+  background: var(--accent); color: #1A1A18; border: none; border-radius: 4px;
+  padding: 9px 16px; font-family: var(--font-display); font-weight: 700;
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: pointer; white-space: nowrap;
+}
+.backup-nudge-dismiss {
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.backup-nudge-dismiss:hover { color: var(--text); border-color: var(--field); }
 .run-readonly {
   background: var(--surface); border: 1px solid var(--border); color: var(--text);
   padding: 12px 14px; font-family: var(--font-display); font-size: 16px; font-weight: 800;
@@ -2669,7 +2689,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.53</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.54</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2734,13 +2754,20 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.53</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.54</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
     <span style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);">Training Week</span>
     <div style="display:flex;gap:4px;flex-wrap:wrap;" id="trainWeekSelector"></div>
+  </div>
+  <div id="backupNudgeBanner" class="backup-nudge-banner" style="display:none">
+    <div class="backup-nudge-text">Back up your data. Save the file to Google Drive or email it to yourself — a backup that only lives on this device won't survive a lost or wiped phone.</div>
+    <div class="backup-nudge-actions">
+      <button class="backup-nudge-btn" onclick="exportData()">⇩ Backup Now</button>
+      <button class="backup-nudge-dismiss" onclick="dismissBackupNudge()" aria-label="Dismiss">✕</button>
+    </div>
   </div>
   <div id="maintenanceBanner" class="maintenance-banner" style="display:none">
     <span class="maintenance-banner-dot"></span> Maintenance Mode — reduced volume &amp; weight this week. Logging is never restricted.
@@ -2962,7 +2989,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.53</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.54</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3080,7 +3107,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.53</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.54</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3102,7 +3129,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.53</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.54</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3462,6 +3489,47 @@ body.training-mode select.run-input { color: #F1EFE1; }
     try { localStorage.setItem(lsKey, JSON.stringify(value)); } catch(e) {}
     idbSet(idbName, value);
   }
+
+  //     BACKUP NUDGE — a backup that only ever lives in this browser's own
+  //     storage dies with the device (lost, wiped, replaced); exportData()'s
+  //     downloaded file is the only copy that survives that, provided it
+  //     actually leaves the device (Drive, email, etc.) rather than sitting
+  //     in Downloads. Tracks the real signal — when the user last actually
+  //     exported — not just when they last dismissed the nudge, so someone
+  //     who backs up regularly never sees it nag.
+  const BACKUP_NUDGE_KEY = 'monk_backup_nudge_v1';
+  var BACKUP_NUDGE_INTERVAL_MS = 30 * 24 * 60 * 60 * 1000;
+  var backupNudgeState = { firstSeenAt: null, lastBackupAt: null, dismissedAt: null };
+  function loadBackupNudgeState() {
+    try {
+      var stored = JSON.parse(localStorage.getItem(BACKUP_NUDGE_KEY));
+      if (stored) backupNudgeState = stored;
+    } catch(e) {}
+    if (!backupNudgeState.firstSeenAt) {
+      backupNudgeState.firstSeenAt = Date.now();
+      persistBackupNudgeState();
+    }
+  }
+  function persistBackupNudgeState() {
+    setLSMirrored(BACKUP_NUDGE_KEY, 'backupNudge', backupNudgeState);
+  }
+  //  Reference point is the most recent of: last real backup, last dismiss,
+  //  or first-ever open — whichever happened most recently is what the next
+  //  30 days count from.
+  function shouldShowBackupNudge() {
+    var ref = Math.max(backupNudgeState.lastBackupAt || 0, backupNudgeState.dismissedAt || 0, backupNudgeState.firstSeenAt || 0);
+    if (!ref) return false;
+    return (Date.now() - ref) >= BACKUP_NUDGE_INTERVAL_MS;
+  }
+  function dismissBackupNudge() {
+    backupNudgeState.dismissedAt = Date.now();
+    persistBackupNudgeState();
+    updateBackupNudgeUI();
+  }
+  function updateBackupNudgeUI() {
+    var el = document.getElementById('backupNudgeBanner');
+    if (el) el.style.display = shouldShowBackupNudge() ? '' : 'none';
+  }
   function entryCount(o) {
     return Object.keys(o || {}).reduce(function(n, k) { return n + ((o[k] || []).length); }, 0); }
   // Restore from IndexedDB if localStorage came back with less than the mirror.
@@ -3616,6 +3684,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     mirrorPlainKey('timerBg', TIMER_BG_KEY, function(v) { return !!v && !!v.endTime; });
     mirrorPlainKey('stravaToken', STRAVA_TOKEN_KEY, function(v) { return !!v; });
     mirrorPlainKey('stravaSync', STRAVA_SYNC_KEY, function(v) { return !!v; });
+    mirrorPlainKey('backupNudge', BACKUP_NUDGE_KEY, function(v) { return !!v && typeof v === 'object'; });
   }
   //  Surfaces whether the browser actually granted persistent storage —
   //  granted=false is the origin still being exposed to eviction, which used
@@ -6153,6 +6222,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
     document.body.appendChild(a);
     a.click();
     setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    //  The download firing is the real signal — this resets the 30-day
+    //  nudge clock regardless of whether the nudge banner was what triggered it.
+    backupNudgeState.lastBackupAt = Date.now();
+    persistBackupNudgeState();
+    updateBackupNudgeUI();
   }
   function importData(input) {
     var file = input.files && input.files[0];
@@ -8268,6 +8342,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     loadLiftDays();
     loadSplitId();
     loadMaintenanceMode();
+    loadBackupNudgeState();
     loadMaxes();
     loadVariants();
     loadAims();
@@ -8279,6 +8354,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     updateMaxChips();
     updateLiftDaysUI();
     updateMaintenanceModeUI();
+    updateBackupNudgeUI();
     renderWeekSelectors();
     renderDaySections();
     renderAllRowStates();
