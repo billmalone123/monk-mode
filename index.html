@@ -2669,7 +2669,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.52</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.53</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2734,7 +2734,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.52</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.53</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2962,7 +2962,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.52</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.53</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3080,7 +3080,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.52</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.53</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3102,7 +3102,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.52</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.53</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3352,7 +3352,53 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //
   //     normSet() and entryVariant() are the reference examples of doing this
   //     right on data that already shipped.
+  //
+  //     STORAGE_MIGRATIONS below is the formal mechanism for the _v1-to-_v2
+  //     case this rule describes: an ordered, versioned, logged runner rather
+  //     than a one-off function like migrateOldLogs() (kept as-is — it
+  //     predates this and already does the same job for its one case). A
+  //     migration renames keys or transforms shapes; it must never delete
+  //     data outright without an explicit user action elsewhere in the app
+  //     (Reset 1RMs / Start New Cycle already snapshot before clearing —
+  //     that's the model, not something migrations reinvent).
   //  ══════════════════════════════════════════════════════════════════════════
+
+  //     STORAGE VERSIONING — see the standing rule above. CURRENT_STORAGE_
+  //     VERSION is the schema every current user's data is assumed to already
+  //     be at; add a migration by pushing { version: N, run: fn } and bumping
+  //     CURRENT_STORAGE_VERSION to N. runStorageMigrations() runs once at
+  //     init, before any load*() call reads a key a migration might touch.
+  const STORAGE_VERSION_KEY = 'monk_storage_version_v1';
+  const CURRENT_STORAGE_VERSION = 1;
+  //  Empty for now — nothing has needed a shape change since this shipped.
+  //  Example shape for the next one:
+  //  { version: 2, run: function() {
+  //      // rename / transform here; log what happened
+  //      console.log('[Migration] v2: describe what this did');
+  //    } }
+  var STORAGE_MIGRATIONS = [];
+  function getStorageVersion() {
+    var v = parseInt(localStorage.getItem(STORAGE_VERSION_KEY), 10);
+    return isNaN(v) ? 0 : v;
+  }
+  function setStorageVersion(v) {
+    try { localStorage.setItem(STORAGE_VERSION_KEY, String(v)); } catch(e) {}
+    idbSet('storageVersion', v);
+  }
+  function runStorageMigrations() {
+    var current = getStorageVersion();
+    if (current >= CURRENT_STORAGE_VERSION) return;
+    var pending = STORAGE_MIGRATIONS
+      .filter(function(m) { return m.version > current; })
+      .sort(function(a, b) { return a.version - b.version; });
+    console.log('[Migration] storage at v' + current + ', target v' + CURRENT_STORAGE_VERSION + (pending.length ? ', ' + pending.length + ' pending' : ', nothing pending'));
+    pending.forEach(function(m) {
+      console.log('[Migration] running migration to v' + m.version);
+      try { m.run(); } catch(e) { console.error('[Migration] v' + m.version + ' failed:', e); }
+    });
+    setStorageVersion(CURRENT_STORAGE_VERSION);
+    console.log('[Migration] storage now at v' + CURRENT_STORAGE_VERSION);
+  }
 
   //     STORAGE — sessions keyed by exercise id
   const SESSIONS_KEY = 'monk_sessions_v1';
@@ -8218,6 +8264,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     } else {
       reportStoragePersistence(null);
     }
+    runStorageMigrations();
     loadLiftDays();
     loadSplitId();
     loadMaintenanceMode();
