@@ -67,9 +67,7 @@
   /* NAV */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
+    background: var(--bg);
     border-bottom: 1px solid rgba(241,239,225,0.06);
     padding: 0 40px;
     height: 60px;
@@ -734,9 +732,9 @@
 
   /* MOBILE — tablet and below */
   @media (max-width: 768px) {
-    nav { padding: 0 12px; height: 48px; border-bottom: none; background: rgba(0,0,0,0.92); }
+    nav { padding: 0 12px; height: 48px; border-bottom: none; background: var(--bg); }
     body { padding-top: 48px; }
-    .nav-sub { top: 48px; background: rgba(0,0,0,0.95); border-top: none; }
+    .nav-sub { top: 48px; background: var(--bg); border-top: none; }
     nav .nav-logo { font-size: 15px; letter-spacing: 0.04em; flex: 0 1 auto; min-width: 0; }
     nav .nav-logo img { height: 22px; max-width: 100%; object-fit: contain; object-position: left; }
     .nav-links { display: none; }
@@ -1229,9 +1227,7 @@
     position: fixed;
     bottom: 0; left: 0; right: 0;
     z-index: 300;
-    background: rgba(15,15,26,0.96);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: var(--bg);
     border-top: 1px solid var(--border);
     padding: 0;
     transform: translateY(100%);
@@ -1705,7 +1701,7 @@
 
 /* ── TRAINING MODE — dark throughout ─────────────────────────────────────── */
 body.training-mode { background: var(--bg); }
-body.training-mode nav { background: rgba(12,13,31,0.95); border-bottom-color: var(--border); }
+body.training-mode nav { background: var(--bg); border-bottom-color: var(--border); }
 body.training-mode .nav-logo { color: #F1EFE1; }
 body.training-mode .nav-logo span { color: var(--accent); }
 body.training-mode #plan { background: var(--bg); border-top: none; padding-top: 0; padding-bottom: 60px; }
@@ -1757,7 +1753,7 @@ body.training-mode .train-week-btn { border: 1px solid var(--border) !important;
 body.training-mode .train-week-btn:hover { border-color: var(--border-hi) !important; color: var(--text) !important; background: var(--surface-2) !important; }
 body.training-mode .train-week-btn.twb-active { background: var(--accent) !important; border-color: var(--accent) !important; color: #1A1A18 !important; font-weight: 700 !important; box-shadow: 0 2px 12px rgba(241,239,225,0.35) !important; transform: scale(1.07) !important; }
 body.training-mode .train-week-label { color: var(--muted); }
-body.training-mode .timer-bar { background: rgba(12,13,31,0.97); border-top-color: var(--border); }
+body.training-mode .timer-bar { background: var(--bg); border-top-color: var(--border); }
 body.training-mode .timer-label { color: var(--muted); }
 body.training-mode .timer-lift-name { color: var(--muted); }
 body.training-mode .timer-display { color: #F1EFE1; }
@@ -2711,7 +2707,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.58</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.59</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2776,7 +2772,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.58</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.59</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3011,7 +3007,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.58</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.59</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3129,7 +3125,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.58</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.59</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3151,7 +3147,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.58</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.59</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
