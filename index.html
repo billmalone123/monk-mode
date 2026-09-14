@@ -1613,6 +1613,24 @@
   }
   .onb-run-form { display: grid; gap: 22px; margin-bottom: 30px; }
 
+  /* First-launch wizard — one question per screen, same modal shell */
+  .onb-progress { height: 3px; background: var(--border); border-radius: 2px; margin: 0 0 22px; overflow: hidden; }
+  .onb-progress-fill { height: 100%; width: 0; background: var(--red); transition: width 0.25s ease; }
+  .onb-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .onb-choice {
+    background: var(--bg); border: 1px solid var(--field); color: #F1EFE1;
+    padding: 16px 8px; border-radius: 4px; cursor: pointer; transition: all 0.15s;
+    font-family: var(--font-display); font-weight: 800; font-size: 18px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .onb-choice.on { background: var(--red); border-color: var(--red); color: #1A1A18; }
+  .onb-q-hint { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 22px; min-height: 18px; }
+  .onb-summary { list-style: none; padding: 0; margin: 0 0 26px; display: grid; gap: 10px; font-size: 14px; line-height: 1.5; color: #C9C5B6; }
+  .onb-summary strong { color: #F1EFE1; }
+  .onb-later { font-size: 12px; color: var(--muted); text-align: center; margin-top: 14px; }
+  .onb-restore { display: block; text-align: center; font-size: 12px; color: var(--muted); margin-top: 14px; cursor: pointer; text-decoration: underline; }
+  .settings-save-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
   /* Weight badge on lift rows */
   .lift-weight-badge {
     display: inline-block;
@@ -2689,7 +2707,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.55</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.56</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2754,7 +2772,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.55</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.56</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2989,7 +3007,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.55</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.56</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3107,7 +3125,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.55</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.56</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3129,7 +3147,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.55</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.56</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3303,6 +3321,25 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
     <button class="settings-save-btn" onclick="saveRunSetup()">Save &amp; Enter</button>
     <button class="settings-cancel-btn" onclick="skipRunSetup()">Skip for now</button>
+  </div>
+</div>
+<!-- ONBOARDING WIZARD — first launch only. One question per screen; the body is
+     rendered by onbRender() from the answers so far. Not dismissible: the
+     required questions have no skip, and Restore is the only way around it. -->
+<div class="settings-modal-overlay" id="onbWizard" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="onbTitle">
+  <div class="settings-modal-card" id="onbWizardCard">
+    <div class="onb-step" id="onbStepLabel"></div>
+    <div class="onb-progress"><div class="onb-progress-fill" id="onbProgressFill"></div></div>
+    <div class="settings-modal-brand">
+      <img src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
+      <div class="settings-modal-title" id="onbTitle"></div>
+    </div>
+    <div class="settings-modal-sub" id="onbSub"></div>
+    <div id="onbBody"></div>
+    <button class="settings-save-btn" id="onbNextBtn" onclick="onbNext()">Next</button>
+    <button class="settings-cancel-btn" id="onbBackBtn" onclick="onbBack()">Back</button>
+    <div class="onb-later" id="onbLater" style="display:none;">Change these later in settings.</div>
+    <label class="onb-restore" id="onbRestore">Returning with a backup file? Restore it<input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)"></label>
   </div>
 </div>
 <!-- REST TIMER MODAL -->
@@ -3686,6 +3723,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     mirrorPlainKey('stravaSync', STRAVA_SYNC_KEY, function(v) { return !!v; });
     mirrorPlainKey('backupNudge', BACKUP_NUDGE_KEY, function(v) { return !!v && typeof v === 'object'; });
     mirrorPlainKey('autopickDate', AUTOPICK_DATE_KEY, function(v) { return typeof v === 'string' && !!v; });
+    mirrorPlainKey('onboardingComplete', ONBOARDING_KEY, function(v) { return v === true; });
+    mirrorPlainKey('taperAutoRace', TAPER_AUTO_KEY, function(v) { return typeof v === 'string' && !!v; });
   }
   //  Surfaces whether the browser actually granted persistent storage —
   //  granted=false is the origin still being exposed to eviction, which used
@@ -6200,6 +6239,327 @@ body.training-mode select.run-input { color: #F1EFE1; }
     goTab('training');
   }
 
+  //     FIRST-LAUNCH ONBOARDING — one question per screen, for lifters who
+  //     already know their numbers. This is now the first-run entry point; the
+  //     two-modal chain above stays because the settings button and the Run tab
+  //     still reopen those modals. Nothing touches the real stores until the
+  //     final screen: partial answers live in a draft key, so closing the app
+  //     mid-way resumes on the same question, and a half-finished setup never
+  //     makes a user look configured.
+  const ONBOARDING_KEY = 'monk_onboarding_complete_v1';
+  const ONBOARDING_DRAFT_KEY = 'monk_onboarding_draft_v1';
+  //  The race date Maintenance Mode was last auto-enabled for. Fires once per
+  //  race, so switching it off by hand afterwards sticks.
+  const TAPER_AUTO_KEY = 'monk_taper_auto_race_v1';
+  var TAPER_AUTO_DAYS = 21;
+  //  Only day counts with a real template behind them. 6 defaults to PPL, with
+  //  Arnold offered on the same screen.
+  var ONB_SPLIT_BY_DAYS = { 3: 'full-body', 4: 'upper-lower', 5: 'pplul', 6: 'ppl' };
+  //  Weekly mileage band -> the Run tab's current-mileage baseline (band midpoint)
+  var ONB_MILEAGE = { '0-10': 5, '10-20': 15, '20-30': 25, '30+': 35 };
+  var ONB_MILEAGE_LABELS = { '0-10': '0–10 mi', '10-20': '10–20 mi', '20-30': '20–30 mi', '30+': '30+ mi' };
+  var ONB_DIST_LABELS = { '5k': '5K', '10k': '10K', 'half': 'Half', 'marathon': 'Marathon' };
+  var ONB_MAX_LABELS = { squat: 'Back Squat', bench: 'Bench Press', ohp: 'Dumbbell Shoulder Press' };
+  var onb = {};
+
+  function onboardingDone() {
+    try { return localStorage.getItem(ONBOARDING_KEY) === 'true'; } catch(e) { return false; }
+  }
+  //  New user = no completion flag, no maxes, no logged sessions, no split ever
+  //  chosen. The IndexedDB mirror is checked as well: if iOS wiped localStorage,
+  //  a returning user looks brand new until the restore lands and must not be
+  //  walked back through setup. IDB's splitId is deliberately not checked —
+  //  restoreFromIDB() seeds it with the default split for every user.
+  function maybeStartOnboarding() {
+    if (onboardingDone()) return;
+    if (MAX_KEYS.some(function(k) { return userMaxes[k]; }) || Object.keys(sessions).length) return;
+    var splitSet = null;
+    try { splitSet = localStorage.getItem(SPLIT_ID_KEY); } catch(e) {}
+    if (splitSet) return;
+    Promise.all([idbGet('onboardingComplete'), idbGet('maxes'), idbGet('sessions')]).then(function(r) {
+      if (r[0] === true) return;
+      if (r[1] && Object.keys(r[1]).length) return;
+      if (r[2] && entryCount(r[2]) > 0) return;
+      if (onboardingDone() || Object.keys(userMaxes).length || Object.keys(sessions).length) return;
+      openOnboardingWizard();
+    });
+  }
+
+  function onbLoadDraft() {
+    try { onb = JSON.parse(localStorage.getItem(ONBOARDING_DRAFT_KEY)) || {}; } catch(e) { onb = {}; }
+    if (!onb || typeof onb !== 'object') onb = {};
+  }
+  function onbSaveDraft() {
+    try { localStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify(onb)); } catch(e) {}
+  }
+  function onbNum(v) { var n = parseFloat(v); return (isNaN(n) || n <= 0 || n > 2000) ? 0 : n; }
+  function onbDateOK(s) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(String(s || ''))) return false;
+    var d = parseDateKey(s);
+    return !!d && !isNaN(d.getTime()) && dayDiff(startOfToday(), d) >= 0;
+  }
+  //  The question list is derived from the answers, so the progress count and
+  //  Back both follow whichever branch the user is actually on.
+  function onbSteps() {
+    var s = ['days', 'maxes', 'runs'];
+    if (onb.runs === true) {
+      s.push('mileage', 'race');
+      if (onb.race === true) s.push('distance');
+    }
+    s.push('done');
+    return s;
+  }
+  function onbStepValid(step) {
+    switch (step) {
+      case 'days':
+        var t = SPLIT_TEMPLATES[onb.split];
+        return !!ONB_SPLIT_BY_DAYS[onb.days] && !!t && t.days === onb.days;
+      case 'maxes': return MAX_KEYS.every(function(k) { return onbNum(onb[k]) > 0; });
+      case 'runs': return onb.runs === true || onb.runs === false;
+      case 'mileage': return Object.prototype.hasOwnProperty.call(ONB_MILEAGE, onb.mileage);
+      case 'race': return onb.race === false || (onb.race === true && onbDateOK(onb.raceDate));
+      case 'distance': return Object.prototype.hasOwnProperty.call(ONB_DIST_LABELS, onb.distance);
+      default: return true;
+    }
+  }
+
+  function openOnboardingWizard() {
+    var m = document.getElementById('onbWizard');
+    if (!m) return;
+    onbLoadDraft();
+    if (onbSteps().indexOf(onb.step) === -1) onb.step = 'days';
+    m.style.display = 'flex';
+    onbRender();
+  }
+  function closeOnboardingWizard() {
+    var m = document.getElementById('onbWizard');
+    if (m) m.style.display = 'none';
+  }
+
+  //  Values and labels are this file's own constants — never user text.
+  function onbChoices(field, options) {
+    return '<div class="onb-choices">' + options.map(function(o) {
+      var arg = typeof o[0] === 'string' ? '\'' + o[0] + '\'' : String(o[0]);
+      return '<button type="button" class="onb-choice' + (onb[field] === o[0] ? ' on' : '')
+        + '" onclick="onbPick(\'' + field + '\', ' + arg + ')">' + o[1] + '</button>';
+    }).join('') + '</div>';
+  }
+
+  function onbSummaryHTML() {
+    var t = SPLIT_TEMPLATES[onb.split];
+    var items = [];
+    if (t) items.push('<strong>' + t.label + '</strong> · ' + t.days + ' days a week');
+    items.push('Squat ' + onbNum(onb.squat) + ' · Bench ' + onbNum(onb.bench) + ' · Shoulder Press ' + onbNum(onb.ohp) + ' lbs');
+    if (onb.runs !== true) {
+      items.push('No running plan. Add one on the Run tab anytime.');
+    } else if (onb.race === true && onbDateOK(onb.raceDate)) {
+      var race = parseDateKey(onb.raceDate);
+      var days = dayDiff(startOfToday(), race);
+      items.push('About ' + ONB_MILEAGE_LABELS[onb.mileage] + ' a week');
+      items.push(ONB_DIST_LABELS[onb.distance] + ' on ' + fmtRunDate(race) + ' · ' + days + ' day' + (days === 1 ? '' : 's') + ' out');
+      items.push(days <= TAPER_AUTO_DAYS
+        ? 'Maintenance Mode turns on now for your taper'
+        : 'Maintenance Mode switches on automatically 3 weeks before race day');
+    } else {
+      items.push('About ' + ONB_MILEAGE_LABELS[onb.mileage] + ' a week · no race yet');
+    }
+    items.push('Starting at Week 1, Day 1');
+    return '<ul class="onb-summary">' + items.map(function(s) { return '<li>' + s + '</li>'; }).join('') + '</ul>';
+  }
+
+  function onbRender() {
+    var steps = onbSteps();
+    var i = steps.indexOf(onb.step);
+    if (i === -1) { onb.step = steps[0]; i = 0; }
+    var isDone = onb.step === 'done';
+    var questions = steps.length - 1;
+    var title = '', sub = '', body = '';
+    switch (onb.step) {
+      case 'days':
+        title = 'Lifting Days';
+        sub = 'How many days a week do you want to lift?';
+        body = onbChoices('days', [[3, '3'], [4, '4'], [5, '5'], [6, '6']]);
+        if (onb.days === 6) {
+          body += '<div class="settings-input-label">Split</div>'
+            + onbChoices('split', [['ppl', 'PPL'], ['arnold', 'Arnold']]);
+        }
+        var t = SPLIT_TEMPLATES[onb.split];
+        body += '<div class="onb-q-hint">' + (t && t.days === onb.days ? t.label + ' · ' + t.note : 'Pick one to see your split.') + '</div>';
+        break;
+      case 'maxes':
+        title = 'Your 1RMs';
+        sub = 'Current 1-rep max or best heavy single, in pounds. These set the starting weight on every lift.';
+        body = MAX_KEYS.map(function(k) {
+          var v = onbNum(onb[k]);
+          return '<div class="settings-input-group"><div class="settings-input-label">' + ONB_MAX_LABELS[k] + ' <span>lbs</span></div>'
+            + '<input class="settings-input-field" type="number" inputmode="decimal" min="1" max="2000" id="onb-max-' + k + '"'
+            + ' value="' + (v || '') + '" oninput="onbSetMax(\'' + k + '\', this.value)"></div>';
+        }).join('');
+        break;
+      case 'runs':
+        title = 'Running';
+        sub = 'Do you run?';
+        body = onbChoices('runs', [[true, 'Yes'], [false, 'No']]);
+        break;
+      case 'mileage':
+        title = 'Weekly Mileage';
+        sub = 'Roughly how many miles a week are you running right now?';
+        body = onbChoices('mileage', Object.keys(ONB_MILEAGE).map(function(k) { return [k, ONB_MILEAGE_LABELS[k]]; }));
+        break;
+      case 'race':
+        title = 'Race';
+        sub = 'Training for a race?';
+        body = onbChoices('race', [[false, 'No'], [true, 'Yes']]);
+        if (onb.race === true) {
+          var dv = /^\d{4}-\d{2}-\d{2}$/.test(String(onb.raceDate || '')) ? onb.raceDate : '';
+          body += '<div class="settings-input-group"><div class="settings-input-label">Race Date</div>'
+            + '<input class="run-input" type="date" id="onb-race-date" min="' + todayKey() + '" value="' + dv + '"'
+            + ' onchange="onbSetRaceDate(this.value)" oninput="onbSetRaceDate(this.value)">'
+            + '<div class="onb-q-hint" id="onbRaceHint"></div></div>';
+        }
+        break;
+      case 'distance':
+        title = 'Race Distance';
+        sub = 'What distance are you racing?';
+        body = onbChoices('distance', Object.keys(ONB_DIST_LABELS).map(function(k) { return [k, ONB_DIST_LABELS[k]]; }));
+        break;
+      case 'done':
+        title = 'You’re all set.';
+        sub = 'Here’s your first workout.';
+        body = onbSummaryHTML();
+        break;
+    }
+    function el(id) { return document.getElementById(id); }
+    if (el('onbTitle')) el('onbTitle').textContent = title;
+    if (el('onbSub')) el('onbSub').textContent = sub;
+    if (el('onbBody')) el('onbBody').innerHTML = body;
+    if (el('onbStepLabel')) el('onbStepLabel').textContent = isDone ? 'Setup complete' : 'Question ' + (i + 1) + ' of ' + questions;
+    if (el('onbProgressFill')) el('onbProgressFill').style.width = Math.round(((isDone ? questions : i + 1) / questions) * 100) + '%';
+    if (el('onbBackBtn')) el('onbBackBtn').style.display = i === 0 ? 'none' : '';
+    if (el('onbNextBtn')) el('onbNextBtn').textContent = isDone ? 'Start Day 1 →' : 'Next';
+    if (el('onbLater')) el('onbLater').style.display = isDone ? '' : 'none';
+    if (el('onbRestore')) el('onbRestore').style.display = i === 0 ? '' : 'none';
+    var card = el('onbWizardCard');
+    if (card) card.scrollTop = 0;
+    onbPaintNext();
+    if (onb.step === 'maxes') {
+      setTimeout(function() { var f = el('onb-max-squat'); if (f && !f.value) f.focus(); }, 80);
+    }
+  }
+  function onbPaintNext() {
+    var next = document.getElementById('onbNextBtn');
+    if (next) next.disabled = !onbStepValid(onb.step);
+    var hint = document.getElementById('onbRaceHint');
+    if (hint) hint.textContent = (onb.race === true && onb.raceDate && !onbDateOK(onb.raceDate)) ? 'Pick today or a later date.' : '';
+  }
+
+  function onbPick(field, value) {
+    onb[field] = value;
+    if (field === 'days') {
+      var keep = value === 6 && (onb.split === 'ppl' || onb.split === 'arnold');
+      if (!keep) onb.split = ONB_SPLIT_BY_DAYS[value];
+    }
+    onbSaveDraft();
+    onbRender();
+  }
+  //  Typing re-checks Next without re-rendering, so the field keeps focus.
+  function onbSetMax(k, v) {
+    if (MAX_KEYS.indexOf(k) === -1) return;
+    onb[k] = String(v == null ? '' : v);
+    onbSaveDraft();
+    onbPaintNext();
+  }
+  function onbSetRaceDate(v) {
+    onb.raceDate = String(v || '');
+    onbSaveDraft();
+    onbPaintNext();
+  }
+  function onbNext() {
+    if (!onbStepValid(onb.step)) { onbPaintNext(); return; }
+    if (onb.step === 'done') { finishOnboarding(); return; }
+    var steps = onbSteps();
+    onb.step = steps[steps.indexOf(onb.step) + 1] || 'done';
+    onbSaveDraft();
+    onbRender();
+  }
+  function onbBack() {
+    var steps = onbSteps(), i = steps.indexOf(onb.step);
+    if (i <= 0) return;
+    onb.step = steps[i - 1];
+    onbSaveDraft();
+    onbRender();
+  }
+
+  //  Race within TAPER_AUTO_DAYS turns Maintenance Mode on, once per race date.
+  //  Runs at onboarding completion and on every app open, which is how a race
+  //  set further out picks up its taper three weeks before the day.
+  function applyTaperAutoEnable() {
+    var raceKey = runPlan && runPlan.raceDate;
+    var race = raceKey ? parseDateKey(raceKey) : null;
+    if (!race || isNaN(race.getTime())) return false;
+    var days = dayDiff(startOfToday(), race);
+    if (days < 0 || days > TAPER_AUTO_DAYS) return false;
+    var fired = null;
+    try { fired = localStorage.getItem(TAPER_AUTO_KEY); } catch(e) {}
+    if (fired === raceKey) return false;
+    try { localStorage.setItem(TAPER_AUTO_KEY, raceKey); } catch(e) {}
+    idbSet('taperAutoRace', raceKey);
+    if (maintenanceMode) return false;
+    maintenanceMode = true;
+    persistMaintenanceMode();
+    updateMaintenanceModeUI();
+    if (typeof renderDaySections === 'function') { renderDaySections(); renderAllRowStates(); }
+    return true;
+  }
+
+  function finishOnboarding() {
+    var steps = onbSteps();
+    for (var i = 0; i < steps.length; i++) {
+      if (!onbStepValid(steps[i])) { onb.step = steps[i]; onbSaveDraft(); onbRender(); return; }
+    }
+    //  Split first: liftDaysPerWeek feeds the run-plan merge written below.
+    setSplit(onb.split);
+    userMaxes = {};
+    MAX_KEYS.forEach(function(k) { userMaxes[k] = onbNum(onb[k]); });
+    persistMaxes();
+    updateMaxChips();
+    //  The same cycle-start record Start New Cycle takes, so this first cycle
+    //  archives with its real starting maxes rather than an estimate.
+    setLSMirrored(CYCLE_START_MAXES_KEY, 'cycleStartMaxes', { maxes: JSON.parse(JSON.stringify(userMaxes)), date: todayKey() });
+
+    //  Running writes through the Run tab's own fields and onRunInput(), the one
+    //  parse-and-persist path, exactly as the old step-2 modal does.
+    var runs = onb.runs === true;
+    var racing = runs && onb.race === true;
+    function field(id, v) { var e = document.getElementById(id); if (e) e.value = v; }
+    if (runs) {
+      var current = ONB_MILEAGE[onb.mileage];
+      field('run-current', current);
+      field('run-race-date', racing ? onb.raceDate : '');
+      if (racing) {
+        field('run-distance', onb.distance);
+        field('run-peak', Math.min(80, Math.max(suggestedPeak(runPlan.level, onb.distance), current)));
+      }
+      onRunInput();
+    }
+    runPlan.runner = runs;
+    runPlan.mileageBand = runs ? onb.mileage : null;   // kept for future Strava/programming work
+    runPlan.liftDays = liftDaysPerWeek;
+    persistRunPlan();
+    initRunPlan();
+    applyTaperAutoEnable();
+
+    try { localStorage.setItem(ONBOARDING_KEY, 'true'); } catch(e) {}
+    idbSet('onboardingComplete', true);
+    try { localStorage.removeItem(ONBOARDING_DRAFT_KEY); } catch(e) {}
+    onb = {};
+    closeOnboardingWizard();
+    setTrainWeek(0);
+    var firstDay = activeSplit().week.filter(function(d) { return d !== 'rest'; })[0];
+    goTab('training');
+    if (firstDay) switchDay(firstDay);
+  }
+
   //     BACKUP / RESTORE — full history as a JSON file, restorable anywhere
   function exportData() {
     var archive = null;
@@ -6296,6 +6656,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
         renderAllRowStates();
         renderProgressView();
         if (typeof renderRing === 'function') renderRing();
+        //  A restored user is not a new one — never walk them through setup
+        try { localStorage.setItem(ONBOARDING_KEY, 'true'); } catch(e) {}
+        idbSet('onboardingComplete', true);
+        try { localStorage.removeItem(ONBOARDING_DRAFT_KEY); } catch(e) {}
+        closeOnboardingWizard();
         alert('Restored history for ' + Object.keys(sessions).length + ' lifts.');
       } catch(e) {
         alert('That file is not a Run the Weights backup.');
@@ -8361,6 +8726,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     renderAllRowStates();
     renderProgressView();
     initRunPlan();
+    // A race set further out picks up its taper once it is 3 weeks away
+    applyTaperAutoEnable();
     initStravaSync();
     renderWeekCalendar();
     // Bring the ring, the Overview tabs and the calendar header onto the
@@ -8368,11 +8735,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     syncWeekDisplays(currentTrainWeek);
     // Recover history/maxes from the IndexedDB mirror if localStorage was wiped
     restoreFromIDB();
-    // First visit: walk straight into setup — maxes, then the race
-    var hasMaxes = userMaxes.squat || userMaxes.bench || userMaxes.ohp;
-    if (!hasMaxes && !Object.keys(sessions).length) {
-      setTimeout(openOnboarding, 600);
-    }
+    // First launch only: the one-question-per-screen setup wizard
+    setTimeout(maybeStartOnboarding, 600);
   });
 </script>
 

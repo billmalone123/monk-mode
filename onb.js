@@ -70,6 +70,7 @@ var doc = {
   querySelector: function () { return null; },
   querySelectorAll: function () { return []; },
   createElement: function (t) { return mkEl('', t, ''); },
+  createElementNS: function (ns, t) { return mkEl('', t, ''); },
   addEventListener: function (t, fn) { (doc._ls[t] = doc._ls[t] || []).push(fn); },
   removeEventListener: function () {},
   _ls: {},
@@ -313,6 +314,149 @@ ctx.openMaxesModal();
 type('max-squat', 315);
 ctx.saveMaxes();
 eq('no step-2 modal from the settings entry point', el('runSetupModal').style.display, 'none');
+
+// ══ 14. First-launch wizard ═══════════════════════════════════════════════
+function dateKeyIn(days) {
+  var d = ctx.addDays(ctx.startOfToday(), days);
+  function p(n) { return n < 10 ? '0' + n : '' + n; }
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+function freshUser() {
+  storage.clear();
+  ctx.userMaxes = {}; ctx.runPlan = {}; ctx.sessions = {}; ctx.maintenanceMode = false;
+  ctx.loadMaxes(); ctx.loadRunPlan(); ctx.loadRunLogs(); ctx.initRunPlan();
+  ctx.setTrainWeek(3);   // prove completion puts a user back on week 1
+}
+
+section('14. Wizard — non-runner, 4 days');
+freshUser();
+ok('not done for a fresh user', !ctx.onboardingDone());
+ctx.openOnboardingWizard();
+eq('wizard visible', el('onbWizard').style.display, 'flex');
+eq('opens on the day-count question', ctx.onb.step, 'days');
+eq('Next disabled until answered', el('onbNextBtn').disabled, true);
+ctx.onbNext();
+eq('cannot skip Q1', ctx.onb.step, 'days');
+ctx.onbPick('days', 4);
+eq('4 days -> Upper/Lower', ctx.onb.split, 'upper-lower');
+ctx.onbNext();
+eq('Q2 maxes', ctx.onb.step, 'maxes');
+ctx.onbSetMax('squat', '315'); ctx.onbSetMax('bench', '225');
+ctx.onbNext();
+eq('blocked with a max missing', ctx.onb.step, 'maxes');
+ctx.onbSetMax('ohp', '-5'); ctx.onbNext();
+eq('blocked on a non-positive max', ctx.onb.step, 'maxes');
+ctx.onbSetMax('ohp', '70'); ctx.onbNext();
+eq('Q3 runs', ctx.onb.step, 'runs');
+eq('partial answers persisted', JSON.parse(storage.getItem('monk_onboarding_draft_v1')).squat, '315');
+ctx.onbBack();
+eq('Back returns to maxes', ctx.onb.step, 'maxes');
+ctx.onb = {}; ctx.openOnboardingWizard();
+eq('reopening resumes from the draft', ctx.onb.step, 'maxes');
+ctx.onbNext();
+ctx.onbPick('runs', false);
+eq('non-runner skips Q4-Q6', ctx.onbSteps().join(','), 'days,maxes,runs,done');
+ctx.onbNext();
+eq('final screen', ctx.onb.step, 'done');
+eq('final button text', el('onbNextBtn').textContent, 'Start Day 1 →');
+ctx.onbNext();
+eq('split applied', ctx.activeSplitId, 'upper-lower');
+eq('lift days follow the split', ctx.liftDaysPerWeek, 4);
+eq('squat max saved as a number', JSON.parse(storage.getItem('monk_mode_maxes_v1')).squat, 315);
+eq('ohp max saved', ctx.userMaxes.ohp, 70);
+eq('week reset to Week 1', ctx.currentTrainWeek, 0);
+eq('completion flag', storage.getItem('monk_onboarding_complete_v1'), 'true');
+eq('draft cleared', storage.getItem('monk_onboarding_draft_v1'), null);
+eq('wizard closed', el('onbWizard').style.display, 'none');
+eq('runner flag stored false', JSON.parse(storage.getItem('monk_run_plan_v1')).runner, false);
+ok('no race stored', !ctx.runPlan.raceDate);
+eq('maintenance untouched', ctx.maintenanceMode, false);
+eq('lands on the Train tab', storage.getItem('monk_mode_last_tab_v1'), 'training');
+eq('lands on Day 1 of the split', storage.getItem('monk_mode_last_day_v1'), 'upper-a');
+ok('cycle-start maxes recorded', !!JSON.parse(storage.getItem('monk_cycle_start_maxes_v1')).maxes);
+el('onbWizard').style.display = 'none';
+ctx.maybeStartOnboarding();
+eq('never re-shows once complete', el('onbWizard').style.display, 'none');
+
+section('15. Wizard — runner, 6 days Arnold, race in 14 days');
+freshUser();
+ctx.openOnboardingWizard();
+ctx.onbPick('days', 6);
+eq('6 days defaults to PPL', ctx.onb.split, 'ppl');
+ctx.onbPick('split', 'arnold');
+ctx.onbPick('days', 6);
+eq('re-tapping 6 keeps the Arnold pick', ctx.onb.split, 'arnold');
+ctx.onbNext();
+ctx.onbSetMax('squat', 405); ctx.onbSetMax('bench', 315); ctx.onbSetMax('ohp', 90);
+ctx.onbNext();
+ctx.onbPick('runs', true);
+eq('runner branch', ctx.onbSteps().join(','), 'days,maxes,runs,mileage,race,done');
+ctx.onbNext();
+eq('Q4 mileage', ctx.onb.step, 'mileage');
+ctx.onbNext();
+eq('mileage required for runners', ctx.onb.step, 'mileage');
+ctx.onbPick('mileage', '10-20'); ctx.onbNext();
+eq('Q5 race', ctx.onb.step, 'race');
+ctx.onbPick('race', true);
+ctx.onbNext();
+eq('race date required on Yes', ctx.onb.step, 'race');
+ctx.onbSetRaceDate('2020-01-01'); ctx.onbNext();
+eq('past date rejected', ctx.onb.step, 'race');
+ctx.onbSetRaceDate('<img src=x>'); ctx.onbNext();
+eq('garbage date rejected', ctx.onb.step, 'race');
+var race14 = dateKeyIn(14);
+ctx.onbSetRaceDate(race14); ctx.onbNext();
+eq('Q6 distance', ctx.onb.step, 'distance');
+ctx.onbPick('distance', 'marathon'); ctx.onbNext();
+eq('final screen', ctx.onb.step, 'done');
+ok('summary mentions the taper', el('onbBody').innerHTML.indexOf('Maintenance Mode turns on now') !== -1);
+ctx.onbNext();
+eq('Arnold applied', ctx.activeSplitId, 'arnold');
+eq('race date stored', ctx.runPlan.raceDate, race14);
+eq('distance stored', ctx.runPlan.distance, 'marathon');
+eq('mileage baseline -> current', ctx.runPlan.current, 15);
+eq('mileage band kept', JSON.parse(storage.getItem('monk_run_plan_v1')).mileageBand, '10-20');
+eq('runner flag', ctx.runPlan.runner, true);
+eq('Run tab field populated', el('run-race-date').value, race14);
+eq('race within 21 days -> Maintenance Mode on', ctx.maintenanceMode, true);
+eq('taper recorded for this race', storage.getItem('monk_taper_auto_race_v1'), race14);
+eq('lands on Arnold Day 1', storage.getItem('monk_mode_last_day_v1'), 'chest');
+ctx.maintenanceMode = false; ctx.persistMaintenanceMode();
+eq('manual switch-off sticks on next open', ctx.applyTaperAutoEnable(), false);
+eq('still off', ctx.maintenanceMode, false);
+ok('run plan renders without throwing',
+   (function () { try { ctx.renderRunPlan(); return true; } catch (e) { return false; } })());
+
+section('16. Wizard — race in 30 days, taper arrives later');
+freshUser();
+ctx.openOnboardingWizard();
+ctx.onbPick('days', 5);
+eq('5 days -> PPLUL', ctx.onb.split, 'pplul');
+ctx.onbNext();
+ctx.onbSetMax('squat', 300); ctx.onbSetMax('bench', 200); ctx.onbSetMax('ohp', 60);
+ctx.onbNext(); ctx.onbPick('runs', true); ctx.onbNext();
+ctx.onbPick('mileage', '30+'); ctx.onbNext();
+ctx.onbPick('race', true); ctx.onbSetRaceDate(dateKeyIn(30)); ctx.onbNext();
+ctx.onbPick('distance', '5k'); ctx.onbNext();
+ok('summary promises the automatic taper', el('onbBody').innerHTML.indexOf('3 weeks before race day') !== -1);
+ctx.onbNext();
+eq('30+ -> 35 mi baseline', ctx.runPlan.current, 35);
+ok('peak never below the baseline', ctx.runPlan.peak >= 35, ctx.runPlan.peak);
+eq('race beyond 21 days -> Maintenance Mode off', ctx.maintenanceMode, false);
+eq('no taper recorded yet', storage.getItem('monk_taper_auto_race_v1'), null);
+ctx.runPlan.raceDate = dateKeyIn(20);
+eq('app open 20 days out enables it', ctx.applyTaperAutoEnable(), true);
+eq('Maintenance Mode now on', ctx.maintenanceMode, true);
+
+section('17. Race No after Yes drops the distance question');
+freshUser();
+ctx.openOnboardingWizard();
+ctx.onbPick('days', 3);
+eq('3 days -> Full Body', ctx.onb.split, 'full-body');
+ctx.onbPick('runs', true); ctx.onbPick('race', true);
+ok('distance asked on Yes', ctx.onbSteps().indexOf('distance') !== -1);
+ctx.onbPick('race', false);
+ok('distance gone on No', ctx.onbSteps().indexOf('distance') === -1);
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
