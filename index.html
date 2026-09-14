@@ -3266,8 +3266,46 @@ body.training-mode select.run-input { color: #F1EFE1; }
         <span class="maintenance-toggle-knob"></span>
       </button>
     </div>
+    <button class="settings-danger-btn" id="changePlanBtn" onclick="openChangePlanModal()">Change Training Plan</button>
     <button class="settings-danger-btn" id="resetMaxesBtn" onclick="resetMaxes()">Reset 1RMs</button>
     <button class="settings-danger-btn" id="startCycleBtn" onclick="startNewCycle()">Start New Cycle</button>
+  </div>
+</div>
+
+<!-- CHANGE TRAINING PLAN MODAL — switch split/day-count without touching maxes,
+     history, or quick-log entries. setSplit() already keeps those untouched;
+     this only adds resetting the week/day to Week 1 Day 1 of the new split,
+     which a genuine plan change should do but the raw Settings picker doesn't. -->
+<div class="settings-modal-overlay" id="changePlanModal" style="display:none;">
+  <div class="settings-modal-card" id="changePlanModalCard">
+    <div class="settings-modal-brand">
+      <img src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
+      <div class="settings-modal-title">Change Training Plan</div>
+    </div>
+
+    <div id="cpStep1">
+      <div class="settings-modal-sub" id="cpCurrentPlanText"></div>
+      <div class="settings-input-label">How many days a week do you want to lift?</div>
+      <div class="liftdays-group" style="margin-bottom:32px;">
+        <button class="liftdays-btn" onclick="changePlanPickDays(3)">3</button>
+        <button class="liftdays-btn" onclick="changePlanPickDays(4)">4</button>
+        <button class="liftdays-btn" onclick="changePlanPickDays(5)">5</button>
+        <button class="liftdays-btn" onclick="changePlanPickDays(6)">6</button>
+      </div>
+    </div>
+
+    <div id="cpStep2" style="display:none;">
+      <div class="settings-modal-sub" id="cpStep2Text"></div>
+      <div id="cpStep2Options"></div>
+    </div>
+
+    <div id="cpStep3" style="display:none;">
+      <div class="settings-modal-sub" id="cpSuccessText"></div>
+    </div>
+
+    <button class="settings-cancel-btn" id="cpBackBtn" onclick="changePlanBackToStep1()" style="display:none;margin-bottom:10px;">&#8249; Back</button>
+    <button class="settings-cancel-btn" id="cpCancelBtn" onclick="closeChangePlanModal()">Cancel</button>
+    <button class="settings-save-btn" id="cpDoneBtn" onclick="closeChangePlanModal()" style="display:none;">Done</button>
   </div>
 </div>
 <!-- RUN SETUP MODAL — onboarding step 2. Its fields are a front end for the Run
@@ -4945,6 +4983,95 @@ body.training-mode select.run-input { color: #F1EFE1; }
     setSplit(presets[0]);
   }
 
+  //     CHANGE TRAINING PLAN — the guided, user-facing version of the raw
+  //     Split picker above. Routes through the exact same setSplit(), so
+  //     maxes/sessions/setCounts/quick-log entries are untouched by
+  //     construction (setSplit never reads or writes any of them) — this
+  //     only adds two things setSplit alone doesn't do: reset the training
+  //     week to 0 and jump to the new split's first day, since a genuine
+  //     plan change should start you at Week 1 Day 1, not leave you wherever
+  //     you happened to be in the old split's week.
+  function splitLabelFor(id) {
+    return (SPLIT_TEMPLATES[id] && SPLIT_TEMPLATES[id].label) || id;
+  }
+  function openChangePlanModal() {
+    var textEl = document.getElementById('cpCurrentPlanText');
+    if (textEl) textEl.textContent = "You're on " + activeSplit().label + ', ' + liftDaysPerWeek + ' days a week.';
+    changePlanShowStep(1);
+    var m = document.getElementById('changePlanModal');
+    if (m) m.style.display = 'flex';
+  }
+  function closeChangePlanModal() {
+    var m = document.getElementById('changePlanModal');
+    if (m) m.style.display = 'none';
+  }
+  function changePlanShowStep(n) {
+    [1, 2, 3].forEach(function(i) {
+      var el = document.getElementById('cpStep' + i);
+      if (el) el.style.display = i === n ? '' : 'none';
+    });
+    var backBtn = document.getElementById('cpBackBtn');
+    var cancelBtn = document.getElementById('cpCancelBtn');
+    var doneBtn = document.getElementById('cpDoneBtn');
+    if (backBtn) backBtn.style.display = n === 2 ? '' : 'none';
+    if (cancelBtn) cancelBtn.style.display = n === 3 ? 'none' : '';
+    if (doneBtn) doneBtn.style.display = n === 3 ? '' : 'none';
+  }
+  function changePlanBackToStep1() {
+    changePlanShowStep(1);
+  }
+  //  Picks the right Step 2 content for the chosen day count: already-on-
+  //  this-with-no-alternative (nothing to do), already-on-this-with-an-
+  //  alternative (offer the switch), a single mapping different from today
+  //  (one Continue button), or multiple mappings (one button per option).
+  //  Built off SPLIT_PRESETS_BY_DAYS's actual length rather than hardcoding
+  //  which day counts branch, so a future added preset starts branching here
+  //  automatically.
+  function changePlanPickDays(n) {
+    var presets = SPLIT_PRESETS_BY_DAYS[n] || [];
+    var alternatives = presets.filter(function(id) { return id !== activeSplitId; });
+    var sameDayCount = (n === liftDaysPerWeek);
+    var textEl = document.getElementById('cpStep2Text');
+    var optsEl = document.getElementById('cpStep2Options');
+    function optionButtons(ids) {
+      return ids.map(function(id) {
+        return '<button class="settings-save-btn" onclick="confirmChangePlan(\'' + id + '\')">' + splitLabelFor(id) + '</button>';
+      }).join('');
+    }
+    if (sameDayCount && !alternatives.length) {
+      textEl.textContent = "You're already set to " + activeSplit().label + ' (' + n + ' days) — there\'s no other ' + n + '-day split available yet.';
+      optsEl.innerHTML = '';
+      changePlanShowStep(2);
+      return;
+    }
+    if (sameDayCount && alternatives.length) {
+      textEl.textContent = "You're already on " + activeSplit().label + '. Switch to one of these instead?';
+      optsEl.innerHTML = optionButtons(alternatives);
+      changePlanShowStep(2);
+      return;
+    }
+    if (presets.length <= 1) {
+      var onlyId = presets[0];
+      textEl.textContent = 'This will switch you to ' + splitLabelFor(onlyId) + '. Your workout history stays. Continue?';
+      optsEl.innerHTML = '<button class="settings-save-btn" onclick="confirmChangePlan(\'' + onlyId + '\')">Continue</button>';
+      changePlanShowStep(2);
+      return;
+    }
+    textEl.textContent = 'Choose a ' + n + '-day split:';
+    optsEl.innerHTML = optionButtons(presets);
+    changePlanShowStep(2);
+  }
+  function confirmChangePlan(splitId) {
+    var newLabel = splitLabelFor(splitId);
+    setSplit(splitId);
+    setTrainWeek(0);
+    var firstDay = (typeof splitDayIds === 'function') ? splitDayIds()[0] : null;
+    if (firstDay) switchDay(firstDay);
+    var successEl = document.getElementById('cpSuccessText');
+    if (successEl) successEl.textContent = 'Switched to ' + newLabel + '. Starting fresh at Week 1 Day 1. All your history is saved.';
+    changePlanShowStep(3);
+  }
+
   function updateLiftDaysUI() {
     document.querySelectorAll('.liftdays-btn').forEach(function(b) {
       b.classList.toggle('on', b.dataset.split === activeSplitId);
@@ -5966,6 +6093,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (resetBtn) resetBtn.style.display = _onboarding ? 'none' : '';
     var cycleBtn = document.getElementById('startCycleBtn');
     if (cycleBtn) cycleBtn.style.display = _onboarding ? 'none' : '';
+    var changePlanBtn = document.getElementById('changePlanBtn');
+    if (changePlanBtn) changePlanBtn.style.display = _onboarding ? 'none' : '';
     var maintRow = document.getElementById('maintenanceModeRow');
     if (maintRow) maintRow.style.display = _onboarding ? 'none' : '';
     updateMaintenanceModeUI();
