@@ -2074,7 +2074,7 @@ body.training-mode footer { display: none; }
    clipping ancestor and a panel parented inside it would be cut off. */
 .navmenu {
   position: fixed; z-index: 500; min-width: 190px; max-width: 260px;
-  background: var(--card); border: 1px solid var(--border-hi); border-radius: 12px;
+  background: var(--bg); border: 1px solid var(--border-hi); border-radius: 12px;
   box-shadow: 0 18px 44px rgba(0,0,0,0.6); padding: 8px;
   opacity: 0; transform: scale(0.95); transform-origin: top left;
   transition: opacity 0.13s ease, transform 0.13s ease;
@@ -2093,14 +2093,18 @@ body.training-mode footer { display: none; }
 }
 .navmenu-item {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  width: 100%; background: none; border: 0; cursor: pointer;
-  padding: 10px 10px; border-radius: 8px; text-align: left;
+  width: 100%; min-height: 44px; background: none; border: 0; cursor: pointer;
+  padding: 10px 12px; border-radius: 8px; text-align: left;
+  border-left: 3px solid transparent;
   font-family: var(--font-display); font-weight: 700; font-size: 13px;
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 .navmenu-item:hover, .navmenu-item:focus-visible { background: var(--surface-2); color: var(--text); outline: none; }
-.navmenu-item.current { color: var(--text); }
+.navmenu-item:focus { outline: none; }
+.navmenu-item:active { background: var(--surface-2); }
+.navmenu-item.current { color: var(--text); border-left-color: var(--accent); background: rgba(241,239,225,0.06); }
 .navmenu-item.primary { font-size: 15px; color: var(--text); }
 .navmenu-tick { font-size: 10px; color: var(--accent); opacity: 0; }
 .navmenu-item.current .navmenu-tick { opacity: 1; }
@@ -2707,7 +2711,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.57</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.58</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2772,7 +2776,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.57</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.58</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3007,7 +3011,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.57</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.58</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3125,7 +3129,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.57</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.58</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3147,7 +3151,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.57</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.58</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
