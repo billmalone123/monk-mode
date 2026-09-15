@@ -2707,7 +2707,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.59</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.60</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2772,7 +2772,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.59</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.60</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3007,7 +3007,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.59</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.60</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3125,7 +3125,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.59</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.60</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3147,7 +3147,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.59</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.60</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3761,6 +3761,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     mirrorPlainKey('stravaSync', STRAVA_SYNC_KEY, function(v) { return !!v; });
     mirrorPlainKey('backupNudge', BACKUP_NUDGE_KEY, function(v) { return !!v && typeof v === 'object'; });
     mirrorPlainKey('autopickDate', AUTOPICK_DATE_KEY, function(v) { return typeof v === 'string' && !!v; });
+    //  activeSession has no IndexedDB mirror by design — see the comment on
+    //  persistActiveSession() for why (a mirror here can resurrect a session
+    //  that was correctly cleared, which was caught in testing).
     mirrorPlainKey('onboardingComplete', ONBOARDING_KEY, function(v) { return v === true; });
     mirrorPlainKey('taperAutoRace', TAPER_AUTO_KEY, function(v) { return typeof v === 'string' && !!v; });
   }
@@ -5283,6 +5286,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function onAimInput(exId) {
     var ex = EX_BY_ID[exId];
     if (!ex) return;
+    snapshotExerciseDraft(exId);
     clearTimeout(_aimT[exId]);
     _aimT[exId] = setTimeout(function() { commitAim(exId); }, 1200);
     renderWarmupsAndTargets(ex);
@@ -5314,12 +5318,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
     clearTimeout(_autoSaveT[exId]);
     _autoSaveT[exId] = setTimeout(function() { autoSaveExercise(exId, fireTimer); }, 1200);
   }
-  function onSetInput(inp) { scheduleAutoSave(inp.dataset.ex, true); }
+  function onSetInput(inp) { snapshotExerciseDraft(inp.dataset.ex); scheduleAutoSave(inp.dataset.ex, true); }
   function onSetCommit(inp) {
     clearTimeout(_autoSaveT[inp.dataset.ex]);
     autoSaveExercise(inp.dataset.ex, true);
   }
-  function onLogEdit(exId) { scheduleAutoSave(exId, false); }
+  function onLogEdit(exId) { snapshotExerciseDraft(exId); scheduleAutoSave(exId, false); }
   //  Blur commit for the set-weight boxes. They had the 1200ms debounce but no
   //  commit, so leaving the field inside that window lost the value — the reps
   //  boxes have had onSetCommit all along. fireTimer stays false: a weight edit
@@ -5453,6 +5457,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (typeof renderRing === 'function') renderRing();
         if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
       }
+      if (activeSession && activeSession.exId === exId) { activeSession.draft = null; persistActiveSession(); }
       return;
     }
     //  Top set across every slot that was logged, not just the first two.
@@ -5476,6 +5481,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     renderProgressView();
     if (typeof renderRing === 'function') renderRing();
     if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
+    //  This set is now durably saved — the draft's whole job was covering
+    //  the gap until this happened, so it has nothing left to protect.
+    if (activeSession && activeSession.exId === exId) { activeSession.draft = null; persistActiveSession(); }
     var note = document.getElementById('save-' + exId);
     if (note) {
       note.textContent = '✓ Saved';
@@ -5652,6 +5660,73 @@ body.training-mode select.run-input { color: #F1EFE1; }
     }).join('');
   }
 
+    //     ACTIVE SESSION — survives a killed-and-reloaded tab, not just a
+    //     hidden one. iOS can reclaim a backgrounded PWA's tab entirely; when
+    //     that happens the whole script re-executes from scratch on return,
+    //     so anything that only lived in a JS variable (which exercise/set
+    //     you were on, what you'd typed but not yet saved, the rest timer)
+    //     is gone unless it was written to storage as it happened. One key,
+    //     checked once at cold load before the normal day/tab restore logic
+    //     runs, so a genuine reload resumes exactly where you were instead of
+    //     rerouting you through the ordinary "which day should I open" logic.
+    //     { dayId, exId, draft:{w,r,s1w,s1r,s2w,s2r,s3w,s3r}, timer:{endTime,
+    //     total, liftName, surface}, updatedAt }
+  const ACTIVE_SESSION_KEY = 'monk_active_session_v1';
+  const ACTIVE_SESSION_MAX_AGE_MS = 4 * 60 * 60 * 1000; // 4 hours — likely abandoned past this
+  var activeSession = null;
+  var _sessionRestoreAttempted = false; // in-memory on purpose: only a genuine
+    // reload should re-trigger a restore, never a same-session tab switch —
+    // a plain variable resets exactly on reload and nowhere else, which is
+    // precisely the condition this needs (unlike the day-auto-pick logic,
+    // which needed to survive a reload and was moved to a persisted date for
+    // that reason — this is the opposite requirement).
+  //  Deliberately localStorage-only, no IndexedDB mirror. Every other
+  //  persisted key mirrors to IDB because localStorage eviction is a real,
+  //  if rare, way to lose durable data. This key isn't that: a backgrounded
+  //  tab getting killed and reloaded — the whole scenario this exists for —
+  //  does not wipe localStorage, and a mirror here actively hurts:
+  //  clearActiveSession() removes localStorage synchronously but IDB only
+  //  asynchronously, so restoreFromIDB()'s recovery pass can read the old IDB
+  //  copy and resurrect a session that had just been correctly invalidated
+  //  (confirmed while testing the 4-hour staleness path — the mirror raced
+  //  ahead of the synchronous restore check and un-expired it). Short-lived
+  //  and self-expiring is exactly the profile that doesn't need this.
+  function persistActiveSession() {
+    if (!activeSession) {
+      try { localStorage.removeItem(ACTIVE_SESSION_KEY); } catch(e) {}
+      return;
+    }
+    activeSession.updatedAt = Date.now();
+    try { localStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(activeSession)); } catch(e) {}
+  }
+  function clearActiveSession() {
+    activeSession = null;
+    try { localStorage.removeItem(ACTIVE_SESSION_KEY); } catch(e) {}
+  }
+  //  Snapshot of every input currently on screen for one exercise — aim plus
+  //  all three set slots, whichever exist. Written on every keystroke, not
+  //  debounced like the real autosave, because backgrounding suspends
+  //  pending setTimeout callbacks — a value typed just before switching apps
+  //  could otherwise never reach storage before the tab is killed.
+  function snapshotExerciseDraft(exId) {
+    function v(id) {
+      var el = document.getElementById(id);
+      if (!el) return null;
+      var val = el.value;
+      return (val === '' || val == null) ? null : val;
+    }
+    activeSession = activeSession || {};
+    activeSession.dayId = getMostRecentDay();
+    activeSession.exId = exId;
+    activeSession.draft = {
+      w: v('w-' + exId), r: v('r-' + exId),
+      s1w: v('s1w-' + exId), s1r: v('s1r-' + exId),
+      s2w: v('s2w-' + exId), s2r: v('s2r-' + exId),
+      s3w: v('s3w-' + exId), s3r: v('s3r-' + exId)
+    };
+    persistActiveSession();
+  }
+
     //     REST TIMER
   var TIMER_BG_KEY = 'monk_timer_bg_v1';
   var timerInterval = null;
@@ -5661,6 +5736,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   var timerEndTime = 0;         // ms timestamp when timer fires (0 = not set)
   var timerPausedRemaining = 0; // seconds left when paused
   var timerLiftName = '';
+  var timerSurface = 'bar';     // 'bar' (quiet, auto-started) or 'modal' (explicit) — whichever is showing
   var _notifTimeout = null;
 
   function parseRestToSeconds(restStr) {
@@ -5761,12 +5837,16 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function _saveTimerState() {
     try {
       if (timerRunning && timerEndTime > 0) {
-        var snap = { endTime: timerEndTime, total: timerTotal, liftName: timerLiftName };
+        var snap = { endTime: timerEndTime, total: timerTotal, liftName: timerLiftName, surface: timerSurface };
         localStorage.setItem(TIMER_BG_KEY, JSON.stringify(snap));
         idbSet('timerBg', snap);
+        activeSession = activeSession || {};
+        activeSession.timer = snap;
+        persistActiveSession();
       } else {
         localStorage.removeItem(TIMER_BG_KEY);
         idbSet('timerBg', null);
+        if (activeSession) { activeSession.timer = null; persistActiveSession(); }
       }
     } catch(e) {}
   }
@@ -5822,6 +5902,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     timerEndTime = Date.now() + seconds * 1000;
     timerLiftName = liftName || '';
     timerPausedRemaining = 0;
+    timerSurface = quiet ? 'bar' : 'modal';
     _saveTimerState();
     var display = document.getElementById('timerDisplay');
     var fill = document.getElementById('timerFill');
@@ -5869,7 +5950,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       timerPausedRemaining = Math.max(0, Math.ceil((timerEndTime - Date.now()) / 1000));
       timerEndTime = 0;
       if (_notifTimeout) clearTimeout(_notifTimeout);
-      try { localStorage.removeItem(TIMER_BG_KEY); } catch(e) {}
+      _saveTimerState();
       setTimerToggleIcon(btn, false);
     } else {
       timerEndTime = Date.now() + timerPausedRemaining * 1000;
@@ -5921,7 +6002,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (timerInterval) clearInterval(timerInterval);
     if (_notifTimeout) clearTimeout(_notifTimeout);
     timerRunning = false; timerEndTime = 0; timerPausedRemaining = 0;
-    try { localStorage.removeItem(TIMER_BG_KEY); } catch(e) {}
+    _saveTimerState();
     var bar = document.getElementById('timerBar');
     if (bar) bar.classList.remove('visible');
     var modal = document.getElementById('restModal');
@@ -5942,43 +6023,60 @@ body.training-mode select.run-input { color: #F1EFE1; }
   }
 
   // Restore timer when tab/screen returns from background
+  //  Shared by the visibilitychange listener below (tab stayed alive, just
+  //  hidden) and the cold-load active-session restore (tab was killed and
+  //  reloaded — same math, same rule either way: an elapsed rest the user
+  //  didn't watch finish gets a calm completion state, not a beep/vibrate/
+  //  forced-open ambush, and whichever surface (bottom bar or full-screen
+  //  modal) was showing when the state was saved is the one that's restored.
+  function renderTimerRestoreState(stored) {
+    if (!stored || !stored.endTime) return false;
+    var remaining = Math.ceil((stored.endTime - Date.now()) / 1000);
+    timerTotal = stored.total || 90;
+    timerLiftName = stored.liftName || '';
+    timerSurface = stored.surface === 'modal' ? 'modal' : 'bar';
+    var showModal = timerSurface === 'modal';
+    var display = document.getElementById('timerDisplay');
+    var fill = document.getElementById('timerFill');
+    var toggleBtn = document.getElementById('timerToggleBtn');
+    var liftEl = document.getElementById('timerLiftName');
+    var modal = document.getElementById('restModal');
+    var bar = document.getElementById('timerBar');
+    var mLift = document.getElementById('restModalLift');
+    if (liftEl) liftEl.textContent = timerLiftName || '-';
+    if (mLift) mLift.textContent = timerLiftName;
+    if (remaining > 0) {
+      timerEndTime = stored.endTime;
+      timerRunning = true; timerSeconds = remaining; timerPausedRemaining = 0;
+      if (showModal) { if (modal) modal.classList.add('visible'); }
+      else { if (bar) bar.classList.add('visible'); }
+      if (display) { display.className = 'timer-display'; setTimerText(display, formatTime(remaining)); }
+      if (fill) { fill.style.width = Math.max(0, (remaining / timerTotal) * 100) + '%'; fill.className = 'timer-progress-fill'; }
+      setTimerToggleIcon(toggleBtn, true);
+      if (showModal) updateModalRing(remaining);
+      if (!timerInterval) timerInterval = setInterval(_timerTick, 400);
+    } else {
+      // Elapsed while away — calm completion in whichever surface was
+      // already showing. No sound, no vibration, no surface switch: the
+      // user didn't watch it finish, so it shouldn't ambush them now either.
+      timerRunning = false; timerEndTime = 0;
+      _saveTimerState();
+      if (showModal) { if (modal) modal.classList.add('visible'); }
+      else { if (bar) bar.classList.add('visible'); }
+      if (display) { display.className = 'timer-display done'; setTimerText(display, 'GO!'); }
+      if (fill) { fill.style.width = '0%'; fill.className = 'timer-progress-fill done'; }
+      setTimerToggleIcon(toggleBtn, false);
+      if (showModal) updateModalRing(0);
+    }
+    return true;
+  }
+
   document.addEventListener('visibilitychange', function() {
     if (document.hidden) return;
     try {
-      var stored = JSON.parse(localStorage.getItem(TIMER_BG_KEY));
-      if (!stored || !stored.endTime) return;
       if (timerRunning) return; // already ticking, _timerTick will catch up
-      var remaining = Math.ceil((stored.endTime - Date.now()) / 1000);
-      timerTotal = stored.total || 90;
-      timerLiftName = stored.liftName || '';
-      var display = document.getElementById('timerDisplay');
-      var fill = document.getElementById('timerFill');
-      var toggleBtn = document.getElementById('timerToggleBtn');
-      var modal = document.getElementById('restModal');
-      var mLift = document.getElementById('restModalLift');
-      if (remaining > 0) {
-        timerEndTime = stored.endTime;
-        timerRunning = true; timerSeconds = remaining; timerPausedRemaining = 0;
-        if (modal) modal.classList.add('visible');
-        if (mLift) mLift.textContent = timerLiftName;
-        if (display) { display.className = 'timer-display'; setTimerText(display, formatTime(remaining)); }
-        if (fill) { fill.style.width = Math.max(0, (remaining / timerTotal) * 100) + '%'; fill.className = 'timer-progress-fill'; }
-        setTimerToggleIcon(toggleBtn, true);
-        updateModalRing(remaining);
-        if (!timerInterval) timerInterval = setInterval(_timerTick, 400);
-      } else {
-        // Expired while hidden — show GO! and alert
-        timerRunning = false; timerEndTime = 0;
-        try { localStorage.removeItem(TIMER_BG_KEY); } catch(e) {}
-        if (modal) modal.classList.add('visible');
-        if (mLift) mLift.textContent = timerLiftName;
-        if (display) { display.className = 'timer-display done'; setTimerText(display, 'GO!'); }
-        if (fill) { fill.style.width = '0%'; fill.className = 'timer-progress-fill done'; }
-        setTimerToggleIcon(toggleBtn, false);
-        updateModalRing(0);
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-        playBeep();
-      }
+      var stored = JSON.parse(localStorage.getItem(TIMER_BG_KEY));
+      renderTimerRestoreState(stored);
     } catch(e) {}
   });
 
@@ -7060,6 +7158,16 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     day at all. Each surface now clears only its own, and the shorter
   //     splits route to switchAltDay() and persist the same way.
   function switchDay(dayId) {
+    //  A genuine day change means whatever mid-workout state was in progress
+    //  belongs to a day the user is now leaving — clear it rather than let it
+    //  resurface (wrong exercise, wrong day) on a later reload. Compared
+    //  against the day actually stored, not just "did the same id switch to
+    //  itself twice" — re-affirming the day you're already on (tab-away-and-
+    //  back, or the restore flow's own switchDay call) must never wipe a
+    //  draft that's still valid for right now.
+    var _prevDay = null;
+    try { _prevDay = localStorage.getItem(LAST_DAY_KEY); } catch(e) {}
+    if (_prevDay && _prevDay !== dayId) clearActiveSession();
     if (activeSplitId !== 'arnold') {
       switchAltDay(dayId);
       try { localStorage.setItem(LAST_DAY_KEY, dayId); } catch(e) {}
@@ -8887,6 +8995,66 @@ function getMostRecentDay() {
   return valid[0];
 }
 
+//  Resumes an in-progress workout after a genuine reload (the tab was
+//  killed and re-executed from scratch — a plain visibilitychange listener
+//  never fires for that, since there's no surviving JS context left to fire
+//  it in). Only ever attempted once per page load: _sessionRestoreAttempted
+//  is a plain in-memory flag, which is exactly right here — it resets
+//  precisely on a real reload and nowhere else, so a same-session tab
+//  switch back to Training later never re-triggers this and fights the
+//  user's own manual navigation the way pickTrainingDay()'s old in-memory
+//  flag once did (see AUTOPICK_DATE_KEY's comment for that history).
+//
+//  Position (day/exercise/draft) and the rest timer are restored as two
+//  independent concerns, not gated behind each other: a timer started from
+//  the Settings rest-timer-strip quick-start buttons (quickStartTimer(),
+//  not tied to any exercise) legitimately has activeSession.timer set with
+//  no dayId/exId at all, and that timer still deserves to resume even
+//  though there's no specific exercise position to restore alongside it.
+//
+//  Only restoring a real exercise position returns true, which is what
+//  tells the caller to skip the normal next-unlogged-day pick — a bare
+//  timer restore has no specific day to anchor that override to, so the
+//  ordinary pick still runs and the timer just resumes wherever it lands.
+function restoreActiveSessionIfPresent() {
+  if (_sessionRestoreAttempted) return false;
+  _sessionRestoreAttempted = true;
+  var stored = null;
+  try { stored = JSON.parse(localStorage.getItem(ACTIVE_SESSION_KEY)); } catch(e) { stored = null; }
+  if (!stored) return false;
+  if (!stored.updatedAt || (Date.now() - stored.updatedAt) > ACTIVE_SESSION_MAX_AGE_MS) {
+    clearActiveSession();
+    return false;
+  }
+  activeSession = stored;
+  if (stored.timer) renderTimerRestoreState(stored.timer);
+  if (!stored.dayId || !stored.exId) return false;
+  //  validDays + EX_BY_ID existing is the real guard here — exercises
+  //  resolve to a day through splitDayExercises(), not a 1:1 ex.day match,
+  //  once alt splits with explicit ex:[] lists are involved, so this doesn't
+  //  try to re-derive that mapping; it just confirms the day is still part
+  //  of whatever split is active now and the exercise id still exists.
+  var validDays = [];
+  try { validDays = splitDayIds(); } catch(e) {}
+  var ex = EX_BY_ID[stored.exId];
+  if (validDays.indexOf(stored.dayId) === -1 || !ex) return false;
+  switchDay(stored.dayId);
+  var row = document.getElementById('row-' + stored.exId);
+  if (row) {
+    var note = row.querySelector('.lift-note');
+    if (note) note.classList.add('open');
+    row.classList.add('expanded');
+    setTimeout(function() { row.scrollIntoView({ block: 'center' }); }, 50);
+  }
+  var draft = stored.draft || {};
+  ['w', 'r', 's1w', 's1r', 's2w', 's2r', 's3w', 's3r'].forEach(function(field) {
+    if (draft[field] == null) return;
+    var el = document.getElementById(field + '-' + stored.exId);
+    if (el) el.value = draft[field];
+  });
+  return true;
+}
+
 //  Earliest non-rest day in the active split's Mon-Sun order that has no
 //  logged sets for the current training week. Null when every lifting day
 //  this week is already logged. Rest days are skipped — a rest day with
@@ -9574,7 +9742,14 @@ function goTab(t) {
   } else {
     // Train, Run and Calendar all use the dark training chrome
     document.body.classList.add('training-mode');
-    if (t === 'training') switchDay(pickTrainingDay());
+    if (t === 'training') {
+      //  A killed-and-reloaded tab mid-workout takes priority over the
+      //  ordinary next-unlogged-day pick entirely — restoreActiveSessionIf
+      //  Present() already calls switchDay() itself when it finds something
+      //  to resume, so pickTrainingDay() (which would reroute to whichever
+      //  day is earliest-unlogged) never runs at all in that case.
+      if (!restoreActiveSessionIfPresent()) switchDay(pickTrainingDay());
+    }
     else if (t === 'calendar') {
       // Opens on whatever week is selected app-wide, never resets to week 1
       if (typeof renderCalendarTab === 'function') renderCalendarTab();
