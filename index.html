@@ -1105,6 +1105,7 @@
   .remove-ex:hover { border-color: var(--red); color: var(--red); }
   .lift-status { grid-column: 1 / -1; margin-top: 10px; cursor: default; }
   .soft-set-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; }
+  .seed-weight-note { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 2px; opacity: 0.8; }
   .stall-warning { font-size: 12px; color: var(--accent); font-weight: 700; margin-top: 6px; letter-spacing: 0.02em; }
   /* LOG MODAL */
   .log-modal-overlay {
@@ -2707,7 +2708,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.60</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.61</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2772,7 +2773,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.60</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.61</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3007,7 +3008,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.60</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.61</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3125,7 +3126,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.60</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.61</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3147,7 +3148,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.60</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.61</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -4512,6 +4513,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
   var WEEKLY_PCT = 0.03;  // +3% per working week
   var DELOAD_MULT = 0.85; // deload weeks back off to ~85%
   function isDeloadWeek(wk) { return (wk % 4) === 3; } // weeks 4, 8, 12, …
+  //     PER-EXERCISE WEIGHT MEMORY — shown alongside a seeded (never-logged)
+  //     starting weight so it reads as a rough guess, not a precise plan.
+  var SEED_WEIGHT_INDICATOR = 'Starting weight, adjust based on feel.';
   //     The exercise variant a logged entry represents (legacy entries with no
   //     variant field count as the exercise's default/primary movement).
   function entryVariant(e, ex) { return e.variant || (ex ? ex.name : null); }
@@ -4551,20 +4555,34 @@ body.training-mode select.run-input { color: #F1EFE1; }
       if (hist[j].week === wk && hist[j].weight && !hist[j].quickLog)
         return { mode: 'baseline', weight: hist[j].weight, reps: ex.repRange[0], msg: 'Logged this week at ' + hist[j].weight + ' lbs.' };
     }
-    // 3) No prior weeks logged — seed the starting weight from your max
+    // 3) No prior weeks logged — seed the starting weight from your max.
+    //    Per-exercise weight memory: an anchor lift STILL on its own default
+    //    movement (bench/squat/OHP, never swapped away) keeps this exact
+    //    seed untouched, no indicator — that's the "don't change anchor
+    //    logic" requirement. Everything else (accessories, and an anchor id
+    //    whose variant HAS been swapped to something else, e.g. Flat BB
+    //    Bench -> Dumbbell Bench Press) is a rough guess with nothing real
+    //    behind it yet, so it gets the subtle indicator. The moment any of
+    //    these has one logged entry for the active variant, step 1 above
+    //    (prevWeekEntry, already variant-aware) takes over with the real
+    //    logged weight + normal progression — no indicator, no change needed.
+    var seedIsRough = !isAnchorLift(ex) || activeVariant(ex) !== ex.name;
     if (ex.maxKey && ex.maxPct && userMaxes[ex.maxKey] > 0) {
       var mW = roundToNearestFive(userMaxes[ex.maxKey] * ex.maxPct);
       if (mW > 0) return { mode: 'baseline', weight: mW, reps: ex.repRange[0],
-        msg: 'Suggested start: ' + mW + ' lbs from your ' + MAX_LABELS[ex.maxKey] + ' max. Log it to start the progression.' };
+        msg: 'Suggested start: ' + mW + ' lbs from your ' + MAX_LABELS[ex.maxKey] + ' max. Log it to start the progression.',
+        indicator: seedIsRough ? SEED_WEIGHT_INDICATOR : null };
     }
     // 4) Or from a sibling lift
     if (ex.seedFrom && EX_BY_ID[ex.seedFrom]) {
       var sh = getHistory(ex.seedFrom);
       if (sh.length) { var sw = sh[sh.length - 1].weight;
-        return { mode: 'baseline', weight: sw, reps: ex.repRange[0], msg: 'Suggested start: ' + sw + ' lbs from your ' + EX_BY_ID[ex.seedFrom].name + '.' }; }
+        return { mode: 'baseline', weight: sw, reps: ex.repRange[0], msg: 'Suggested start: ' + sw + ' lbs from your ' + EX_BY_ID[ex.seedFrom].name + '.',
+          indicator: seedIsRough ? SEED_WEIGHT_INDICATOR : null }; }
     }
     return { mode: 'baseline', weight: null, reps: ex.repRange[0],
-      msg: 'First session — establish a baseline in the ' + repRangeText(ex) + ' rep range.' };
+      msg: 'First session — establish a baseline in the ' + repRangeText(ex) + ' rep range.',
+      indicator: seedIsRough ? SEED_WEIGHT_INDICATOR : null };
   }
 
   //     MAINTENANCE MODE — display wrappers. Each one falls straight through
@@ -5157,7 +5175,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
       for (var i = 1; i <= effectiveSets(ex.id); i++) {
         lines += '<div class="target-line">Set ' + i + ' · ' + wTxt + ' × ' + repsTxt + '</div>';
       }
-      tEl.innerHTML = '<div class="target-msg">' + target.msg + '</div>' + lines;
+      tEl.innerHTML = '<div class="target-msg">' + target.msg + '</div>' + lines
+        + (target.indicator ? '<div class="seed-weight-note">' + target.indicator + '</div>' : '');
     }
   }
 
