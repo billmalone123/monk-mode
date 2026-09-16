@@ -615,28 +615,6 @@
   }
   .lift-rest { font-size: 14px; color: var(--muted); font-weight: 600; padding-top: 2px; }
   .lift-time { font-size: 14px; color: var(--muted); padding-top: 2px; }
-  .lift-note {
-    display: none;
-    grid-column: 1 / -1;
-    padding: 16px 20px;
-    background: var(--card);
-    border-left: 3px solid var(--dc, var(--red));
-    border-radius: 0 12px 12px 0;
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.7;
-    margin-top: 10px;
-    animation: fadeIn 0.2s ease;
-  }
-  .lift-note.open { display: block; }
-  .lift-chevron {
-    font-size: 11px;
-    color: var(--muted);
-    padding-top: 4px;
-    transition: transform 0.2s;
-    user-select: none;
-  }
-  .lift-row.expanded .lift-chevron { transform: rotate(180deg); }
 
   /* PROGRESSION */
   #progression { background: var(--dark); border-top: 1px solid var(--border); }
@@ -1755,8 +1733,6 @@ body.training-mode .lift-row.has-logs { border-left-color: var(--accent); }
 body.training-mode .lift-name { color: var(--text); }
 body.training-mode .lift-sets-reps { color: var(--muted); }
 body.training-mode .lift-rep-why { color: var(--muted); }
-body.training-mode .lift-chevron { color: var(--muted); }
-body.training-mode .lift-note { background: var(--surface-2); color: var(--muted); border-radius: 0 10px 10px 0; border-left-color: var(--accent); }
 body.training-mode .warmup-toggle-btn { border-color: rgba(241,239,225,0.25); color: rgba(241,239,225,0.6); }
 body.training-mode .warmup-toggle-btn:hover, body.training-mode .warmup-toggle-btn.open { border-color: var(--accent); color: var(--accent); background: var(--accent-lo); }
 body.training-mode .warmup-panel { background: rgba(241,239,225,0.03); border-color: rgba(241,239,225,0.16); border-left-color: rgba(241,239,225,0.45); }
@@ -1855,7 +1831,6 @@ body.training-mode footer { display: none; }
   .lift-table-header { display: none; }
   .lift-row { grid-template-columns: 1fr; gap: 8px; padding: 18px 14px; }
   .lift-rest { font-size: 11px; color: var(--muted); }
-  .lift-chevron { position: absolute; top: 16px; right: 12px; margin: 0; }
   /* Below this a name plus its equipment tag cannot share a line at chip width,
      so each becomes a full-width row: name left, tag right, one line each. */
   .lift-variants { flex-direction: column; align-items: stretch; }
@@ -2723,7 +2698,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.64</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.65</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2788,7 +2763,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.64</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.65</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3006,13 +2981,13 @@ body.training-mode select.run-input { color: #F1EFE1; }
       </div>
     </div>
     <div class="lift-table-header"><span>Movement</span><span>Hold</span><span>Time</span><span></span></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Hip Flexor Stretch (couch stretch)</div><div class="lift-sets-reps">2 sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">The single most important mobility exercise for anyone who trains legs. Tight psoas and rectus femoris limit squat depth, increase lower back stress, and flatten the glute response. Rear foot on a bench or couch, front shin vertical, drive your hip toward the floor. Hold the tension — don't wiggle around. 60 seconds is the minimum effective dose for actual tissue change.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Hip 90/90 Switches</div><div class="lift-sets-reps">2 sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Sit with both knees bent at 90° — one in front, one to the side. Rotate your pelvis to switch sides, moving through internal and external rotation of the hip joint. Don't use your hands to push your knee down. Let the range come from actual hip rotation. Consistent sessions of this will measurably change your squat depth over time.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Pigeon Pose</div><div class="lift-sets-reps">2 sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div><div class="lift-chevron">▼</div><div class="lift-note">Targets the piriformis and external hip rotators — the muscles responsible for hip tightness that presents as knee cave during squats. Front shin as close to horizontal as your current mobility allows. Keep both hips square to the floor. Breathe into the tension. 60 seconds minimum per side. It's supposed to be uncomfortable. That discomfort is the work.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">T-Spine Rotation (foam roller)</div><div class="lift-sets-reps">2 sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~4 min</div><div class="lift-chevron">▼</div><div class="lift-note">Place the foam roller perpendicular to your spine at mid-back level. Support your head, cross your arms, and rotate to each side. Thoracic mobility is critical for overhead pressing mechanics — a stiff t-spine forces the shoulder to compensate. 10 reps each side, letting the weight of your arms rotate you further each rep.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Band Pull-Aparts</div><div class="lift-sets-reps">2 sets × 20 reps</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Hold the band at shoulder width, arms straight, and pull it apart to chest level — ending in a "T" position. Pinch shoulder blades together hard at end range. This trains the posterior deltoid and external rotators, directly counterbalancing the internal rotation load of pressing. The shoulder maintenance you do on rest day is the reason this shoulder will still train heavy at 40.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Face Pull with External Rotation</div><div class="lift-sets-reps">2 sets × 20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~5 min</div><div class="lift-chevron">▼</div><div class="lift-note">Light load — rotator cuff activation, not strength stimulus. Pull to your face with high elbows, then add external rotation at the end: press handles up and outward so your hands end above your elbows. This end-range external rotation is what makes this version more effective than a standard face pull. Think of this as the direct antidote to every pressing session you've done this week.</div></div>
-    <div class="lift-row" onclick="toggleNote(this)"><div><div class="lift-name">Jefferson Curl (very light)</div><div class="lift-sets-reps">2 sets × 8 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~4 min</div><div class="lift-chevron">▼</div><div class="lift-note">Stand on a box or step, hold 10–25 lbs, and slowly curl your spine down vertebra by vertebra — chin to chest first, then thoracic, then lumbar. Controlled spinal flexion under minimal load builds tensile strength in the spinal erectors. Never heavy. Never rushed. The spine is rounding deliberately — that deliberate control is what makes it safe and beneficial.</div></div>
+    <div class="lift-row"><div><div class="lift-name">Hip Flexor Stretch (couch stretch)</div><div class="lift-sets-reps">2 sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div></div>
+    <div class="lift-row"><div><div class="lift-name">Hip 90/90 Switches</div><div class="lift-sets-reps">2 sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div></div>
+    <div class="lift-row"><div><div class="lift-name">Pigeon Pose</div><div class="lift-sets-reps">2 sets × 60 sec/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~7 min</div></div>
+    <div class="lift-row"><div><div class="lift-name">T-Spine Rotation (foam roller)</div><div class="lift-sets-reps">2 sets × 10/side</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~4 min</div></div>
+    <div class="lift-row"><div><div class="lift-name">Band Pull-Aparts</div><div class="lift-sets-reps">2 sets × 20 reps</div></div><div class="lift-rest">30 sec</div><div class="lift-time">~5 min</div></div>
+    <div class="lift-row"><div><div class="lift-name">Face Pull with External Rotation</div><div class="lift-sets-reps">2 sets × 20 reps</div></div><div class="lift-rest">45 sec</div><div class="lift-time">~5 min</div></div>
+    <div class="lift-row"><div><div class="lift-name">Jefferson Curl (very light)</div><div class="lift-sets-reps">2 sets × 8 reps</div></div><div class="lift-rest">60 sec</div><div class="lift-time">~4 min</div></div>
   </div>
 
 </section>
@@ -3023,7 +2998,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.64</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.65</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3141,7 +3116,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.64</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.65</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3163,7 +3138,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.64</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.65</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -4490,17 +4465,6 @@ body.training-mode select.run-input { color: #F1EFE1; }
   var sessions = loadSessions();
 
   function getHistory(exId) { return sessions[exId] || []; }
-  //  How many distinct training weeks has this exercise had a real logged set
-  //  in — drives progressive disclosure of the coaching note (liftRowHTML).
-  //  Quick Log entries excluded to match the "did I do this week" convention
-  //  used elsewhere (see the week-completion check's quickLog comment).
-  function exerciseWeeksLogged(exId) {
-    var weeks = {};
-    (sessions[exId] || []).forEach(function(e) {
-      if (!e.quickLog) weeks[e.week] = true;
-    });
-    return Object.keys(weeks).length;
-  }
   // Normalize a logged set: new shape {w, r}; legacy shape was reps-only number
   function normSet(e, s) {
     if (s == null) return null;
@@ -4887,16 +4851,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var n = setsFor(ex.id);
     var dispN = effectiveSets(ex.id);
     var range = effectiveRepRangeText(ex) + ' reps' + (ex.repsSuffix || '');
-    //  New/unfamiliar lifts (< 3 logged weeks) show the coaching note open by
-    //  default; past that, it collapses behind the existing tap-to-expand
-    //  chevron so returning users aren't re-reading the same paragraph.
-    var noteFamiliar = exerciseWeeksLogged(ex.id) >= 3;
-    return '<div class="lift-row' + (n === 3 ? ' sets-3' : '') + (noteFamiliar ? '' : ' expanded') + '" id="row-' + ex.id + '" onclick="toggleNote(this)">'
+    return '<div class="lift-row' + (n === 3 ? ' sets-3' : '') + '" id="row-' + ex.id + '">'
       + '<div>'
       + '<div class="lift-name" id="name-' + ex.id + '">' + activeVariant(ex) + '</div>'
       + '<div class="lift-sets-reps" data-setslabel="' + ex.id + '">' + dispN + ' sets × ' + range + '</div>'
-      //  Caption under the rep count, not a control and not part of .lift-note.
-      //  Static content off EXERCISES, so it never needs restoring or persisting.
+      //  Caption under the rep count. Static content off EXERCISES, so it
+      //  never needs restoring or persisting.
       + (ex.repWhy ? '<div class="lift-rep-why">' + ex.repWhy + '</div>' : '')
       + variantChipsHTML(ex)
       + '<div class="warmup-lines" data-warmups="' + ex.id + '"></div>'
@@ -4904,9 +4864,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '</div>'
       + '<div class="lift-rest">' + ex.rest + '</div>'
       + '<div class="lift-time">' + ex.time + '</div>'
-      + '<div class="lift-chevron">▼</div>'
-      + '<div class="lift-note' + (noteFamiliar ? '' : ' open') + '">' + ex.note + '</div>'
-      + '<div class="lift-log-inline" onclick="event.stopPropagation()">'
+      + '<div class="lift-log-inline">'
       + '<div class="log-row">'
       + '<div class="log-inline-group"><span class="log-inline-label">Top Set Aim Weight</span>'
       + withSteppers('w-' + ex.id, 'weight', '<input class="log-inline-input" type="number" inputmode="decimal" id="w-' + ex.id + '" data-ex="' + ex.id + '" oninput="onAimInput(this.dataset.ex)" onchange="onAimCommit(this.dataset.ex)">') + '</div>'
@@ -7235,17 +7193,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (typeof updateWeekCompleteBanner === 'function') updateWeekCompleteBanner();
   }
 
-  //     LIFT NOTE TOGGLE                                                        
-  function toggleNote(row) {
-    var note = row.querySelector('.lift-note');
-    var chevron = row.querySelector('.lift-chevron');
-    var isOpen = note.classList.contains('open');
-    note.classList.toggle('open');
-    row.classList.toggle('expanded');
-    chevron.textContent = isOpen ? ' ' : ' ';
-  }
-
-  //     WARMUP TOGGLE                                                           
+  //     WARMUP TOGGLE
   function toggleWarmup(panelId, btn) {
     var panel = document.getElementById(panelId);
     if (!panel) return;
@@ -9090,9 +9038,6 @@ function restoreActiveSessionIfPresent() {
   switchDay(stored.dayId);
   var row = document.getElementById('row-' + stored.exId);
   if (row) {
-    var note = row.querySelector('.lift-note');
-    if (note) note.classList.add('open');
-    row.classList.add('expanded');
     setTimeout(function() { row.scrollIntoView({ block: 'center' }); }, 50);
   }
   var draft = stored.draft || {};
