@@ -2708,7 +2708,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.61</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.62</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2773,7 +2773,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.61</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.62</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3008,7 +3008,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.61</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.62</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3126,7 +3126,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.61</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.62</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3148,7 +3148,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.61</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.62</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -4475,6 +4475,17 @@ body.training-mode select.run-input { color: #F1EFE1; }
   var sessions = loadSessions();
 
   function getHistory(exId) { return sessions[exId] || []; }
+  //  How many distinct training weeks has this exercise had a real logged set
+  //  in — drives progressive disclosure of the coaching note (liftRowHTML).
+  //  Quick Log entries excluded to match the "did I do this week" convention
+  //  used elsewhere (see the week-completion check's quickLog comment).
+  function exerciseWeeksLogged(exId) {
+    var weeks = {};
+    (sessions[exId] || []).forEach(function(e) {
+      if (!e.quickLog) weeks[e.week] = true;
+    });
+    return Object.keys(weeks).length;
+  }
   // Normalize a logged set: new shape {w, r}; legacy shape was reps-only number
   function normSet(e, s) {
     if (s == null) return null;
@@ -4861,7 +4872,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var n = setsFor(ex.id);
     var dispN = effectiveSets(ex.id);
     var range = effectiveRepRangeText(ex) + ' reps' + (ex.repsSuffix || '');
-    return '<div class="lift-row' + (n === 3 ? ' sets-3' : '') + '" id="row-' + ex.id + '" onclick="toggleNote(this)">'
+    //  New/unfamiliar lifts (< 3 logged weeks) show the coaching note open by
+    //  default; past that, it collapses behind the existing tap-to-expand
+    //  chevron so returning users aren't re-reading the same paragraph.
+    var noteFamiliar = exerciseWeeksLogged(ex.id) >= 3;
+    return '<div class="lift-row' + (n === 3 ? ' sets-3' : '') + (noteFamiliar ? '' : ' expanded') + '" id="row-' + ex.id + '" onclick="toggleNote(this)">'
       + '<div>'
       + '<div class="lift-name" id="name-' + ex.id + '">' + activeVariant(ex) + '</div>'
       + '<div class="lift-sets-reps" data-setslabel="' + ex.id + '">' + dispN + ' sets × ' + range + '</div>'
@@ -4875,7 +4890,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + '<div class="lift-rest">' + ex.rest + '</div>'
       + '<div class="lift-time">' + ex.time + '</div>'
       + '<div class="lift-chevron">▼</div>'
-      + '<div class="lift-note">' + ex.note + '</div>'
+      + '<div class="lift-note' + (noteFamiliar ? '' : ' open') + '">' + ex.note + '</div>'
       + '<div class="lift-log-inline" onclick="event.stopPropagation()">'
       + '<div class="log-row">'
       + '<div class="log-inline-group"><span class="log-inline-label">Top Set Aim Weight</span>'
