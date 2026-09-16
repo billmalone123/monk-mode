@@ -68,17 +68,15 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
 
-  /* SPLASH — cold-load brand moment. var(--bg), not literal black: the mark
-     PNG has its background baked in at essentially the same dark tone
-     (confirmed by decoding its corner pixel), so a mismatched overlay color
-     would show as a visible box around the logo instead of it sitting flush
-     on the page. inset:0 on a fixed element already bleeds full-screen
-     under any safe area with no separate handling needed, since html/body
-     share this same background everywhere behind it.
-     No fade-in: opacity starts at 1, not 0. The previous fade-in left a real
-     frame where the overlay was transparent and the still-initializing app
-     underneath could show through — a flicker, not a nice effect. Only the
-     dismiss gets a transition. */
+  /* SPLASH — seamlessness over brand moment: this exists only to cover real
+     load time, never to add any of its own. Pure CSS, no JS gate — visible
+     from the very first paint because it's just there, the same way the
+     mark PNG's own baked-in dark background needs var(--bg) here (not a
+     literal black) to sit flush with no seam. inset:0 on a fixed element
+     already bleeds full-screen under any safe area with no separate
+     handling needed, since html/body share this same background everywhere
+     behind it. No fade-in — opacity starts at 1 so there's never a
+     transparent frame the still-initializing app could show through. */
   .splash-screen {
     position: fixed; inset: 0; z-index: 9999;
     background: var(--bg);
@@ -86,7 +84,11 @@
     opacity: 1;
     pointer-events: auto;
   }
-  .splash-screen.out { opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
+  /* Fade-out only — 150ms max, snappy rather than cinematic, and only ever
+     used when the load genuinely took long enough to be worth animating
+     away; a load fast enough to beat the script's own threshold skips this
+     and is removed with no transition at all. */
+  .splash-screen.out { opacity: 0; transition: opacity 0.15s ease; pointer-events: none; }
   /* vmin is exactly "% of the shorter viewport dimension" — the unit this
      was specified in — with a generous px ceiling only so it doesn't become
      enormous on a large desktop monitor; it never engages on phones/tablets. */
@@ -2528,11 +2530,13 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </head>
 <body>
 
-<!-- SPLASH — cold-load only. This script runs synchronously during parsing,
-     before <nav> or anything else exists, so a repeat view within the same
-     session removes it before first paint rather than flashing it then
-     hiding it. Standalone (installed to the home screen) always shows it,
-     matching a native app's cold-launch feel every time it's relaunched. -->
+<!-- SPLASH — seamlessness, not a brand moment. No sessionStorage gate: it
+     shows on every full load, on purpose, because it's now tied to actual
+     load time rather than a fixed duration — a warm/cached load finishes
+     inside FAST_MS below and is never even animated, so in practice users
+     on a warm reload see nothing here at all. The HTML/CSS above are the
+     entire "show" step; nothing below decides whether it appears, only how
+     it disappears. -->
 <div class="splash-screen" id="splashScreen" aria-hidden="true">
   <img class="splash-logo" src="assets/brand/rtw-square-a.png" alt="RTW">
 </div>
@@ -2540,39 +2544,38 @@ body.training-mode select.run-input { color: #F1EFE1; }
 (function() {
   var el = document.getElementById('splashScreen');
   if (!el) return;
-  var standalone = false;
-  try {
-    standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
-      || window.navigator.standalone === true;
-  } catch (e) {}
-  var alreadyShown = false;
-  try { alreadyShown = sessionStorage.getItem('rtw_splash_shown_v1') === '1'; } catch (e) {}
-  if (alreadyShown && !standalone) { el.remove(); return; }
-  try { sessionStorage.setItem('rtw_splash_shown_v1', '1'); } catch (e) {}
-
-  //  Dismiss on real readiness, not a guessed hold time — this is what
-  //  makes a fast/warm-cache load just flash briefly (load fires almost
-  //  immediately) while a slow one keeps the splash up for as long as it
-  //  actually takes (fonts stylesheet, this image, the icons) instead of
-  //  either cutting it short or padding a fast load with a fake wait.
-  //  A safety ceiling still dismisses even if `load` never comes, so a
-  //  dead network can't strand the app behind the splash forever.
-  var timer = null;
+  var start = Date.now();
   var dismissed = false;
-  function dismiss() {
+  var timer = null;
+  //  Below this, the splash was visible for such a short time that even a
+  //  150ms fade would be a big fraction of its total lifetime and look like
+  //  a glitch, not a transition — a flash that instantly vanishes is worse
+  //  than never showing it, so just unmount with no animation at all.
+  var FAST_MS = 200;
+  function removeNow() {
+    if (dismissed) return;
+    dismissed = true;
+    if (timer) clearTimeout(timer);
+    el.remove();
+  }
+  function dismissWithFade() {
     if (dismissed) return;
     dismissed = true;
     if (timer) clearTimeout(timer);
     el.classList.add('out');
-    //  Unmount, not just hide — nothing should linger as a hidden
-    //  full-viewport layer once it's dismissed.
-    setTimeout(function() { el.remove(); }, 260);
+    setTimeout(function() { el.remove(); }, 170);
+  }
+  function onReady() {
+    if (Date.now() - start < FAST_MS) removeNow();
+    else dismissWithFade();
   }
   if (document.readyState === 'complete') {
-    dismiss();
+    removeNow();
   } else {
-    window.addEventListener('load', dismiss);
-    timer = setTimeout(dismiss, 6000);
+    window.addEventListener('load', onReady);
+    //  Safety ceiling only — a dead network must never strand the user
+    //  behind this screen. By 6s the fade is always worth doing.
+    timer = setTimeout(dismissWithFade, 6000);
   }
 })();
 </script>
@@ -2764,7 +2767,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.68</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.69</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2785,7 +2788,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.68</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.69</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3033,7 +3036,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.68</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.69</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3151,7 +3154,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.68</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.69</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3173,7 +3176,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.68</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.69</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
