@@ -93,6 +93,14 @@
   /* Needs to out-specify .nav-logo img above, which sets display:block on
      every mark — (0,1,1) beats a bare class. */
   .nav-logo img.nav-logo-mark { display: none; border-radius: 6px; }
+  /* Subtle affordance so the pill obviously reads as a menu trigger, not just
+     a static logo. Rotates via the aria-expanded the open/close functions
+     already set — no separate JS state to keep in sync. */
+  .nav-logo-chevron {
+    font-size: 10px; color: var(--muted); margin-left: 7px;
+    transition: transform 0.2s; line-height: 1;
+  }
+  .nav-logo[aria-expanded="true"] .nav-logo-chevron { transform: rotate(180deg); }
   .nav-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .nav-logo span { color: var(--red); }
   .nav-links { display: flex; gap: 32px; }
@@ -2526,6 +2534,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <button class="nav-logo" id="navLogo" aria-haspopup="menu" aria-expanded="false" aria-label="Run the Weights — open menu">
     <img class="nav-logo-word" src="assets/brand/rtw-wordmark.png" alt="Run the Weights">
     <img class="nav-logo-mark" src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
+    <span class="nav-logo-chevron" aria-hidden="true">▾</span>
   </button>
   <!-- The logo dropdown is the whole nav now. The horizontal tab row and its
        sliding indicator were removed in build 7.32; goTab() is untouched and
@@ -2708,7 +2717,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.62</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.63</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2773,7 +2782,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.62</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.63</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3008,7 +3017,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.62</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.63</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3126,7 +3135,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.62</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.63</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3148,7 +3157,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.62</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.63</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
