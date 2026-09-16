@@ -84,7 +84,8 @@
      page, so its padding is invisible and it sits flush. Height is set so the
      lettering inside matches the type size the text mark used to render at. */
   .nav-logo {
-    background: none; border: 0; padding: 0; cursor: pointer;
+    background: rgba(241,239,225,0.05); border: 1px solid var(--border);
+    border-radius: 10px; padding: 6px 14px; cursor: pointer;
     display: flex; align-items: center; -webkit-tap-highlight-color: transparent;
   }
   .nav-logo img { height: 30px; width: auto; display: block; }
@@ -93,14 +94,18 @@
   /* Needs to out-specify .nav-logo img above, which sets display:block on
      every mark — (0,1,1) beats a bare class. */
   .nav-logo img.nav-logo-mark { display: none; border-radius: 6px; }
-  /* Subtle affordance so the pill obviously reads as a menu trigger, not just
-     a static logo. Rotates via the aria-expanded the open/close functions
+  /* Affordance so the pill obviously reads as a menu trigger, not just a
+     static logo. Rotates via the aria-expanded the open/close functions
      already set — no separate JS state to keep in sync. */
   .nav-logo-chevron {
-    font-size: 10px; color: var(--muted); margin-left: 7px;
+    font-size: 15px; margin-left: 10px;
     transition: transform 0.2s; line-height: 1;
   }
   .nav-logo[aria-expanded="true"] .nav-logo-chevron { transform: rotate(180deg); }
+  /* .nav-logo span below colors any span in the pill — pins the chevron's
+     color explicitly (specificity: 2 classes beats 1 class + element) so it
+     can't silently change if that rule's target ever does. */
+  .nav-logo .nav-logo-chevron { color: var(--accent); }
   .nav-logo:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .nav-logo span { color: var(--red); }
   .nav-links { display: flex; gap: 32px; }
@@ -743,8 +748,12 @@
     nav { padding: 0 12px; height: 48px; border-bottom: none; background: var(--bg); }
     body { padding-top: 48px; }
     .nav-sub { top: 48px; background: var(--bg); border-top: none; }
-    nav .nav-logo { font-size: 15px; letter-spacing: 0.04em; flex: 0 1 auto; min-width: 0; }
-    nav .nav-logo img { height: 22px; max-width: 100%; object-fit: contain; object-position: left; }
+    /* Bigger and more obviously tappable on mobile, not smaller — this is the
+       only way to switch sections, so it earns the extra footprint. Total
+       pill height (img + padding + border) stays under the 48px nav row. */
+    nav .nav-logo { font-size: 15px; letter-spacing: 0.04em; flex: 0 1 auto; min-width: 0; padding: 7px 14px; }
+    nav .nav-logo img { height: 27px; max-width: 100%; object-fit: contain; object-position: left; }
+    nav .nav-logo-chevron { font-size: 17px; margin-left: 8px; }
     .nav-links { display: none; }
     /* Three tiers of nav rules used to sit here — tab overflow at 768, the
        wordmark giving way to the square mark at 520, tighter tab padding at
@@ -2080,28 +2089,25 @@ body.training-mode footer { display: none; }
 .navmenu {
   position: fixed; z-index: 500; min-width: 190px; max-width: 260px;
   background: var(--bg); border: 1px solid var(--border-hi); border-radius: 12px;
-  box-shadow: 0 18px 44px rgba(0,0,0,0.6); padding: 8px;
+  box-shadow: 0 18px 44px rgba(0,0,0,0.6); padding: 10px;
   opacity: 0; transform: scale(0.95); transform-origin: top left;
   transition: opacity 0.13s ease, transform 0.13s ease;
   pointer-events: none;
 }
 .navmenu.on { opacity: 1; transform: scale(1); pointer-events: auto; }
-.navmenu-head {
-  display: flex; align-items: center; gap: 9px;
-  padding: 6px 8px 10px; margin-bottom: 6px;
-  border-bottom: 1px solid var(--border);
-}
-.navmenu-head img { width: 26px; height: 26px; border-radius: 6px; display: block; }
-.navmenu-head span {
-  font-family: var(--font-display); font-weight: 700; font-size: 11px;
-  letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+/* Phone widths only — this is the primary way users switch sections, so it
+   should read as the most important control on screen, not a cramped
+   utility menu. positionNavMenu() reads offsetWidth at open time, so no JS
+   change is needed to keep the panel clamped on-screen at this width. */
+@media (max-width: 480px) {
+  .navmenu { min-width: 78vw; max-width: 82vw; }
 }
 .navmenu-item {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  width: 100%; min-height: 44px; background: none; border: 0; cursor: pointer;
-  padding: 10px 12px; border-radius: 8px; text-align: left;
+  width: 100%; min-height: 56px; background: none; border: 0; cursor: pointer;
+  padding: 14px 18px; border-radius: 8px; text-align: left;
   border-left: 3px solid transparent;
-  font-family: var(--font-display); font-weight: 700; font-size: 13px;
+  font-family: var(--font-display); font-weight: 700; font-size: 15px;
   letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
@@ -2110,7 +2116,7 @@ body.training-mode footer { display: none; }
 .navmenu-item:focus { outline: none; }
 .navmenu-item:active { background: var(--surface-2); }
 .navmenu-item.current { color: var(--text); border-left-color: var(--accent); background: rgba(241,239,225,0.06); }
-.navmenu-item.primary { font-size: 15px; color: var(--text); }
+.navmenu-item.primary { font-size: 17px; color: var(--text); }
 .navmenu-tick { font-size: 10px; color: var(--accent); opacity: 0; }
 .navmenu-item.current .navmenu-tick { opacity: 1; }
 /* The letter-roll from the main tabs, reused here so a destination behaves the
@@ -2717,7 +2723,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.63</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.64</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2782,7 +2788,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
     <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.63</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.64</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3017,7 +3023,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.63</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.64</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3135,7 +3141,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.63</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.64</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3157,7 +3163,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.63</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.64</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -9631,9 +9637,6 @@ function buildNavMenu() {
   el.className = 'navmenu';
   el.id = 'navMenu';
   el.setAttribute('role', 'menu');
-  var head = '<div class="navmenu-head">'
-    + '<img src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">'
-    + '<span>Run the Weights</span></div>';
   var items = [
     { id: 'info', label: 'Overview', primary: true },
     { id: 'training', label: 'Train' },
@@ -9641,7 +9644,10 @@ function buildNavMenu() {
     { id: 'calendar', label: 'Calendar' },
     { id: 'quicklog', label: 'Quick Log' }
   ];
-  el.innerHTML = head + items.map(function(it) {
+  //  No header row here — the trigger pill itself (the wordmark you just
+  //  tapped) already says what this is; a repeated "Run the Weights" label
+  //  inside the panel was redundant and cost every item extra scroll room.
+  el.innerHTML = items.map(function(it) {
     return '<button class="navmenu-item' + (it.primary ? ' primary' : '') + '" role="menuitem"'
       + ' data-tab="' + it.id + '">' + it.label + '<span class="navmenu-tick">&#9679;</span></button>';
   }).join('');
