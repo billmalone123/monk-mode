@@ -775,6 +775,12 @@
     .stat-label { font-size: 10px; }
     .hero-cta { margin-top: 20px; padding: 12px 24px; font-size: 14px; }
     .section-title { font-size: clamp(36px, 10vw, 80px); }
+    /* body.training-mode .train-title's own clamp() floors at 56px, wider than
+       this viewport wants, and the h2's default left-align then leaves dead
+       space to the right of the shorter "THIS IS" line. Centering (one of the
+       three options this was flagged with) fixes it without fighting that
+       clamp or the hard-coded <br> line break. */
+    .train-title { text-align: center; }
     .nav-sub { padding: 0 10px; }
     .nav-sub button { padding: 12px 10px; font-size: 11px; }
     .plan-nav-btn { font-size: 11px; padding: 7px 8px; }
@@ -1354,16 +1360,6 @@
 
 
   /* ── MAXES SETTINGS ─────────────────────────────────────────────────────── */
-  .settings-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 0 28px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
   .settings-maxes-display {
     display: flex;
     gap: 20px;
@@ -1701,7 +1697,6 @@ body.training-mode nav { background: var(--bg); border-bottom-color: var(--borde
 body.training-mode .nav-logo { color: #F1EFE1; }
 body.training-mode .nav-logo span { color: var(--accent); }
 body.training-mode #plan { background: var(--bg); border-top: none; padding-top: 0; padding-bottom: 60px; }
-body.training-mode .settings-bar { background: rgba(241,239,225,0.03); border-bottom: 1px solid rgba(241,239,225,0.15); padding: 20px 0 20px; margin-bottom: 24px; }
 body.training-mode .settings-max-chip { background: var(--surface); border-color: rgba(241,239,225,0.2); gap: 10px; padding: 10px 18px; }
 body.training-mode .settings-max-label { color: var(--muted); font-size: 9px; letter-spacing: 0.18em; }
 body.training-mode .settings-max-val { color: var(--accent); font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
@@ -1952,12 +1947,6 @@ body.training-mode footer { display: none; }
 }
 .maintenance-banner-dot {
   width: 7px; height: 7px; border-radius: 50%; background: #7C93B3; flex: 0 0 auto;
-}
-.maintenance-badge {
-  display: inline-block; background: rgba(110,136,168,0.16); border: 1px solid rgba(110,136,168,0.4);
-  color: #A9BEDA; font-family: var(--font-display); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px;
-  align-self: center;
 }
 .maintenance-mode-row {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
@@ -2698,7 +2687,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.65</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.66</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2719,51 +2708,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <!-- MAXES BAR -->
-  <div class="settings-bar" id="settingsBar">
-    <div class="settings-maxes-display" id="maxesDisplay">
-      <div class="settings-max-chip">
-        <span class="settings-max-label">Squat</span>
-        <span class="settings-max-val unset" id="chip-squat">Not set</span>
-      </div>
-      <div class="settings-max-chip">
-        <span class="settings-max-label">Bench</span>
-        <span class="settings-max-val unset" id="chip-bench">Not set</span>
-      </div>
-      <div class="settings-max-chip">
-        <span class="settings-max-label">DB Press</span>
-        <span class="settings-max-val unset" id="chip-ohp">Not set</span>
-      </div>
-    </div>
-    <button class="settings-open-btn" id="settingsOpenBtn" onclick="openMaxesModal()">
-      ⚙ Set Your Maxes
-    </button>
-    <span class="maintenance-badge" id="maintenanceBadge" style="display:none">Maintenance Mode</span>
-    <div class="liftdays-wrap">
-      <span class="liftdays-label">Split</span>
-      <div class="liftdays-group">
-        <button class="liftdays-btn" data-split="arnold" onclick="setSplit('arnold')">Arnold</button>
-        <button class="liftdays-btn" data-split="ppl" onclick="setSplit('ppl')">PPL</button>
-        <button class="liftdays-btn" data-split="pplul" onclick="setSplit('pplul')">PPLUL</button>
-        <button class="liftdays-btn" data-split="upper-lower" onclick="setSplit('upper-lower')">Upper/Lower</button>
-        <button class="liftdays-btn" data-split="full-body" onclick="setSplit('full-body')">Full Body</button>
-      </div>
-      <span class="liftdays-desc" id="liftDaysLabel"></span>
-    </div>
-    <button class="settings-open-btn" onclick="exportData()">⇩ Backup</button>
-    <label class="settings-open-btn" style="cursor:pointer">⇧ Restore<input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)"></label>
-    <div class="storage-status" id="storageStatus" style="display:none"></div>
-  </div>
-  <!-- REST TIMER QUICK-START -->
-  <div class="rest-timer-strip">
-    <span class="rest-timer-strip-label">Rest Timer</span>
-    <button class="rest-preset-btn" onclick="quickStartTimer(60, this)">1:00</button>
-    <button class="rest-preset-btn" onclick="quickStartTimer(90, this)">1:30</button>
-    <button class="rest-preset-btn" onclick="quickStartTimer(120, this)">2:00</button>
-    <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
-    <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
-  </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.65</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.66</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -2784,6 +2729,19 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="weekCompleteBanner" class="week-complete-banner" style="display:none">
     <div class="week-complete-text">Week <span id="weekCompleteNum"></span> complete — every lifting day logged.</div>
     <button class="week-complete-btn" onclick="advanceToNextWeek()">Start Week <span id="weekCompleteNext"></span> →</button>
+  </div>
+  <!-- REST TIMER QUICK-START — kept inline (not moved into #settingsModal with
+       the rest of the settings bar) since it's a one-tap workout utility, not
+       configuration; burying it behind a modal open would cost every rest
+       period an extra tap. Still satisfies "nothing but the hero above the
+       fold" since it now sits below it, not above. -->
+  <div class="rest-timer-strip">
+    <span class="rest-timer-strip-label">Rest Timer</span>
+    <button class="rest-preset-btn" onclick="quickStartTimer(60, this)">1:00</button>
+    <button class="rest-preset-btn" onclick="quickStartTimer(90, this)">1:30</button>
+    <button class="rest-preset-btn" onclick="quickStartTimer(120, this)">2:00</button>
+    <button class="rest-preset-btn" onclick="quickStartTimer(180, this)">3:00</button>
+    <button class="rest-preset-btn" onclick="quickStartTimer(240, this)">4:00</button>
   </div>
   <div id="altPlan"></div>
   <div class="plan-nav" id="planNav">
@@ -2998,7 +2956,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.65</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.66</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3116,7 +3074,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.65</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.66</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3138,7 +3096,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.65</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.66</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3297,6 +3255,57 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <button class="settings-cancel-btn" id="cpBackBtn" onclick="changePlanBackToStep1()" style="display:none;margin-bottom:10px;">&#8249; Back</button>
     <button class="settings-cancel-btn" id="cpCancelBtn" onclick="closeChangePlanModal()">Cancel</button>
     <button class="settings-save-btn" id="cpDoneBtn" onclick="closeChangePlanModal()" style="display:none;">Done</button>
+  </div>
+</div>
+<!-- SETTINGS MODAL — everything that used to sit inline above the "This Is
+     Where You Win" hero (maxes summary, split picker, backup/restore, storage
+     status) moved here so the training day opens straight into training, not
+     a stack of configuration. Same ids as before, so updateMaxChips(),
+     updateLiftDaysUI() and reportStoragePersistence() keep working untouched
+     — they already update by id regardless of where the element lives or
+     whether it's currently visible, the same as every other modal here. -->
+<div class="settings-modal-overlay" id="settingsModal" style="display:none;">
+  <div class="settings-modal-card" id="settingsModalCard">
+    <div class="settings-modal-brand">
+      <img src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
+      <div class="settings-modal-title">Settings</div>
+    </div>
+
+    <div class="settings-maxes-display" id="maxesDisplay" style="margin-bottom:16px;">
+      <div class="settings-max-chip">
+        <span class="settings-max-label">Squat</span>
+        <span class="settings-max-val unset" id="chip-squat">Not set</span>
+      </div>
+      <div class="settings-max-chip">
+        <span class="settings-max-label">Bench</span>
+        <span class="settings-max-val unset" id="chip-bench">Not set</span>
+      </div>
+      <div class="settings-max-chip">
+        <span class="settings-max-label">DB Press</span>
+        <span class="settings-max-val unset" id="chip-ohp">Not set</span>
+      </div>
+    </div>
+    <button class="settings-open-btn" id="settingsOpenBtn" onclick="openMaxesModal()" style="margin-bottom:24px;">
+      ⚙ Set Your Maxes
+    </button>
+    <div class="liftdays-wrap" style="margin-bottom:24px;">
+      <span class="liftdays-label">Split</span>
+      <div class="liftdays-group">
+        <button class="liftdays-btn" data-split="arnold" onclick="setSplit('arnold')">Arnold</button>
+        <button class="liftdays-btn" data-split="ppl" onclick="setSplit('ppl')">PPL</button>
+        <button class="liftdays-btn" data-split="pplul" onclick="setSplit('pplul')">PPLUL</button>
+        <button class="liftdays-btn" data-split="upper-lower" onclick="setSplit('upper-lower')">Upper/Lower</button>
+        <button class="liftdays-btn" data-split="full-body" onclick="setSplit('full-body')">Full Body</button>
+      </div>
+      <span class="liftdays-desc" id="liftDaysLabel"></span>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="settings-open-btn" onclick="exportData()">⇩ Backup</button>
+      <label class="settings-open-btn" style="cursor:pointer">⇧ Restore<input type="file" accept=".json,application/json" style="display:none" onchange="importData(this)"></label>
+    </div>
+    <div class="storage-status" id="storageStatus" style="display:none;margin-bottom:16px;"></div>
+
+    <button class="settings-cancel-btn" onclick="closeSettingsModal()">Close</button>
   </div>
 </div>
 <!-- RUN SETUP MODAL — onboarding step 2. Its fields are a front end for the Run
@@ -5105,14 +5114,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
     renderAllRowStates();
   }
 
-  //  Syncs the banner (Train tab), the badge (next to Set Your Maxes), and
-  //  the switch itself (inside the maxes modal) to the current flag. Called
-  //  on init and every toggle — never assume any one of the three is current.
+  //  Syncs the banner (Train tab) and the switch itself (inside the maxes
+  //  modal) to the current flag. Called on init and every toggle — never
+  //  assume either of the two is current. (A third element, the compact
+  //  badge next to the old inline Set Your Maxes button, was removed with
+  //  the settings-bar relocation — the banner already covers the same
+  //  at-a-glance purpose from a spot that isn't the bug being fixed.)
   function updateMaintenanceModeUI() {
     var banner = document.getElementById('maintenanceBanner');
     if (banner) banner.style.display = maintenanceMode ? '' : 'none';
-    var badge = document.getElementById('maintenanceBadge');
-    if (badge) badge.style.display = maintenanceMode ? '' : 'none';
     var toggleBtn = document.getElementById('maintenanceToggleBtn');
     if (toggleBtn) {
       toggleBtn.classList.toggle('on', maintenanceMode);
@@ -6209,6 +6219,18 @@ body.training-mode select.run-input { color: #F1EFE1; }
   }
   function closeMaxesModal() {
     var m = document.getElementById('maxesModal');
+    if (m) m.style.display = 'none';
+  }
+  //  Everything inside stays synced by id already (updateMaxChips() on maxes
+  //  change, updateLiftDaysUI() inside setSplit(), reportStoragePersistence()
+  //  on its own async resolution) — nothing here needs a refresh-on-open step
+  //  that the older bar-in-flow version didn't have either.
+  function openSettingsModal() {
+    var m = document.getElementById('settingsModal');
+    if (m) m.style.display = 'flex';
+  }
+  function closeSettingsModal() {
+    var m = document.getElementById('settingsModal');
     if (m) m.style.display = 'none';
   }
   //     This screen used to persist only when Save & Enter was tapped, so typing
@@ -9592,16 +9614,22 @@ function buildNavMenu() {
   //  No header row here — the trigger pill itself (the wordmark you just
   //  tapped) already says what this is; a repeated "Run the Weights" label
   //  inside the panel was redundant and cost every item extra scroll room.
+  //  Settings is appended after a divider rather than folded into `items` —
+  //  it opens a modal, not a destination goTab() knows about, so it needs a
+  //  data-action instead of a data-tab and must be excluded from the
+  //  current-section highlighting below.
   el.innerHTML = items.map(function(it) {
     return '<button class="navmenu-item' + (it.primary ? ' primary' : '') + '" role="menuitem"'
       + ' data-tab="' + it.id + '">' + it.label + '<span class="navmenu-tick">&#9679;</span></button>';
-  }).join('');
+  }).join('') + '<hr class="divider" style="margin:6px 4px;">'
+    + '<button class="navmenu-item" role="menuitem" data-action="settings">Settings</button>';
   document.body.appendChild(el);
   el.querySelectorAll('.navmenu-item').forEach(function(b) {
     b.addEventListener('click', function(e) {
       e.stopPropagation();
       closeNavMenu();
-      goTab(b.dataset.tab);
+      if (b.dataset.action === 'settings') openSettingsModal();
+      else goTab(b.dataset.tab);
     });
     //  Same letter-roll as the primary tabs, driven the same way: a .rolling
     //  class, hover in and out on a mouse, and a single timed roll on tap that
