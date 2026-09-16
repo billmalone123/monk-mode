@@ -2762,7 +2762,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.69</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.70</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2783,7 +2783,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.69</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.70</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3031,7 +3031,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.69</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.70</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3149,7 +3149,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.69</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.70</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3171,7 +3171,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.69</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.70</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3903,8 +3903,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
       var v = localStorage.getItem(SPLIT_ID_KEY);
       if (v && SPLIT_TEMPLATES[v]) { activeSplitId = v; liftDaysPerWeek = SPLIT_TEMPLATES[v].days; return; }
     } catch(e) {}
-    var presets = SPLIT_PRESETS_BY_DAYS[liftDaysPerWeek] || SPLIT_PRESETS_BY_DAYS[6];
-    activeSplitId = presets[0];
+    var entry = SPLIT_PRESETS_BY_DAYS[liftDaysPerWeek] || SPLIT_PRESETS_BY_DAYS[6];
+    activeSplitId = entry.presets[0];
   }
   function persistSplitId() {
     try { localStorage.setItem(SPLIT_ID_KEY, activeSplitId); } catch(e) {}
@@ -3950,10 +3950,27 @@ body.training-mode select.run-input { color: #F1EFE1; }
     'full-body': { days: 3, label: 'Full Body', note: 'Every group three times',
          week: ['fb-a','rest','fb-b','rest','fb-c','rest','rest'] }
   };
-  //  Which presets are offered at each day count, primary (legacy-default)
-  //  preset first — that first entry is what an old liftDays-only save
-  //  (no splitId yet) migrates onto.
-  const SPLIT_PRESETS_BY_DAYS = { 6: ['arnold','ppl'], 5: ['pplul'], 4: ['upper-lower'], 3: ['full-body'] };
+  //  Single source of truth for "what splits exist at this day count" —
+  //  consolidates what used to be two hand-maintained tables (this one, plus
+  //  onboarding's own ONB_SPLIT_BY_DAYS). Two different, deliberately
+  //  different defaults live side by side here since they answer different
+  //  questions:
+  //    presets[0]         — the legacy-migration default. An old save with
+  //                         only a day count (no splitId yet) predates
+  //                         presets, and back then day count 6 always meant
+  //                         Arnold, so this must stay presets[0] === 'arnold'
+  //                         regardless of what's more popular now.
+  //    onboardingDefault  — what a brand-new user gets. 6 days defaults new
+  //                         users to PPL, with Arnold offered as a same-
+  //                         screen alternative — an intentionally different
+  //                         choice from the legacy default above, not a
+  //                         second copy of it.
+  const SPLIT_PRESETS_BY_DAYS = {
+    6: { presets: ['arnold', 'ppl'], onboardingDefault: 'ppl' },
+    5: { presets: ['pplul'], onboardingDefault: 'pplul' },
+    4: { presets: ['upper-lower'], onboardingDefault: 'upper-lower' },
+    3: { presets: ['full-body'], onboardingDefault: 'full-body' }
+  };
 
   //  Day definitions. The 6-day template routes straight through the original
   //  pools by id so its output is unchanged; the shorter templates name their
@@ -5072,8 +5089,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     v = parseInt(v, 10);
     if (isNaN(v)) v = 6;
     v = Math.max(3, Math.min(6, v));
-    var presets = SPLIT_PRESETS_BY_DAYS[v] || SPLIT_PRESETS_BY_DAYS[6];
-    setSplit(presets[0]);
+    var entry = SPLIT_PRESETS_BY_DAYS[v] || SPLIT_PRESETS_BY_DAYS[6];
+    setSplit(entry.presets[0]);
   }
 
   //     CHANGE TRAINING PLAN — the guided, user-facing version of the raw
@@ -5121,7 +5138,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //  which day counts branch, so a future added preset starts branching here
   //  automatically.
   function changePlanPickDays(n) {
-    var presets = SPLIT_PRESETS_BY_DAYS[n] || [];
+    var presets = (SPLIT_PRESETS_BY_DAYS[n] || {}).presets || [];
     var alternatives = presets.filter(function(id) { return id !== activeSplitId; });
     var sameDayCount = (n === liftDaysPerWeek);
     var textEl = document.getElementById('cpStep2Text');
@@ -6583,9 +6600,6 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //  race, so switching it off by hand afterwards sticks.
   const TAPER_AUTO_KEY = 'monk_taper_auto_race_v1';
   var TAPER_AUTO_DAYS = 21;
-  //  Only day counts with a real template behind them. 6 defaults to PPL, with
-  //  Arnold offered on the same screen.
-  var ONB_SPLIT_BY_DAYS = { 3: 'full-body', 4: 'upper-lower', 5: 'pplul', 6: 'ppl' };
   //  Weekly mileage band -> the Run tab's current-mileage baseline (band midpoint)
   var ONB_MILEAGE = { '0-10': 5, '10-20': 15, '20-30': 25, '30+': 35 };
   var ONB_MILEAGE_LABELS = { '0-10': '0–10 mi', '10-20': '10–20 mi', '20-30': '20–30 mi', '30+': '30+ mi' };
@@ -6644,7 +6658,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     switch (step) {
       case 'days':
         var t = SPLIT_TEMPLATES[onb.split];
-        return !!ONB_SPLIT_BY_DAYS[onb.days] && !!t && t.days === onb.days;
+        return !!SPLIT_PRESETS_BY_DAYS[onb.days] && !!t && t.days === onb.days;
       case 'maxes': return MAX_KEYS.every(function(k) { return onbNum(onb[k]) > 0; });
       case 'runs': return onb.runs === true || onb.runs === false;
       case 'mileage': return Object.prototype.hasOwnProperty.call(ONB_MILEAGE, onb.mileage);
@@ -6788,7 +6802,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     onb[field] = value;
     if (field === 'days') {
       var keep = value === 6 && (onb.split === 'ppl' || onb.split === 'arnold');
-      if (!keep) onb.split = ONB_SPLIT_BY_DAYS[value];
+      if (!keep) onb.split = (SPLIT_PRESETS_BY_DAYS[value] || {}).onboardingDefault;
     }
     onbSaveDraft();
     onbRender();
