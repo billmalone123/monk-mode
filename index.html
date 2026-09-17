@@ -2762,7 +2762,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.70</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.71</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2783,7 +2783,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.70</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.71</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3031,7 +3031,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.70</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.71</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3149,7 +3149,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.70</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.71</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3171,7 +3171,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.70</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.71</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -4189,29 +4189,29 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //     as a toggle under each lift so each user can pick the variant they train.
   //     Switching only changes the label; history and progression stay on the lift.
   const EX_ALTS = {
-    'flat-bb-bench':      ['Dumbbell Bench Press', 'Machine Chest Press', 'Smith Machine Bench Press'],
+    'flat-bb-bench':      ['Dumbbell Bench Press', 'Machine Chest Press', 'Smith Machine Bench Press', 'Close-Grip Bench Press', 'Floor Press'],
     'lat-pulldown':       ['Pull-Ups', 'Assisted Pull-Up Machine', 'Neutral-Grip Pulldown'],
     'incline-mach-press': ['Incline Dumbbell Press', 'Incline Barbell Bench Press', 'Incline Smith Machine Press'],
     'seated-cable-row':   ['Chest-Supported Row', 'Machine Row', 'Single-Arm Dumbbell Row'],
     'pec-dec':            ['Cable Chest Fly', 'Dumbbell Fly', 'Machine Chest Press'],
     'chest-supp-row':     ['Chest-Supported Row Machine', 'Seated Cable Row', 'T-Bar Row', 'Single-Arm Dumbbell Row'],
     'face-pulls':         ['Rear Delt Machine Fly', 'Reverse Pec Dec', 'Band Pull-Aparts'],
-    'seated-ohp':         ['Seated Barbell OHP', 'Shoulder Press Machine', 'Standing Overhead Press'],
+    'seated-ohp':         ['Seated Barbell OHP', 'Shoulder Press Machine', 'Standing Overhead Press', 'Push Press'],
     'shoulder-press-mach':['Seated Dumbbell Press', 'Seated Barbell OHP', 'Arnold Press'],
     'lateral-raise-mach': ['Dumbbell Lateral Raise', 'Cable Lateral Raise', 'Leaning Cable Raise'],
     'ez-bar-curl':        ['Barbell Curl', 'Dumbbell Curl', 'Cable Curl'],
     'cable-curl':         ['Dumbbell Curl', 'EZ Bar Curl', 'Concentration Curl'],
     'tricep-pushdown':    ['Straight-Bar Pushdown', 'Overhead Cable Extension', 'Dumbbell Kickback'],
     'oh-tricep-ext':      ['Overhead Dumbbell Extension', 'Skull Crushers', 'Rope Pushdown'],
-    'bb-squat':           ['Goblet Squat', 'Hack Squat Machine', 'Smith Machine Squat'],
+    'bb-squat':           ['Goblet Squat', 'Hack Squat Machine', 'Smith Machine Squat', 'Front Squat'],
     'leg-press':          ['Single-Leg Press', 'Hack Squat Machine', 'Goblet Squat', 'Bulgarian Split Squat'],
-    'rdl':                ['Dumbbell RDL', 'Stiff-Leg Deadlift', 'Seated Leg Curl'],
+    'rdl':                ['Dumbbell RDL', 'Stiff-Leg Deadlift', 'Seated Leg Curl', 'Sumo Deadlift', 'Trap Bar Deadlift', 'Good Morning'],
     'leg-ext':            ['Sissy Squat', 'Goblet Squat', 'Hack Squat Machine'],
     'leg-curl':           ['Lying Leg Curl', 'Seated Leg Curl', 'Nordic Curl'],
     'seated-calf':        ['Standing Calf Raise', 'Leg Press Calf Raise', 'Smith Machine Calf Raise'],
     'ab-wheel':           ['Cable Crunch', 'Hanging Leg Raise', 'Weighted Plank'],
     'incline-bb-bench':   ['Incline Dumbbell Press', 'Incline Machine Press', 'Incline Smith Machine Press'],
-    'machine-row':        ['Seated Cable Row', 'Chest-Supported Row', 'Single-Arm Dumbbell Row'],
+    'machine-row':        ['Seated Cable Row', 'Chest-Supported Row', 'Single-Arm Dumbbell Row', 'Barbell Row', 'Pendlay Row'],
     'machine-chest-press':['Dumbbell Bench Press', 'Flat Barbell Bench Press', 'Pec Dec'],
     'sa-cable-row':       ['Single-Arm Dumbbell Row', 'Machine Row', 'Seated Cable Row'],
     'low-high-fly':       ['Incline Dumbbell Fly', 'Pec Dec', 'Incline Machine Press'],
@@ -4241,7 +4241,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     [/machine|pec dec|hack squat|assisted|leg press|pulldown|leg curl|leg extension|seated calf|calf raise machine|diverging|low row|chest-supported row/, 'machine'],
     [/cable|rope|pushdown|face pull|crunch/,                               'cable'],
     [/dumbbell|goblet|kickback|hammer curl|arnold press|concentration curl/, 'dumbbell'],
-    [/barbell|ez bar|t-bar|deadlift|ohp|overhead press|front squat|box squat|close-grip bench|skull crusher|reverse curl/, 'barbell'],
+    [/barbell|ez bar|t-bar|deadlift|ohp|overhead press|front squat|box squat|close-grip bench|skull crusher|reverse curl|push press|floor press|pendlay|good morning/, 'barbell'],
     [/pull-up|push-up|dip|plank|sit-up|leg raise|v-up|wall sit|nordic|sissy|hold|lunge|step-up|split squat|cossack|rock-back|swiss-ball|ab wheel|bodyweight|standing calf raise|single-leg calf raise/, 'bodyweight']
   ];
   const EQUIP_LABEL = { smith:'Smith', band:'Band', machine:'Machine', cable:'Cable',
