@@ -1978,7 +1978,7 @@ body.training-mode footer { display: none; }
 .food-item-row .food-item-name { font-family: var(--font-body); font-weight: 500; }
 .food-assumptions { margin: 12px 0 4px 18px; padding: 0; font-size: 12px; color: var(--muted); line-height: 1.55; }
 .food-meal-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; cursor: pointer; }
-#foodSnapBtn.disabled { opacity: 0.5; pointer-events: none; }
+.food-photo-btn.disabled { opacity: 0.5; pointer-events: none; }
 @media (max-width: 420px) {
   .food-item-row { grid-template-columns: 1fr 1fr 1fr 32px; }
   .food-item-row .food-item-name { grid-column: 1 / -1; }
@@ -2774,7 +2774,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.73</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.74</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2795,7 +2795,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.74</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3043,7 +3043,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.74</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3161,7 +3161,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.74</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3183,7 +3183,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.74</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3199,11 +3199,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
 
   <div class="food-block">
     <div class="run-setup-bar" style="margin-bottom:8px;">
-      <label class="run-setup-toggle" id="foodSnapBtn">Snap meal<input type="file" id="foodPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="onFoodPhoto(this)"></label>
+      <label class="run-setup-toggle food-photo-btn" id="foodSnapBtn"><span id="foodSnapLabel">Snap meal</span><input type="file" id="foodPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="onFoodPhoto(this)"></label>
+      <label class="run-setup-toggle food-photo-btn" id="foodLibBtn">Choose photo<input type="file" id="foodLibInput" accept="image/*" style="display:none" onchange="onFoodPhoto(this)"></label>
       <button class="run-setup-toggle" id="foodTypeBtn" onclick="onFoodTypeIt()">Type it</button>
     </div>
     <div class="quicklog-field" style="max-width:480px;margin-bottom:6px;">
-      <input type="text" id="foodNote" placeholder="Weights or details (8 oz chicken, 250g rice)" maxlength="300">
+      <input type="text" id="foodNote" placeholder="8 oz chicken, 250g rice... or paste a photo" maxlength="300" onpaste="onFoodPaste(event)">
     </div>
     <div class="run-hint" id="foodAddMsg"></div>
   </div>
@@ -3236,7 +3237,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.74</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3452,7 +3453,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
         <div><div class="run-field-label">Protein g</div><input class="run-input" type="number" inputmode="numeric" id="set-food-protein" placeholder="e.g. 200" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal')"></div>
         <div><div class="run-field-label">Goal lbs</div><input class="run-input" type="number" inputmode="decimal" id="set-food-goal" placeholder="200" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal')"></div>
       </div>
-      <button class="settings-open-btn" style="margin-top:12px;" onclick="resetMealPass()">Reset meal passcode</button>
+      <div style="width:100%;"><div class="run-field-label">Meal passcode</div><input class="run-input" type="password" id="set-food-pass" placeholder="Same as MEAL_PASSCODE in Vercel" autocomplete="off" onchange="saveMealPass(this.value)"></div>
+      <button class="settings-open-btn" style="margin-top:4px;" onclick="resetMealPass()">Reset meal passcode</button>
       <span class="liftdays-desc" id="foodSettingsMsg"></span>
     </div>
 
@@ -7725,15 +7727,26 @@ body.training-mode select.run-input { color: #F1EFE1; }
   }
   function resetMealPass() {
     try { localStorage.removeItem(MEAL_PASS_KEY); } catch(e) {}
+    var el = document.getElementById('set-food-pass');
+    if (el) el.value = '';
     foodSetMsg('foodSettingsMsg', 'Meal passcode cleared. The app asks again on the next estimate.');
+  }
+  //  Optional: entering it here up front just saves the pop up on the first
+  //  estimate. Same device only key either way.
+  function saveMealPass(value) {
+    var v = String(value || '').trim();
+    try { if (v) localStorage.setItem(MEAL_PASS_KEY, v); else localStorage.removeItem(MEAL_PASS_KEY); } catch(e) {}
+    foodSetMsg('foodSettingsMsg', v ? 'Meal passcode saved on this device.' : 'Meal passcode cleared.');
   }
   function setFoodBusy(on) {
     foodBusy = on;
-    var snap = document.getElementById('foodSnapBtn'), type = document.getElementById('foodTypeBtn');
-    var file = document.getElementById('foodPhotoInput');
-    if (snap) { snap.textContent = on ? 'Estimating...' : 'Snap meal'; snap.classList.toggle('disabled', on); }
+    //  Only the label's own span changes. Setting the label's textContent
+    //  would delete the hidden file input nested inside it.
+    var label = document.getElementById('foodSnapLabel'), type = document.getElementById('foodTypeBtn');
+    if (label) label.textContent = on ? 'Estimating...' : 'Snap meal';
+    ['foodSnapBtn', 'foodLibBtn'].forEach(function(id) { var b = document.getElementById(id); if (b) b.classList.toggle('disabled', on); });
+    ['foodPhotoInput', 'foodLibInput'].forEach(function(id) { var f = document.getElementById(id); if (f) f.disabled = on; });
     if (type) type.disabled = on;
-    if (file) file.disabled = on;
   }
   //  Longest edge to 1024px, JPEG 0.8 — plenty for a food estimate and well
   //  under the server's 1.5 MB cap even for a full resolution phone photo.
@@ -7756,6 +7769,24 @@ body.training-mode select.run-input { color: #F1EFE1; }
   function onFoodPhoto(input) {
     var file = input.files && input.files[0];
     input.value = '';
+    estimateFoodImage(file);
+  }
+  //  A photo pasted into the note field (copied from Photos, Messages, a
+  //  screenshot) goes down the same path as one picked from the library.
+  //  Pasted text is left alone and lands in the field as normal.
+  function onFoodPaste(e) {
+    var cd = e && e.clipboardData;
+    if (!cd) return;
+    var files = [].slice.call(cd.files || []);
+    [].slice.call(cd.items || []).forEach(function(it) {
+      if (it.kind === 'file') { var f = it.getAsFile(); if (f) files.push(f); }
+    });
+    var img = files.filter(function(f) { return f && /^image\//.test(f.type); })[0];
+    if (!img) return;
+    e.preventDefault();
+    estimateFoodImage(img);
+  }
+  function estimateFoodImage(file) {
     if (!file || foodBusy) return;
     setFoodBusy(true);
     foodSetMsg('foodAddMsg', '');
@@ -8010,6 +8041,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     set('set-food-cal', foodTargets.cal);
     set('set-food-protein', foodTargets.protein);
     set('set-food-goal', foodTargets.goalWeight);
+    var pass = null;
+    try { pass = localStorage.getItem(MEAL_PASS_KEY); } catch(e) {}
+    set('set-food-pass', pass);
     foodSetMsg('foodSettingsMsg', '');
   }
 

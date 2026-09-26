@@ -376,6 +376,40 @@ var noLift = ctx.buildFoodPost(day(-2));
 eq('a line with no data is left out', noLift.indexOf('Lifts'), -1);
 eq('and so is weight with no weigh in that week', noLift.indexOf('Weight'), -1);
 
+section('7b. Photo input: library, paste, busy state, passcode in Settings');
+ok('Snap meal still opens the camera', /id="foodPhotoInput" accept="image\/\*" capture="environment"/.test(html));
+ok('Choose photo has no capture, so iOS offers the library', /id="foodLibInput" accept="image\/\*" style/.test(html));
+ok('the note field takes a pasted photo', /id="foodNote"[^>]*onpaste="onFoodPaste\(event\)"/.test(html));
+var got = [], realEst = ctx.estimateFoodImage;
+ctx.estimateFoodImage = function (f) { got.push(f); };
+var prevented = false;
+var png = { type: 'image/png', name: 'x.png' };
+ctx.onFoodPaste({ clipboardData: { files: [], items: [{ kind: 'file', getAsFile: function () { return png; } }] }, preventDefault: function () { prevented = true; } });
+eq('a pasted image is estimated', got[0], png);
+eq('and does not also paste into the field', prevented, true);
+got = []; prevented = false;
+ctx.onFoodPaste({ clipboardData: { files: [], items: [{ kind: 'string' }] }, preventDefault: function () { prevented = true; } });
+eq('pasted text is left alone', got.length + (prevented ? 1 : 0), 0);
+ctx.onFoodPaste({ clipboardData: { files: [{ type: 'application/pdf' }], items: [] }, preventDefault: function () {} });
+eq('a pasted non image is ignored', got.length, 0);
+ctx.estimateFoodImage = realEst;
+// The old busy state set the label's textContent, which deletes the nested
+// file input in a real browser. Only the span may change now.
+noThrow('busy on', function () { ctx.setFoodBusy(true); });
+eq('the span reads Estimating...', ctx.document.getElementById('foodSnapLabel').textContent, 'Estimating...');
+eq('the Snap label itself is not rewritten', ctx.document.getElementById('foodSnapBtn').textContent, '');
+eq('both photo inputs are disabled', ctx.document.getElementById('foodPhotoInput').disabled && ctx.document.getElementById('foodLibInput').disabled, true);
+ctx.setFoodBusy(false);
+eq('and back to Snap meal', ctx.document.getElementById('foodSnapLabel').textContent, 'Snap meal');
+ctx.saveMealPass('  pw-123 ');
+eq('passcode from Settings is saved trimmed', storage.getItem('monk_meal_pass_v1'), 'pw-123');
+ctx.fillFoodSettings();
+eq('and shown when Settings opens', ctx.document.getElementById('set-food-pass').value, 'pw-123');
+ok('so the first estimate does not prompt', ctx.getMealPass(false) === 'pw-123');
+ctx.resetMealPass();
+eq('reset clears it', storage.getItem('monk_meal_pass_v1'), null);
+eq('and clears the field', ctx.document.getElementById('set-food-pass').value, '');
+
 section('8. Secrets and GET requests');
 var repoText = html + fs.readFileSync('sw.js', 'utf8');
 eq('no Anthropic key pattern in index.html', /sk-ant-/.test(html), false);
