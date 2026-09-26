@@ -2548,10 +2548,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <body>
 
 <!-- SPLASH — seamlessness, not a brand moment. No sessionStorage gate: it
-     shows on every full load, on purpose, because it's now tied to actual
-     load time rather than a fixed duration — a warm/cached load finishes
-     inside FAST_MS below and is never even animated, so in practice users
-     on a warm reload see nothing here at all. The HTML/CSS above are the
+     shows on every full load, on purpose. It stays up for at least MIN_MS
+     below, longer if the page is still loading, and always fades out — a
+     warm/cached load used to dismiss it within a few ms, which read as a
+     glitchy logo flash rather than a splash. The HTML/CSS above are the
      entire "show" step; nothing below decides whether it appears, only how
      it disappears. -->
 <div class="splash-screen" id="splashScreen" aria-hidden="true">
@@ -2563,18 +2563,13 @@ body.training-mode select.run-input { color: #F1EFE1; }
   if (!el) return;
   var start = Date.now();
   var dismissed = false;
-  var timer = null;
-  //  Below this, the splash was visible for such a short time that even a
-  //  150ms fade would be a big fraction of its total lifetime and look like
-  //  a glitch, not a transition — a flash that instantly vanishes is worse
-  //  than never showing it, so just unmount with no animation at all.
-  var FAST_MS = 200;
-  function removeNow() {
-    if (dismissed) return;
-    dismissed = true;
-    if (timer) clearTimeout(timer);
-    el.remove();
-  }
+  //  On a cached PWA load readyState is already 'complete' by the time this
+  //  runs, so dismissing on ready alone flashed the logo for a few ms. The
+  //  splash now always stays up at least this long, then always fades.
+  var MIN_MS = 1200;
+  //  Safety ceiling only — a dead network must never strand the user
+  //  behind this screen.
+  var timer = setTimeout(dismissWithFade, 6000);
   function dismissWithFade() {
     if (dismissed) return;
     dismissed = true;
@@ -2583,17 +2578,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
     setTimeout(function() { el.remove(); }, 170);
   }
   function onReady() {
-    if (Date.now() - start < FAST_MS) removeNow();
-    else dismissWithFade();
+    var elapsed = Date.now() - start;
+    if (elapsed >= MIN_MS) dismissWithFade();
+    else setTimeout(dismissWithFade, MIN_MS - elapsed);
   }
-  if (document.readyState === 'complete') {
-    removeNow();
-  } else {
-    window.addEventListener('load', onReady);
-    //  Safety ceiling only — a dead network must never strand the user
-    //  behind this screen. By 6s the fade is always worth doing.
-    timer = setTimeout(dismissWithFade, 6000);
-  }
+  if (document.readyState === 'complete') onReady();
+  else window.addEventListener('load', onReady);
 })();
 </script>
 
@@ -2784,7 +2774,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.72</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.73</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2805,7 +2795,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.72</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3053,7 +3043,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.72</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3171,7 +3161,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.72</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3193,7 +3183,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.72</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3246,7 +3236,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.72</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.73</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
