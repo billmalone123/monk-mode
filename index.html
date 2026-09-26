@@ -2548,10 +2548,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <body style="background:#1A1A18">
 
 <!-- SPLASH — seamlessness, not a brand moment. No sessionStorage gate: it
-     shows on every full load, on purpose. It stays up for exactly as long as
-     the app is genuinely loading (tied to the load event, or to script
-     execution on an already-complete cached load), plus a small render
-     buffer, and always fades out. The HTML/CSS above are the
+     shows on every full load, on purpose. It stays up for at least MIN_MS
+     below, longer still if the app is not genuinely ready by then, and
+     always fades out. The HTML/CSS above are the
      entire "show" step; nothing below decides whether it appears, only how
      it disappears. -->
 <div class="splash-screen" id="splashScreen" aria-hidden="true">
@@ -2561,13 +2560,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
 (function() {
   var el = document.getElementById('splashScreen');
   if (!el) return;
+  var start = Date.now();
   var dismissed = false;
-  //  120ms is a render buffer, not a branding hold — just enough for the
-  //  first paint to land behind the fade so dismissing doesn't flash raw
-  //  unstyled content. The real signal for "ready" is the load event (or,
-  //  on a cached PWA where readyState is already 'complete' when this runs,
-  //  that same instant) — nothing here waits on a fixed floor any more.
-  var RENDER_BUFFER_MS = 120;
+  //  A real minimum hold — a fast cached load used to skip past this in
+  //  well under 300ms, which read as a glitchy flash of the logo rather
+  //  than a splash. The splash now always stays up at least this long,
+  //  and longer still if the app genuinely isn't ready yet (the load event
+  //  fires late) — it waits on whichever of the two takes longer.
+  var MIN_MS = 1200;
   //  Safety ceiling only — a dead network must never strand the user
   //  behind this screen.
   var timer = setTimeout(dismissWithFade, 6000);
@@ -2579,7 +2579,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     setTimeout(function() { el.remove(); }, 170);
   }
   function onReady() {
-    setTimeout(dismissWithFade, RENDER_BUFFER_MS);
+    var elapsed = Date.now() - start;
+    if (elapsed >= MIN_MS) dismissWithFade();
+    else setTimeout(dismissWithFade, MIN_MS - elapsed);
   }
   if (document.readyState === 'complete') onReady();
   else window.addEventListener('load', onReady);
@@ -2773,7 +2775,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.77</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.78</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2794,7 +2796,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.77</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.78</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3042,7 +3044,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main" style="background:#1A1A18">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.77</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.78</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3160,7 +3162,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main" style="background:#1A1A18">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.77</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.78</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3182,7 +3184,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main" style="background:#1A1A18">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.77</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.78</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3236,7 +3238,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main" style="background:#1A1A18">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.77</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.78</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
