@@ -2002,6 +2002,21 @@ label.food-photo-btn.food-photo-primary:hover, button.food-photo-btn.food-photo-
 /* A quiet line between the camera row and the typed path — two distinct
    ways in, not one blurred list of options. */
 .food-input-divider { border-top: 1px solid var(--border); max-width: 480px; margin: 18px 0 16px; }
+/* ── WELCOME FLOW ─────────────────────────────────────────────────────────── */
+/* Full viewport, same tokens/typography/buttons as everywhere else — only the
+   outer scaffold and the bullet list below are new, nothing else. */
+.onb-flow {
+  position: fixed; inset: 0; z-index: 500; background: var(--bg);
+  display: none; align-items: flex-start; justify-content: center;
+  overflow-y: auto; padding: 48px 20px;
+}
+.onb-flow-inner { width: 100%; max-width: 440px; }
+.onb-flow-bullets { list-style: none; margin: 0 0 28px; padding: 0; }
+.onb-flow-bullets li {
+  font-family: var(--font-body); font-size: 14px; color: var(--text);
+  line-height: 1.5; padding: 10px 0; border-top: 1px solid var(--border);
+}
+.onb-flow-bullets li:first-child { border-top: none; }
 /* Taller than the shared .quicklog-field input style (an ID beats that
    class regardless of order), so it reads as a real input, not a search
    bar — this is the only field that needed it, so the shared style for
@@ -2618,6 +2633,62 @@ body.training-mode select.run-input { color: #F1EFE1; }
 })();
 </script>
 
+<!-- WELCOME FLOW — three full-viewport screens for a genuinely fresh
+     install, gated on monk_onboarded_v1. See startOnbFlow() for who gets
+     shown this versus silently flagged past it. Hidden by default; shown
+     by JS once the rest of the app has finished initializing. -->
+<div class="onb-flow" id="onbFlow" style="display:none;">
+  <div class="onb-flow-inner">
+
+    <div class="onb-flow-screen" id="onbFlowScreen1">
+      <div class="settings-modal-title" style="font-size:32px;">RUN THE WEIGHTS</div>
+      <div class="settings-modal-sub">Train like an athlete. Track everything.</div>
+      <ul class="onb-flow-bullets">
+        <li>Log every lift. Track sets, reps, and weight over time.</li>
+        <li>Log every run. A dedicated run section built into the app.</li>
+        <li>Track every meal. Photo, barcode, or type what you ate.</li>
+        <li>Monitor your weight. Weekly trends, not daily noise.</li>
+      </ul>
+      <button class="quicklog-save-btn" onclick="onbFlowGoto(2)">Get Started</button>
+      <button class="quicklog-back" style="margin-top:14px;" onclick="onbFlowSkip()">Skip setup</button>
+    </div>
+
+    <div class="onb-flow-screen" id="onbFlowScreen2" style="display:none">
+      <div class="settings-modal-title">SET YOUR GOAL</div>
+      <div class="quicklog-field">
+        <label for="onbFlowWeight">Current bodyweight (lbs)</label>
+        <input class="run-input" type="number" inputmode="decimal" id="onbFlowWeight" placeholder="e.g. 185">
+      </div>
+      <div class="run-field-label" style="margin-top:18px;"><span>Goal</span></div>
+      <div class="liftdays-group goal-mode-group" id="onbFlowGoalPills"></div>
+      <div class="run-field-label" style="margin-top:18px;"><span>Lift days per week</span></div>
+      <div class="liftdays-group" id="onbFlowLiftDaysPills"></div>
+      <div class="run-field-label" style="margin-top:18px;"><span>Do you plan to run or do cardio?</span></div>
+      <div class="run-toggle">
+        <button type="button" class="run-toggle-btn" id="onbFlowCardioYes" onclick="onbFlowSetCardio(true)">Yes</button>
+        <button type="button" class="run-toggle-btn" id="onbFlowCardioNo" onclick="onbFlowSetCardio(false)">No</button>
+      </div>
+      <div id="onbFlowStravaWrap" style="margin-top:18px;display:none;">
+        <button class="settings-open-btn" onclick="onStravaButtonClick()">Connect Strava to sync your runs automatically.</button>
+        <div class="run-hint" style="margin-top:6px;">Apple Health sync coming when the native app launches.</div>
+      </div>
+      <button class="quicklog-save-btn" style="margin-top:24px;" onclick="onbFlowNext2()">Next</button>
+      <button class="quicklog-back" style="margin-top:14px;" onclick="onbFlowSkip()">Skip setup</button>
+    </div>
+
+    <div class="onb-flow-screen" id="onbFlowScreen3" style="display:none">
+      <div class="settings-modal-title">YOU'RE READY</div>
+      <div class="settings-modal-sub">Your targets are set. Log your first meal or your first lift to get started.</div>
+      <div style="display:flex;gap:12px;">
+        <button class="quicklog-save-btn" style="margin-top:0;" onclick="onbFlowFinish('food')">Log a meal</button>
+        <button class="quicklog-save-btn" style="margin-top:0;" onclick="onbFlowFinish('training')">Start lifting</button>
+      </div>
+      <button class="quicklog-back" style="margin-top:14px;" onclick="onbFlowSkip()">Skip setup</button>
+    </div>
+
+  </div>
+</div>
+
 <nav>
   <button class="nav-logo" id="navLogo" aria-haspopup="menu" aria-expanded="false" aria-label="Run the Weights — open menu">
     <img class="nav-logo-word" src="assets/brand/rtw-wordmark.png" alt="Run the Weights">
@@ -2805,7 +2876,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.85</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.86</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2826,7 +2897,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.86</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3074,7 +3145,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main" style="background:#1A1A18">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.86</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3192,7 +3263,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main" style="background:#1A1A18">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.86</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3214,7 +3285,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main" style="background:#1A1A18">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.86</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3276,7 +3347,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main" style="background:#1A1A18">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.86</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -6723,6 +6794,146 @@ body.training-mode select.run-input { color: #F1EFE1; }
     goTab('training');
   }
 
+  //     WELCOME FLOW — three full-viewport screens shown once, ahead of
+  //     everything below, for a genuinely fresh install: what the app does,
+  //     bodyweight/goal/lift-days/cardio with a live macro recommendation
+  //     (reusing goalMode/applyGoalModeRecommendation exactly as they already
+  //     work), then a landing screen into Food or Training. Gated on its own
+  //     flag, monk_onboarded_v1 — separate from ONBOARDING_KEY below on
+  //     purpose, since that one is about maxes/split/race and this one isn't.
+  //     Because the flag is brand new, every existing install is missing it
+  //     too — looksLikeExistingUserForOnbFlow() below is what keeps this from
+  //     popping up for them: anyone with maxes, sessions, a chosen split, a
+  //     food log or a bodyweight entry (in localStorage or, if it hasn't
+  //     synced back yet, IndexedDB) gets the flag backfilled silently and
+  //     never sees the screens at all. Only after this settles (shown or
+  //     silently skipped) does the existing wizard below get its turn — see
+  //     the guard at the top of maybeStartOnboarding().
+  const ONBOARDED_KEY = 'monk_onboarded_v1';
+  var ONB_FLOW_LIFT_DAYS = [3, 4, 5, 6];
+  var _onbFlowLiftDays = 4, _onbFlowGoalMode = 'bulk', _onbFlowCardio = null;
+  function onboardedFlowDone() {
+    try { return localStorage.getItem(ONBOARDED_KEY) === '1'; } catch(e) { return false; }
+  }
+  function markOnboardedFlowDone() {
+    try { localStorage.setItem(ONBOARDED_KEY, '1'); } catch(e) {}
+  }
+  //  Same signals maybeStartOnboarding() already trusts (maxes/sessions/split),
+  //  plus the food side of the app, which that older check has no reason to
+  //  know about.
+  function looksLikeExistingUserForOnbFlow() {
+    if (MAX_KEYS.some(function(k) { return userMaxes[k]; }) || Object.keys(sessions).length) return true;
+    var splitSet = null;
+    try { splitSet = localStorage.getItem(SPLIT_ID_KEY); } catch(e) {}
+    if (splitSet) return true;
+    if (Object.keys(foodLogs).length || Object.keys(bodyweight).length) return true;
+    return false;
+  }
+  function startOnbFlow() {
+    if (onboardedFlowDone()) return;
+    if (looksLikeExistingUserForOnbFlow()) { markOnboardedFlowDone(); return; }
+    //  A wipe-and-restore-in-progress user (iOS evicted localStorage, IDB
+    //  recovery hasn't landed yet) must not be shown this either — same
+    //  cross-check restoreFromIDB()/maybeStartOnboarding() already do.
+    Promise.all([idbGet('maxes'), idbGet('sessions'), idbGet('foodLogs'), idbGet('bodyweight')]).then(function(r) {
+      if (onboardedFlowDone()) return;
+      var hasMaxes = r[0] && Object.keys(r[0]).length;
+      var hasSessions = r[1] && entryCount(r[1]) > 0;
+      var hasFoodLogs = r[2] && Object.keys(r[2]).length;
+      var hasBodyweight = r[3] && Object.keys(r[3]).length;
+      if (hasMaxes || hasSessions || hasFoodLogs || hasBodyweight || looksLikeExistingUserForOnbFlow()) {
+        markOnboardedFlowDone();
+        return;
+      }
+      showOnbFlow();
+    });
+  }
+  function showOnbFlow() {
+    var el = document.getElementById('onbFlow');
+    if (!el) return;
+    _onbFlowGoalMode = goalMode;
+    _onbFlowCardio = null;
+    renderOnbFlowGoalPills();
+    renderOnbFlowLiftDaysPills(4);
+    renderOnbFlowCardioToggle();
+    var wEl = document.getElementById('onbFlowWeight');
+    if (wEl) wEl.value = '';
+    onbFlowShowScreen(1);
+    el.style.display = 'flex';
+  }
+  function onbFlowShowScreen(n) {
+    [1, 2, 3].forEach(function(i) {
+      var s = document.getElementById('onbFlowScreen' + i);
+      if (s) s.style.display = i === n ? 'block' : 'none';
+    });
+  }
+  function onbFlowGoto(n) { onbFlowShowScreen(n); }
+  function renderOnbFlowGoalPills() {
+    var host = document.getElementById('onbFlowGoalPills');
+    if (!host) return;
+    host.innerHTML = GOAL_MODES.map(function(m) {
+      return '<button type="button" class="liftdays-btn' + (m === _onbFlowGoalMode ? ' on' : '')
+        + '" onclick="onbFlowSetGoalMode(\'' + m + '\')">' + GOAL_MODE_LABELS[m] + '</button>';
+    }).join('');
+  }
+  function onbFlowSetGoalMode(m) {
+    if (GOAL_MODES.indexOf(m) === -1) return;
+    _onbFlowGoalMode = m;
+    renderOnbFlowGoalPills();
+  }
+  function renderOnbFlowLiftDaysPills(selected) {
+    _onbFlowLiftDays = selected;
+    var host = document.getElementById('onbFlowLiftDaysPills');
+    if (!host) return;
+    host.innerHTML = ONB_FLOW_LIFT_DAYS.map(function(n) {
+      return '<button type="button" class="liftdays-btn' + (n === selected ? ' on' : '')
+        + '" onclick="onbFlowSetLiftDays(' + n + ')">' + n + '</button>';
+    }).join('');
+  }
+  //  3 to 6 only — the app has no split for a 1 or 2 day week (setLiftDays()
+  //  itself clamps below 3 up to 3), so a 1-6 picker would silently relabel
+  //  whatever the user picked without saying so. Not offering the impossible
+  //  choices is more honest than offering them and quietly overriding them.
+  function onbFlowSetLiftDays(n) { renderOnbFlowLiftDaysPills(n); }
+  function renderOnbFlowCardioToggle() {
+    var y = document.getElementById('onbFlowCardioYes'), n = document.getElementById('onbFlowCardioNo');
+    if (y) y.classList.toggle('on', _onbFlowCardio === true);
+    if (n) n.classList.toggle('on', _onbFlowCardio === false);
+    //  Not persisted anywhere — the task names no storage key for this
+    //  answer. Its only effect is whether the Strava section below it shows.
+    var wrap = document.getElementById('onbFlowStravaWrap');
+    if (wrap) wrap.style.display = _onbFlowCardio === true ? '' : 'none';
+  }
+  function onbFlowSetCardio(v) { _onbFlowCardio = v; renderOnbFlowCardioToggle(); }
+  //  Everything on this screen is optional and nothing here is written until
+  //  Next is tapped — Skip (from any screen) must leave all of it undone.
+  function onbFlowNext2() {
+    var wEl = document.getElementById('onbFlowWeight');
+    var w = wEl ? parseFloat(wEl.value) : NaN;
+    if (isFinite(w) && w > 50 && w < 1000) {
+      bodyweight[todayKey()] = Math.round(w * 10) / 10;
+      persistBodyweight();
+    }
+    goalMode = _onbFlowGoalMode;
+    persistGoalMode();
+    setLiftDays(_onbFlowLiftDays);        // existing function — also picks the matching split
+    applyGoalModeRecommendation();        // exact Prompt 2 math; a safe no-op with no bodyweight
+    onbFlowShowScreen(3);
+  }
+  function onbFlowFinish(tab) {
+    markOnboardedFlowDone();
+    var el = document.getElementById('onbFlow');
+    if (el) el.style.display = 'none';
+    if (tab) goTab(tab);
+    if (typeof maybeStartOnboarding === 'function') maybeStartOnboarding();
+  }
+  function onbFlowSkip() {
+    markOnboardedFlowDone();
+    var el = document.getElementById('onbFlow');
+    if (el) el.style.display = 'none';
+    if (typeof maybeStartOnboarding === 'function') maybeStartOnboarding();
+  }
+
   //     FIRST-LAUNCH ONBOARDING — one question per screen, for lifters who
   //     already know their numbers. This is now the first-run entry point; the
   //     two-modal chain above stays because the settings button and the Run tab
@@ -6752,6 +6963,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
   //  walked back through setup. IDB's splitId is deliberately not checked —
   //  restoreFromIDB() seeds it with the default split for every user.
   function maybeStartOnboarding() {
+    //  The new welcome flow goes first for a genuinely fresh install — it
+    //  calls this itself once it's done (shown or skipped), rather than this
+    //  racing it on the pre-existing setTimeout below.
+    if (!onboardedFlowDone()) return;
     if (onboardingDone()) return;
     if (MAX_KEYS.some(function(k) { return userMaxes[k]; }) || Object.keys(sessions).length) return;
     var splitSet = null;
@@ -10091,6 +10306,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     syncWeekDisplays(currentTrainWeek);
     // Recover history/maxes from the IndexedDB mirror if localStorage was wiped
     restoreFromIDB();
+    // Brand-new device only: the three-screen welcome + goal-setup flow.
+    // Runs first; it calls maybeStartOnboarding() itself once it settles.
+    startOnbFlow();
     // First launch only: the one-question-per-screen setup wizard
     setTimeout(maybeStartOnboarding, 600);
   });

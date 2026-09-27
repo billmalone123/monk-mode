@@ -460,6 +460,148 @@ eq('an old backup leaves goal mode exactly as it was, not reset to bulk', ctx.go
 eq('and existing targets from that restore are still in place', ctx.foodTargets.cal, 2500);
 eq('and the existing food log came through untouched', ctx.foodLogs[day(0)][0].name, 'Oats');
 
+section('2f. Welcome flow (onbFlow): markup and copy');
+ok('three screens exist', /id="onbFlowScreen1"/.test(html) && /id="onbFlowScreen2"/.test(html) && /id="onbFlowScreen3"/.test(html));
+ok('screen 1: heading', />RUN THE WEIGHTS</.test(html));
+ok('screen 1: subhead', />Train like an athlete\. Track everything\.</.test(html));
+['Log every lift. Track sets, reps, and weight over time.',
+ 'Log every run. A dedicated run section built into the app.',
+ 'Track every meal. Photo, barcode, or type what you ate.',
+ 'Monitor your weight. Weekly trends, not daily noise.'
+].forEach(function (b) {
+  ok('bullet: ' + b, html.indexOf('<li>' + b + '</li>') > -1);
+  ok('under 15 words: ' + b, b.split(' ').length < 15);
+});
+ok('screen 1 CTA', /onclick="onbFlowGoto\(2\)">Get Started</.test(html));
+ok('screen 2 heading', />SET YOUR GOAL</.test(html));
+ok('Strava button reuses the existing connect flow', /onclick="onStravaButtonClick\(\)">Connect Strava to sync your runs automatically\./.test(html));
+ok('Apple Health note', /Apple Health sync coming when the native app launches\./.test(html));
+ok('screen 3 heading', />YOU'RE READY</.test(html));
+ok('screen 3 body copy', /Your targets are set\. Log your first meal or your first lift to get started\./.test(html));
+ok('Log a meal goes to Food', /onclick="onbFlowFinish\('food'\)">Log a meal</.test(html));
+ok('Start lifting goes to Training', /onclick="onbFlowFinish\('training'\)">Start lifting</.test(html));
+eq('every screen has a Skip setup link', (html.match(/onclick="onbFlowSkip\(\)">Skip setup</g) || []).length, 3);
+eq('every screen (well, 1 and 2) has a way forward besides skip', /onclick="onbFlowGoto\(2\)"/.test(html) && /onclick="onbFlowNext2\(\)">Next</.test(html), true);
+
+section('2g. Welcome flow: gating — existing users are never shown it');
+function assertBackfilledNotShown(label, setupFn) {
+  reset(); boot(); ctx.loadFoodData();
+  setupFn();
+  eq(label + ': not yet flagged', ctx.onboardedFlowDone(), false);
+  ctx.startOnbFlow();
+  eq(label + ': flag is set immediately, no async wait needed', ctx.onboardedFlowDone(), true);
+  //  The stub never parses the inline style="display:none" HTML attribute
+  //  into .style.display (only explicit JS assignment does), so an
+  //  untouched element reads undefined here, not the string 'none' — the
+  //  real invariant is just that showOnbFlow() (which sets 'flex') never ran.
+  eq(label + ': the overlay is never opened', ctx.document.getElementById('onbFlow').style.display === 'flex', false);
+}
+assertBackfilledNotShown('has a logged max', function () { ctx.userMaxes = { squat: 300 }; });
+assertBackfilledNotShown('has a logged session', function () { ctx.sessions = { 'flat-bb-bench': [{ d: day(0), week: 0, weight: 200, reps: 5 }] }; });
+assertBackfilledNotShown('has chosen a split', function () { storage.setItem('monk_split_id_v1', 'ppl'); });
+assertBackfilledNotShown('has a food log', function () {
+  var l = {}; l[day(0)] = [{ id: 'x', time: '08:00', name: 'Eggs', items: [item('Eggs', 150, 215, 19)], source: 'text' }];
+  setFood(l, null, null);
+});
+assertBackfilledNotShown('has a bodyweight entry', function () {
+  var bw = {}; bw[day(0)] = 190; setFood(null, null, bw);
+});
+ctx.userMaxes = {}; ctx.sessions = {};   // undo the direct-assignment cases above for what follows
+
+section('2h. Welcome flow: shown for a genuinely fresh install, and the draft is isolated from real state');
+reset(); boot(); ctx.loadFoodData();
+eq('starts unflagged', ctx.onboardedFlowDone(), false);
+ctx.startOnbFlow();
+eq('not decided synchronously — this path waits on the IDB cross-check', ctx.onboardedFlowDone(), false);
+var p2h = flush(8).then(function () {
+  eq('a genuinely new install is not backfilled', ctx.onboardedFlowDone(), false);
+  eq('the overlay is shown', ctx.document.getElementById('onbFlow').style.display, 'flex');
+  eq('starting on screen 1', ctx.document.getElementById('onbFlowScreen1').style.display, 'block');
+  eq('screen 2 starts hidden', ctx.document.getElementById('onbFlowScreen2').style.display, 'none');
+  eq('screen 3 starts hidden', ctx.document.getElementById('onbFlowScreen3').style.display, 'none');
+  ok('goal pills default to the app-wide default (Bulk)', /class="liftdays-btn on" onclick="onbFlowSetGoalMode\('bulk'\)"/.test(ctx.document.getElementById('onbFlowGoalPills')._html));
+  ok('lift day pills default to 4, as specified', /class="liftdays-btn on" onclick="onbFlowSetLiftDays\(4\)">4</.test(ctx.document.getElementById('onbFlowLiftDaysPills')._html));
+  eq('cardio starts unanswered — Yes is not pre-selected', ctx.document.getElementById('onbFlowCardioYes').classList.contains('on'), false);
+  eq('nor is No', ctx.document.getElementById('onbFlowCardioNo').classList.contains('on'), false);
+  eq('so the Strava section starts hidden', ctx.document.getElementById('onbFlowStravaWrap').style.display, 'none');
+
+  ctx.onbFlowGoto(2);
+  eq('Get Started moves to screen 2', ctx.document.getElementById('onbFlowScreen2').style.display, 'block');
+
+  ctx.onbFlowSetCardio(true);
+  eq('Yes activates', ctx.document.getElementById('onbFlowCardioYes').classList.contains('on'), true);
+  eq('and reveals Strava', ctx.document.getElementById('onbFlowStravaWrap').style.display, '');
+  ctx.onbFlowSetCardio(false);
+  eq('No re-hides it', ctx.document.getElementById('onbFlowStravaWrap').style.display, 'none');
+
+  // Tapping pills is a local draft — it must not leak into real app state
+  // (visible elsewhere the instant it changes) before Next is tapped.
+  ctx.onbFlowSetGoalMode('cut');
+  eq('the real goalMode is untouched by a pill tap alone', ctx.goalMode, 'bulk');
+  ctx.onbFlowSetLiftDays(6);
+  eq('the real liftDaysPerWeek is untouched too', ctx.liftDaysPerWeek, 6);   // 6 is boot()'s own default either way, so also check nothing was WRITTEN:
+  eq('and nothing was persisted for it', storage.getItem('monk_lift_days_v1'), null);
+  eq('goal mode was not persisted either', storage.getItem('monk_goal_mode_v1'), null);
+
+  // Skip from mid-flow must discard the entire draft, per spec.
+  ctx.document.getElementById('onbFlowWeight').value = '190';
+  ctx.onbFlowSkip();
+  eq('Skip sets the onboarded flag', ctx.onboardedFlowDone(), true);
+  eq('and hides the overlay', ctx.document.getElementById('onbFlow').style.display, 'none');
+  eq('but the draft goal mode never applied', ctx.goalMode, 'bulk');
+  eq('nor the draft lift days', ctx.liftDaysPerWeek, 6);   // boot() default, unchanged by setLiftDays (never called)
+  eq('nor any bodyweight entry, even though the field had a value typed in', Object.keys(ctx.bodyweight).length, 0);
+  eq('nor any targets', 'cal' in ctx.foodTargets, false);
+});
+
+section('2i. Welcome flow: Next actually saves, using the exact Prompt 2 math');
+var p2i = p2h.then(function () {
+  reset(); boot(); ctx.loadFoodData();
+  ctx.startOnbFlow();
+  return flush(8).then(function () {
+    ok('shown (fresh install, same as 2h)', ctx.document.getElementById('onbFlow').style.display === 'flex');
+    ctx.onbFlowGoto(2);
+    ctx.document.getElementById('onbFlowWeight').value = '200';
+    ctx.onbFlowSetGoalMode('cut');
+    ctx.onbFlowSetLiftDays(5);
+    ctx.onbFlowNext2();
+    eq('bodyweight saved as today\'s entry', ctx.bodyweight[day(0)], 200);
+    eq('goal mode saved', ctx.goalMode, 'cut');
+    eq('and persisted', storage.getItem('monk_goal_mode_v1'), 'cut');
+    eq('lift days saved via the existing setLiftDays()', ctx.liftDaysPerWeek, 5);
+    eq('and persisted to its existing key', storage.getItem('monk_lift_days_v1'), '5');
+    // The exact Prompt 2 math for Cut at 200 lbs: BMR 3000 - 400, 1.1x protein.
+    eq('calorie target applied', ctx.foodTargets.cal, 2600);
+    eq('protein target applied', ctx.foodTargets.protein, 220);
+    eq('carb target applied', ctx.foodTargets.carbTarget, 260);
+    eq('fat target applied', ctx.foodTargets.fatTarget, 72);
+    eq('Next moves on to screen 3', ctx.document.getElementById('onbFlowScreen3').style.display, 'block');
+
+    ctx.onbFlowFinish('food');
+    eq('Finish sets the onboarded flag', ctx.onboardedFlowDone(), true);
+    eq('and hides the overlay', ctx.document.getElementById('onbFlow').style.display, 'none');
+    ok('Log a meal lands on the Food tab', ctx.document.getElementById('tab-food').style.display === 'block');
+
+    // A blank bodyweight on Next must not write anything — "all fields
+    // optional, skip saving if blank" — while goal mode/lift days (which
+    // always carry a value, pill toggles rather than free text) still save.
+    reset(); boot(); ctx.loadFoodData();
+    ctx.startOnbFlow();
+    return flush(8).then(function () {
+      ctx.onbFlowGoto(2);
+      ctx.document.getElementById('onbFlowWeight').value = '';
+      ctx.onbFlowSetLiftDays(3);
+      ctx.onbFlowNext2();
+      eq('a blank bodyweight writes nothing', Object.keys(ctx.bodyweight).length, 0);
+      eq('lift days still saves — it always has a value', ctx.liftDaysPerWeek, 3);
+      eq('goal mode still saves too', ctx.goalMode, 'bulk');
+      eq('but with no bodyweight, no targets get applied', 'cal' in ctx.foodTargets, false);
+      ctx.onbFlowFinish('training');
+      ok('Start lifting lands on the Training tab', ctx.document.getElementById('tab-training').style.display === 'block');
+    });
+  });
+});
+
 section('3. weekAvgWeight and weightTrend');
 reset(); boot(); setFood(null, null, {});
 eq('no data: null', ctx.weekAvgWeight(day(0)), null);
@@ -661,7 +803,7 @@ ctx.document.getElementById('foodNote').value = '2 scoops whey protein with wate
 ctx.onFoodTypeIt();
 eq('button reads Estimating... while the request is out', ctx.document.getElementById('foodTypeBtn').textContent, 'Estimating...');
 eq('and is disabled', ctx.document.getElementById('foodTypeBtn').disabled, true);
-var p7c = flush(8).then(function () {
+var p7c = p2i.then(function () { return flush(8).then(function () {
   eq('exactly one request goes out', calls.length, 1);
   eq('no image key is sent for a text-only submission', 'image' in calls[0].body, false);
   eq('the note is sent', calls[0].body.note, '2 scoops whey protein with water');
@@ -679,6 +821,11 @@ var p7c = flush(8).then(function () {
   ctx.discardFoodDraft();
 
   // A note long enough to need truncation.
+  //  Re-set here rather than trusted from this section's own top: sections
+  //  2h/2i/2i's inner scenarios call reset() (clears ALL of storage) on their
+  //  own async legs, which now run before this one settles, in between the
+  //  passcode being set at the top of this section and this second call.
+  storage.setItem('monk_meal_pass_v1', 'pw');
   var long = 'Grilled chicken breast, about eight ounces, with two cups of steamed broccoli and a cup of brown rice, olive oil drizzled on top';
   ctx.document.getElementById('foodNote').value = long;
   ctx.fetch = function (url, init) {
@@ -693,7 +840,7 @@ var p7c = flush(8).then(function () {
     ok('and still reads as the start of what was typed', long.indexOf(ctx.foodDraft.meal.name.replace(/\u2026$/, '').trim()) === 0);
     ctx.discardFoodDraft();
   });
-});
+}); });
 
 section('9b. Scan barcode: markup, camera lifecycle, and the review screen');
 ok('three capture buttons: Snap meal, Scan barcode, Choose photo',
