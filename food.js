@@ -848,11 +848,12 @@ ok('three capture buttons: Snap meal, Scan barcode, Choose photo',
 ok('the viewfinder is hidden by default in the markup', /id="barcodeWrap" class="food-barcode-wrap" style="display:none"/.test(html));
 ok('it has a live video element and a Cancel button', /id="barcodeVideo"/.test(html) && /onclick="cancelBarcodeScan\(\)">Cancel</.test(html));
 ok('the native detector asks for EAN-13/UPC-A/UPC-E and QR', /formats: \['ean_13', 'upc_a', 'upc_e', 'qr_code'\]/.test(html));
-ok('quagga has no QR reader — it is documented as native-only, not silently configured',
-   /no QR reader here on purpose/i.test(html) && !/readers: \['ean_reader', 'upc_reader', 'upc_e_reader', 'qr_reader'\]/.test(html));
-ok('quagga, when needed, loads only the pinned build from cdnjs',
-   html.indexOf("'https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js'") > -1);
-eq('no other external script is loaded for scanning', (html.match(/createElement\('script'\)/g) || []).length, 1);
+eq('quagga is functionally gone — no Quagga.* API call anywhere', (html.match(/\bQuagga\./g) || []).length, 0);
+eq('and the old cdnjs quagga script is no longer loaded', html.indexOf('cdnjs.cloudflare.com/ajax/libs/quagga') > -1, false);
+ok('ZXing, when needed, loads only the pinned build from jsdelivr as an ES module',
+   html.indexOf("import('https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.4/esm/index.js')") > -1);
+eq('no createElement(\'script\') tag-injection path is used for it (a real ES import instead)',
+   (html.match(/createElement\('script'\)/g) || []).length, 0);
 
 var p9b = p7c.then(function () {
   // ── Happy path: a code is found, the lookup succeeds, the camera is
@@ -1004,6 +1005,76 @@ var p9c = p9b.then(function () {
   });
 });
 
+section('9d. ZXing fallback detector (BarcodeDetector unavailable)');
+var p9d = p9c.then(function () {
+  reset(); boot(); ctx.loadFoodData();
+  storage.setItem('monk_meal_pass_v1', 'pw');
+  var streamsD = [];
+  function makeStreamD() {
+    var track = { stopped: false, stop: function () { track.stopped = true; } };
+    var s = { getTracks: function () { return [track]; } };
+    streamsD.push({ stream: s, track: track });
+    return s;
+  }
+  ctx.navigator.mediaDevices = { getUserMedia: function () { return Promise.resolve(makeStreamD()); } };
+  var video5 = ctx.document.getElementById('barcodeVideo');
+  video5.play = function () { return Promise.resolve(); };
+  video5.pause = function () {};
+  delete ctx.BarcodeDetector;   // simulate a browser without native support
+  ctx.window.__zxing = null;   // force loadZXing() to go through import() and cache fresh
+  var readerCb = null, controlsStopCalled = false;
+  var decodeFromStreamArgs = null;
+  function FakeReader() {
+    this.decodeFromStream = function (stream, video, cb) {
+      decodeFromStreamArgs = { stream: stream, video: video };
+      readerCb = cb;
+      return Promise.resolve();
+    };
+  }
+  // loadZXing() calls the real import() when nothing is cached — stub the
+  // cache directly so the test never depends on Node's vm dynamic import
+  // support, only on the app's own logic once a module is available.
+  ctx.window.__zxing = { BrowserMultiFormatReader: FakeReader };
+  ctx.onScanBarcode();
+  return flush(8).then(function () {
+    ok('decodeFromStream is called with the app\'s own already-open MediaStream',
+       !!decodeFromStreamArgs && decodeFromStreamArgs.stream === streamsD[0].stream);
+    ok('and the same video element the native path would have used',
+       decodeFromStreamArgs.video === video5);
+    ok('the reader callback was captured — decodeFromStream started', typeof readerCb === 'function');
+
+    // A frame with no match: err set, no result — must not open a draft or throw.
+    noThrow('a no-match frame does not throw', function () { readerCb(undefined, new Error('not found'), { stop: function () { controlsStopCalled = true; } }); });
+    eq('and opens no draft', ctx.foodDraft, null);
+
+    // A real match: result.getText() -> onBarcodeDetected, same path as native.
+    ctx.fetch = function () {
+      return Promise.resolve({ status: 200, ok: true, json: function () {
+        return Promise.resolve({ name: 'ZXing Item', servingG: 100, cal: 150, protein: 10, carbs: 20, fat: 3 });
+      } });
+    };
+    readerCb({ getText: function () { return '049000028911'; } }, undefined, { stop: function () { controlsStopCalled = true; } });
+    ok('the camera stops the instant a code is found, same as the native path', streamsD[0].track.stopped);
+    return flush(8).then(function () {
+      ok('a draft opened via the ZXing path exactly like the native one would', !!ctx.foodDraft && ctx.foodDraft.meal.items[0].name === 'ZXing Item');
+      ctx.discardFoodDraft();
+
+      // Cancel mid-scan must also stop ZXing's own controls, not just the tracks.
+      streamsD = [];
+      var controls2Stopped = false;
+      readerCb = null;
+      ctx.onScanBarcode();
+      return flush(8).then(function () {
+        // Deliver a controls object for this second scan the same way the
+        // real library does, so cancelBarcodeScan() has something to call.
+        readerCb(undefined, new Error('not found'), { stop: function () { controls2Stopped = true; } });
+        ctx.cancelBarcodeScan();
+        ok('cancelling calls through to the still-running detector\'s own stop(), not just the camera', controls2Stopped);
+      });
+    });
+  });
+});
+
 section('9. /api/meal.js with a fake fetch');
 var mealPath = require('path').resolve('api/meal.js');
 function runMeal(opts) {
@@ -1027,7 +1098,7 @@ var good = JSON.stringify({ items: [{ name: 'Rice', grams: '250', cal: 325.4, pr
 //  Chained after p7c (not a fresh Promise.resolve()) so section 7c's async
 //  assertions are guaranteed to finish, and this file's final tally/exit
 //  covers both sections, before this one's own process.exit runs.
-p9c
+p9d
   .then(function () { return runMeal({ headers: {}, body: { note: 'rice' } }); })
   .then(function (o) { eq('no passcode: 401', o.status, 401); eq('and no API call', o.calls.length, 0); })
   .then(function () { return runMeal({ headers: { 'x-rtw-pass': 'nope' }, body: { note: 'rice' } }); })
