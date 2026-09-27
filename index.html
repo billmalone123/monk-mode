@@ -2775,7 +2775,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.79</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.80</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2796,7 +2796,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.79</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3044,7 +3044,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main" style="background:#1A1A18">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.79</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3162,7 +3162,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main" style="background:#1A1A18">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.79</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3184,7 +3184,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main" style="background:#1A1A18">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.79</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3202,11 +3202,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <div class="run-setup-bar" style="margin-bottom:8px;">
       <label class="run-setup-toggle food-photo-btn" id="foodSnapBtn"><span id="foodSnapLabel">Snap meal</span><input type="file" id="foodPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="onFoodPhoto(this)"></label>
       <label class="run-setup-toggle food-photo-btn" id="foodLibBtn">Choose photo<input type="file" id="foodLibInput" accept="image/*" style="display:none" onchange="onFoodPhoto(this)"></label>
-      <button class="run-setup-toggle" id="foodTypeBtn" onclick="onFoodTypeIt()">Type it</button>
     </div>
     <div class="quicklog-field" style="max-width:480px;margin-bottom:6px;">
       <input type="text" id="foodNote" placeholder="8 oz chicken, 250g rice... or paste a photo" maxlength="300" onpaste="onFoodPaste(event)">
     </div>
+    <button class="quicklog-save-btn" style="max-width:480px;" id="foodTypeBtn" onclick="onFoodTypeIt()">Estimate</button>
     <div class="run-hint" id="foodAddMsg"></div>
   </div>
 
@@ -3238,7 +3238,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main" style="background:#1A1A18">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.79</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -7658,6 +7658,17 @@ body.training-mode select.run-input { color: #F1EFE1; }
     return pad(d.getHours()) + ':' + pad(d.getMinutes());
   }
   function foodSetMsg(id, text) { var el = document.getElementById(id); if (el) el.textContent = text || ''; }
+  //  A short summary of what was typed, for the Meal Name field — cut at a
+  //  word boundary where there's room to, so it doesn't end mid-word.
+  function truncateFoodName(note, max) {
+    var s = String(note || '').trim().replace(/\s+/g, ' ');
+    max = max || 60;
+    if (s.length <= max) return s;
+    var cut = s.slice(0, max - 1);
+    var lastSpace = cut.lastIndexOf(' ');
+    if (lastSpace > max * 0.6) cut = cut.slice(0, lastSpace);
+    return cut.replace(/[,.\s]+$/, '') + '…';
+  }
 
   function stepFoodDay(delta) {
     foodViewDate = delta === 0 ? todayKey() : shiftDateKey(foodDate(), delta);
@@ -7747,7 +7758,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (label) label.textContent = on ? 'Estimating...' : 'Snap meal';
     ['foodSnapBtn', 'foodLibBtn'].forEach(function(id) { var b = document.getElementById(id); if (b) b.classList.toggle('disabled', on); });
     ['foodPhotoInput', 'foodLibInput'].forEach(function(id) { var f = document.getElementById(id); if (f) f.disabled = on; });
-    if (type) type.disabled = on;
+    //  Estimate is a plain <button> with no nested input to lose, so its own
+    //  textContent can change directly — unlike foodSnapLabel's span, which
+    //  exists only because the Snap meal label wraps a hidden file input.
+    if (type) { type.disabled = on; type.textContent = on ? 'Estimating...' : 'Estimate'; }
   }
   //  Longest edge to 1024px, JPEG 0.8 — plenty for a food estimate and well
   //  under the server's 1.5 MB cap even for a full resolution phone photo.
@@ -7828,9 +7842,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
       setFoodBusy(false);
       if (noteEl) noteEl.value = '';
       var items = res.data.items || [];
+      var itemsName = items.slice(0, 2).map(function(i) { return i.name; }).join(' + ');
+      //  For a typed (no photo) submission, what the user actually typed is a
+      //  better meal name than the model's item labels — it wins even when
+      //  items came back. A photo with no items falls back to its own note.
+      var mealName = source === 'text' ? (truncateFoodName(note) || itemsName || 'Meal') : (itemsName || note || 'Meal');
       var meal = {
         id: newMealId(), time: nowHHMM(),
-        name: items.slice(0, 2).map(function(i) { return i.name; }).join(' + ') || (note || 'Meal'),
+        name: mealName,
         items: items, source: source, confidence: res.data.confidence || 'low'
       };
       openFoodDraft(meal, res.data.assumptions || [], null);

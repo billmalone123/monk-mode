@@ -424,6 +424,67 @@ eq('food code makes exactly one fetch', fetches.length, 1);
 ok('and it is a POST to /api/meal', /fetch\('\/api\/meal', \{\s*method: 'POST'/.test(foodSrc));
 
 // ─────────────────────────────────────────────────────────────────────────────
+function flush(n) {
+  var p = Promise.resolve();
+  for (var i = 0; i < n; i++) p = p.then(function () { return Promise.resolve(); });
+  return p;
+}
+
+section('7c. Type it: a real submit button, Estimating state, and the meal name');
+ok('the input has its own clearly labeled submit button, not Type it/Submit/Send',
+   /id="foodTypeBtn" onclick="onFoodTypeIt\(\)">Estimate</.test(html));
+eq('the old ambiguous label is gone', /id="foodTypeBtn"[^>]*>Type it</.test(html), false);
+ok('it sits right after the note input, not up with the photo buttons',
+   html.indexOf('id="foodNote"') < html.indexOf('id="foodTypeBtn"')
+   && html.indexOf('id="foodTypeBtn"') - html.indexOf('id="foodNote"') < 400);
+
+reset(); boot(); ctx.loadFoodData();
+storage.setItem('monk_meal_pass_v1', 'pw');
+var calls = [];
+ctx.fetch = function (url, init) {
+  calls.push({ url: url, body: JSON.parse(init.body) });
+  return Promise.resolve({ status: 200, ok: true, json: function () {
+    return Promise.resolve({ items: [{ name: 'Whey shake', grams: 300, cal: 240, protein: 48, carbs: 6, fat: 3 }], assumptions: [], confidence: 'medium' });
+  } });
+};
+ctx.document.getElementById('foodNote').value = '2 scoops whey protein with water';
+ctx.onFoodTypeIt();
+eq('button reads Estimating... while the request is out', ctx.document.getElementById('foodTypeBtn').textContent, 'Estimating...');
+eq('and is disabled', ctx.document.getElementById('foodTypeBtn').disabled, true);
+var p7c = flush(8).then(function () {
+  eq('exactly one request goes out', calls.length, 1);
+  eq('no image key is sent for a text-only submission', 'image' in calls[0].body, false);
+  eq('the note is sent', calls[0].body.note, '2 scoops whey protein with water');
+  eq('button is back to Estimate once done', ctx.document.getElementById('foodTypeBtn').textContent, 'Estimate');
+  ok('a draft with editable rows opened', !!ctx.foodDraft && Array.isArray(ctx.foodDraft.meal.items));
+  eq('the row came from the estimate', ctx.foodDraft.meal.items[0].name, 'Whey shake');
+  eq('Meal Name pre-populates from what was typed, not the item name',
+     ctx.foodDraft.meal.name, '2 scoops whey protein with water');
+  noThrow('renderFoodDraft does not throw for a text-only submission', function () { ctx.renderFoodDraft(); });
+  var host = ctx.document.getElementById('foodDraft');
+  ok('the review screen is showing', host.style.display !== 'none');
+  ok('with a Meal name field carrying the typed text',
+     (host._html || '').indexOf('value="2 scoops whey protein with water"') > -1);
+  ok('save and discard controls are present', /Save meal/.test(host._html) && /Discard/.test(host._html));
+  ctx.discardFoodDraft();
+
+  // A note long enough to need truncation.
+  var long = 'Grilled chicken breast, about eight ounces, with two cups of steamed broccoli and a cup of brown rice, olive oil drizzled on top';
+  ctx.document.getElementById('foodNote').value = long;
+  ctx.fetch = function (url, init) {
+    return Promise.resolve({ status: 200, ok: true, json: function () {
+      return Promise.resolve({ items: [{ name: 'Chicken breast', grams: 220, cal: 360, protein: 62 }, { name: 'Rice', grams: 200, cal: 260, protein: 5 }], assumptions: [], confidence: 'medium' });
+    } });
+  };
+  ctx.onFoodTypeIt();
+  return flush(8).then(function () {
+    ok('a long note is truncated to fit', ctx.foodDraft.meal.name.length <= 60);
+    ok('truncation ends with an ellipsis, not a chopped word', /\u2026$/.test(ctx.foodDraft.meal.name));
+    ok('and still reads as the start of what was typed', long.indexOf(ctx.foodDraft.meal.name.replace(/\u2026$/, '').trim()) === 0);
+    ctx.discardFoodDraft();
+  });
+});
+
 section('9. /api/meal.js with a fake fetch');
 var mealPath = require('path').resolve('api/meal.js');
 function runMeal(opts) {
@@ -444,7 +505,10 @@ function runMeal(opts) {
   return handler(req, res).then(function () { return out; });
 }
 var good = JSON.stringify({ items: [{ name: 'Rice', grams: '250', cal: 325.4, protein: 7, carbs: 70, fat: 1 }, { name: '', cal: 5 }, { cal: 9 }], assumptions: ['1 tbsp oil'], confidence: 'medium' });
-Promise.resolve()
+//  Chained after p7c (not a fresh Promise.resolve()) so section 7c's async
+//  assertions are guaranteed to finish, and this file's final tally/exit
+//  covers both sections, before this one's own process.exit runs.
+p7c
   .then(function () { return runMeal({ headers: {}, body: { note: 'rice' } }); })
   .then(function (o) { eq('no passcode: 401', o.status, 401); eq('and no API call', o.calls.length, 0); })
   .then(function () { return runMeal({ headers: { 'x-rtw-pass': 'nope' }, body: { note: 'rice' } }); })
