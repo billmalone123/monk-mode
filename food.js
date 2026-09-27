@@ -602,6 +602,66 @@ var p2i = p2h.then(function () {
   });
 });
 
+section('2j. Interactive-elements polish: borders, button weight, nav hint, empty states, About teaser');
+// 1. Input borders — one shared token, applied to every real input class,
+// not a literal 20% white (which would have been LESS visible than the
+// --field it replaced — see the :root comment for the contrast math).
+ok('a dedicated input-border token exists', /--input-border-idle:\s*rgba\(255,255,255,0\.35\)/.test(html));
+[/^  \.log-inline-input \{/m, /^  \.settings-input-field \{/m, /^\.run-input \{/m, /^\.run-log-input \{/m, /^\.quicklog-field input \{/m].forEach(function (re) {
+  var m = re.exec(html);
+  ok(re.source + ' uses the shared input-border token', !!m && html.slice(m.index, m.index + 200).indexOf('var(--input-border-idle)') > -1);
+});
+ok('a literal 20% opacity white border was NOT used (it would regress contrast)', !/border:\s*1px solid rgba\(255,255,255,0\.2\)/.test(html));
+
+// 2. Primary action buttons — more padding, a subtle inner glow, no color change.
+ok('.quicklog-save-btn got +4px top/bottom padding (14px -> 18px 14px)', /\.quicklog-save-btn \{[^}]*padding: 18px 14px;/.test(html));
+ok('.quicklog-save-btn got the inner glow', /\.quicklog-save-btn \{[^}]*box-shadow: inset 0 1px 0 rgba\(255,255,255,0\.1\);/.test(html));
+ok('.quicklog-save-btn is still accent-colored — untouched', /\.quicklog-save-btn \{[^}]*background: var\(--accent\);/.test(html));
+ok('.settings-save-btn got +4px padding too (16px -> 20px 16px)', /\.settings-save-btn \{[^}]*padding: 20px 16px;/.test(html));
+ok('.settings-save-btn got the inner glow, alongside its existing drop shadow', /\.settings-save-btn \{[^}]*box-shadow: 0 4px 16px rgba\(241,239,225,0\.25\), inset 0 1px 0 rgba\(255,255,255,0\.1\);/.test(html));
+// Apply was the one primary action with NO fill at all before this — a
+// bigger gap than "needs more weight" describes for the others.
+eq('the Apply button no longer uses the plain, unfilled link style', /class="quicklog-back"[^>]*onclick="applyGoalModeRecommendation\(\)"/.test(html), false);
+ok('Apply is now a compact, accent-filled button with the same inner glow', /class="food-apply-btn" onclick="applyGoalModeRecommendation\(\)">Apply</.test(html));
+ok('.food-apply-btn uses --accent, not a new color', /\.food-apply-btn \{[^}]*background: var\(--accent\);/.test(html));
+ok('and stays inline, not full width (no layout change to the recommendation line)', /\.food-apply-btn \{[^}]*display: inline-block;/.test(html));
+
+// 3. Nav dropdown: clearer icon, first-open pulse.
+ok('chevron is now the clearer menu icon (≡), not ▾', /<span class="nav-logo-chevron" aria-hidden="true">≡<\/span>/.test(html));
+ok('a pulse ring is defined, gated in CSS to the .nav-hint class (never on by default)', /\.nav-logo\.nav-hint::after/.test(html));
+eq('the ring plays once — no infinite loop', /animation: navHintPulse[^;]*infinite/.test(html), false);
+reset(); boot();
+eq('nothing writes the nav-hint flag just from booting', storage.getItem('monk_nav_hint_v1'), null);
+var navEl = ctx.document.getElementById('navLogo');
+navEl.classList.add('nav-hint');
+ctx.openNavMenu();
+eq('opening the nav sets the flag', storage.getItem('monk_nav_hint_v1'), '1');
+eq('and clears the hint class immediately', navEl.classList.contains('nav-hint'), false);
+ctx.closeNavMenu();
+
+// 4. Empty states: a clear call to action, not just a bare statement.
+reset(); boot(); ctx.loadFoodData();
+ctx.renderFoodMeals();
+eq('Food > Meals empty state names the actual buttons above it',
+   ctx.document.getElementById('foodMeals').innerHTML,
+   '<div class="quicklog-recent-empty">No meals logged. Tap Snap Meal or Type It above to add one.</div>');
+ctx.renderFoodRepeat();
+ok('Food > Repeat a meal empty state explains how one gets here',
+   ctx.document.getElementById('foodRepeat').innerHTML.indexOf('Log one above and it shows up here') > -1);
+ok('Run tab\'s existing empty state already carries an actionable instruction (left as is)',
+   /Enter what you actually ran on any past run day below and it appears here/.test(html));
+
+// 5. About-page teaser on Welcome Screen 3, and only there.
+ok('the teaser text and arrow are on screen 3', /Explore what's possible &rarr; About Run the Weights/.test(html));
+ok('it sits before (above) the two CTA buttons in the markup', html.indexOf('onbFlowExploreAbout') < html.indexOf(">Log a meal<"));
+eq('no other onboarding screen was touched by this', (html.match(/onbFlowExploreAbout/g) || []).length, 2);   // the button + its handler def
+reset(); boot(); ctx.loadFoodData();
+ctx.onboardedFlowDone = ctx.onboardedFlowDone;   // no-op, just documents intent below
+storage.removeItem('monk_onboarded_v1');
+noThrow('tapping the teaser does not throw', function () { ctx.onbFlowExploreAbout(); });
+eq('it finishes onboarding, same as the two CTA buttons', ctx.onboardedFlowDone(), true);
+eq('and lands on the About section specifically', ctx.document.getElementById('sec-about').style.display, 'block');
+
 section('3. weekAvgWeight and weightTrend');
 reset(); boot(); setFood(null, null, {});
 eq('no data: null', ctx.weekAvgWeight(day(0)), null);

@@ -36,6 +36,12 @@
     /* Input borders are the only thing delineating a field, so they carry the
        3:1 WCAG 1.4.11 minimum on their own (3.70:1). --dim is decorative only. */
     --field:       #78736A;
+    /* Default (unfocused) border for every text/number input, app-wide. A
+       literal 20% opacity white — the value first suggested for this — works
+       out to roughly 3.05:1 against --bg/--surface, right at the edge of
+       dropping below the 3:1 floor --field was deliberately tuned to just
+       above (see the comment on it). 35% keeps that same margin instead. */
+    --input-border-idle: rgba(255,255,255,0.35);
     /* The sparkle gray from the brand mark — the one non-cream accent it uses */
     --gray:        #5E5E5E;
     --black:  #1A1A18;
@@ -109,9 +115,25 @@
      page, so its padding is invisible and it sits flush. Height is set so the
      lettering inside matches the type size the text mark used to render at. */
   .nav-logo {
+    position: relative;
     background: rgba(241,239,225,0.05); border: 1px solid var(--border);
     border-radius: 10px; padding: 6px 14px; cursor: pointer;
     display: flex; align-items: center; -webkit-tap-highlight-color: transparent;
+  }
+  /* First-open hint — a ring that expands and fades once, so a brand-new
+     user notices the only nav there is. Gated in JS on monk_nav_hint_v1;
+     the single play (animation's default iteration-count is 1, not
+     infinite) means it's inert on its own once that's set, but the class is
+     also removed the moment the menu is actually opened, so it can't linger
+     mid-animation into a session that already used it. */
+  .nav-logo.nav-hint::after {
+    content: ''; position: absolute; inset: -5px; border-radius: 14px;
+    border: 2px solid var(--accent); pointer-events: none;
+    animation: navHintPulse 1.6s ease-out 1;
+  }
+  @keyframes navHintPulse {
+    0%   { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.18); opacity: 0; }
   }
   .nav-logo img { height: 30px; width: auto; display: block; }
   /* The wordmark is the desktop mark; the square is the compact one. Only one
@@ -996,7 +1018,7 @@
   }
   .log-inline-input {
     background: rgba(241,239,225,0.08);
-    border: 1px solid var(--field);
+    border: 1px solid var(--input-border-idle);
     color: #F1EFE1;
     padding: 10px 12px;
     font-family: var(--font-display);
@@ -1489,7 +1511,7 @@
   .settings-input-label span { color: var(--accent); font-size: 10px; }
   .settings-input-field {
     background: var(--bg);
-    border: 1px solid var(--field);
+    border: 1px solid var(--input-border-idle);
     color: #F1EFE1;
     padding: 14px 18px;
     font-family: var(--font-display);
@@ -1512,7 +1534,7 @@
     background: linear-gradient(135deg, #F1EFE1 0%, #D9D6C6 100%);
     color: #1A1A18;
     border: none;
-    padding: 16px;
+    padding: 20px 16px;
     font-family: var(--font-display);
     font-weight: 900;
     font-size: 16px;
@@ -1523,7 +1545,7 @@
     width: 100%;
     margin-bottom: 10px;
     transition: all 0.15s;
-    box-shadow: 0 4px 16px rgba(241,239,225,0.25);
+    box-shadow: 0 4px 16px rgba(241,239,225,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
   }
   .settings-save-btn:hover { background: linear-gradient(135deg, #C9C5B6 0%, #D9D6C6 100%); }
   .settings-cancel-btn {
@@ -1942,15 +1964,16 @@ body.training-mode footer { display: none; }
   text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
 }
 .quicklog-field input {
-  width: 100%; box-sizing: border-box; background: var(--bg); border: 1px solid var(--field);
+  width: 100%; box-sizing: border-box; background: var(--bg); border: 1px solid var(--input-border-idle);
   color: var(--text); font-family: var(--font-body); font-size: 17px;
   padding: 12px 14px; border-radius: 5px; outline: none;
 }
 .quicklog-field input:focus { border-color: var(--accent); }
 .quicklog-save-btn {
   width: 100%; background: var(--accent); color: #1A1A18; border: none; border-radius: 5px;
-  padding: 14px; font-family: var(--font-display); font-weight: 700; font-size: 15px;
+  padding: 18px 14px; font-family: var(--font-display); font-weight: 700; font-size: 15px;
   letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; margin-top: 4px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
 }
 .quicklog-save-btn:active { transform: scale(0.98); }
 .quicklog-confirm {
@@ -2002,6 +2025,19 @@ label.food-photo-btn.food-photo-primary:hover, button.food-photo-btn.food-photo-
 /* A quiet line between the camera row and the typed path — two distinct
    ways in, not one blurred list of options. */
 .food-input-divider { border-top: 1px solid var(--border); max-width: 480px; margin: 18px 0 16px; }
+/* Apply is a primary action (it commits the recommended targets) that used
+   to be styled like the plain Cancel/Discard links next to it, with no fill
+   at all — worse than any of the other primary buttons, not just quieter.
+   Same accent + inner-glow treatment as .quicklog-save-btn, just inline and
+   compact rather than full width, since it sits mid-sentence next to the
+   recommendation text, not on its own line. */
+.food-apply-btn {
+  display: inline-block; background: var(--accent); color: #1A1A18; border: none;
+  border-radius: 5px; padding: 10px 14px; font-family: var(--font-display); font-weight: 700;
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+  margin-left: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.food-apply-btn:active { transform: scale(0.98); }
 /* ── WELCOME FLOW ─────────────────────────────────────────────────────────── */
 /* Full viewport, same tokens/typography/buttons as everywhere else — only the
    outer scaffold and the bullet list below are new, nothing else. */
@@ -2282,7 +2318,7 @@ input.smooth-input { caret-color: transparent; }
   color: var(--accent); letter-spacing: 0.02em;
 }
 .run-input {
-  background: var(--bg); border: 1px solid var(--field); color: #F1EFE1;
+  background: var(--bg); border: 1px solid var(--input-border-idle); color: #F1EFE1;
   padding: 12px 14px; font-family: var(--font-display); font-size: 17px; font-weight: 800;
   border-radius: 4px; width: 100%; outline: none; letter-spacing: 0.02em;
   transition: border-color 0.15s;
@@ -2487,7 +2523,7 @@ body.training-mode #calendarfull { background: var(--bg); border-top: none; padd
 }
 .run-log-input {
   background: rgba(241,239,225,0.08);
-  border: 1px solid var(--field);
+  border: 1px solid var(--input-border-idle);
   color: #F1EFE1;
   padding: 6px 8px;
   font-family: var(--font-display);
@@ -2685,6 +2721,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <div class="onb-flow-screen" id="onbFlowScreen3" style="display:none">
       <div class="settings-modal-title">YOU'RE READY</div>
       <div class="settings-modal-sub">Your targets are set. Log your first meal or your first lift to get started.</div>
+      <button class="quicklog-back" style="margin-bottom:14px;" onclick="onbFlowExploreAbout()">Explore what's possible &rarr; About Run the Weights</button>
       <div style="display:flex;gap:12px;">
         <button class="quicklog-save-btn" style="margin-top:0;" onclick="onbFlowFinish('food')">Log a meal</button>
         <button class="quicklog-save-btn" style="margin-top:0;" onclick="onbFlowFinish('training')">Start lifting</button>
@@ -2699,7 +2736,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <button class="nav-logo" id="navLogo" aria-haspopup="menu" aria-expanded="false" aria-label="Run the Weights — open menu">
     <img class="nav-logo-word" src="assets/brand/rtw-wordmark.png" alt="Run the Weights">
     <img class="nav-logo-mark" src="assets/brand/rtw-square-a.png" alt="" aria-hidden="true">
-    <span class="nav-logo-chevron" aria-hidden="true">▾</span>
+    <span class="nav-logo-chevron" aria-hidden="true">≡</span>
   </button>
   <!-- The logo dropdown is the whole nav now. The horizontal tab row and its
        sliding indicator were removed in build 7.32; goTab() is untouched and
@@ -2882,7 +2919,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.88</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.89</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2903,7 +2940,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.88</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3151,7 +3188,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main" style="background:#1A1A18">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.88</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3269,7 +3306,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main" style="background:#1A1A18">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.88</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3291,7 +3328,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main" style="background:#1A1A18">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.88</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3354,7 +3391,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main" style="background:#1A1A18">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.88</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -6940,6 +6977,17 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (el) el.style.display = 'none';
     if (typeof maybeStartOnboarding === 'function') maybeStartOnboarding();
   }
+  //  The one teaser link on screen 3 — same finish sequence as the two CTA
+  //  buttons next to it, just landing on the About section of Overview
+  //  instead of Food or Training.
+  function onbFlowExploreAbout() {
+    markOnboardedFlowDone();
+    var el = document.getElementById('onbFlow');
+    if (el) el.style.display = 'none';
+    goTab('info');
+    goSec('about');
+    if (typeof maybeStartOnboarding === 'function') maybeStartOnboarding();
+  }
 
   //     FIRST-LAUNCH ONBOARDING — one question per screen, for lifters who
   //     already know their numbers. This is now the first-run entry point; the
@@ -7875,7 +7923,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       html += '<div class="run-hint" style="margin-top:10px;">Log your weight to get a recommendation</div>';
     } else {
       html += '<div class="run-hint" style="margin-top:10px;">Recommended: ' + fmtInt(rec.cal) + ' cal / ' + fmtInt(rec.protein) + 'g protein'
-        + ' <button class="quicklog-back" style="display:inline;margin:0 0 0 4px;" onclick="applyGoalModeRecommendation()">Apply</button></div>';
+        + ' <button class="food-apply-btn" onclick="applyGoalModeRecommendation()">Apply</button></div>';
     }
     host.innerHTML = html;
   }
@@ -8568,7 +8616,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var host = document.getElementById('foodMeals');
     if (!host) return;
     var list = foodLogs[foodDate()] || [];
-    if (!list.length) { host.innerHTML = '<div class="quicklog-recent-empty">No meals logged for this day.</div>'; return; }
+    if (!list.length) { host.innerHTML = '<div class="quicklog-recent-empty">No meals logged. Tap Snap Meal or Type It above to add one.</div>'; return; }
     host.innerHTML = list.map(function(m) {
       var t = mealTotals(m);
       return '<div class="quicklog-recent-row food-meal-row" onclick="openFoodMeal(\'' + m.id + '\')">'
@@ -8597,7 +8645,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var host = document.getElementById('foodRepeat');
     if (!host) return;
     _foodRepeatList = recentDistinctMeals(10);
-    if (!_foodRepeatList.length) { host.innerHTML = '<div class="quicklog-recent-empty">Saved meals show up here for one tap repeats.</div>'; return; }
+    if (!_foodRepeatList.length) { host.innerHTML = '<div class="quicklog-recent-empty">No saved meals yet. Log one above and it shows up here for a one-tap repeat.</div>'; return; }
     host.innerHTML = '<div class="run-setup-bar">' + _foodRepeatList.map(function(m, i) {
       return '<button class="run-setup-toggle" onclick="repeatFoodMeal(' + i + ')">+ ' + quickLogEscape(m.name) + '</button>';
     }).join('') + '</div>';
@@ -10355,6 +10403,14 @@ body.training-mode select.run-input { color: #F1EFE1; }
     // Brand-new device only: the three-screen welcome + goal-setup flow.
     // Runs first; it calls maybeStartOnboarding() itself once it settles.
     startOnbFlow();
+    // Nav hint — the pulse ring plays once, ever, until the user opens the
+    // menu (openNavMenu() clears both the class and the flag's absence).
+    try {
+      if (!localStorage.getItem(NAV_HINT_KEY)) {
+        var navHintEl = document.getElementById('navLogo');
+        if (navHintEl) navHintEl.classList.add('nav-hint');
+      }
+    } catch(e) {}
     // First launch only: the one-question-per-screen setup wizard
     setTimeout(maybeStartOnboarding, 600);
   });
@@ -11026,9 +11082,13 @@ function buildNavMenu() {
 
 function navMenuOpen() { return !!(_navMenu && _navMenu.classList.contains('on')); }
 
+const NAV_HINT_KEY = 'monk_nav_hint_v1';
 function openNavMenu() {
   var trigger = document.getElementById('navLogo');
   if (!trigger) return;
+  //  First real open, ever, on this device — the hint has done its job.
+  trigger.classList.remove('nav-hint');
+  try { localStorage.setItem(NAV_HINT_KEY, '1'); } catch(e) {}
   var el = buildNavMenu();
   //  Mark the tab you are already on
   var current = null;
