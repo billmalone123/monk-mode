@@ -847,7 +847,9 @@ ok('three capture buttons: Snap meal, Scan barcode, Choose photo',
    /id="foodSnapBtn"/.test(html) && /id="foodBarcodeBtn" onclick="onScanBarcode\(\)">Scan barcode</.test(html) && /id="foodLibBtn"/.test(html));
 ok('the viewfinder is hidden by default in the markup', /id="barcodeWrap" class="food-barcode-wrap" style="display:none"/.test(html));
 ok('it has a live video element and a Cancel button', /id="barcodeVideo"/.test(html) && /onclick="cancelBarcodeScan\(\)">Cancel</.test(html));
-ok('the native detector only asks for EAN-13/UPC-A/UPC-E', /formats: \['ean_13', 'upc_a', 'upc_e'\]/.test(html));
+ok('the native detector asks for EAN-13/UPC-A/UPC-E and QR', /formats: \['ean_13', 'upc_a', 'upc_e', 'qr_code'\]/.test(html));
+ok('quagga has no QR reader — it is documented as native-only, not silently configured',
+   /no QR reader here on purpose/i.test(html) && !/readers: \['ean_reader', 'upc_reader', 'upc_e_reader', 'qr_reader'\]/.test(html));
 ok('quagga, when needed, loads only the pinned build from cdnjs',
    html.indexOf("'https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js'") > -1);
 eq('no other external script is loaded for scanning', (html.match(/createElement\('script'\)/g) || []).length, 1);
@@ -904,8 +906,8 @@ var p9b = p7c.then(function () {
     eq('grams edit rescales calories (588 at 100g -> 294 at 50g)', ctx.foodDraft.meal.items[0].cal, 294);
     ctx.discardFoodDraft();
 
-    // ── Not found: the error shows inline, and the viewfinder reopens on
-    // its own so the user can try again without a second tap. ──────────────
+    // ── Not found (both sources): the error shows inline, the camera stays
+    // off, and the note field gets focus so typing it is one less tap. ────
     reset(); boot(); ctx.loadFoodData();
     storage.setItem('monk_meal_pass_v1', 'pw');
     streams = [];
@@ -914,41 +916,90 @@ var p9b = p7c.then(function () {
     var video2 = ctx.document.getElementById('barcodeVideo');
     video2.play = function () { return Promise.resolve(); };
     video2.pause = function () {};
-    var detectCalls = 0;
-    //  Only the very first detect() across this whole scan finds a code —
-    //  the reopened scanner's own detect() calls come back empty, so the
-    //  test settles instead of cycling forever through 404s.
-    ctx.BarcodeDetector = function () { this.detect = function () {
-      detectCalls++;
-      return Promise.resolve(detectCalls === 1 ? [{ rawValue: '000000000000' }] : []);
-    }; };
+    ctx.BarcodeDetector = function () { this.detect = function () { return Promise.resolve([{ rawValue: '000000000000' }]); }; };
     ctx.fetch = function () {
       return Promise.resolve({ status: 404, ok: false, json: function () {
-        return Promise.resolve({ error: 'Product not found. Try typing it instead.' });
+        return Promise.resolve({ error: 'Product not found. Try typing what you ate instead.' });
       } });
     };
+    var noteEl = ctx.document.getElementById('foodNote');
+    noteEl.focus = function () { noteEl._focused = true; };
     ctx.onScanBarcode();
-    return flush(14).then(function () {
-      eq('the camera reopens once on its own after a 404', getUserMediaCalls, 2);
-      ok('the first stream (that found the bad code) is stopped', streams[0].track.stopped);
-      ok('the reopened stream is still live, waiting for another attempt', !streams[1].track.stopped);
-      eq('the not-found message shows inline', ctx.document.getElementById('foodAddMsg').textContent,
-         'Product not found. Try typing it instead.');
+    return flush(10).then(function () {
+      eq('exactly one scan — a 404 does not reopen the camera', getUserMediaCalls, 1);
+      ok('the stream that found the code is stopped', streams[0].track.stopped);
+      eq('the viewfinder is hidden, not left waiting for another attempt', ctx.document.getElementById('barcodeWrap').style.display, 'none');
+      eq('the scanning banner is cleared too', ctx.document.getElementById('barcodeScanBanner').style.display, 'none');
+      eq('the not-found message shows inline, matching the server\'s exact wording',
+         ctx.document.getElementById('foodAddMsg').textContent, 'Product not found. Try typing what you ate instead.');
       eq('no draft opens for a failed lookup', ctx.foodDraft, null);
+      ok('the note field gets focus so typing it is one less tap', noteEl._focused);
 
-      // ── Cancel and tab-change both stop a still-open camera. ────────────
-      ctx.cancelBarcodeScan();
-      ok('Cancel stops the reopened stream too', streams[1].track.stopped);
-      eq('and hides the viewfinder', ctx.document.getElementById('barcodeWrap').style.display, 'none');
-
-      streams = []; getUserMediaCalls = 0; detectCalls = -99;   // detect() always returns [] from here on
+      // ── The scanning banner: shown the instant a code is found, above the
+      // (still momentarily visible) viewfinder, before the lookup settles. ──
+      reset(); boot(); ctx.loadFoodData();
+      storage.setItem('monk_meal_pass_v1', 'pw');
+      var settle = null;
+      ctx.navigator.mediaDevices = { getUserMedia: function () { return Promise.resolve(makeStream()); } };
+      var video3 = ctx.document.getElementById('barcodeVideo');
+      video3.play = function () { return Promise.resolve(); };
+      video3.pause = function () {};
+      ctx.BarcodeDetector = function () { this.detect = function () { return Promise.resolve([{ rawValue: '049000028911' }]); }; };
+      ctx.fetch = function () {
+        return new Promise(function (resolve) { settle = resolve; });   // hangs until we release it below
+      };
       ctx.onScanBarcode();
       return flush(6).then(function () {
-        ok('camera is open before leaving the Food tab', getUserMediaCalls === 1 && !streams[0].track.stopped);
-        noThrow('switching tabs away from Food does not throw', function () { ctx.goTab('training'); });
-        ok('leaving the Food tab stops a still-running camera', streams[0].track.stopped);
-        ctx.goTab('food');
+        var banner = ctx.document.getElementById('barcodeScanBanner');
+        eq('the banner shows the scanned code while the lookup is still in flight',
+           banner.textContent, 'Scanning 049000028911...');
+        ok('and is visible', banner.style.display !== 'none');
+        ok('the camera is already off by this point, though — stopping it never waits on the banner',
+           streams[streams.length - 1].track.stopped);
+        settle({ status: 200, ok: true, json: function () {
+          return Promise.resolve({ name: 'Item', servingG: 100, cal: 100, protein: 5, carbs: 10, fat: 2 });
+        } });
+        return flush(8).then(function () {
+          eq('the banner clears once the lookup finishes', banner.style.display, 'none');
+          ctx.discardFoodDraft();
+        });
       });
+    });
+  });
+});
+
+section('9c. Barcode: camera cleanup on cancel and tab-change (unaffected by the 404 change above)');
+var p9c = p9b.then(function () {
+  reset(); boot(); ctx.loadFoodData();
+  storage.setItem('monk_meal_pass_v1', 'pw');
+  var streamsC = [];
+  function makeStreamC() {
+    var track = { stopped: false, stop: function () { track.stopped = true; } };
+    var s = { getTracks: function () { return [track]; } };
+    streamsC.push({ stream: s, track: track });
+    return s;
+  }
+  var getUserMediaCallsC = 0;
+  ctx.navigator.mediaDevices = { getUserMedia: function () { getUserMediaCallsC++; return Promise.resolve(makeStreamC()); } };
+  var video4 = ctx.document.getElementById('barcodeVideo');
+  video4.play = function () { return Promise.resolve(); };
+  video4.pause = function () {};
+  ctx.BarcodeDetector = function () { this.detect = function () { return Promise.resolve([]); }; };   // never finds a code
+  ctx.onScanBarcode();
+  return flush(6).then(function () {
+    eq('camera opened', getUserMediaCallsC, 1);
+    ok('track not stopped yet', !streamsC[0].track.stopped);
+    ctx.cancelBarcodeScan();
+    ok('cancel stops the camera track', streamsC[0].track.stopped);
+    eq('and hides the viewfinder', ctx.document.getElementById('barcodeWrap').style.display, 'none');
+
+    streamsC = []; getUserMediaCallsC = 0;
+    ctx.onScanBarcode();
+    return flush(6).then(function () {
+      ok('camera is open before leaving the Food tab', getUserMediaCallsC === 1 && !streamsC[0].track.stopped);
+      noThrow('switching tabs away from Food does not throw', function () { ctx.goTab('training'); });
+      ok('leaving the Food tab stops a still-running camera', streamsC[0].track.stopped);
+      ctx.goTab('food');
     });
   });
 });
@@ -976,7 +1027,7 @@ var good = JSON.stringify({ items: [{ name: 'Rice', grams: '250', cal: 325.4, pr
 //  Chained after p7c (not a fresh Promise.resolve()) so section 7c's async
 //  assertions are guaranteed to finish, and this file's final tally/exit
 //  covers both sections, before this one's own process.exit runs.
-p9b
+p9c
   .then(function () { return runMeal({ headers: {}, body: { note: 'rice' } }); })
   .then(function (o) { eq('no passcode: 401', o.status, 401); eq('and no API call', o.calls.length, 0); })
   .then(function () { return runMeal({ headers: { 'x-rtw-pass': 'nope' }, body: { note: 'rice' } }); })
@@ -1015,15 +1066,23 @@ p9b
   .then(function () {
     section('10. /api/barcode.js with a fake fetch');
     var barcodePath = require('path').resolve('api/barcode.js');
+    //  Two independent endpoints now, so the mock branches by URL rather than
+    //  answering every fetch the same way — opts.offData/offStatus/offThrow
+    //  control the Open Food Facts leg, opts.usdaData/usdaStatus/usdaThrow
+    //  the USDA fallback leg, and a call is only recorded, not answered,
+    //  until the matching opts are actually reached (so "USDA never called
+    //  when OFF succeeds" is a real assertion, not just an unused mock).
     function runBarcode(opts) {
       process.env.MEAL_PASSCODE = 'pw';
       var calls = [];
       global.fetch = function (url, init) {
         calls.push({ url: url, init: init });
-        return Promise.resolve({
-          ok: opts.offStatus == null || opts.offStatus < 400, status: opts.offStatus || 200,
-          json: function () { return Promise.resolve(opts.offData); }
-        });
+        var isUsda = url.indexOf('api.nal.usda.gov') > -1;
+        if (isUsda && opts.usdaThrow) return Promise.reject(new Error('network down'));
+        if (!isUsda && opts.offThrow) return Promise.reject(new Error('network down'));
+        var status = isUsda ? (opts.usdaStatus || 200) : (opts.offStatus || 200);
+        var data = isUsda ? opts.usdaData : opts.offData;
+        return Promise.resolve({ ok: status < 400, status: status, json: function () { return Promise.resolve(data); } });
       };
       delete require.cache[barcodePath];
       var handler = require(barcodePath);
@@ -1051,22 +1110,59 @@ p9b
         eq('parsed output shape', JSON.stringify(o.body), JSON.stringify({ name: 'Peanut Butter', servingG: 100, cal: 588, protein: 25, carbs: 20, fat: 50 }));
         eq('calls Open Food Facts with the barcode in the path', o.calls[0].url, 'https://world.openfoodfacts.org/api/v0/product/012345678901.json');
         eq('no init/body on a GET to Open Food Facts', o.calls[0].init, undefined);
+        eq('OFF succeeded, so USDA is never called', o.calls.length, 1);
       })
       .then(function () { return runBarcode({ body: { barcode: '000000000000' }, offData: { status: 0 } }); })
       .then(function (o) {
-        eq('product not found: 404', o.status, 404);
-        eq('with the friendly message', o.body.error, 'Product not found. Try typing it instead.');
+        eq('OFF not found, USDA not asked either (no usdaData given): 404', o.status, 404);
+        eq('with the friendly message', o.body.error, 'Product not found. Try typing what you ate instead.');
+        eq('but USDA WAS tried before giving up', o.calls.length, 2);
+        ok('at the documented endpoint, with the barcode as the query and DEMO_KEY',
+           o.calls[1].url === 'https://api.nal.usda.gov/fdc/v1/foods/search?query=000000000000&api_key=DEMO_KEY');
       })
       .then(function () { return runBarcode({ body: { barcode: '000000000001' }, offData: { status: 1, product: { product_name: 'Mystery Item', nutriments: {} } } }); })
       .then(function (o) {
-        eq('found but no usable nutriments: 404 too', o.status, 404);
-        eq('same friendly message', o.body.error, 'Product not found. Try typing it instead.');
+        eq('found but no usable nutriments: also falls through to USDA, then 404', o.status, 404);
+        eq('same friendly message', o.body.error, 'Product not found. Try typing what you ate instead.');
       })
       .then(function () { return runBarcode({ body: { barcode: '000000000002' }, offData: { status: 1, product: { nutriments: { 'energy-kcal_100g': 100, proteins_100g: 5 } } } }); })
       .then(function (o) {
         eq('a product missing product_name falls back to a name', o.body.name, 'Scanned item');
         eq('carbs/fat individually absent default to 0, not a 404', o.body.carbs, 0);
         eq('protein present is kept', o.body.protein, 5);
+        eq('OFF succeeded here too, so no USDA call', o.calls.length, 1);
+      })
+      // ── USDA fallback: the whole point of this task. ──────────────────────
+      .then(function () {
+        return runBarcode({
+          body: { barcode: '04963406' }, offData: { status: 0 },
+          usdaData: { foods: [{ description: 'COCA-COLA, COLA', foodNutrients: [
+            { nutrientName: 'Protein', unitName: 'G', value: 0 },
+            { nutrientName: 'Total lipid (fat)', unitName: 'G', value: 0 },
+            { nutrientName: 'Carbohydrate, by difference', unitName: 'G', value: 11 },
+            { nutrientName: 'Energy', unitName: 'KJ', value: 163 },   // the kJ entry — must not be mistaken for kcal
+            { nutrientName: 'Energy', unitName: 'KCAL', value: 39 }
+          ] }] }
+        });
+      })
+      .then(function (o) {
+        eq('OFF missing it, USDA has it: 200', o.status, 200);
+        eq('parsed from USDA\'s shape', JSON.stringify(o.body), JSON.stringify({ name: 'COCA-COLA, COLA', servingG: 100, cal: 39, protein: 0, carbs: 11, fat: 0 }));
+        eq('both sources were actually tried, in order', o.calls.length, 2);
+        ok('OFF first', o.calls[0].url.indexOf('openfoodfacts') > -1);
+        ok('USDA second', o.calls[1].url.indexOf('usda.gov') > -1);
+      })
+      .then(function () { return runBarcode({ body: { barcode: '012345678902' }, offThrow: true, usdaData: { foods: [{ description: 'Item', foodNutrients: [{ nutrientName: 'Energy', unitName: 'KCAL', value: 200 }] }] } }); })
+      .then(function (o) {
+        eq('OFF unreachable (network error, not just not-found): USDA still saves it', o.status, 200);
+        eq('parsed', o.body.cal, 200);
+      })
+      .then(function () { return runBarcode({ body: { barcode: '012345678903' }, offData: { status: 0 }, usdaData: { foods: [] } }); })
+      .then(function (o) { eq('USDA with zero results: still the friendly 404', o.status, 404); })
+      .then(function () { return runBarcode({ body: { barcode: '012345678904' }, offData: { status: 0 }, usdaThrow: true }); })
+      .then(function (o) {
+        eq('both sources unreachable/empty: the friendly 404, not a 500', o.status, 404);
+        eq('same message either way', o.body.error, 'Product not found. Try typing what you ate instead.');
       });
   })
   .then(function () {
