@@ -420,8 +420,12 @@ var start = html.indexOf('FOOD LOG — what was eaten'), end = html.indexOf('fun
 var foodSrc = html.slice(start, end);
 ok('found the food code', start > -1 && end > start);
 var fetches = foodSrc.match(/fetch\(/g) || [];
-eq('food code makes exactly one fetch', fetches.length, 1);
-ok('and it is a POST to /api/meal', /fetch\('\/api\/meal', \{\s*method: 'POST'/.test(foodSrc));
+//  One to /api/meal (photo/text estimates), one to /api/barcode (scanner) —
+//  no others; both must be POST so sw.js's GET-only cache layer never sees them.
+eq('food code makes exactly the two known fetches', fetches.length, 2);
+ok('and one is a POST to /api/meal', /fetch\('\/api\/meal', \{\s*method: 'POST'/.test(foodSrc));
+ok('and the other is a POST to /api/barcode', /fetch\('\/api\/barcode', \{\s*method: 'POST'/.test(foodSrc));
+eq('nothing in the food code path uses any other method', (foodSrc.match(/method: '(GET|PUT|DELETE|PATCH)'/g) || []).length, 0);
 
 // ─────────────────────────────────────────────────────────────────────────────
 function flush(n) {
@@ -485,6 +489,117 @@ var p7c = flush(8).then(function () {
   });
 });
 
+section('9b. Scan barcode: markup, camera lifecycle, and the review screen');
+ok('three capture buttons: Snap meal, Scan barcode, Choose photo',
+   /id="foodSnapBtn"/.test(html) && /id="foodBarcodeBtn" onclick="onScanBarcode\(\)">Scan barcode</.test(html) && /id="foodLibBtn"/.test(html));
+ok('the viewfinder is hidden by default in the markup', /id="barcodeWrap" class="food-barcode-wrap" style="display:none"/.test(html));
+ok('it has a live video element and a Cancel button', /id="barcodeVideo"/.test(html) && /onclick="cancelBarcodeScan\(\)">Cancel</.test(html));
+ok('the native detector only asks for EAN-13/UPC-A/UPC-E', /formats: \['ean_13', 'upc_a', 'upc_e'\]/.test(html));
+ok('quagga, when needed, loads only the pinned build from cdnjs',
+   html.indexOf("'https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js'") > -1);
+eq('no other external script is loaded for scanning', (html.match(/createElement\('script'\)/g) || []).length, 1);
+
+var p9b = p7c.then(function () {
+  // ── Happy path: a code is found, the lookup succeeds, the camera is
+  // already stopped by the time the review screen for it opens. ──────────
+  reset(); boot(); ctx.loadFoodData();
+  storage.setItem('monk_meal_pass_v1', 'pw');
+  var streams = [];
+  function makeStream() {
+    var track = { stopped: false, stop: function () { track.stopped = true; } };
+    var s = { getTracks: function () { return [track]; } };
+    streams.push({ stream: s, track: track });
+    return s;
+  }
+  var getUserMediaCalls = 0;
+  ctx.navigator.mediaDevices = { getUserMedia: function () { getUserMediaCalls++; return Promise.resolve(makeStream()); } };
+  var video = ctx.document.getElementById('barcodeVideo');
+  video.play = function () { return Promise.resolve(); };
+  video.pause = function () {};
+  ctx.BarcodeDetector = function () { this.detect = function () { return Promise.resolve([{ rawValue: '049000028911' }]); }; };
+  var apiCalls = [];
+  ctx.fetch = function (url, init) {
+    apiCalls.push({ url: url, body: JSON.parse(init.body) });
+    return Promise.resolve({ status: 200, ok: true, json: function () {
+      return Promise.resolve({ name: 'Peanut Butter', servingG: 100, cal: 588, protein: 25, carbs: 20, fat: 50 });
+    } });
+  };
+  ctx.onScanBarcode();
+  eq('the viewfinder opens right away, before the camera prompt even resolves',
+     ctx.document.getElementById('barcodeWrap').style.display, '');
+  return flush(10).then(function () {
+    eq('exactly one lookup call goes out', apiCalls.length, 1);
+    ok('it is a POST to /api/barcode', /fetch\('\/api\/barcode', \{\s*method: 'POST'/.test(foodSrc));
+    eq('the scanned code is sent', apiCalls[0].body.barcode, '049000028911');
+    ok('the camera is stopped once a code is found, before the review screen opens',
+       streams[0].track.stopped);
+    eq('the viewfinder is hidden again', ctx.document.getElementById('barcodeWrap').style.display, 'none');
+    ok('a draft opened with one prefilled item', !!ctx.foodDraft && ctx.foodDraft.meal.items.length === 1);
+    eq('item name from the label', ctx.foodDraft.meal.items[0].name, 'Peanut Butter');
+    eq('item calories from the label', ctx.foodDraft.meal.items[0].cal, 588);
+    eq('serving grams default to 100', ctx.foodDraft.meal.items[0].grams, 100);
+    eq('source is barcode', ctx.foodDraft.meal.source, 'barcode');
+    eq('no confidence field — this came off the label, not a guess', ctx.foodDraft.meal.confidence, undefined);
+    noThrow('renderFoodDraft does not throw', function () { ctx.renderFoodDraft(); });
+    var host = ctx.document.getElementById('foodDraft');
+    eq('and the review screen renders with no Confidence line', /Confidence:/.test(host._html || ''), false);
+    ok('save and discard controls are present, same as any other estimate',
+       /Save meal/.test(host._html) && /Discard/.test(host._html));
+    // The prefilled row still goes through the same scaleItem path as any
+    // other item — editing grams must rescale it, not just overwrite them.
+    ctx.foodEditItem(0, 'grams', '50');
+    eq('grams edit rescales calories (588 at 100g -> 294 at 50g)', ctx.foodDraft.meal.items[0].cal, 294);
+    ctx.discardFoodDraft();
+
+    // ── Not found: the error shows inline, and the viewfinder reopens on
+    // its own so the user can try again without a second tap. ──────────────
+    reset(); boot(); ctx.loadFoodData();
+    storage.setItem('monk_meal_pass_v1', 'pw');
+    streams = [];
+    getUserMediaCalls = 0;
+    ctx.navigator.mediaDevices = { getUserMedia: function () { getUserMediaCalls++; return Promise.resolve(makeStream()); } };
+    var video2 = ctx.document.getElementById('barcodeVideo');
+    video2.play = function () { return Promise.resolve(); };
+    video2.pause = function () {};
+    var detectCalls = 0;
+    //  Only the very first detect() across this whole scan finds a code —
+    //  the reopened scanner's own detect() calls come back empty, so the
+    //  test settles instead of cycling forever through 404s.
+    ctx.BarcodeDetector = function () { this.detect = function () {
+      detectCalls++;
+      return Promise.resolve(detectCalls === 1 ? [{ rawValue: '000000000000' }] : []);
+    }; };
+    ctx.fetch = function () {
+      return Promise.resolve({ status: 404, ok: false, json: function () {
+        return Promise.resolve({ error: 'Product not found. Try typing it instead.' });
+      } });
+    };
+    ctx.onScanBarcode();
+    return flush(14).then(function () {
+      eq('the camera reopens once on its own after a 404', getUserMediaCalls, 2);
+      ok('the first stream (that found the bad code) is stopped', streams[0].track.stopped);
+      ok('the reopened stream is still live, waiting for another attempt', !streams[1].track.stopped);
+      eq('the not-found message shows inline', ctx.document.getElementById('foodAddMsg').textContent,
+         'Product not found. Try typing it instead.');
+      eq('no draft opens for a failed lookup', ctx.foodDraft, null);
+
+      // ── Cancel and tab-change both stop a still-open camera. ────────────
+      ctx.cancelBarcodeScan();
+      ok('Cancel stops the reopened stream too', streams[1].track.stopped);
+      eq('and hides the viewfinder', ctx.document.getElementById('barcodeWrap').style.display, 'none');
+
+      streams = []; getUserMediaCalls = 0; detectCalls = -99;   // detect() always returns [] from here on
+      ctx.onScanBarcode();
+      return flush(6).then(function () {
+        ok('camera is open before leaving the Food tab', getUserMediaCalls === 1 && !streams[0].track.stopped);
+        noThrow('switching tabs away from Food does not throw', function () { ctx.goTab('training'); });
+        ok('leaving the Food tab stops a still-running camera', streams[0].track.stopped);
+        ctx.goTab('food');
+      });
+    });
+  });
+});
+
 section('9. /api/meal.js with a fake fetch');
 var mealPath = require('path').resolve('api/meal.js');
 function runMeal(opts) {
@@ -508,7 +623,7 @@ var good = JSON.stringify({ items: [{ name: 'Rice', grams: '250', cal: 325.4, pr
 //  Chained after p7c (not a fresh Promise.resolve()) so section 7c's async
 //  assertions are guaranteed to finish, and this file's final tally/exit
 //  covers both sections, before this one's own process.exit runs.
-p7c
+p9b
   .then(function () { return runMeal({ headers: {}, body: { note: 'rice' } }); })
   .then(function (o) { eq('no passcode: 401', o.status, 401); eq('and no API call', o.calls.length, 0); })
   .then(function () { return runMeal({ headers: { 'x-rtw-pass': 'nope' }, body: { note: 'rice' } }); })
@@ -543,6 +658,63 @@ p7c
   .then(function (o) {
     eq('garbage JSON: 502', o.status, 502);
     eq('with the friendly message', o.body.error, 'Could not read the estimate. Try again or add a note.');
+  })
+  .then(function () {
+    section('10. /api/barcode.js with a fake fetch');
+    var barcodePath = require('path').resolve('api/barcode.js');
+    function runBarcode(opts) {
+      process.env.MEAL_PASSCODE = 'pw';
+      var calls = [];
+      global.fetch = function (url, init) {
+        calls.push({ url: url, init: init });
+        return Promise.resolve({
+          ok: opts.offStatus == null || opts.offStatus < 400, status: opts.offStatus || 200,
+          json: function () { return Promise.resolve(opts.offData); }
+        });
+      };
+      delete require.cache[barcodePath];
+      var handler = require(barcodePath);
+      var out = { status: 0, body: null, calls: calls };
+      var res = { status: function (s) { out.status = s; return res; }, json: function (b) { out.body = b; return res; } };
+      var req = { method: opts.method || 'POST', headers: opts.headers || { 'x-rtw-pass': 'pw' }, body: opts.body };
+      return handler(req, res).then(function () { return out; });
+    }
+    var validOFF = {
+      status: 1,
+      product: { product_name: 'Peanut Butter', nutriments: { 'energy-kcal_100g': 588, proteins_100g: 25, carbohydrates_100g: 20, fat_100g: 50 } }
+    };
+    return Promise.resolve()
+      .then(function () { return runBarcode({ headers: {}, body: { barcode: '012345678901' } }); })
+      .then(function (o) { eq('no passcode: 401', o.status, 401); eq('and no lookup call', o.calls.length, 0); })
+      .then(function () { return runBarcode({ method: 'GET', body: {} }); })
+      .then(function (o) { eq('GET: 405', o.status, 405); })
+      .then(function () { return runBarcode({ body: {} }); })
+      .then(function (o) { eq('no barcode: 400', o.status, 400); })
+      .then(function () { return runBarcode({ body: { barcode: 'abc' } }); })
+      .then(function (o) { eq('non numeric barcode: 400', o.status, 400); })
+      .then(function () { return runBarcode({ body: { barcode: '012345678901' }, offData: validOFF }); })
+      .then(function (o) {
+        eq('valid product: 200', o.status, 200);
+        eq('parsed output shape', JSON.stringify(o.body), JSON.stringify({ name: 'Peanut Butter', servingG: 100, cal: 588, protein: 25, carbs: 20, fat: 50 }));
+        eq('calls Open Food Facts with the barcode in the path', o.calls[0].url, 'https://world.openfoodfacts.org/api/v0/product/012345678901.json');
+        eq('no init/body on a GET to Open Food Facts', o.calls[0].init, undefined);
+      })
+      .then(function () { return runBarcode({ body: { barcode: '000000000000' }, offData: { status: 0 } }); })
+      .then(function (o) {
+        eq('product not found: 404', o.status, 404);
+        eq('with the friendly message', o.body.error, 'Product not found. Try typing it instead.');
+      })
+      .then(function () { return runBarcode({ body: { barcode: '000000000001' }, offData: { status: 1, product: { product_name: 'Mystery Item', nutriments: {} } } }); })
+      .then(function (o) {
+        eq('found but no usable nutriments: 404 too', o.status, 404);
+        eq('same friendly message', o.body.error, 'Product not found. Try typing it instead.');
+      })
+      .then(function () { return runBarcode({ body: { barcode: '000000000002' }, offData: { status: 1, product: { nutriments: { 'energy-kcal_100g': 100, proteins_100g: 5 } } } }); })
+      .then(function (o) {
+        eq('a product missing product_name falls back to a name', o.body.name, 'Scanned item');
+        eq('carbs/fat individually absent default to 0, not a 404', o.body.carbs, 0);
+        eq('protein present is kept', o.body.protein, 5);
+      });
   })
   .then(function () {
     console.log('\n' + pass + ' passed, ' + fail + ' failed');

@@ -1979,6 +1979,8 @@ body.training-mode footer { display: none; }
 .food-assumptions { margin: 12px 0 4px 18px; padding: 0; font-size: 12px; color: var(--muted); line-height: 1.55; }
 .food-meal-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; cursor: pointer; }
 .food-photo-btn.disabled { opacity: 0.5; pointer-events: none; }
+.food-barcode-wrap { max-width: 480px; margin-bottom: 14px; }
+.food-barcode-video { width: 100%; height: 200px; object-fit: cover; background: #000; border-radius: 8px; display: block; }
 @media (max-width: 420px) {
   .food-item-row { grid-template-columns: 1fr 1fr 1fr 32px; }
   .food-item-row .food-item-name { grid-column: 1 / -1; }
@@ -2775,7 +2777,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.80</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.81</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2796,7 +2798,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3044,7 +3046,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main" style="background:#1A1A18">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3162,7 +3164,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main" style="background:#1A1A18">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3184,7 +3186,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main" style="background:#1A1A18">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3201,7 +3203,12 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div class="food-block">
     <div class="run-setup-bar" style="margin-bottom:8px;">
       <label class="run-setup-toggle food-photo-btn" id="foodSnapBtn"><span id="foodSnapLabel">Snap meal</span><input type="file" id="foodPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="onFoodPhoto(this)"></label>
+      <button class="run-setup-toggle food-photo-btn" id="foodBarcodeBtn" onclick="onScanBarcode()">Scan barcode</button>
       <label class="run-setup-toggle food-photo-btn" id="foodLibBtn">Choose photo<input type="file" id="foodLibInput" accept="image/*" style="display:none" onchange="onFoodPhoto(this)"></label>
+    </div>
+    <div id="barcodeWrap" class="food-barcode-wrap" style="display:none">
+      <video id="barcodeVideo" class="food-barcode-video" playsinline muted autoplay></video>
+      <button class="quicklog-back" style="margin:8px 0 0;" onclick="cancelBarcodeScan()">Cancel</button>
     </div>
     <div class="quicklog-field" style="max-width:480px;margin-bottom:6px;">
       <input type="text" id="foodNote" placeholder="8 oz chicken, 250g rice... or paste a photo" maxlength="300" onpaste="onFoodPaste(event)">
@@ -3238,7 +3245,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main" style="background:#1A1A18">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.80</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -7758,6 +7765,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
     if (label) label.textContent = on ? 'Estimating...' : 'Snap meal';
     ['foodSnapBtn', 'foodLibBtn'].forEach(function(id) { var b = document.getElementById(id); if (b) b.classList.toggle('disabled', on); });
     ['foodPhotoInput', 'foodLibInput'].forEach(function(id) { var f = document.getElementById(id); if (f) f.disabled = on; });
+    var barcodeBtn = document.getElementById('foodBarcodeBtn');
+    if (barcodeBtn) barcodeBtn.classList.toggle('disabled', on || barcodeScanActive);
     //  Estimate is a plain <button> with no nested input to lose, so its own
     //  textContent can change directly — unlike foodSnapLabel's span, which
     //  exists only because the Snap meal label wraps a hidden file input.
@@ -7859,6 +7868,179 @@ body.training-mode select.run-input { color: #F1EFE1; }
     });
   }
 
+  //     SCAN BARCODE — a live in-page viewfinder, not a file picker. Uses the
+  //     native BarcodeDetector where the browser has it (Chrome, Safari 17+),
+  //     falls back to quagga2 (loaded from cdnjs, only on browsers that need
+  //     it) everywhere else. A detected code goes to /api/barcode.js, and the
+  //     result opens the same review screen as a photo or typed estimate —
+  //     one prefilled item row, no confidence (it came off the label, not a
+  //     guess), grams editable like any other item.
+  var barcodeScanActive = false;   // viewfinder open and camera running
+  var barcodeStream = null;        // the MediaStream, so tracks can be stopped
+  var barcodeHandle = null;        // { stop() } for whichever detector is running
+  var barcodeGuard = 0;            // bumped on every stop, so a detector callback
+                                    // that fires after stop can't act on stale state
+  function renderBarcodeUI(open) {
+    var wrap = document.getElementById('barcodeWrap');
+    if (wrap) wrap.style.display = open ? '' : 'none';
+    var btn = document.getElementById('foodBarcodeBtn');
+    if (btn) btn.classList.toggle('disabled', open || foodBusy);
+  }
+  //  The one cleanup path every exit (cancel, a successful scan, an error,
+  //  leaving the Food tab) runs through — a camera left running in the
+  //  background is a bug, not just a UI glitch.
+  function stopBarcodeScan() {
+    barcodeScanActive = false;
+    barcodeGuard++;
+    if (barcodeHandle && barcodeHandle.stop) { try { barcodeHandle.stop(); } catch(e) {} }
+    barcodeHandle = null;
+    if (barcodeStream) {
+      barcodeStream.getTracks().forEach(function(t) { try { t.stop(); } catch(e) {} });
+      barcodeStream = null;
+    }
+    var v = document.getElementById('barcodeVideo');
+    if (v) { try { v.pause(); v.srcObject = null; } catch(e) {} }
+    renderBarcodeUI(false);
+  }
+  function cancelBarcodeScan() {
+    stopBarcodeScan();
+    foodSetMsg('foodAddMsg', '');
+  }
+  function onScanBarcode() {
+    if (foodBusy || barcodeScanActive) return;
+    foodSetMsg('foodAddMsg', '');
+    openBarcodeViewfinder();
+  }
+  //  Does NOT touch foodAddMsg itself — the 404 path calls this to reopen
+  //  the camera while deliberately keeping its "not found" message on
+  //  screen. Clearing stale messages on a fresh, user-initiated scan is
+  //  onScanBarcode()'s job, not this one's.
+  function openBarcodeViewfinder() {
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      foodSetMsg('foodAddMsg', 'This browser can\'t open the camera here. Try Type it instead.');
+      return;
+    }
+    barcodeScanActive = true;
+    renderBarcodeUI(true);
+    var myGuard = barcodeGuard;
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(function(stream) {
+      if (myGuard !== barcodeGuard) { stream.getTracks().forEach(function(t) { t.stop(); }); return; }   // cancelled while awaiting the prompt
+      barcodeStream = stream;
+      var video = document.getElementById('barcodeVideo');
+      if (!video) { stream.getTracks().forEach(function(t) { t.stop(); }); return; }
+      video.srcObject = stream;
+      video.play().catch(function() {});
+      startBarcodeDetection(video, myGuard);
+    }).catch(function(e) {
+      stopBarcodeScan();
+      foodSetMsg('foodAddMsg', 'Could not open the camera' + (e && e.message ? ': ' + e.message : '.'));
+    });
+  }
+  function startBarcodeDetection(video, myGuard) {
+    if (typeof BarcodeDetector !== 'undefined') {
+      barcodeHandle = startNativeBarcodeDetector(video, myGuard);
+      return;
+    }
+    loadQuagga().then(function() {
+      if (myGuard !== barcodeGuard) return;   // cancelled while the script was loading
+      barcodeHandle = startQuaggaDetector(myGuard);
+    }).catch(function() {
+      stopBarcodeScan();
+      foodSetMsg('foodAddMsg', 'Barcode scanning is not supported in this browser. Try Type it instead.');
+    });
+  }
+  //  Chrome / Safari 17+: polls detect() on the live video element.
+  function startNativeBarcodeDetector(video, myGuard) {
+    var detector = new BarcodeDetector({ formats: ['ean_13', 'upc_a', 'upc_e'] });
+    var stopped = false;
+    function tick() {
+      if (stopped || myGuard !== barcodeGuard) return;
+      detector.detect(video).then(function(codes) {
+        if (stopped || myGuard !== barcodeGuard) return;
+        if (codes && codes.length) onBarcodeDetected(codes[0].rawValue, myGuard);
+        else requestAnimationFrame(tick);
+      }).catch(function() {
+        if (!stopped && myGuard === barcodeGuard) requestAnimationFrame(tick);
+      });
+    }
+    tick();
+    return { stop: function() { stopped = true; } };
+  }
+  var _quaggaLoading = null;
+  function loadQuagga() {
+    if (typeof Quagga !== 'undefined') return Promise.resolve();
+    if (_quaggaLoading) return _quaggaLoading;
+    _quaggaLoading = new Promise(function(resolve, reject) {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js';
+      s.onload = function() { resolve(); };
+      s.onerror = function() { _quaggaLoading = null; reject(new Error('quagga failed to load')); };
+      document.head.appendChild(s);
+    });
+    return _quaggaLoading;
+  }
+  //  Fallback for browsers with no BarcodeDetector (Firefox, older Safari).
+  function startQuaggaDetector(myGuard) {
+    var handler = function(result) {
+      var code = result && result.codeResult && result.codeResult.code;
+      if (code) onBarcodeDetected(code, myGuard);
+    };
+    Quagga.init({
+      inputStream: { type: 'LiveStream', target: document.getElementById('barcodeVideo'),
+                     constraints: { facingMode: 'environment' } },
+      decoder: { readers: ['ean_reader', 'upc_reader', 'upc_e_reader'] }
+    }, function(err) {
+      if (err || myGuard !== barcodeGuard) return;
+      Quagga.start();
+      Quagga.onDetected(handler);
+    });
+    return { stop: function() {
+      try { Quagga.offDetected(handler); Quagga.stop(); } catch(e) {}
+    } };
+  }
+  function onBarcodeDetected(code, myGuard) {
+    if (myGuard !== barcodeGuard) return;   // a stale callback from an already stopped scan
+    stopBarcodeScan();
+    foodSetMsg('foodAddMsg', 'Looking up...');
+    requestBarcodeLookup(code);
+  }
+  function requestBarcodeLookup(code, retried) {
+    var pass = getMealPass(!!retried);
+    if (!pass) { foodSetMsg('foodAddMsg', 'A passcode is needed to look up a barcode.'); return Promise.resolve(); }
+    return fetch('/api/barcode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-rtw-pass': pass },
+      body: JSON.stringify({ barcode: code })
+    }).then(function(r) {
+      return r.json().catch(function() { return {}; }).then(function(data) { return { r: r, data: data }; });
+    }).then(function(res) {
+      if (res.r.status === 401) {
+        try { localStorage.removeItem(MEAL_PASS_KEY); } catch(e) {}
+        if (!retried) return requestBarcodeLookup(code, true);
+        throw new Error('Wrong passcode.');
+      }
+      if (res.r.status === 404) {
+        foodSetMsg('foodAddMsg', res.data.error || 'Product not found. Try typing it instead.');
+        openBarcodeViewfinder();   // let them try again without a second tap
+        return;
+      }
+      if (!res.r.ok) throw new Error(res.data.error || 'Lookup failed. Try again.');
+      foodSetMsg('foodAddMsg', '');
+      var d = res.data;
+      var meal = {
+        id: newMealId(), time: nowHHMM(), name: d.name || 'Scanned item',
+        items: [{ name: d.name || 'Item', grams: d.servingG || 100,
+                  cal: foodNum(d.cal), protein: foodNum(d.protein), carbs: foodNum(d.carbs), fat: foodNum(d.fat) }],
+        source: 'barcode'
+        //  No confidence field — renderFoodDraft only shows that line when
+        //  one is present, and a label reading is not a model guess.
+      };
+      openFoodDraft(meal, [], null);
+    }).catch(function(e) {
+      foodSetMsg('foodAddMsg', e.message || 'Lookup failed. Try again.');
+    });
+  }
+
   //     REVIEW BEFORE SAVE — where the accuracy comes from.
   function copyItem(it) {
     return { name: String(it.name || ''), grams: foodNum(it.grams), cal: foodNum(it.cal),
@@ -7897,7 +8079,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
       + rows
       + '<button class="run-setup-toggle" style="margin-top:6px;" onclick="foodAddItem()">+ Add item</button>'
       + assumptions
-      + '<div class="run-hint">Confidence: ' + esc(m.confidence || 'low') + '</div>'
+      //  Barcode results carry no confidence field at all — they came straight
+      //  off the product label, not a model guess, so there's nothing to rate.
+      + (m.confidence ? '<div class="run-hint">Confidence: ' + esc(m.confidence) + '</div>' : '')
       + '<div class="run-field-label" style="margin-top:14px;"><span>Meal total</span><span class="run-field-val" id="foodDraftTotals"></span></div>'
       + '<button class="quicklog-save-btn" onclick="saveFoodDraft()">Save meal</button>'
       + '<button class="quicklog-back" style="margin-top:12px;" onclick="discardFoodDraft()">Discard</button>';
@@ -10512,6 +10696,9 @@ window.addEventListener('resize', function() { if (navMenuOpen()) positionNavMen
 
 function goTab(t) {
   if (MAIN_TABS.indexOf(t) === -1) t = 'info';
+  //  A live camera has no business running once the Food tab isn't even on
+  //  screen — stop it on every way out, not just the in-tab Cancel button.
+  if (t !== 'food' && typeof stopBarcodeScan === 'function') stopBarcodeScan();
   try { localStorage.setItem(LAST_TAB_KEY, t); } catch(e) {}
   idbSet('lastTab', t);
   MAIN_TABS.forEach(function(name) {
