@@ -317,6 +317,43 @@ eq('and the default takes over again', ctx.foodCarbTarget(), 350);
 ctx.fillFoodSettings();
 eq('Settings shows it blank, not 0', ctx.document.getElementById('set-food-carb').value, '');
 
+section('2c. Bar color follows percent of target, live, via inline style');
+eq('0%: red', ctx.foodBarColor(0).fill, '#E05252');
+eq('32%: still red', ctx.foodBarColor(32).fill, '#E05252');
+eq('33%: yellow', ctx.foodBarColor(33).fill, '#E0B352');
+eq('79%: still yellow', ctx.foodBarColor(79).fill, '#E0B352');
+eq('80%: green', ctx.foodBarColor(80).fill, '#52C27A');
+eq('99%: still green', ctx.foodBarColor(99).fill, '#52C27A');
+eq('100%: bright green', ctx.foodBarColor(100).fill, '#27C46A');
+eq('bright green carries a glow flag', ctx.foodBarColor(100).glow, true);
+eq('the three lower bands have no glow', ctx.foodBarColor(0).glow || ctx.foodBarColor(33).glow || ctx.foodBarColor(80).glow, false);
+// foodBar()'s own pct is capped at 100 for the bar width before it reaches
+// here, but the color function is robust to a raw over-100 value too —
+// over target must read as "done", never fall back to red.
+eq('over target reads as done, not a warning', ctx.foodBarColor(150).fill, '#27C46A');
+
+reset(); boot(); setFood({}, { cal: 1000, protein: 100 });
+function barFillStyle(html, label) {
+  var m = new RegExp('<span>' + label + '</span><span class="run-field-val">[^<]*</span></div><div class="food-bar-track"><div class="food-bar-fill" style="([^"]*)"').exec(html);
+  return m ? m[1] : null;
+}
+ctx.foodLogs[day(0)] = [{ id: 'a', time: '08:00', name: 'Meal', items: [item('X', 100, 200, 20)], source: 'text' }];   // 20% of 1000/100
+ctx.renderFoodTotals();
+var html0 = ctx.document.getElementById('foodTotals')._html;
+ok('20%: red inline, no class swap needed', /background:#E05252/.test(barFillStyle(html0, 'Calories')));
+eq('width matches the real percent', barFillStyle(html0, 'Calories'), 'width:20%;background:#E05252');
+
+ctx.foodLogs[day(0)] = [{ id: 'a', time: '08:00', name: 'Meal', items: [item('X', 100, 850, 85)], source: 'text' }];   // 85%
+ctx.renderFoodTotals();
+var html85 = ctx.document.getElementById('foodTotals')._html;
+ok('85%: green, live after re-logging the same day', /background:#52C27A/.test(barFillStyle(html85, 'Calories')));
+
+ctx.foodLogs[day(0)] = [{ id: 'a', time: '08:00', name: 'Meal', items: [item('X', 100, 1200, 130)], source: 'text' }];   // over target
+ctx.renderFoodTotals();
+var htmlOver = ctx.document.getElementById('foodTotals')._html;
+ok('over target: bright green with a glow, not red', /background:#27C46A;box-shadow:0 0 6px 1px #27C46A/.test(barFillStyle(htmlOver, 'Calories')));
+ok('protein over target is bright green too, same rule for all four bars', /background:#27C46A/.test(barFillStyle(htmlOver, 'Protein')));
+
 section('3. weekAvgWeight and weightTrend');
 reset(); boot(); setFood(null, null, {});
 eq('no data: null', ctx.weekAvgWeight(day(0)), null);
