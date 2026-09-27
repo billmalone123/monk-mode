@@ -2777,7 +2777,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.81</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.82</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2798,7 +2798,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.82</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3046,7 +3046,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main" style="background:#1A1A18">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.82</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3164,7 +3164,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main" style="background:#1A1A18">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.82</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3186,7 +3186,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main" style="background:#1A1A18">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.82</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3245,7 +3245,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main" style="background:#1A1A18">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.81</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.82</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3457,9 +3457,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
     <div class="liftdays-wrap" style="margin:8px 0 24px;">
       <span class="liftdays-label">Food</span>
       <div class="food-settings-grid">
-        <div><div class="run-field-label">Calories</div><input class="run-input" type="number" inputmode="numeric" id="set-food-cal" placeholder="e.g. 3300" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal')"></div>
-        <div><div class="run-field-label">Protein g</div><input class="run-input" type="number" inputmode="numeric" id="set-food-protein" placeholder="e.g. 200" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal')"></div>
-        <div><div class="run-field-label">Goal lbs</div><input class="run-input" type="number" inputmode="decimal" id="set-food-goal" placeholder="200" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal')"></div>
+        <div><div class="run-field-label">Calories</div><input class="run-input" type="number" inputmode="numeric" id="set-food-cal" placeholder="e.g. 3300" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal', 'set-food-carb', 'set-food-fat')"></div>
+        <div><div class="run-field-label">Protein g</div><input class="run-input" type="number" inputmode="numeric" id="set-food-protein" placeholder="e.g. 200" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal', 'set-food-carb', 'set-food-fat')"></div>
+        <div><div class="run-field-label">Carbs g</div><input class="run-input" type="number" inputmode="numeric" id="set-food-carb" placeholder="350" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal', 'set-food-carb', 'set-food-fat')"></div>
+        <div><div class="run-field-label">Fat g</div><input class="run-input" type="number" inputmode="numeric" id="set-food-fat" placeholder="90" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal', 'set-food-carb', 'set-food-fat')"></div>
+        <div><div class="run-field-label">Goal lbs</div><input class="run-input" type="number" inputmode="decimal" id="set-food-goal" placeholder="200" onchange="saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal', 'set-food-carb', 'set-food-fat')"></div>
       </div>
       <div style="width:100%;"><div class="run-field-label">Meal passcode</div><input class="run-input" type="password" id="set-food-pass" placeholder="Same as MEAL_PASSCODE in Vercel" autocomplete="off" onchange="saveMealPass(this.value)"></div>
       <button class="settings-open-btn" style="margin-top:4px;" onclick="resetMealPass()">Reset meal passcode</button>
@@ -7596,6 +7598,18 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var g = parseFloat(foodTargets.goalWeight);
     return isFinite(g) && g > 0 ? g : FOOD_DEFAULT_GOAL;
   }
+  //  Unlike calories/protein (no target at all until the user sets one, which
+  //  is what gates the "Set your daily calories and protein to start"
+  //  prompt), carbs and fat always have a usable target — same defaulting
+  //  shape as foodGoalWeight() above.
+  function foodCarbTarget() {
+    var v = parseFloat(foodTargets.carbTarget);
+    return isFinite(v) && v > 0 ? Math.round(v) : 350;
+  }
+  function foodFatTarget() {
+    var v = parseFloat(foodTargets.fatTarget);
+    return isFinite(v) && v > 0 ? Math.round(v) : 90;
+  }
   function fmtInt(n) { return String(Math.round(foodNum(n))).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
   function firstFoodDate() {
     var keys = Object.keys(foodLogs).filter(function(k) { return (foodLogs[k] || []).length; }).sort();
@@ -7632,6 +7646,8 @@ body.training-mode select.run-input { color: #F1EFE1; }
       var t = dayTotals(dateKey);
       lines.push('Calories: ' + fmtInt(t.cal));
       lines.push('Protein: ' + fmtInt(t.protein) + 'g');
+      lines.push('Carbs: ' + fmtInt(t.carbs) + 'g');
+      lines.push('Fat: ' + fmtInt(t.fat) + 'g');
     }
     var avg = weekAvgWeight(dateKey);
     if (avg != null) lines.push('Weight: ' + avg.toFixed(1) + ' (7 day avg)');
@@ -7717,12 +7733,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
     } else {
       html = foodBar('Calories', t.cal, cal, '') + foodBar('Protein', t.protein, pro, 'g');
     }
-    html += '<div class="run-hint">Carbs ' + fmtInt(t.carbs) + 'g · Fat ' + fmtInt(t.fat) + 'g</div>';
+    //  Carbs and fat always have a target (foodCarbTarget/foodFatTarget
+    //  default when unset), so their bars show up front, same as calories
+    //  and protein once those are set — not gated behind the same prompt.
+    html += foodBar('Carbs', t.carbs, foodCarbTarget(), 'g') + foodBar('Fat', t.fat, foodFatTarget(), 'g');
     host.innerHTML = html;
   }
-  function saveFoodTargetsFrom(calId, proId, goalId) {
+  function saveFoodTargetsFrom(calId, proId, goalId, carbId, fatId) {
     function val(id) { var el = id && document.getElementById(id); var v = el ? parseFloat(el.value) : NaN; return isFinite(v) && v > 0 ? Math.round(v) : null; }
-    [['cal', calId], ['protein', proId], ['goalWeight', goalId]].forEach(function(p) {
+    [['cal', calId], ['protein', proId], ['goalWeight', goalId], ['carbTarget', carbId], ['fatTarget', fatId]].forEach(function(p) {
       if (!p[1] || !document.getElementById(p[1])) return;
       var v = val(p[1]);
       if (v == null) delete foodTargets[p[0]]; else foodTargets[p[0]] = v;
@@ -8244,6 +8263,11 @@ body.training-mode select.run-input { color: #F1EFE1; }
     function set(id, v) { var el = document.getElementById(id); if (el) el.value = v != null ? v : ''; }
     set('set-food-cal', foodTargets.cal);
     set('set-food-protein', foodTargets.protein);
+    //  Blank when unset, like Goal lbs already does — the placeholder shows
+    //  the default (350/90) that foodCarbTarget()/foodFatTarget() apply
+    //  elsewhere, rather than pre-filling it as if the user had chosen it.
+    set('set-food-carb', foodTargets.carbTarget);
+    set('set-food-fat', foodTargets.fatTarget);
     set('set-food-goal', foodTargets.goalWeight);
     var pass = null;
     try { pass = localStorage.getItem(MEAL_PASS_KEY); } catch(e) {}

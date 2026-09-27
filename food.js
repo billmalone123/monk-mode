@@ -261,6 +261,62 @@ eq('another day is unaffected', ctx.dayTotals(day(-1)).cal, 0);
 eq('an item with junk numbers counts as 0', ctx.mealTotals({ items: [{ name: 'x', cal: 'abc' }, null] }).cal, 0);
 eq('a meal with no items is 0', ctx.mealTotals({}).protein, 0);
 
+section('2b. Carb and fat targets: default, override, bars, and Settings');
+reset(); boot(); setFood({}, {});
+eq('carb target defaults to 350 when unset', ctx.foodCarbTarget(), 350);
+eq('fat target defaults to 90 when unset', ctx.foodFatTarget(), 90);
+setFood({}, { carbTarget: 275, fatTarget: 70 });
+eq('an explicit carb target overrides the default', ctx.foodCarbTarget(), 275);
+eq('an explicit fat target overrides the default', ctx.foodFatTarget(), 70);
+
+// renderFoodTotals: carbs/fat bars show even before cal/protein are set,
+// since they always have a target — unlike cal/protein, which show the
+// "set your targets" prompt instead of a bar until the user picks one.
+reset(); boot(); setFood({});
+ctx.renderFoodTotals();
+var totalsHtml = ctx.document.getElementById('foodTotals')._html || '';
+ok('cal/protein show the setup prompt before targets are set', /Set your daily calories and protein to start/.test(totalsHtml));
+ok('but Carbs already renders as a bar, not a bare hint', /<span>Carbs<\/span>/.test(totalsHtml));
+ok('and so does Fat', /<span>Fat<\/span>/.test(totalsHtml));
+ok('the old bare "Carbs Xg · Fat Yg" hint line is gone', !/Carbs \d+g/.test(totalsHtml));
+
+// Once cal/protein are set, all four bars render together, same style.
+setFood({}, { cal: 3300, protein: 200 });
+ctx.foodLogs[day(0)] = [{ id: 'z', time: '08:00', name: 'Meal', items: [item('X', 100, 500, 40, 60, 20)], source: 'text' }];
+ctx.renderFoodTotals();
+totalsHtml = ctx.document.getElementById('foodTotals')._html || '';
+['Calories', 'Protein', 'Carbs', 'Fat'].forEach(function (label) {
+  ok(label + ' bar is present', new RegExp('<span>' + label + '</span>').test(totalsHtml));
+});
+ok('carbs bar shows eaten vs target', totalsHtml.indexOf('60g / 350g') > -1, totalsHtml);
+ok('fat bar shows eaten vs target', totalsHtml.indexOf('20g / 90g') > -1, totalsHtml);
+
+// saveFoodTargetsFrom / Settings round trip.
+reset(); boot(); ctx.loadFoodData();
+ctx.document.getElementById('set-food-cal').value = '3300';
+ctx.document.getElementById('set-food-protein').value = '200';
+ctx.document.getElementById('set-food-carb').value = '400';
+ctx.document.getElementById('set-food-fat').value = '110';
+ctx.document.getElementById('set-food-goal').value = '';
+ctx.saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal', 'set-food-carb', 'set-food-fat');
+eq('carb target saved', ctx.foodTargets.carbTarget, 400);
+eq('fat target saved', ctx.foodTargets.fatTarget, 110);
+ctx.loadFoodData();   // reload from storage, as a refresh would
+eq('carb target survives a reload', ctx.foodTargets.carbTarget, 400);
+eq('fat target survives a reload', ctx.foodTargets.fatTarget, 110);
+ctx.fillFoodSettings();
+eq('Settings shows the saved carb target', ctx.document.getElementById('set-food-carb').value, '400');
+eq('Settings shows the saved fat target', ctx.document.getElementById('set-food-fat').value, '110');
+// Clearing the field deletes the key, same as Goal lbs already does — the
+// default (350/90) applies again rather than the field showing 0.
+ctx.document.getElementById('set-food-carb').value = '';
+ctx.document.getElementById('set-food-fat').value = '';
+ctx.saveFoodTargetsFrom('set-food-cal', 'set-food-protein', 'set-food-goal', 'set-food-carb', 'set-food-fat');
+eq('an emptied carb field deletes the override', 'carbTarget' in ctx.foodTargets, false);
+eq('and the default takes over again', ctx.foodCarbTarget(), 350);
+ctx.fillFoodSettings();
+eq('Settings shows it blank, not 0', ctx.document.getElementById('set-food-carb').value, '');
+
 section('3. weekAvgWeight and weightTrend');
 reset(); boot(); setFood(null, null, {});
 eq('no data: null', ctx.weekAvgWeight(day(0)), null);
@@ -361,7 +417,7 @@ eq('corrupt bodyweight becomes {}', JSON.stringify(ctx.bodyweight), '{}');
 section('7. Instagram post text');
 reset(); boot();
 var l7 = {}; l7[day(-2)] = [{ id: 'p', time: '08:00', name: 'Eggs', items: [item('Eggs', 150, 215, 19)], source: 'text' }];
-l7[day(0)] = [{ id: 'q', time: '12:00', name: 'Big', items: [item('Steak', 400, 3240, 196)], source: 'photo' }];
+l7[day(0)] = [{ id: 'q', time: '12:00', name: 'Big', items: [item('Steak', 400, 3240, 196, 12, 220)], source: 'photo' }];
 var w7 = {}; w7[day(0)] = 186.4;
 setFood(l7, { goalWeight: 200 }, w7);
 ctx.sessions['flat-bb-bench'] = [{ d: day(0), week: 0, weight: 225, reps: 5 }, { d: day(0), ts: 1, weight: 235, reps: 2, quickLog: true }, { d: day(-7), week: 0, weight: 300, reps: 1 }];
@@ -369,12 +425,19 @@ var post = ctx.buildFoodPost(day(0));
 ok('day N counts from the first food day', post.indexOf('Day 3. 185 to 200.') === 0, post);
 ok('calories with a comma', post.indexOf('Calories: 3,240') > -1, post);
 ok('protein', post.indexOf('Protein: 196g') > -1, post);
+ok('carbs', post.indexOf('Carbs: 12g') > -1, post);
+ok('fat', post.indexOf('Fat: 220g') > -1, post);
+eq('macro line order is Calories, Protein, Carbs, Fat',
+   post.indexOf('Calories:') < post.indexOf('Protein:') && post.indexOf('Protein:') < post.indexOf('Carbs:') && post.indexOf('Carbs:') < post.indexOf('Fat:'), true);
 ok('weight is the 7 day avg', post.indexOf('Weight: 186.4 (7 day avg)') > -1, post);
 ok('lifts: top set for that day only', post.indexOf('Lifts: Bench 235x2') > -1, post);
 eq('no dashes anywhere', /[-‐-―]/.test(post), false);
 var noLift = ctx.buildFoodPost(day(-2));
 eq('a line with no data is left out', noLift.indexOf('Lifts'), -1);
 eq('and so is weight with no weigh in that week', noLift.indexOf('Weight'), -1);
+var emptyDay = ctx.buildFoodPost(day(-1));
+eq('a day with nothing logged has no macro lines either', emptyDay.indexOf('Carbs'), -1);
+eq('nor calories/protein', emptyDay.indexOf('Calories'), -1);
 
 section('7b. Photo input: library, paste, busy state, passcode in Settings');
 ok('Snap meal still opens the camera', /id="foodPhotoInput" accept="image\/\*" capture="environment"/.test(html));
