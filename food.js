@@ -354,6 +354,112 @@ var htmlOver = ctx.document.getElementById('foodTotals')._html;
 ok('over target: bright green with a glow, not red', /background:#27C46A;box-shadow:0 0 6px 1px #27C46A/.test(barFillStyle(htmlOver, 'Calories')));
 ok('protein over target is bright green too, same rule for all four bars', /background:#27C46A/.test(barFillStyle(htmlOver, 'Protein')));
 
+section('2d. Goal mode toggle and smart calorie targets');
+reset(); boot(); ctx.loadFoodData();
+eq('defaults to Bulk with nothing in storage', ctx.goalMode, 'bulk');
+// Exact math at a clean bodyweight (200 lbs), one mode at a time.
+var recBulk = ctx.goalModeRecommendation('bulk', 200);
+eq('Bulk: BMR + 300', recBulk.cal, 3300);
+eq('Bulk: protein at 1.0x bodyweight', recBulk.protein, 200);
+eq('Bulk: carbs at 45% of calories / 4', recBulk.carbs, 371);
+eq('Bulk: fat at 25% of calories / 9', recBulk.fat, 92);
+var recMaintain = ctx.goalModeRecommendation('maintain', 200);
+eq('Maintain: plain BMR', recMaintain.cal, 3000);
+eq('Maintain: same macro split as Bulk', JSON.stringify([recMaintain.protein, recMaintain.carbs, recMaintain.fat]), JSON.stringify([200, 338, 83]));
+var recCut = ctx.goalModeRecommendation('cut', 200);
+eq('Cut: BMR minus 400', recCut.cal, 2600);
+eq('Cut: higher protein (1.1x) to preserve muscle', recCut.protein, 220);
+eq('Cut: carbs at 40%', recCut.carbs, 260);
+eq('Cut: fat still 25%', recCut.fat, 72);
+var recCarb = ctx.goalModeRecommendation('carbload', 200);
+eq('Carb Load: BMR + 200', recCarb.cal, 3200);
+eq('Carb Load: protein at 0.8x', recCarb.protein, 160);
+eq('Carb Load: carbs at 60%', recCarb.carbs, 480);
+eq('Carb Load: fat at 15%', recCarb.fat, 53);
+var recRace = ctx.goalModeRecommendation('raceprep', 200);
+eq('Race Prep: identical math to Carb Load', JSON.stringify(recRace), JSON.stringify(recCarb));
+eq('goalModeRecommendation with no bodyweight logged: null', ctx.goalModeRecommendation('bulk', null), null);
+eq('and with a junk bodyweight: null', ctx.goalModeRecommendation('bulk', NaN), null);
+
+// mostRecentBodyweight: the latest entry, not an average of the week.
+reset(); boot(); ctx.loadFoodData();
+eq('no weigh-ins: null', ctx.mostRecentBodyweight(), null);
+var bwHist = {}; bwHist[day(-5)] = 190; bwHist[day(-1)] = 188; bwHist[day(0)] = 186;
+setFood(null, null, bwHist);
+eq('picks the most recent date, not the lightest or an average', ctx.mostRecentBodyweight(), 186);
+
+// setGoalMode: persists, re-renders, ignores junk, no-ops on the same mode.
+reset(); boot(); ctx.loadFoodData();
+ctx.setGoalMode('cut');
+eq('mode switched', ctx.goalMode, 'cut');
+eq('persisted to its own key', storage.getItem('monk_goal_mode_v1'), 'cut');
+ctx.loadFoodData();
+eq('survives a reload', ctx.goalMode, 'cut');
+ctx.setGoalMode('not-a-real-mode');
+eq('a junk mode is ignored', ctx.goalMode, 'cut');
+
+// renderGoalMode: the pill row, the "log your weight" case, and the
+// recommendation-with-Apply case.
+reset(); boot(); ctx.loadFoodData();
+ctx.renderGoalMode();
+var gmHtml = ctx.document.getElementById('foodGoalMode')._html || '';
+['Bulk', 'Maintain', 'Cut', 'Carb Load', 'Race Prep'].forEach(function (label) {
+  ok('pill shown: ' + label, gmHtml.indexOf('>' + label + '<') > -1);
+});
+ok('Bulk (the default) is the active pill', /class="liftdays-btn on" onclick="setGoalMode\('bulk'\)">Bulk</.test(gmHtml));
+eq('no weight logged: prompts to log it', /Log your weight to get a recommendation/.test(gmHtml), true);
+eq('and there is no Apply button yet', /Apply/.test(gmHtml), false);
+
+setFood(null, null, (function () { var o = {}; o[day(0)] = 200; return o; })());
+ctx.renderGoalMode();
+gmHtml = ctx.document.getElementById('foodGoalMode')._html || '';
+ok('with a weight logged: the recommendation line appears', gmHtml.indexOf('Recommended: 3,300 cal / 200g protein') > -1, gmHtml);
+ok('with an Apply button', /Apply/.test(gmHtml));
+ctx.setGoalMode('cut');
+gmHtml = ctx.document.getElementById('foodGoalMode')._html || '';
+ok('switching modes updates the recommendation live', gmHtml.indexOf('Recommended: 2,600 cal / 220g protein') > -1, gmHtml);
+ok('and Cut is now the active pill', /class="liftdays-btn on" onclick="setGoalMode\('cut'\)">Cut</.test(gmHtml));
+
+// applyGoalModeRecommendation: only takes effect on tap, and only touches targets.
+reset(); boot(); ctx.loadFoodData();
+setFood(null, { cal: 9999, protein: 50 }, (function () { var o = {}; o[day(0)] = 200; return o; })());
+ctx.setGoalMode('bulk');
+eq('rendering the section never changes targets on its own', ctx.foodTargets.cal, 9999);
+ctx.applyGoalModeRecommendation();
+eq('Apply sets calories', ctx.foodTargets.cal, 3300);
+eq('Apply sets protein', ctx.foodTargets.protein, 200);
+eq('Apply sets carbs', ctx.foodTargets.carbTarget, 371);
+eq('Apply sets fat', ctx.foodTargets.fatTarget, 92);
+ctx.loadFoodData();
+eq('applied targets survive a reload', ctx.foodTargets.cal, 3300);
+ctx.renderFoodTotals();
+var totalsHtml = ctx.document.getElementById('foodTotals')._html || '';
+ok('the bars reflect the newly applied target immediately', totalsHtml.indexOf('/ 3,300') > -1, totalsHtml);
+reset(); boot(); ctx.loadFoodData();
+noThrow('Apply with no bodyweight logged is a safe no-op', function () { ctx.applyGoalModeRecommendation(); });
+eq('and sets nothing', 'cal' in ctx.foodTargets, false);
+
+section('2e. Goal mode: additive only, existing users untouched');
+reset(); boot(); ctx.loadFoodData();
+noThrow('a user with no goal-mode key at all boots fine', function () { ctx.renderFoodTab(); });
+eq('goalMode quietly defaults to bulk', ctx.goalMode, 'bulk');
+eq('nothing writes monk_goal_mode_v1 just from opening the tab', storage.getItem('monk_goal_mode_v1'), null);
+// A backup/import from before this feature existed must not disturb it.
+var logs2e = {}; logs2e[day(0)] = [{ id: 'p', time: '08:00', name: 'Oats', items: [item('Oats', 80, 300, 10, 54, 6)], source: 'text' }];
+setFood(logs2e, { cal: 2500, protein: 180 }, {});
+ctx.setGoalMode('cut');
+var exported2e = null;
+ctx.Blob = function (parts) { exported2e = parts[0]; };
+ctx.exportData();
+var backup2e = JSON.parse(exported2e);
+eq('the backup carries the current goal mode', backup2e.goalMode, 'cut');
+var oldBackup = JSON.stringify({ app: 'monk-mode', sessions: {}, maxes: {}, week: 0, foodLogs: logs2e, foodTargets: { cal: 2500, protein: 180 } });
+ctx.FileReader = function () { var self = this; this.readAsText = function (f) { self.result = f._text; self.onload(); }; };
+noThrow('restoring a pre-goal-mode backup does not throw', function () { ctx.importData({ files: [{ _text: oldBackup }] }); });
+eq('an old backup leaves goal mode exactly as it was, not reset to bulk', ctx.goalMode, 'cut');
+eq('and existing targets from that restore are still in place', ctx.foodTargets.cal, 2500);
+eq('and the existing food log came through untouched', ctx.foodLogs[day(0)][0].name, 'Oats');
+
 section('3. weekAvgWeight and weightTrend');
 reset(); boot(); setFood(null, null, {});
 eq('no data: null', ctx.weekAvgWeight(day(0)), null);

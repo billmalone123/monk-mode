@@ -1891,6 +1891,11 @@ body.training-mode footer { display: none; }
 .liftdays-btn:hover { color: var(--text); }
 .liftdays-btn.on { background: var(--accent); color: #1A1A18; }
 .liftdays-desc { font-size: 11px; color: var(--muted); }
+/* Reuses .liftdays-group/.liftdays-btn as-is (same pill look, same .on active
+   state) — this modifier only adds wrapping, since five modes including two
+   two-word labels (Carb Load, Race Prep) can run past .food-block's width on
+   a phone, unlike the shorter day-count/split pickers that group serves. */
+.goal-mode-group { flex-wrap: wrap; }
 .storage-status { font-size: 11px; color: var(--muted); flex-basis: 100%; }
 .storage-status.warn { color: #D9A05B; }
 .week-complete-banner {
@@ -2800,7 +2805,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.84</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.85</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2821,7 +2826,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.84</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3069,7 +3074,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main" style="background:#1A1A18">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.84</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3187,7 +3192,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main" style="background:#1A1A18">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.84</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3209,7 +3214,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main" style="background:#1A1A18">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.84</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3222,6 +3227,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   </div>
 
   <div id="foodTotals" class="food-block"></div>
+  <div id="foodGoalMode" class="food-block"></div>
 
   <div class="food-block">
     <div class="run-setup-bar" style="margin-bottom:8px;">
@@ -3270,7 +3276,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main" style="background:#1A1A18">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.84</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.85</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3964,6 +3970,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     mirrorPlainKey('stravaSync', STRAVA_SYNC_KEY, function(v) { return !!v; });
     mirrorPlainKey('backupNudge', BACKUP_NUDGE_KEY, function(v) { return !!v && typeof v === 'object'; });
     mirrorPlainKey('autopickDate', AUTOPICK_DATE_KEY, function(v) { return typeof v === 'string' && !!v; });
+    mirrorPlainKey('goalMode', GOAL_MODE_KEY, function(v) { return GOAL_MODES.indexOf(v) > -1; });
     //  activeSession has no IndexedDB mirror by design — see the comment on
     //  persistActiveSession() for why (a mirror here can resurrect a session
     //  that was correctly cleared, which was caught in testing).
@@ -7051,7 +7058,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
       splitHistory: splitHistory, cycleStartMaxes: cycleStartMaxes,
       //  MEAL_PASS_KEY is left out on purpose: a backup file is not a place
       //  for a credential.
-      foodLogs: foodLogs, foodTargets: foodTargets, bodyweight: bodyweight
+      foodLogs: foodLogs, foodTargets: foodTargets, bodyweight: bodyweight, goalMode: goalMode
     };
     var blob = new Blob([JSON.stringify(data, null, 1)], { type: 'application/json' });
     var a = document.createElement('a');
@@ -7133,6 +7140,10 @@ body.training-mode select.run-input { color: #F1EFE1; }
         if (data.foodLogs && typeof data.foodLogs === 'object') { foodLogs = data.foodLogs; persistFoodLogs(); }
         if (data.foodTargets && typeof data.foodTargets === 'object') { foodTargets = data.foodTargets; persistFoodTargets(); }
         if (data.bodyweight && typeof data.bodyweight === 'object') { bodyweight = data.bodyweight; persistBodyweight(); }
+        //  Absent on every backup older than this feature — leaves goalMode
+        //  at its already-loaded value (the 'bulk' default) rather than
+        //  forcing it, same as maintenanceMode's own absent-on-old-backup rule.
+        if (GOAL_MODES.indexOf(data.goalMode) > -1) { goalMode = data.goalMode; persistGoalMode(); }
         if (typeof renderFoodTab === 'function') renderFoodTab();
         updateMaxChips();
         renderAllRowStates();
@@ -7544,8 +7555,15 @@ body.training-mode select.run-input { color: #F1EFE1; }
   const BODYWEIGHT_KEY  = 'monk_bodyweight_v1';    // { 'YYYY-MM-DD': lbs }
   //  Device only. Never exported: a backup file should not carry a credential.
   const MEAL_PASS_KEY   = 'monk_meal_pass_v1';
+  //  A preference, not a log entry — same storage treatment as everything
+  //  else here (localStorage + idbSet mirror, recovered in restoreFromIDB,
+  //  carried by export/import) even though it's new, since nothing about it
+  //  is different from any other food setting once it exists.
+  const GOAL_MODE_KEY   = 'monk_goal_mode_v1';
   var FOOD_START_WEIGHT = 185, FOOD_DEFAULT_GOAL = 200;
-  var foodLogs = {}, foodTargets = {}, bodyweight = {};
+  var GOAL_MODES = ['bulk', 'maintain', 'cut', 'carbload', 'raceprep'];
+  var GOAL_MODE_LABELS = { bulk: 'Bulk', maintain: 'Maintain', cut: 'Cut', carbload: 'Carb Load', raceprep: 'Race Prep' };
+  var foodLogs = {}, foodTargets = {}, bodyweight = {}, goalMode = 'bulk';
   function loadFoodData() {
     function read(k) {
       try { var v = JSON.parse(localStorage.getItem(k)); return (v && typeof v === 'object' && !Array.isArray(v)) ? v : {}; }
@@ -7554,6 +7572,9 @@ body.training-mode select.run-input { color: #F1EFE1; }
     foodLogs = read(FOOD_LOG_KEY);
     foodTargets = read(FOOD_TARGET_KEY);
     bodyweight = read(BODYWEIGHT_KEY);
+    var gm = null;
+    try { gm = localStorage.getItem(GOAL_MODE_KEY); } catch(e) {}
+    goalMode = GOAL_MODES.indexOf(gm) > -1 ? gm : 'bulk';
   }
   function persistFoodLogs() {
     try { localStorage.setItem(FOOD_LOG_KEY, JSON.stringify(foodLogs)); } catch(e) {}
@@ -7567,7 +7588,75 @@ body.training-mode select.run-input { color: #F1EFE1; }
     try { localStorage.setItem(BODYWEIGHT_KEY, JSON.stringify(bodyweight)); } catch(e) {}
     idbSet('bodyweight', bodyweight);
   }
+  function persistGoalMode() {
+    try { localStorage.setItem(GOAL_MODE_KEY, goalMode); } catch(e) {}
+    idbSet('goalMode', goalMode);
+  }
   loadFoodData();
+
+  //  Most recent logged weigh-in, not the 7 day average — the recommendation
+  //  reacts to what the scale said today, not a smoothed trend.
+  function mostRecentBodyweight() {
+    var keys = Object.keys(bodyweight).filter(function(k) { return isFinite(parseFloat(bodyweight[k])); }).sort();
+    var k = keys[keys.length - 1];
+    return k ? parseFloat(bodyweight[k]) : null;
+  }
+  //  All five modes, all estimates — the user can always override in Settings.
+  //  Base metabolic rate: bodyweight(lbs) x 15 (active male estimate).
+  function goalModeRules(mode) {
+    var rules = {
+      bulk:     { calAdj: 300,  proteinPerLb: 1.0, carbPct: 0.45, fatPct: 0.25 },
+      maintain: { calAdj: 0,    proteinPerLb: 1.0, carbPct: 0.45, fatPct: 0.25 },
+      cut:      { calAdj: -400, proteinPerLb: 1.1, carbPct: 0.40, fatPct: 0.25 },
+      carbload: { calAdj: 200,  proteinPerLb: 0.8, carbPct: 0.60, fatPct: 0.15 }
+    };
+    //  Race Prep is Carb Load's math under a different label — same rule set.
+    return rules[mode === 'raceprep' ? 'carbload' : mode] || rules.bulk;
+  }
+  function goalModeRecommendation(mode, bw) {
+    if (!isFinite(bw) || bw <= 0) return null;
+    var r = goalModeRules(mode);
+    var cal = Math.round(bw * 15 + r.calAdj);
+    return {
+      cal: cal, protein: Math.round(bw * r.proteinPerLb),
+      carbs: Math.round(cal * r.carbPct / 4), fat: Math.round(cal * r.fatPct / 9)
+    };
+  }
+  function setGoalMode(m) {
+    if (GOAL_MODES.indexOf(m) === -1 || m === goalMode) return;
+    goalMode = m;
+    persistGoalMode();
+    renderGoalMode();
+  }
+  function applyGoalModeRecommendation() {
+    var bw = mostRecentBodyweight();
+    var rec = goalModeRecommendation(goalMode, bw);
+    if (!rec) return;
+    foodTargets.cal = rec.cal; foodTargets.protein = rec.protein;
+    foodTargets.carbTarget = rec.carbs; foodTargets.fatTarget = rec.fat;
+    persistFoodTargets();
+    renderFoodTotals();
+    renderGoalMode();
+    fillFoodSettings();   // keeps Settings in sync if it happens to be open
+  }
+  function renderGoalMode() {
+    var host = document.getElementById('foodGoalMode');
+    if (!host) return;
+    var pills = GOAL_MODES.map(function(m) {
+      return '<button class="liftdays-btn' + (m === goalMode ? ' on' : '') + '" onclick="setGoalMode(\'' + m + '\')">' + GOAL_MODE_LABELS[m] + '</button>';
+    }).join('');
+    var html = '<div class="quicklog-recent-title">Goal</div>'
+      + '<div class="liftdays-group goal-mode-group">' + pills + '</div>';
+    var bw = mostRecentBodyweight();
+    var rec = goalModeRecommendation(goalMode, bw);
+    if (!rec) {
+      html += '<div class="run-hint" style="margin-top:10px;">Log your weight to get a recommendation</div>';
+    } else {
+      html += '<div class="run-hint" style="margin-top:10px;">Recommended: ' + fmtInt(rec.cal) + ' cal / ' + fmtInt(rec.protein) + 'g protein'
+        + ' <button class="quicklog-back" style="display:inline;margin:0 0 0 4px;" onclick="applyGoalModeRecommendation()">Apply</button></div>';
+    }
+    host.innerHTML = html;
+  }
 
   //  Pure helpers — no DOM, so food.js can check the math directly.
   function foodNum(v) { var n = parseFloat(v); return isFinite(n) ? n : 0; }
@@ -7729,6 +7818,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     var sub = document.getElementById('foodDateSub');
     if (sub) sub.textContent = dk;
     renderFoodTotals();
+    renderGoalMode();
     renderFoodDraft();
     renderFoodMeals();
     renderFoodRepeat();
@@ -8283,6 +8373,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
     else delete bodyweight[dk];
     persistBodyweight();
     renderFoodWeight();
+    renderGoalMode();   // the recommendation reacts the instant bodyweight changes
   }
 
   function copyFoodPost() {
