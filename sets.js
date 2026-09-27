@@ -734,11 +734,32 @@ eq('pace text reads off the corrected time',
 
 section('16. Every day cell renders the same log block — no exceptions');
 storage.clear(); boot();
+//  This section generates its own throwaway plan to get a representative
+//  week of cells, and used to anchor it on the REAL today (ctx.startOfToday()).
+//  That made week0's shape depend on which real weekday the suite happened to
+//  run on: buildRunWeeks() only creates a partial "Restart" week0 at all when
+//  today isn't Monday (no week0 -> no c.before cell -> cEarlier null), and
+//  when it exists it only spans today through that calendar week's Sunday
+//  (today Sunday -> a single-cell week0 -> no day after today in it -> cFuture
+//  null). Both crash shapeOf() below on a null cell. It hit the cFuture case
+//  first, on 2026-09-27 (a Sunday) — but it was never really "safe until that
+//  date"; it would have broken the same way on the Sunday before, or on any
+//  Monday, going back to whenever this test was written, and will again every
+//  time a real Monday/Sunday lines up with a test run, forever.
+//  Fixed with a hardcoded, weekday-known reference date for the PLAN ITSELF
+//  (a Tuesday, so week0 is always a genuine partial week with both a real
+//  c.before day (Monday) and five more real days in it (Wed-Sun)) — this
+//  governs cEarlier/cToday/cUnsched below, none of which are ever compared
+//  against real "now". cFuture (which the app's own runDateIsFuture() DOES
+//  compare against real "now") is built the other way instead — genuinely
+//  future relative to whichever real day the suite actually runs on, per the
+//  fix's own instructions, rather than picked out of the fixed plan's cells.
+var PLAN_TODAY = new Date(2026, 0, 6);   // a Tuesday — see above
 var uInp = Object.assign({}, ctx.readRunInputs(), {
-  raceDate: '2026-11-14', distance: 'half', level: 'casual',
+  raceDate: '2026-03-24', distance: 'half', level: 'casual',
   daysPerWeek: 5, current: 15, peak: 30, longDow: 5, liftDays: 4, liftRestDow: 6
 });
-var uPlan = ctx.generateRunPlan(uInp, ctx.startOfToday());
+var uPlan = ctx.generateRunPlan(uInp, PLAN_TODAY);
 ok('a plan was generated', !!(uPlan && uPlan.weeks && uPlan.weeks.length));
 var uw0 = uPlan.weeks[0];
 
@@ -753,11 +774,15 @@ function pick(fn) {
   return c;
 }
 var cEarlier    = pick(function (c) { return c.before; });                                  // earlier this week
-var cToday      = pick(function (c) { return c.date.getTime() === ctx.startOfToday().getTime(); });
+var cToday      = pick(function (c) { return c.date.getTime() === PLAN_TODAY.getTime(); });
 var cUnsched    = pick(function (c) { return !(c.miles > 0); });                            // never a scheduled run
-var cFuture     = pick(function (c) { return c.date > ctx.startOfToday(); });
-var elapsed     = new Date(); elapsed.setDate(elapsed.getDate() - 21); elapsed.setHours(0, 0, 0, 0);
-var cElapsed    = { date: elapsed };                                                        // a fully elapsed week
+//  30 real days out, not picked from the (fixed-date) plan above — this is
+//  the one cell in the five that runDateIsFuture() below checks against
+//  genuine real time, so it has to be built from real time, always 30 days
+//  ahead of whenever this suite actually runs rather than tied to any
+//  calendar constant that would eventually stop being "future" for real.
+var cFuture     = { date: ctx.addDays(ctx.startOfToday(), 30) };
+var cElapsed    = { date: ctx.addDays(ctx.startOfToday(), -21) };                            // a fully elapsed week
 
 var five = [
   ['earlier this week (the c.before case)', cEarlier],
