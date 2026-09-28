@@ -116,10 +116,17 @@
      lettering inside matches the type size the text mark used to render at. */
   .nav-logo {
     position: relative;
-    background: rgba(241,239,225,0.05); border: 1px solid var(--border);
+    /* --accent at 15%/40% opacity — a visible pill against the nav bar
+       without introducing a new color; reads as a control, not a label. */
+    background: rgba(241,239,225,0.15); border: 1px solid rgba(241,239,225,0.4);
     border-radius: 10px; padding: 6px 14px; cursor: pointer;
-    display: flex; align-items: center; -webkit-tap-highlight-color: transparent;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.1s;
   }
+  /* Tap flash — confirms the tap registered before the menu (open async on
+     the next frame via buildNavMenu/positionNavMenu) actually appears. */
+  .nav-logo.nav-tap-flash { background: rgba(241,239,225,0.32); }
   /* First-open hint — a ring that expands and fades once, so a brand-new
      user notices the only nav there is. Gated in JS on monk_nav_hint_v1;
      the single play (animation's default iteration-count is 1, not
@@ -145,7 +152,10 @@
      static logo. Rotates via the aria-expanded the open/close functions
      already set — no separate JS state to keep in sync. */
   .nav-logo-chevron {
-    font-size: 15px; margin-left: 10px;
+    /* Spacing comes from the parent's flex gap now, not a one-sided margin —
+       a margin-left only pushed the visual center of icon+wordmark right of
+       the pill's true center. */
+    font-size: 15px;
     transition: transform 0.2s; line-height: 1;
   }
   .nav-logo[aria-expanded="true"] .nav-logo-chevron { transform: rotate(180deg); }
@@ -776,9 +786,9 @@
     /* Bigger and more obviously tappable on mobile, not smaller — this is the
        only way to switch sections, so it earns the extra footprint. Total
        pill height (img + padding + border) stays under the 48px nav row. */
-    nav .nav-logo { font-size: 15px; letter-spacing: 0.04em; flex: 0 1 auto; min-width: 0; padding: 7px 14px; }
-    nav .nav-logo img { height: 27px; max-width: 100%; object-fit: contain; object-position: left; }
-    nav .nav-logo-chevron { font-size: 17px; margin-left: 8px; }
+    nav .nav-logo { font-size: 15px; letter-spacing: 0.04em; flex: 0 1 auto; min-width: 0; padding: 7px 14px; gap: 8px; }
+    nav .nav-logo img { height: 27px; max-width: 100%; object-fit: contain; object-position: center; }
+    nav .nav-logo-chevron { font-size: 17px; }
     .nav-links { display: none; }
     /* Three tiers of nav rules used to sit here — tab overflow at 768, the
        wordmark giving way to the square mark at 520, tighter tab padding at
@@ -2025,6 +2035,15 @@ label.food-photo-btn.food-photo-primary:hover, button.food-photo-btn.food-photo-
 /* A quiet line between the camera row and the typed path — two distinct
    ways in, not one blurred list of options. */
 .food-input-divider { border-top: 1px solid var(--border); max-width: 480px; margin: 18px 0 16px; }
+/* ── MORE ─────────────────────────────────────────────────────────────────── */
+.more-list { max-width: 480px; }
+.more-list-item {
+  display: block; width: 100%; text-align: left; background: transparent; border: none;
+  border-top: 1px solid var(--border); color: var(--text); font-family: var(--font-display);
+  font-weight: 700; font-size: 16px; letter-spacing: 0.02em; padding: 16px 4px; cursor: pointer;
+}
+.more-list-item:last-child { border-bottom: 1px solid var(--border); }
+.more-list-item:active { background: var(--surface-2); }
 /* Apply is a primary action (it commits the recommended targets) that used
    to be styled like the plain Cancel/Discard links next to it, with no fill
    at all — worse than any of the other primary buttons, not just quieter.
@@ -2919,7 +2938,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 </section><footer>
   <div>
     <div class="footer-logo"><img src="assets/brand/rtw-wordmark.png" alt="Run the Weights"></div>
-    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.89</span></div>
+    <div class="footer-sub">Do the work. Become undeniable. <span style="opacity:0.45">· build 7.90</span></div>
   </div>
   <div class="footer-rules">
     <div class="footer-rules-title">The Code</div>
@@ -2940,7 +2959,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
   <div id="storageWarn" style="display:none;padding:12px 16px;margin-bottom:16px;border:1px solid var(--accent);border-radius:12px;background:rgba(241,239,225,0.10);color:var(--accent);font-size:13px;font-weight:600">
     ⚠ This device is blocking storage — logs will not survive closing the app. Tap Backup now, and check private-browsing or storage settings.
   </div>
-  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
+  <div class="section-label">Run the Weights — Daily Training <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.90</span></div>
   <h2 class="section-title train-title">THIS IS<br>WHERE YOU <span class="accent-word">WIN</span></h2>
 
   <!-- WEEK SELECTOR FOR TRAINING -->
@@ -3188,7 +3207,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-running" class="tab-main" style="background:#1A1A18">
 
 <section id="runplan">
-  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
+  <div class="section-label">Run the Weights — Running Plan <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.90</span></div>
   <h2 class="section-title train-title">RACE DAY IS<br>A <span class="accent-word">DEADLINE</span></h2>
 
   <!-- Race setup collapses once there is a raceDate, so a returning user lands
@@ -3306,7 +3325,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-calendar" class="tab-main" style="background:#1A1A18">
 
 <section id="calendarfull">
-  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
+  <div class="section-label">Full Calendar <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.90</span></div>
   <h2 class="section-title train-title">EVERY WEEK.<br>BOTH <span class="accent-word">PLANS</span>.</h2>
 
   <div class="calfull-nav">
@@ -3328,7 +3347,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-food" class="tab-main" style="background:#1A1A18">
 
 <section id="foodSection">
-  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
+  <div class="section-label">Run the Weights — Food <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.90</span></div>
   <h2 class="section-title train-title">EVERY MEAL.<br>TO <span class="accent-word">200</span>.</h2>
 
   <div class="calfull-nav">
@@ -3391,7 +3410,7 @@ body.training-mode select.run-input { color: #F1EFE1; }
 <div id="tab-quicklog" class="tab-main" style="background:#1A1A18">
 
 <section id="quicklogSection">
-  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.89</span></div>
+  <div class="section-label">Run the Weights — Quick Log <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.90</span></div>
   <h2 class="section-title train-title">ONE LIFT.<br>ONE <span class="accent-word">SET</span>.</h2>
   <p style="color:var(--muted);font-size:13px;line-height:1.6;margin:-8px 0 20px;max-width:480px;">
     For taper weeks and short-on-time days — log one set on an anchor lift without opening the full workout.
@@ -3433,6 +3452,25 @@ body.training-mode select.run-input { color: #F1EFE1; }
   </div>
 </section>
 
+</div>
+
+<!-- MORE — replaces Home/About/The Edge/Week Overview/Progression/Quick Log
+     in the top-level nav. Each link is a plain call into goTab()/goSec(),
+     the same functions those destinations always used — nothing about how
+     they render changed, only how you get to them. -->
+<div id="tab-more" class="tab-main" style="display:none">
+<section id="moreSection">
+  <div class="section-label">Run the Weights — More <span style="opacity:0.45;text-transform:none;letter-spacing:0.05em">· build 7.90</span></div>
+  <h2 class="section-title train-title">EVERYTHING<br>ELSE.</h2>
+  <div class="more-list">
+    <button class="more-list-item" onclick="goTab('info'); goSec('home');">Home</button>
+    <button class="more-list-item" onclick="goTab('info'); goSec('about');">About</button>
+    <button class="more-list-item" onclick="goTab('info'); goSec('edge');">The Edge</button>
+    <button class="more-list-item" onclick="goTab('info'); goSec('overview');">Week Overview</button>
+    <button class="more-list-item" onclick="goTab('info'); goSec('progression');">Progression</button>
+    <button class="more-list-item" onclick="goTab('quicklog');">Quick Log</button>
+  </div>
+</section>
 </div>
 
 <!-- MAXES MODAL -->
@@ -10552,7 +10590,11 @@ function advanceToNextWeek() {
   updateWeekCompleteBanner();
 }
 
-var MAIN_TABS = ['info','training','running','calendar','food','quicklog'];
+//  'info' and 'quicklog' stay real, working tabs — their content and every
+//  goTab()/goSec() call into them is unchanged. 'more' is the only new one:
+//  a small static panel of links into the five destinations the nav no
+//  longer lists directly (see buildNavMenu() and #tab-more).
+var MAIN_TABS = ['info','training','running','calendar','food','quicklog','more'];
 
 //     TOOLTIPS — one bubble element reused for every trigger, appended to
 //     document.body rather than nested beside the trigger, so a scrolling or
@@ -10769,8 +10811,41 @@ function enhanceAllInputs() {
   var n = 0;
   document.querySelectorAll('input').forEach(function(inp) {
     if (enhanceSmoothInput(inp)) n++;
+    enhanceInputColorState(inp);
   });
   return n;
+}
+
+//  INPUT COLOR STATES — empty/unfocused keeps the existing idle border
+//  (untouched); focus already jumps to --accent via CSS, and this never
+//  fights that (it clears its own inline override the instant an input is
+//  the activeElement, every time it re-checks). Filled turns green; a field
+//  that was focused and then blurred still empty turns red — never a field
+//  that was simply never touched at all. Called from the exact same sites
+//  as enhanceAllInputs() (it's called from inside it), so any render that
+//  rebuilds inputs re-evaluates this too, including a value set
+//  programmatically rather than typed.
+var INPUT_COLOR_VALID = '#52C27A', INPUT_COLOR_INVALID = '#E05252';
+function enhanceInputColorState(inp) {
+  if (!inp) return false;
+  var t = (inp.type || 'text').toLowerCase();
+  if (['text', 'search', 'tel', 'url', 'email', 'password', 'number'].indexOf(t) === -1) return false;
+  function refresh() {
+    if (document.activeElement === inp) { inp.style.borderColor = ''; return; }   // focus (CSS) always wins
+    var hasValue = String(inp.value == null ? '' : inp.value).trim() !== '';
+    if (hasValue) inp.style.borderColor = INPUT_COLOR_VALID;
+    else if (inp._colorTouched) inp.style.borderColor = INPUT_COLOR_INVALID;
+    else inp.style.borderColor = '';   // never touched — leave the idle border alone
+  }
+  if (!inp._colorStateDone) {
+    inp._colorStateDone = true;
+    inp._colorTouched = false;
+    inp.addEventListener('focus', refresh);
+    inp.addEventListener('input', refresh);
+    inp.addEventListener('blur', function() { inp._colorTouched = true; refresh(); });
+  }
+  refresh();
+  return true;
 }
 
 //  NAV LETTER ROLL — two stacked copies of a label, each letter delayed
@@ -11024,13 +11099,16 @@ function buildNavMenu() {
   el.className = 'navmenu';
   el.id = 'navMenu';
   el.setAttribute('role', 'menu');
+  //  Streamlined to five destinations. Info (Home/About/The Edge/Week
+  //  Overview/Progression) and Quick Log still exist and still work exactly
+  //  as before via goTab()/goSec() — they're just no longer listed here
+  //  directly, reached instead through More (see #tab-more).
   var items = [
-    { id: 'info', label: 'Overview', primary: true },
-    { id: 'training', label: 'Train' },
+    { id: 'training', label: 'Lift' },
     { id: 'running', label: 'Run' },
-    { id: 'calendar', label: 'Calendar' },
     { id: 'food', label: 'Food' },
-    { id: 'quicklog', label: 'Quick Log' }
+    { id: 'calendar', label: 'Calendar' },
+    { id: 'more', label: 'More' }
   ];
   //  No header row here — the trigger pill itself (the wordmark you just
   //  tapped) already says what this is; a repeated "Run the Weights" label
@@ -11090,10 +11168,13 @@ function openNavMenu() {
   trigger.classList.remove('nav-hint');
   try { localStorage.setItem(NAV_HINT_KEY, '1'); } catch(e) {}
   var el = buildNavMenu();
-  //  Mark the tab you are already on
+  //  Mark the tab you are already on. Info and Quick Log have no entry of
+  //  their own any more — both live behind More now, so that's what ticks
+  //  when either of them is the actual current tab.
   var current = null;
   try { current = localStorage.getItem(LAST_TAB_KEY); } catch (e) {}
   if (MAIN_TABS.indexOf(current) === -1) current = 'info';
+  if (current === 'info' || current === 'quicklog') current = 'more';
   el.querySelectorAll('.navmenu-item').forEach(function(b) {
     b.classList.toggle('current', b.dataset.tab === current);
     //  The panel is built once and reused, so clear any roll left over from the
@@ -11144,6 +11225,14 @@ function closeNavMenu(returnFocus) {
 
 function toggleNavMenu(e) {
   if (e) e.stopPropagation();
+  //  Confirms the tap registered before the menu itself appears (openNavMenu
+  //  below still runs synchronously right after — this isn't a delay, just a
+  //  visible acknowledgment of the tap that already happened).
+  var trigger = document.getElementById('navLogo');
+  if (trigger) {
+    trigger.classList.add('nav-tap-flash');
+    setTimeout(function() { trigger.classList.remove('nav-tap-flash'); }, 100);
+  }
   if (navMenuOpen()) closeNavMenu(); else openNavMenu();
 }
 
@@ -11209,6 +11298,11 @@ function goTab(t) {
     }
     else if (t === 'quicklog') {
       if (typeof resetQuickLog === 'function') resetQuickLog();
+    }
+    else if (t === 'more') {
+      // Static list of links — nothing to render. Without this branch 'more'
+      // fell through to the final else below, which is really "assume this
+      // is the running tab" and would have called renderRunPlan() on entry.
     }
     else if (typeof renderRunPlan === 'function') renderRunPlan();
   }

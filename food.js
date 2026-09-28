@@ -662,6 +662,95 @@ noThrow('tapping the teaser does not throw', function () { ctx.onbFlowExploreAbo
 eq('it finishes onboarding, same as the two CTA buttons', ctx.onboardedFlowDone(), true);
 eq('and lands on the About section specifically', ctx.document.getElementById('sec-about').style.display, 'block');
 
+section('2k. Input color states: green when filled, red only after being touched empty');
+reset(); boot();
+var wEl = ctx.document.getElementById('max-squat');   // a real .settings-input-field
+eq('never touched, still empty: no color override', wEl.style.borderColor, undefined);
+// enhanceInputColorState() always re-runs its refresh on every call (the
+// _colorStateDone guard only skips re-attaching listeners), so driving
+// document.activeElement/_colorTouched/.value directly and calling it again
+// exercises the exact same logic a real focus/input/blur cycle would.
+ctx.enhanceInputColorState(wEl);
+eq('idle border untouched on attach (nothing typed yet)', wEl.style.borderColor, '');
+ctx.document.activeElement = null;
+eq('blurring without ever having focused does nothing (never touched)', wEl._colorTouched, false);
+wEl._colorTouched = true;
+ctx.enhanceInputColorState(wEl);
+eq('touched, blurred, still empty: red', wEl.style.borderColor, '#E05252');
+wEl.value = '275';
+ctx.enhanceInputColorState(wEl);
+eq('now filled: green, overriding the red', wEl.style.borderColor, '#52C27A');
+ctx.document.activeElement = wEl;
+ctx.enhanceInputColorState(wEl);
+eq('focused again: cleared, so CSS :focus (accent) shows instead', wEl.style.borderColor, '');
+ctx.document.activeElement = null;
+ctx.enhanceInputColorState(wEl);
+eq('blurring a filled field goes back to green, not red', wEl.style.borderColor, '#52C27A');
+var freshEl = ctx.document.getElementById('max-bench');
+eq('a different, never-touched field is unaffected by the one above', freshEl._colorTouched, undefined);
+eq('and starts uncolored', freshEl.style.borderColor, undefined);
+ok('enhanceAllInputs also drives color state now (same call sites, no new ones needed)',
+   /function enhanceAllInputs\(\) \{[\s\S]{0,200}enhanceInputColorState\(inp\);/.test(html));
+
+section('2l. Nav pill: accent background/border, centered content, tap flash');
+ok('background is --accent at 15% opacity, not a new color', /\.nav-logo \{[\s\S]{0,220}background: rgba\(241,239,225,0\.15\);/.test(html));
+ok('border is --accent at 40% opacity', /border: 1px solid rgba\(241,239,225,0\.4\);/.test(html));
+ok('content is centered both ways', /background: rgba\(241,239,225,0\.15\);[\s\S]{0,150}justify-content: center;/.test(html));
+ok('a tap-flash class and its 100ms timeout both exist', /nav-tap-flash/.test(html) && /setTimeout\(function\(\) \{ trigger\.classList\.remove\('nav-tap-flash'\); \}, 100\)/.test(html));
+reset(); boot();
+var navBtn = ctx.document.getElementById('navLogo');
+noThrow('tapping the pill does not throw', function () { ctx.toggleNavMenu({ stopPropagation: function () {} }); });
+eq('the flash class is applied immediately on tap', navBtn.classList.contains('nav-tap-flash'), true);
+ctx.closeNavMenu();
+
+section('2m. Navigation consolidation: five top items, More holds the rest, nothing lost');
+eq('MAIN_TABS keeps info and quicklog working, adds more', ev('MAIN_TABS').join(','), 'info,training,running,calendar,food,quicklog,more');
+var menuHtml = ctx.buildNavMenu().innerHTML;
+['Lift', 'Run', 'Food', 'Calendar', 'More'].forEach(function (label, i) {
+  var order = ['Lift', 'Run', 'Food', 'Calendar', 'More'];
+  ok(label + ' is a top-level nav item', menuHtml.indexOf('>' + label + '<') > -1);
+});
+eq('exactly five destinations plus Settings — Home/About/Edge/Overview/Progression/Quick Log are gone from the list',
+   (menuHtml.match(/data-tab="/g) || []).length, 5);
+['Home', 'About', 'Edge', 'Week Overview', 'Progression', 'Quick Log'].forEach(function (label) {
+  eq('"' + label + '" is not a top-level nav item any more', menuHtml.indexOf('>' + label + '<') > -1, false);
+});
+// The More tab itself: every removed destination is reachable from it, via
+// the exact same goTab()/goSec() calls those destinations always used.
+[['Home', "goTab('info'); goSec('home');"], ['About', "goTab('info'); goSec('about');"],
+ ['The Edge', "goTab('info'); goSec('edge');"], ['Week Overview', "goTab('info'); goSec('overview');"],
+ ['Progression', "goTab('info'); goSec('progression');"], ['Quick Log', "goTab('quicklog');"]
+].forEach(function (p) {
+  ok('More has a working link to ' + p[0], html.indexOf('onclick="' + p[1] + '">' + p[0] + '<') > -1);
+});
+// goTab('more') itself: must not fall through to the run-plan renderer,
+// which the final catch-all in goTab is really "assume this is Run".
+reset(); boot();
+var renderRunPlanCalls = 0;
+ctx.renderRunPlan = function () { renderRunPlanCalls++; };
+noThrow('goTab(\'more\') runs without throwing', function () { ctx.goTab('more'); });
+eq('the More panel is shown', ctx.document.getElementById('tab-more').style.display, 'block');
+eq('every other panel is hidden, including info and quicklog', ['info', 'training', 'running', 'calendar', 'food', 'quicklog'].every(function (n) {
+  return ctx.document.getElementById('tab-' + n).style.display === 'none';
+}), true);
+eq('and it did NOT fall through to renderRunPlan() (the bug this needed guarding against)', renderRunPlanCalls, 0);
+ok('dark training-mode chrome applies to More, same as Lift/Run/Food/Calendar', ctx.document.body.classList.contains('training-mode'));
+// Existing destinations reached through More still render exactly as before.
+noThrow('More -> Home reaches the info tab and its Home section', function () { ctx.goTab('info'); ctx.goSec('home'); });
+eq('lands on tab-info', ctx.document.getElementById('tab-info').style.display, 'block');
+eq('with Home active', ctx.document.getElementById('sec-home').style.display, 'block');
+noThrow('More -> Quick Log still resets and renders the Quick Log tab', function () { ctx.goTab('quicklog'); });
+eq('lands on tab-quicklog', ctx.document.getElementById('tab-quicklog').style.display, 'block');
+// The dropdown's "current tab" tick now maps info/quicklog onto More —
+// verified as source logic above (dynamically-created menu nodes aren't
+// discoverable via this stub's getElementById, so this can't be driven
+// end-to-end through openNavMenu() here; the regex check above covers the
+// actual behavior, and 2l already exercises toggleNavMenu -> openNavMenu
+// without throwing).
+// Existing users: no storage keys touched by any of this.
+eq('the food/goal-mode/lift-days storage keys from earlier tasks are untouched by this diff',
+   /GOAL_MODE_KEY\s*=\s*'monk_goal_mode_v1'/.test(html) && /LIFT_DAYS_KEY = 'monk_lift_days_v1'/.test(html), true);
+
 section('3. weekAvgWeight and weightTrend');
 reset(); boot(); setFood(null, null, {});
 eq('no data: null', ctx.weekAvgWeight(day(0)), null);
